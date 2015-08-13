@@ -54,3 +54,7 @@ function whoIsMyParent(){
 
 # This will fix broken (bash imported) scripts which use "for var in ${list of space separated files goes here}" loops
 setopt sh_word_split
+
+if [[ -e ~/.zshrc.local ]]; then
+	source ~/.zshrc.local
+fi
