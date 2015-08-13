@@ -52,4 +52,5 @@ function whoIsMyParent(){
 	ps aux | grep -v grep | grep $PPID
 }
 
+# This will fix broken (bash imported) scripts which use "for var in ${list of space separated files goes here}" loops
 setopt sh_word_split
