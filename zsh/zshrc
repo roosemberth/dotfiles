@@ -52,4 +52,4 @@ function whoIsMyParent(){
 	ps aux | grep -v grep | grep $PPID
 }
 
-# source ~/.bin/tmuxinator.zsh
+setopt sh_word_split
