@@ -1,0 +1,5 @@
+#!/bin/bash
+
+USERNAME="rpalacio"
+FILES_Server="8"
+sudo mount -t cifs //files${FILES_Server}/data/$(USERNAME) /mnt/remotes/smbShares/epfl-files${FILES_Server}/ -o rw,exec,uid=1000,gid=1000,noperm,forceuid,forcegid

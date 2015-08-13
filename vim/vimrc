@@ -1,0 +1,62 @@
+"NeoBundle Scripts-----------------------------
+if has('vim_starting')
+  if &compatible
+    set nocompatible               " Be iMproved
+  endif
+
+  " Required:
+  set runtimepath+=/home/roosemberth/.vim/bundle/neobundle.vim/
+endif
+
+" Required:
+call neobundle#begin(expand('/home/roosemberth/.vim/bundle'))
+
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" Add or remove your Bundles here:
+NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+NeoBundle 'flazz/vim-colorschemes'
+
+"--Start My Packages ----------------------------
+
+NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
+
+NeoBundle 'scrooloose/nerdtree'
+
+"--End My Packages ------------------------------
+
+" You can specify revision/branch/tag.
+NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+
+" Required:
+call neobundle#end()
+
+" Required:
+filetype plugin indent on
+
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
+NeoBundleCheck
+"End NeoBundle Scripts-------------------------
+
+" size of a hard tabstop
+set tabstop=4
+
+" size of an "indent"
+set shiftwidth=4
+
+" a combination of spaces and tabs are used to simulate tab stops at a width
+" other than the (hard)tabstop
+set softtabstop=4
+
+" Line Numbers
+set number
+set relativenumber
+
+autocmd InsertEnter * :set number
+autocmd InsertLeave * :set relativenumber

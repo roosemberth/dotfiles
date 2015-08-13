@@ -1,0 +1,44 @@
+#!/bin/bash
+
+USAGE="Usage: $0 {Host} {Remote Folder} {file1} [file2 file3 ... fileN]"
+if [ "$#" == "0" ]; then
+	echo "$USAGE"
+	exit 1
+fi
+
+Connection="$1"
+shift
+
+if [ "$#" == "0" ]; then
+	echo "$USAGE"
+	echo
+	echo "No Remote Location was Specified!, please specify it!"
+	exit 1
+fi
+
+RemoteFolder="$1"
+shift
+
+if [ "$#" == "0" ]; then
+	echo "$USAGE"
+	echo
+	echo "No Files were Specified!, please add some files"
+	exit 1
+fi
+
+FILES="$@"
+
+echo
+echo "Transmitting Files to $Connection:$RemoteFolder"
+
+scp -r $(echo $FILES) $Connection:$RemoteFolder
+rc=$?
+echo
+
+if [[ $rc -eq 0 ]]; then
+	echo "Everything was successfully Transmitted!"
+else
+	echo ""There was a problem sending these files, please check the abode messages for more intormation
+	exit $rc
+fi
+

@@ -1,0 +1,239 @@
+# Ce fichier viminfo a été généré par Vim 7.4.
+# Vous pouvez l'éditer, mais soyez prudent.
+
+# 'encoding' dans lequel ce fichier a été écrit
+*encoding=utf-8
+
+
+# hlsearch on (H) or off (h):
+~h
+# Dernier motif de recherche  :
+~MSle0~/tac
+
+# Historique ligne de commande (chronologie décroissante) :
+:source ~/.vimrc
+:set rnu
+:set lines
+:q
+:wq
+:colorscheme evening
+:colorscheme
+:colorscheme desert
+:ew
+:q!
+:diffupdate
+:w
+:help diff
+:diffoff
+:diffthis
+:vs /tmp/Report.tex
+:vs ~/.vimrc
+:split net.tex
+:help latex-folding
+:help latex-suite.txt
+
+# Historique chaîne de recherche (chronologie décroissante) :
+?/tac
+?/ssh
+?/lstinline
+?/copy-diffs
+
+# Historique expression (chronologie décroissante) :
+
+# Historique ligne de saisie (chronologie décroissante) :
+
+# Historique ligne de saisie (chronologie décroissante) :
+
+# Registres :
+""0	CHAR	0
+	%%This
+"1	LINE	0
+	set ta
+"2	LINE	0
+	           \item etc/cron.daily/pushDomosafetyLogs
+	                \item rpiDomosafetyXtractor/rpiUpstartScript
+"3	LINE	0
+	\part{Network Reability}
+	
+	\section{Dynamically Enabling and Disabling Modem Connection}
+	This is basically done through the following shell scripts:
+	
+	\begin{itemize}
+	  \item Disable Script
+	  \begin{lstlisting}[frame=single]
+	#!/bin/bash
+	
+	# First, we check we're running as root
+	
+	if [[ $(whoami) != "root" ]]; then
+		echo $0 Should be ran as root!
+		exit -1
+	fi
+	
+	# Change this if using a modem from another supplyer, I just used the vendor ID, because Huawei mostly makes modems, so the script might not need modifications while using their modems
+	
+	modem_vID="12d1"
+	
+	cd /sys/bus/usb/devices
+	modem_port=""
+	
+	# Basically we don't know which port is modem on, so we'll poke them all
+	# If using other platform we should modify this to sweep through all ports
+	for port in $(seq 2 5); do 
+		if [[ $(cat 1-1.$port/idVendor 2>/dev/null) == $modem_vID ]]; then 
+			modem_port="1-1.$port"
+		fi 
+	done
+	
+	echo Found modem at $modem_port
+	echo $modem_port > /rpiDomosafetyXtractor/modemPort
+	echo $modem_port > /sys/bus/usb/drivers/usb/unbind 2>/dev/null
+	
+	  \end{lstlisting}
+	  Prease note that we don't poke \lstinline {1-1.1} Because on rpi2, this port
+	  belongs to the in-built ethernet port. This Script basic work ow is the
+	  following:
+	  
+	  \begin{itemize}
+	    \item Running as root, search among all usb devices connected to the
+	    platform, those whose vendor id matches \lstinline {12d1}, which is Huawei's
+	    vendor id, as Huawei's makes mostly modems, there's not much danger. If
+	    unsure, it's possible to edit the script to add a product ID check and tie
+	    the script to a specic device.
+	    \item When the matching device has been found. We store it's "Address" on a
+	    File that may be readed by the enabler script (to avoid dangerous
+	    "Hole-Punching").
+"4	LINE	0
+	%%There is just one section and two subsections.
+"5	LINE	0
+	%%This is a very basic article template.
+"6	LINE	0
+	NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
+"7	LINE	0
+	" LaTeX
+"8	LINE	0
+	NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
+"9	LINE	0
+	set ta
+"-	CHAR	0
+	%%This
+
+# Marques dans le fichier :
+'0  23  0  /opt/facebook/README
+'1  1  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+'2  220  5  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/old.ds-standalone-bu-log-recorder.tex
+'3  24  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+'4  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+'5  311  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+'6  310  1  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+'7  310  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+'8  27  0  ~/.vimrc
+'9  56  0  ~/.vimrc
+
+# Liste de sauts (le plus récent en premier) :
+-'  23  0  /opt/facebook/README
+-'  1  0  /opt/facebook/README
+-'  1  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  220  5  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/old.ds-standalone-bu-log-recorder.tex
+-'  24  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  32  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  29  3  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  2  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  259  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  256  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  269  11  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  268  16  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  311  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  310  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  258  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  255  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  267  16  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  309  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/ds-standalone-bu-log-recorder.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  2  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/old.ds-standalone-bu-log-recorder.tex
+-'  296  6  /tmp/Report-fix.tex
+-'  1  0  /tmp/Report-fix.tex
+-'  222  24  /tmp/Report-orig-fix.tex
+-'  68  7  /tmp/Report-orig-fix.tex
+-'  65  8  /tmp/Report-orig-fix.tex
+-'  51  15  /tmp/Report-orig-fix.tex
+-'  48  19  /tmp/Report-orig-fix.tex
+-'  256  20  /tmp/Report-orig-fix.tex
+-'  1  0  /tmp/Report-orig-fix.tex
+-'  445  1  /tmp/Report-orig-fix.tex
+-'  146  21  /tmp/Report-orig-fix.tex
+-'  417  45  /tmp/Report-orig-fix.tex
+-'  73  31  /tmp/Report-orig-fix.tex
+-'  400  42  /tmp/Report-orig-fix.tex
+-'  352  46  /tmp/Report-orig-fix.tex
+-'  346  35  /tmp/Report-orig-fix.tex
+-'  218  28  /tmp/Report-orig-fix.tex
+-'  211  19  /tmp/Report-orig-fix.tex
+-'  176  22  /tmp/Report-orig-fix.tex
+-'  175  8  /tmp/Report-orig-fix.tex
+-'  174  27  /tmp/Report-orig-fix.tex
+-'  100  15  /tmp/Report-orig-fix.tex
+-'  94  67  /tmp/Report-orig-fix.tex
+-'  212  16  /tmp/Report-orig-fix.tex
+-'  99  133  /tmp/Report-orig-fix.tex
+-'  347  35  /tmp/Report-orig-fix.tex
+-'  2  0  /tmp/Report-orig-fix.tex
+-'  317  0  /tmp/Report-fix.tex
+-'  171  16  /tmp/Report-fix.tex
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  135  0  ~/Bureau/domosafety/ds-Projects-Reports/ds-standalone-bu-log-recorder/net.tex
+-'  27  0  ~/.vimrc
+-'  1  0  ~/.vimrc
+-'  56  0  ~/.vimrc
+-'  39  0  ~/.vimrc
+-'  222  24  /tmp/Report-orig-fix.tex
+-'  68  7  /tmp/Report-orig-fix.tex
+-'  65  8  /tmp/Report-orig-fix.tex
+-'  51  15  /tmp/Report-orig-fix.tex
+-'  48  19  /tmp/Report-orig-fix.tex
+-'  256  20  /tmp/Report-orig-fix.tex
+-'  1  0  /tmp/Report-orig-fix.tex
+-'  445  1  /tmp/Report-orig-fix.tex
+-'  146  21  /tmp/Report-orig-fix.tex
+-'  417  45  /tmp/Report-orig-fix.tex
+-'  73  31  /tmp/Report-orig-fix.tex
+-'  400  42  /tmp/Report-orig-fix.tex
+
+# Historique des marques dans les fichiers (les plus récentes en premier) :
+
+> /opt/facebook/README
+	"	23	0
+	^	23	0

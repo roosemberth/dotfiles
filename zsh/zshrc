@@ -1,0 +1,55 @@
+# The following lines were added by compinstall
+
+zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
+zstyle :compinstall filename '/home/roosemberth/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=1000000
+SAVEHIST=1000000
+setopt appendhistory beep notify
+bindkey -v
+# End of lines configured by zsh-newuser-install
+# enable color support of ls and also add handy aliases
+alias ls='ls --color=auto'
+#alias dir='dir --color=auto'
+#alias vdir='vdir --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+export EDITOR="vim"
+
+function compress(){
+	if [[ $# -lt "1" ]]; then
+		echo "Please specify at least one argument!"
+		exit 1
+	fi
+	FileName=$(basename $1).$(date +%y.%m.%d-%H.%M.%S).tar.gz
+	if [[ $# -gt "1" ]]; then
+		shift
+	fi
+	
+	tar -zcvf $FileName "$@"
+	
+}
+
+function mailFile(){
+	if [[ $# -gt 1 ]]; then
+		echo "Warning: This Macro accept one and one only argument, I'll ignore the rest of the arguments. You may want to use compress macro if you really want to send all the specified files" 
+	fi
+	thunderbird -compose subject="$1",body="$1 file attached",attachment="file://$(pwd)/$1" &>/dev/null &
+}
+
+function whoIsMyParent(){
+	ps aux | grep -v grep | grep $PPID
+}
+
+# source ~/.bin/tmuxinator.zsh

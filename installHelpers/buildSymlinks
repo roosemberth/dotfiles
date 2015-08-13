@@ -1,0 +1,5 @@
+ln -s dotfiles/vim/vim/ .vim
+ln -s dotfiles/vim/vimrc .vimrc
+ln -s dotfiles/vim/vimshell/ .vimshell
+ln -s dotfiles/zsh/zshrc .zshrc
+ln -s dotfiles/zsh/zshrc.zni .zshrc.zni
