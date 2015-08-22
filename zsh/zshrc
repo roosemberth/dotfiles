@@ -58,3 +58,12 @@ function aps(){
 
 # This will fix broken (bash imported) scripts which use "for var in ${list of space separated files goes here}" loops
 setopt sh_word_split
+
+# This will load local "Host-dependant" zsh config files
+if [[ -e ~/.zshrc.local ]]; then
+	source ~/.zshrc.local
+fi
+
+# This will allow "Special dirs" (./ and ../) to be available as autocomplete
+zstyle ':completion:*' special-dirs true
+
