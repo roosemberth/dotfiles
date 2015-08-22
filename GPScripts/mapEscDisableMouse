@@ -1,0 +1,16 @@
+## Global Variables:
+
+deviceName="Synaptics TouchPad""
+
+## Script Variables
+
+deviceID  =$(xinput | grep "Synaptics TouchPad" | head -n 1 | sed 's/^.*id=//' | grep -o "[0-9]*" | head -n 1)
+deviceEnabled=$(xinput list-props 13 | grep "Device Enabled" | awk '{print $4}')
+
+## Main Work
+
+if [[ ${deviceEnabled} -eq 1 ]]; then
+	xinput set-prop ${deviceID} "Device Enabled" 0
+else
+	xinput set-prop ${deviceID} "Device Enabled" 1
+fi
