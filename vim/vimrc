@@ -21,6 +21,13 @@ NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'ctrlpvim/ctrlp.vim'
 NeoBundle 'flazz/vim-colorschemes'
+" NeoBundle 'dmonllao/vim-IDE'
+NeoBundle 'scrooloose/nerdtree'
+" NeoBundle 'fholgado/minibufexpl.vim'
+" NeoBundle 'majutsushi/tagbar'
+" NeoBundle 'hari-rangarajan/CCTree/'
+" NeoBundle 'vim-scripts/exUtility'
+" NeoBundle 'https://bitbucket.org/ns9tks/vim-autocomplpop/'
 
 "--Start My Packages ----------------------------
 
@@ -57,6 +64,10 @@ set softtabstop=4
 " Line Numbers
 set number
 set relativenumber
+
+" vim Latex, set output format to pdf
+let g:Tex_DefaultTargetFormat = 'pdf'
+let g:Tex_MultipleCompileFormats='pdf, aux'
 
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
