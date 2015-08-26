@@ -1,0 +1,45 @@
+function develEspressif(){
+	ESP_DEVEL_HOME="/Projects/ESP8266-Devel/"
+	ESP_TOOLCHAIN_BUILDER="/Projects/ESP8266-Devel/esp-open-sdk/"
+	ESP_TOOLCHAIN="${ESP_TOOLCHAIN_BUILDER}/xtensa-lx106-elf/bin"
+	if [[ ! -d ${ESP_TOOLCHAIN_BUILDER} ]]; then
+		echo "Could not find the toolchain builder (esp-open-sdk) directory, please fix me\!"
+		exit 1
+	fi
+	echo "Would you like to update the toolchain? [Y]/n"
+	read doUpdate
+	if [[ ${doUpdate:-y} == "y" || ${doUpdate} == "Y" ]]; then
+		cd ${ESP_TOOLCHAIN_BUILDER}
+		make clean
+		git pull
+		git submodule sync
+		git submodule update
+		make STANDALONE=n
+	fi
+	unset doUpdate
+
+	if [[ -d ${ESP_DEVEL_HOME} ]]; then
+		cd ${ESP_DEVEL_HOME}
+	else 
+		echo "Warning: ESP_DEVEL_HOME:${ESP_DEVEL_HOME} does not exist, fix me\!"
+	fi
+	
+	varK="setupToolchainTemp-$RANDOM"
+	mkdir -p /tmp/${varK}
+	${ZDOTDIR:=~/}
+
+cat << EOF > /tmp/${varK}/.zshrc
+	ZDOTDIR="${ZDOTDIR}"
+	if [[ -f \${ZDOTDIR}/.zshrc ]]; then	
+		source \${ZDOTDIR}/.zshrc
+	fi
+	export PATH="${ESP_TOOLCHAIN}:\$PATH"
+	subPS1="\${PS1%??}"
+	[[ "\${subPS1:\$((\${#subPS1}-1))}" == "%" ]] && subPS1="\${subPS1%?}"
+	export PS1="\${subPS1} - [Devel Espressif]%# "
+EOF
+
+	export ZDOTDIR=/tmp/${varK}
+	unset varK
+	exec zsh -i
+}

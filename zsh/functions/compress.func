@@ -1,0 +1,14 @@
+function compress(){
+	if [[ $# -lt "1" ]]; then
+		echo "Please specify at least one argument!"
+		exit 1
+	fi
+	FileName=$(basename $1).$(date +%y.%m.%d-%H.%M.%S).tar.gz
+	if [[ $# -gt "1" ]]; then
+		shift
+	fi
+	
+	tar -zcvf $FileName "$@"
+	
+}
+
