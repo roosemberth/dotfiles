@@ -6,9 +6,9 @@ function develEspressif(){
 		echo "Could not find the toolchain builder (esp-open-sdk) directory, please fix me\!"
 		exit 1
 	fi
-	echo "Would you like to update the toolchain? [Y]/n"
+	echo "Would you like to update the toolchain? Y/[N]"
 	read doUpdate
-	if [[ ${doUpdate:-y} == "y" || ${doUpdate} == "Y" ]]; then
+	if [[ ${doUpdate:-n} == "y" || ${doUpdate} == "Y" ]]; then
 		cd ${ESP_TOOLCHAIN_BUILDER}
 		make clean
 		git pull
@@ -26,10 +26,10 @@ function develEspressif(){
 	
 	varK="setupToolchainTemp-$RANDOM"
 	mkdir -p /tmp/${varK}
-	${ZDOTDIR:=~/}
 
 cat << EOF > /tmp/${varK}/.zshrc
-	ZDOTDIR="${ZDOTDIR}"
+	ZDOTDIR="${ZDOTDIR:=~/}"
+	rm -fr /tmp/${varK}
 	if [[ -f \${ZDOTDIR}/.zshrc ]]; then	
 		source \${ZDOTDIR}/.zshrc
 	fi
