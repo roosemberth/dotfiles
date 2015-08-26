@@ -13,6 +13,7 @@ SAVEHIST=1000000
 setopt appendhistory beep notify
 bindkey -v
 # End of lines configured by zsh-newuser-install
+
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
 #alias dir='dir --color=auto'
@@ -25,27 +26,43 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
+# quite handy!
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
 export EDITOR="vim"
 
-function compress(){
-	if [[ $# -lt "1" ]]; then
-		echo "Please specify at least one argument!"
-		exit 1
-	fi
-	FileName=$(basename $1).$(date +%y.%m.%d-%H.%M.%S).tar.gz
-	if [[ $# -gt "1" ]]; then
-		shift
-	fi
-	
-	tar -zcvf $FileName "$@"
-	
-}
+# This will fix broken (bash imported) scripts which use "for var in ${list of space separated variables goes here}" loops
+setopt sh_word_split
 
-function mailFile(){
-	if [[ $# -gt 1 ]]; then
-		echo "Warning: This Macro accept one and one only argument, I'll ignore the rest of the arguments. You may want to use compress macro if you really want to send all the specified files" 
+# "Include" custom shell functions. They need to have a proper function declaration
+# ej. --------------------------------------------------------
+# function myfunc(){
+#	# cool function code here
+# }
+# ----------------- file: ~/dotfiles/zsh/functions/myfunc.func
+# This functions can be located in subdirectories too, but only the files ending 
+# with '.func' will be included. 
+
+ADDITIONAL_FUNCTIONS=$(find ~/dotfiles/zsh/functions -type f -iname "*.func")
+
+for newFunction in ${ADDITIONAL_FUNCTIONS}; do
+	source ${newFunction}
+	if [[ $? != 0 ]]; then
+		echo "Error processing additional function ${newFunction}"
 	fi
-	thunderbird -compose subject="$1",body="$1 file attached",attachment="file://$(pwd)/$1" &>/dev/null &
+done
+
+unset ADDITIONAL_FUNCTIONS
+
+# This will allow "Special dirs" (./ and ../) to be available as autocomplete
+zstyle ':completion:*' special-dirs true
+
+# Space for small functions which do not merite to be in a single file ----------
+function reload(){
+	source ~/.zshrc
 }
 
 function whoIsMyParent(){
@@ -56,14 +73,17 @@ function aps(){
 	ps aux | grep -v grep | grep $1
 }
 
-# This will fix broken (bash imported) scripts which use "for var in ${list of space separated files goes here}" loops
-setopt sh_word_split
+function shakeInternet(){
+	INTERFACE=wlan0
+	[[ ! -z $1 ]] && INTERFACE=$1
+	sudo dhclient ${INTERFACE} &>/dev/null && ping epfl.ch -c 3 &>/dev/null && echo "Internet shound be fine."
+	unset INTERFACE
+}
 
-# This will load local "Host-dependant" zsh config files
+# -------------------------------------------------------------------------------
+
+# This will load local "Host-dependant" zsh config files, so we won't polute git repo :)
 if [[ -e ~/.zshrc.local ]]; then
 	source ~/.zshrc.local
 fi
-
-# This will allow "Special dirs" (./ and ../) to be available as autocomplete
-zstyle ':completion:*' special-dirs true
 
