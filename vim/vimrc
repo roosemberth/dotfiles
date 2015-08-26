@@ -28,6 +28,7 @@ NeoBundle 'scrooloose/nerdtree'
 " NeoBundle 'hari-rangarajan/CCTree/'
 " NeoBundle 'vim-scripts/exUtility'
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-autocomplpop/'
+NeoBundle 'https://github.com/dfxyz/CandyPaper.vim'
 
 "--Start My Packages ----------------------------
 
@@ -68,6 +69,7 @@ set relativenumber
 " vim Latex, set output format to pdf
 let g:Tex_DefaultTargetFormat = 'pdf'
 let g:Tex_MultipleCompileFormats='pdf, aux'
+let g:Tex_ViewRule_pdf = "evince &>/dev/null"
 
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
