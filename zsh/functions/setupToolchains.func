@@ -37,6 +37,9 @@ cat << EOF > /tmp/${varK}/.zshrc
 	subPS1="\${PS1%??}"
 	[[ "\${subPS1:\$((\${#subPS1}-1))}" == "%" ]] && subPS1="\${subPS1%?}"
 	export PS1="\${subPS1} - [Devel Espressif]%# "
+	clear
+	echo 
+	pwd
 EOF
 
 	export ZDOTDIR=/tmp/${varK}
