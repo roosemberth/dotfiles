@@ -14,7 +14,7 @@ function develEspressif(){
 		git pull
 		git submodule sync
 		git submodule update
-		make STANDALONE=n
+		ionice nice make STANDALONE=n
 	fi
 	unset doUpdate
 
