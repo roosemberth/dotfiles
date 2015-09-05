@@ -1,6 +1,6 @@
 function develEspressif(){
 	ESP_DEVEL_HOME="/Projects/ESP8266-Devel/"
-	ESP_TOOLCHAIN_BUILDER="/Projects/ESP8266-Devel/esp-open-sdk/"
+	ESP_TOOLCHAIN_BUILDER="${ESP_DEVEL_HOME}/esp-open-sdk/"
 	ESP_TOOLCHAIN="${ESP_TOOLCHAIN_BUILDER}/xtensa-lx106-elf/bin"
 	if [[ ! -d ${ESP_TOOLCHAIN_BUILDER} ]]; then
 		echo "Could not find the toolchain builder (esp-open-sdk) directory, please fix me\!"
@@ -33,10 +33,12 @@ cat << EOF > /tmp/${varK}/.zshrc
 	if [[ -f \${ZDOTDIR}/.zshrc ]]; then	
 		source \${ZDOTDIR}/.zshrc
 	fi
+	source ~/.zshrc
 	export PATH="${ESP_TOOLCHAIN}:\$PATH"
 	subPS1="\${PS1%??}"
 	[[ "\${subPS1:\$((\${#subPS1}-1))}" == "%" ]] && subPS1="\${subPS1%?}"
 	export PS1="\${subPS1} - [Devel Espressif]%# "
+	export esp_open_sdk_hone="${ESP_TOOLCHAIN_BUILDER}"
 	clear
 	echo 
 	pwd
