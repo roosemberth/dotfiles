@@ -1,4 +1,8 @@
-"NeoBundle Scripts-----------------------------
+" People from whom --I've stolen config frags-- I'm getting inspired:
+" @nicknisi, @rasendubi, @shougo,
+" And manymore comming! Thanks everyone!
+
+"NeoBundle Scripts------------------------------------------------------------
 if has('vim_starting')
   if &compatible
     set nocompatible               " Be iMproved
@@ -16,27 +20,33 @@ call neobundle#begin(expand('~/.vim/bundle'))
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 " Add or remove your Bundles here:
+"--Start My Packages ---------------------------------------------------------
 NeoBundle 'Shougo/neosnippet.vim'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'ctrlpvim/ctrlp.vim'
 NeoBundle 'flazz/vim-colorschemes'
 " NeoBundle 'dmonllao/vim-IDE'
+NeoBundle 'Valloric/YouCompleteMe'
 NeoBundle 'scrooloose/nerdtree'
 " NeoBundle 'fholgado/minibufexpl.vim'
 " NeoBundle 'majutsushi/tagbar'
+NeoBundle 'https://github.com/mbbill/code_complete'
 " NeoBundle 'hari-rangarajan/CCTree/'
 " NeoBundle 'vim-scripts/exUtility'
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-autocomplpop/'
 NeoBundle 'https://github.com/dfxyz/CandyPaper.vim'
-
-"--Start My Packages ----------------------------
-
 NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
-
 NeoBundle 'scrooloose/nerdtree'
-
-"--End My Packages ------------------------------
+NeoBundle 'rdnetto/YCM-Generator'
+NeoBundleLazy 'jeaye/color_coded', {
+      \ 'build': {
+      \   'unix': 'cmake . && make && make install',
+      \ },
+      \ 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] },
+      \ 'build_commands' : ['cmake', 'make']
+  \}
+"--End My Packages -----------------------------------------------------------
 
 " You can specify revision/branch/tag.
 NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
@@ -50,26 +60,51 @@ filetype plugin indent on
 " If there are uninstalled bundles found on startup,
 " this will conveniently prompt you to install them.
 NeoBundleCheck
-"End NeoBundle Scripts-------------------------
+"End NeoBundle Scripts--------------------------------------------------------
 
-" size of a hard tabstop
-set tabstop=4
+set tabstop=4							" size of a hard tabstop
+set shiftwidth=4						" size of an 'indent'
+set softtabstop=4						" a combination of spaces and tabs
+set shiftwidth=4						" size of an 'autoindent'
+set number								" Line Numbers
+set relativenumber						" Relative numbers
+set showmatch							" Brackets
+set scrolloff=2							" Min Visible Lines Around Cursor
+set noexpandtab							" Don't convert indent tabs to spaces
 
-" size of an "indent"
-set shiftwidth=4
+filetype plugin on
+syntax on
 
-" a combination of spaces and tabs are used to simulate tab stops at a width
-" other than the (hard)tabstop
-set softtabstop=4
-
-" Line Numbers
-set number
-set relativenumber
-
-" vim Latex, set output format to pdf
-let g:Tex_DefaultTargetFormat = 'pdf'
-let g:Tex_MultipleCompileFormats='pdf, aux'
-let g:Tex_ViewRule_pdf = "evince &>/dev/null"
+augroup filetype_tex
+	source ~/.vim/after/syntax/tex/lstlisting.vim
+	let g:Tex_DefaultTargetFormat = 'pdf'			" vim Latex, set output format to pdf
+	let g:Tex_MultipleCompileFormats='pdf, aux'
+	let g:Tex_ViewRule_pdf = "evince &>/dev/null"
+augroup end
+augroup Devel_C
+	autocmd!
+	autocmd BufRead,BufNewFile *.h,*.c set filetype=c
+	let &path.="src/include,/usr/include/AL,"
+augroup END
 
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
+
+" Navigation : Start and end of line
+nnoremap H ^
+nnoremap L $
+vnoremap L g_
+
+" Window manipulation: Resize window 
+nnoremap + <C-W>+
+nnoremap _ <C-W>-
+nnoremap > <C-W>>
+nnoremap < <C-W><
+
+" Manipulate windows: Move between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+

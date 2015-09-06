@@ -1,0 +1,1 @@
+lstlisting.vba: call delete('/home/roosemberth/.vim/after/syntax/tex/lstlisting.vim	')

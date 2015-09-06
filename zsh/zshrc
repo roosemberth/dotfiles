@@ -70,7 +70,11 @@ function whoIsMyParent(){
 }
 
 function aps(){
-	ps aux | grep -v grep | grep $1
+	ps aux | grep -v grep | grep -i $1
+}
+
+function lastCommand(){
+	history l | tail -n 1 | sed 's/[0-9]*[ ]*//'
 }
 
 function shakeInternet(){
@@ -87,3 +91,6 @@ if [[ -e ~/.zshrc.local ]]; then
 	source ~/.zshrc.local
 fi
 
+if [[ -e /opt/tmuxinator/completion/tmuxinator.zsh ]]; then
+	source /opt/tmuxinator/completion/tmuxinator.zsh
+fi
