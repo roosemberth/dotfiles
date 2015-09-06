@@ -1,2 +1,3 @@
 *.localInclude
 *.sw?
+/home/roosemberth/dotfiles/mpd/mpd.log
