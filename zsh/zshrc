@@ -73,6 +73,10 @@ function aps(){
 	ps aux | grep -v grep | grep -i $1
 }
 
+function lastCommand(){
+	history l | tail -n 1 | sed 's/[0-9]*[ ]*//'
+}
+
 function shakeInternet(){
 	INTERFACE=wlan0
 	[[ ! -z $1 ]] && INTERFACE=$1
