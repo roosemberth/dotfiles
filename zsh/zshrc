@@ -3,6 +3,12 @@
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
 zstyle :compinstall filename '/home/roosemberth/.zshrc'
 
+# This will allow "Special dirs" (./ and ../) to be available as autocomplete
+zstyle ':completion:*' special-dirs true
+
+# This pushes current cmd to a stack so I'll let me run something else and restores the cmd on the next shell prompt
+bindkey "^B" push-input
+
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
@@ -57,9 +63,6 @@ done
 
 unset ADDITIONAL_FUNCTIONS
 
-# This will allow "Special dirs" (./ and ../) to be available as autocomplete
-zstyle ':completion:*' special-dirs true
-
 # Space for small functions which do not merite to be in a single file ----------
 function reload(){
 	source ~/.zshrc
@@ -91,6 +94,12 @@ if [[ -e ~/.zshrc.local ]]; then
 	source ~/.zshrc.local
 fi
 
-if [[ -e /opt/tmuxinator/completion/tmuxinator.zsh ]]; then
-	source /opt/tmuxinator/completion/tmuxinator.zsh
+if [[ -e ${HOME}/.gem/ruby/2.2.0/bin ]]; then
+	export PATH="${HOME}/.gem/ruby/2.2.0/bin:$PATH"
+
+	if [[ -e ${HOME}/.gem/ruby/2.2.0/gems/tmuxinator-0.6.11/completion/tmuxinator.zsh ]]; then
+		source ${HOME}/.gem/ruby/2.2.0/gems/tmuxinator-0.6.11/completion/tmuxinator.zsh
+	fi
+
 fi
+
