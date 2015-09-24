@@ -1,0 +1,45 @@
+# ~/.tmuxinator/wrapper.yml
+
+name: wrapper
+root: ~/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Runs before everything. Use it to start daemons etc.
+# pre: sudo /etc/rc.d/mysqld start
+pre: source ~/.tmuxinator/wrapperHelper.sh
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: logs
+
+# Controls whether the tmux session should be attached to automatically. Defaults to true.
+# attach: false
+
+# Runs after everything. Use it to attach to tmux with custom options etc.
+# post: tmux -CC attach -t wrapper
+post: unset PASS
+
+windows:
+  - editor:
+      layout: b9f9,272x84,0,0{191x84,0,0[191x66,0,0,0,191x17,0,67,1],80x84,192,0[80x26,192,0,2,80x10,192,27,3,80x30,192,38,4,80x15,192,69,5]}
+      panes:
+        - Hub:
+            - unset PASS
+            - tmux set prefix M-q
+            - unset TMUX
+            - tmux new -s Hub
+        - ssh SystechCloudEngine -t tmux attach -t xComm
+        - echo $PASS | sudo -S echo; unset PASS; sudo bmon -p wlo1; sudo -k; clear
+        - echo $PASS | sudo -S echo; unset PASS; sudo iotop; sudo -k; clear
+        - echo $PASS | sudo -S echo; unset PASS; sudo htop; sudo -k; clear
+        - echo $PASS | sudo -S echo; unset PASS; sudo iftop; sudo -k; clear
