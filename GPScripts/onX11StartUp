@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# This script will be calle on DE Start
-
-/home/roosemberth/dotfile/GPScripts/swapCapsEsc
-
