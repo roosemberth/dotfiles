@@ -1,10 +1,9 @@
 function develEspressif(){
-	ESP_DEVEL_HOME="/Projects/ESP8266-Devel/"
+	ESP_DEVEL_HOME="/Storage/DevelHub/ESP8266-Devel/"
 	ESP_TOOLCHAIN_BUILDER="${ESP_DEVEL_HOME}/esp-open-sdk/"
 	ESP_TOOLCHAIN="${ESP_TOOLCHAIN_BUILDER}/xtensa-lx106-elf/bin"
 	if [[ ! -d ${ESP_TOOLCHAIN_BUILDER} ]]; then
 		echo "Could not find the toolchain builder (esp-open-sdk) directory, please fix me\!"
-		exit 1
 	fi
 	echo "Would you like to update the toolchain? Y/[N]"
 	read doUpdate
