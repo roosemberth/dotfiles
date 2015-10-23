@@ -10,7 +10,7 @@ echo "$PASS" | sudo -S echo &>/dev/null 0<(echo)
 [[ $? != 0 ]] && echo "Bad password" && exit -1
 
 echo "Authentication succedded, continuing..."
-
 export PASS
 
-sleep 2
+sleep 1
+

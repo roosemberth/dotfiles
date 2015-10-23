@@ -39,7 +39,7 @@ windows:
             - unset TMUX
             - tmux new -s Hub
         - ssh SystechCloudEngine -t tmux attach -t xComm
-        - echo $PASS | sudo -S echo; unset PASS; sudo bmon -p wlo1; sudo -k; clear
+        - echo $PASS | sudo -S echo; unset PASS; sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ','); sudo -k; clear
         - echo $PASS | sudo -S echo; unset PASS; sudo iotop; sudo -k; clear
         - echo $PASS | sudo -S echo; unset PASS; sudo htop; sudo -k; clear
         - echo $PASS | sudo -S echo; unset PASS; sudo iftop; sudo -k; clear
