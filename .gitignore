@@ -7,3 +7,4 @@ mpd/mpd.error
 mpd/pid
 mpd/state
 mpd/sw
+vim/vim/bundle/*
