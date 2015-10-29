@@ -42,8 +42,29 @@ alias .....="cd ../../../.."
 
 export EDITOR="vim"
 
+# This "marks" the terminal by exporting an non empty variable (so if we nest, we "mark" the nest")
+alias MARK="MARK="yes" "
+#bindkey "^M" 'MARK zsh'
+
+# mixer alias
+if [[ ! -z "$(whence pulsemixer)" ]]; then
+	alias mixer="pulsemixer"
+elif [[ ! -z "$(whence alsamixer)" ]]; then
+	alias mixer="alsamixer"
+fi
+
 # This will fix broken (bash imported) scripts which use "for var in ${list of space separated variables goes here}" loops
 setopt sh_word_split
+
+# Check if we're in a nested shell, and add to PS1
+if [[ "$(ps hp $PPID -o comm)" == "$0" ]]; then 
+	if [[ -z "$MARK" ]]; then
+		export PS1="-${PS1}"
+	else 
+		export PS1="|${PS1}"
+		export MARK=""
+	fi
+fi
 
 # "Include" custom shell functions. They need to have a proper function declaration
 # ej. --------------------------------------------------------
@@ -71,7 +92,8 @@ function reload(){
 }
 
 function whoIsMyParent(){
-	ps aux | grep -v grep | grep $PPID
+	# Grep is just for coloring...
+	ps hu $PPID | grep $PPID
 }
 
 function aps(){
@@ -79,7 +101,7 @@ function aps(){
 }
 
 function lastCommand(){
-	history l | tail -n 1 | sed 's/[0-9]*[ ]*//'
+	history | tail -n 1 | sed 's/[ 0-9]*//'
 }
 
 # -------------------------------------------------------------------------------
@@ -96,11 +118,5 @@ if [[ -e ${HOME}/.gem/ruby/2.2.0/bin ]]; then
 		source ${HOME}/.gem/ruby/2.2.0/gems/tmuxinator-0.6.11/completion/tmuxinator.zsh
 	fi
 
-fi
-
-if [[ ! -z "$(whence pulsemixer)" ]]; then
-	alias mixer="pulsemixer"
-elif [[ ! -z "$(whence alsamixer)" ]]; then
-	alias mixer="alsamixer"
 fi
 
