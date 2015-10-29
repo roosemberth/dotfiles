@@ -80,46 +80,48 @@ function lastCommand(){
 	history l | tail -n 1 | sed 's/[0-9]*[ ]*//'
 }
 
-function shakeInternet(){
-	if [[ -z $1 ]]; then 
-		# If not argument was given shake interfaces holding default route
-		InternetInterfaces="$(route -n | cat | grep -E 'default|^0.0.0.0' | awk '{print $NF}')"
-		if [[ -z "$InternetInterfaces" ]]; then
-			echo "Warning, no default route interfaces found, please specify which interfaces to poke as argument"
-			return
-		fi
-	else
-		# If an argument was given shake interfaces which match argument
-		InternetInterfaces="$(ls /sys/class/net | cat | grep $1)"
-		if [[ -z "$InternetInterfaces" ]]; then
-			echo "Error, entered criteria does not match any of the network interfaces, please enter a criteria matching any of the following interfaces"
-			ls /sys/class/net
-			return
-		fi
-	fi
-
-	for Interface in $InternetInterfaces; do
-		# Kill dangling dhclient(s)
-		sudo kill -KILL $(aps dhclient ${Interface} | awk '{print $2}' | tr '\n' ' ') &>/dev/null
-		# Run dhclient on selected interface but kill after 6 seconds
-		sudo timeout 6 dhclient ${Interface} &>/dev/null 
-		if [[ "$?" == "0" ]]; then
-			# Everything went fine with the network, chech for internet
-			sleep 1
-			# traceroute 12 hops max, 6 seconds wait, (12*3=)36 requests at once | remove {first line, leading column, newline, asterisks, spaces}
-			routeStats="$(sudo traceroute -i ${Interface} epfl.ch -m 12 -w 6 -n -N 36 | cat | tail -n +2 | sed 's/^....//' | tr -d '\n' | tr -d '*' | tr -d '[[:space:]]')"
-			# If this is empty, means that no hops were detected. Therefore there's no route through the network
-			if [[ -z ${routeStats} ]]; then
-				echo "Local networking went fine for interface ${Interface}, however there's not internet connectivity through this interface"
-			else
-				echo "Internet shound be fine on interface ${Interface}."
+if [[ ! -x /sbin/shakeInternet ]]; then
+	function shakeInternet(){
+		if [[ -z $1 ]]; then 
+			# If not argument was given shake interfaces holding default route
+			InternetInterfaces="$(route -n | cat | grep -E 'default|^0.0.0.0' | awk '{print $NF}')"
+			if [[ -z "$InternetInterfaces" ]]; then
+				echo "Warning, no default route interfaces found, please specify which interfaces to poke as argument"
+				return
 			fi
 		else
-			echo "Problems on local network negociation for interface ${Interface}"
-			sudo kill -KILL $(aps dhclient ${Interface} | awk '{print $2}' | tr '\n' ' ') &>/dev/null
+			# If an argument was given shake interfaces which match argument
+			InternetInterfaces="$(ls /sys/class/net | cat | grep $1)"
+			if [[ -z "$InternetInterfaces" ]]; then
+				echo "Error, entered criteria does not match any of the network interfaces, please enter a criteria matching any of the following interfaces"
+				ls /sys/class/net
+				return
+			fi
 		fi
-	done
-}
+	
+		for Interface in $InternetInterfaces; do
+			# Kill dangling dhclient(s)
+			sudo kill -KILL $(aps dhclient ${Interface} | awk '{print $2}' | tr '\n' ' ') &>/dev/null
+			# Run dhclient on selected interface but kill after 6 seconds
+			sudo timeout 6 dhclient ${Interface} &>/dev/null 
+			if [[ "$?" == "0" ]]; then
+				# Everything went fine with the network, chech for internet
+				sleep 1
+				# traceroute 12 hops max, 6 seconds wait, (12*3=)36 requests at once | remove {first line, leading column, newline, asterisks, spaces}
+				routeStats="$(sudo traceroute -i ${Interface} epfl.ch -m 12 -w 6 -n -N 36 | cat | tail -n +2 | sed 's/^....//' | tr -d '\n' | tr -d '*' | tr -d '[[:space:]]')"
+				# If this is empty, means that no hops were detected. Therefore there's no route through the network
+				if [[ -z ${routeStats} ]]; then
+					echo "Local networking went fine for interface ${Interface}, however there's not internet connectivity through this interface"
+				else
+					echo "Internet shound be fine on interface ${Interface}."
+				fi
+			else
+				echo "Problems on local network negociation for interface ${Interface}"
+				sudo kill -KILL $(aps dhclient ${Interface} | awk '{print $2}' | tr '\n' ' ') &>/dev/null
+			fi
+		done
+	}
+fi
 
 # -------------------------------------------------------------------------------
 
