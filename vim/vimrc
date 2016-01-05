@@ -1,8 +1,8 @@
 " People from whom --I've stolen config frags-- I'm getting inspired:
-" @nicknisi, @rasendubi, @shougo,
+" @nicknisi, @rasendubi, @shougo, @shawncplus
 " And manymore comming! Thanks everyone!
 
-"NeoBundle Scripts------------------------------------------------------------
+"NeoBundle Scripts-------------------------------------------------------- 
 if has('vim_starting')
   if &compatible
     set nocompatible               " Be iMproved
@@ -19,34 +19,25 @@ call neobundle#begin(expand('~/.vim/bundle'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-" Add or remove your Bundles here:
-"--Start My Packages ---------------------------------------------------------
-NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'Shougo/neosnippet-snippets'
+"--Start My Packages ----------------------------------------------------- 
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'ctrlpvim/ctrlp.vim'
-NeoBundle 'flazz/vim-colorschemes'
-" NeoBundle 'dmonllao/vim-IDE'
-NeoBundle 'Valloric/YouCompleteMe'
+" NeoBundle 'Valloric/YouCompleteMe'
 NeoBundle 'scrooloose/nerdtree'
-" NeoBundle 'fholgado/minibufexpl.vim'
-" NeoBundle 'majutsushi/tagbar'
-NeoBundle 'https://github.com/mbbill/code_complete'
-" NeoBundle 'hari-rangarajan/CCTree/'
-" NeoBundle 'vim-scripts/exUtility'
-" NeoBundle 'https://bitbucket.org/ns9tks/vim-autocomplpop/'
-NeoBundle 'https://github.com/dfxyz/CandyPaper.vim'
-NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'rdnetto/YCM-Generator'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'vim-scripts/Align'
+NeoBundle 'Lokaltog/vim-easymotion'
+NeoBundle 'shawncplus/skittles_berry'
+NeoBundle 'powerline/powerline'
 NeoBundleLazy 'jeaye/color_coded', {
-      \ 'build': {
-      \   'unix': 'cmake . && make && make install',
-      \ },
-      \ 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] },
-      \ 'build_commands' : ['cmake', 'make']
-  \}
-"--End My Packages -----------------------------------------------------------
+  \ 'build': {
+    \   'unix': 'cmake . && make && make install',
+  \ },
+  \ 'autoload': { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] },
+  \ 'build_commands' : ['cmake', 'make']
+\}
+
+"--End My Packages ------------------------------------------------------- 
+set laststatus=2
 
 " You can specify revision/branch/tag.
 NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
@@ -60,7 +51,7 @@ filetype plugin indent on
 " If there are uninstalled bundles found on startup,
 " this will conveniently prompt you to install them.
 NeoBundleCheck
-"End NeoBundle Scripts--------------------------------------------------------
+"End NeoBundle Scripts---------------------------------------------------- 
 
 set tabstop=4							" size of a hard tabstop
 set shiftwidth=4						" size of an 'indent'
@@ -70,30 +61,9 @@ set number								" Line Numbers
 set relativenumber						" Relative numbers
 set showmatch							" Brackets
 set scrolloff=2							" Min Visible Lines Around Cursor
-set noexpandtab							" Don't convert indent tabs to spaces
 
 filetype plugin on
 syntax on
-
-augroup filetype_tex
-	source ~/.vim/after/syntax/tex/lstlisting.vim
-	let g:Tex_DefaultTargetFormat = 'pdf'			" vim Latex, set output format to pdf
-	let g:Tex_MultipleCompileFormats='pdf, aux'
-	let g:Tex_ViewRule_pdf = "evince &>/dev/null"
-augroup end
-augroup Devel_C
-	autocmd!
-	autocmd BufRead,BufNewFile *.h,*.c set filetype=c
-	let &path.="src/include,/usr/include/AL,"
-augroup END
-
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
-
-" Navigation : Start and end of line
-nnoremap H ^
-nnoremap L $
-vnoremap L g_
 
 " Window manipulation: Resize window 
 nnoremap + <C-W>+
@@ -107,3 +77,18 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" Avoid launching vim with sudo, but make it less painful to edit config
+nnoremap w!! w !sudo tee % >/dev/null
+
+" folding
+set foldmethod=marker
+" show 80 columns delimiter
+set colorcolumn=81
+" support for 256 colors
+set t_Co=256
+" column color
+hi ColorColumn ctermbg=235
+" Enable Mouse Support
+set mouse=a
+
+colorscheme skittles_autumn
