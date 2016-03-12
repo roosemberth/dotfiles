@@ -1,6 +1,6 @@
-# ~/.tmuxinator/wrapper.yml
+# ~/.tmuxinator/Hub.yml
 
-name: wrapper
+name: Hub
 root: ~/
 
 # Optional tmux socket
@@ -27,11 +27,10 @@ pre: source ~/.tmuxinator/wrapperHelper.sh
 
 # Runs after everything. Use it to attach to tmux with custom options etc.
 # post: tmux -CC attach -t wrapper
-post: unset PASS
 
 windows:
   - editor:
-      layout: b9f9,272x84,0,0{191x84,0,0[191x66,0,0,0,191x17,0,67,1],80x84,192,0[80x26,192,0,2,80x10,192,27,3,80x30,192,38,4,80x15,192,69,5]}
+      layout: 3143,177x64,0,0[177x27,0,0,8,177x25,0,28,9,177x10,0,54,10]
       panes:
         - Hub:
             - unset PASS

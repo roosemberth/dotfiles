@@ -7,13 +7,13 @@
 #
 ## set it in order to make tag editor and renaming files work properly
 #
-mpd_host = "localhost"
+mpd_host = "/home/roosemberth/.mpd/socket"
 #
 mpd_port = "6600"
 #
-mpd_music_dir = "/mnt/quiver/Music"
+mpd_music_dir = "/Storage/Music/"
 #
-mpd_connection_timeout = "5"
+mpd_connection_timeout = "1"
 #
 #mpd_crossfade_time = "5"
 #
@@ -24,12 +24,12 @@ mpd_connection_timeout = "5"
 ## has to be set to 44100:16:1. Example configuration:
 ## (it has to be put into mpd.conf)
 ##
-## audio_output {
-##        type            "fifo"
-##        name            "My FIFO"
-##        path            "/tmp/mpd.fifo"
-##        format          "44100:16:1"
-## }
+audio_output {
+       type            "fifo"
+       name            "MPD fifo output"
+       path            "/tmp/mpd.fifo"
+       format          "44100:16:1"
+}
 ##
 #
 #visualizer_fifo_path = ""

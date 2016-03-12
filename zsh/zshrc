@@ -3,6 +3,11 @@
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
 zstyle :compinstall filename '/home/roosemberth/.zshrc'
 
+# This will import zsh-syntax.completition
+path_syntax=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -e "$path_syntax" ] && . "$path_syntax"
+unset path_syntax
+
 # This will allow "Special dirs" (./ and ../) to be available as autocomplete
 zstyle ':completion:*' special-dirs true
 
@@ -33,6 +38,7 @@ alias egrep='egrep --color=auto'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+alias xc='xclip -selection clipboard'
 
 # quite handy!
 alias ..="cd .."
@@ -53,7 +59,8 @@ elif [[ ! -z "$(whence alsamixer)" ]]; then
 	alias mixer="alsamixer"
 fi
 
-# This will fix broken (bash imported) scripts which use "for var in ${list of space separated variables goes here}" loops
+# This will fix broken (bash imported) scripts which use 
+# "for var in ${list of space separated variables goes here}" loops
 setopt sh_word_split
 
 # Check if we're in a nested shell, and add to PS1
@@ -119,4 +126,3 @@ if [[ -e ${HOME}/.gem/ruby/2.2.0/bin ]]; then
 	fi
 
 fi
-

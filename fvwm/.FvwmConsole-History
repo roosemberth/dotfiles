@@ -1,0 +1,89 @@
+Key Enter A N Exec exec xterm
+Key Return A N Exec exec xterm
+help
+Help
+Key Return A M Exec exec xterm
+Key Q A CM function-that-does-not-exist-yet
+Key T A CM Echo Hey 
+Key T A CM Exec exec xterm
+Key Z A CM Move
+Windows-Start-Move
+
+DestroyFunc Windows-Start-Move
+AddToFunc Windows-Start-Move
++I Move
+Key Z A CM Windows-Start-Move
+Key Z A CM Move
+Key Z A CM Windows-Start-Move
+AddToFunc Windows-Start-Move
++I Echo hey
+source config
+read config
+read config
+read config
+read config
+read config
+DestroyFunc asd-d
+AddToFunc asd-d
++I Echo "asd"
++I Move
+Key H A CM asd-d
+move
+DestroyFunc asd
+AddToFunc asd
++I Move
+Key H A CM asd
+asd
+Function asd
+DestroyFunc asd
+AddToFunc asd
++I Pick Move
++ I Pick Move
+reload
+source config
+read config
+Pick Replace
+Pick Swap
+Pick PlaceAgain
+Pick PlaceAgain anim
+Pick PlaceAgain anim
+Style * !Title
+Style !Title
+Style * Title
+Style * RTitle
+Style * /Title
+Style * =Title
+Style * rTitle
+Style * TitleAtLeft
+Style * TitleAtRight
+Style * TitleAtBottom
+Style * TitleAtLeft
+Pick WindowStyle * TitleAtTop
+Pick WindowStyle TitleAtTop
+Echo asd
+Echo "asd"
+source confi
+source config
+Read config
+Read config
+Read config
+Read config
+Read condif
+Read config
+Read config
+Read config
+Read config
+Read menus
+Read menus
+Read config
+Read config
+Read config
+Read config
+Read config
+pick ontop
+OnTop
+OnTop true
+Ontop true
+Style OnTop
+Style OnTop
+Style * SloppyFocus

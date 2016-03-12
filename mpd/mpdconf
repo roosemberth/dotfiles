@@ -80,7 +80,7 @@ sticker_file                   "~/.mpd//sticker.sql"
 # to have mpd listen on every address
 #
 # For network
-bind_to_address		"localhost"
+bind_to_address		"any"
 #
 # And for Unix Socket
 bind_to_address		"/home/roosemberth/.mpd/socket"
@@ -88,7 +88,7 @@ bind_to_address		"/home/roosemberth/.mpd/socket"
 # This setting is the TCP port that is desired for the daemon to get assigned
 # to.
 #
-#port				"6600"
+port				"6600"
 #
 # This setting controls the type of information which is logged. Available 
 # setting arguments are "default", "secure" or "verbose". The "verbose" setting
@@ -266,17 +266,17 @@ input {
 #
 # An example of a httpd output (built-in HTTP streaming server):
 #
-#audio_output {
-#	type		"httpd"
-#	name		"My HTTP Stream"
-#	encoder		"vorbis"		# optional, vorbis or lame
-#	port		"8000"
-#	bind_to_address "0.0.0.0"               # optional, IPv4 or IPv6
+audio_output {
+	type		"httpd"
+	name		"My HTTP Stream"
+	encoder		"vorbis"		# optional, vorbis or lame
+	port		"8000"
+	bind_to_address "any"               # optional, IPv4 or IPv6
 #	quality		"5.0"			# do not define if bitrate is defined
-#	bitrate		"128"			# do not define if quality is defined
-#	format		"44100:16:1"
+	bitrate		"512"			# do not define if quality is defined
+	format		"44100:16:1"
 #	max_clients     "0"                     # optional 0=no limit
-#}
+}
 #
 # An example of a pulseaudio output (streaming to a remote pulseaudio server)
 # Please see README.Debian if you want mpd to play through the pulseaudio
@@ -413,6 +413,17 @@ id3v1_encoding			"UTF-8"
 #       default_songlength      "120"
 #       filter "true"
 #}
+#
+###############################################################################
+
+# MPD FIFO Output (For visualization) #########################################
+# 
+audio_output {
+    type                    "fifo"
+    name                    "my_fifo"
+    path                    "/tmp/mpd.fifo"
+    format                  "44100:16:1"
+}
 #
 ###############################################################################
 

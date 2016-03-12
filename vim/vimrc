@@ -28,6 +28,7 @@ NeoBundle 'vim-scripts/Align'
 NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'shawncplus/skittles_berry'
 NeoBundle 'powerline/powerline'
+NeoBundle 'vim-scripts/Align'
 NeoBundleLazy 'jeaye/color_coded', {
   \ 'build': {
     \   'unix': 'cmake . && make && make install',
@@ -78,7 +79,7 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
 " Avoid launching vim with sudo, but make it less painful to edit config
-nnoremap w!! w !sudo tee % >/dev/null
+cmap w!! w !sudo tee % >/dev/null<CR>
 
 " folding
 set foldmethod=marker
@@ -91,4 +92,7 @@ hi ColorColumn ctermbg=235
 " Enable Mouse Support
 set mouse=a
 
-colorscheme skittles_autumn
+" Execure the line under the cursor
+vmap ! :!sh<CR>
+
+colorscheme desert

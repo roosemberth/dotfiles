@@ -6,14 +6,14 @@ PLUG='🔌'
 
 ICON=${BATTERY}
 
-if [ -z "$(cat /proc/acpi/ac_adapter/AC/state | grep off)" ]; then
+if [ -z "$(cat '/sys/bus/acpi/drivers/battery/PNP0C0A:00/power_supply/BAT0/status' | grep Discharging)" ]; then
 	ICON=${PLUG}
 fi
 
 
 if [[ `uname` == 'Linux' ]]; then
-  current_charge=$(cat /proc/acpi/battery/BAT0/state | grep 'remaining capacity' | awk '{print $3}')
-  total_charge=$(cat /proc/acpi/battery/BAT0/info | grep 'last full capacity' | awk '{print $4}')
+  current_charge=$(cat '/sys/bus/acpi/drivers/battery/PNP0C0A:00/power_supply/BAT0/charge_now')
+  total_charge=$(cat '/sys/bus/acpi/drivers/battery/PNP0C0A:00/power_supply/BAT0/charge_full')
 else
   battery_info=`ioreg -rc AppleSmartBattery`
   current_charge=$(echo $battery_info | grep -o '"CurrentCapacity" = [0-9]\+' | awk '{print $3}')
