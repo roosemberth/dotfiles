@@ -1,0 +1,58 @@
+# set backlight
+
+# Usage Function :D
+usage() {
+	cat << dsa
+So here goes some doc, forgive me if I'm sleepy...
+dsa
+}
+
+if [ $(whoami) != "root" ]; then
+	exec sudo $0 $@
+fi
+
+# Check we received a single argument
+
+if [ $# -lt 1 ] || [ $1 -gt 100 ] || [ $1 -lt -100 ]; then
+	usage
+	exit 1
+fi
+
+# Check if we want relative change (ie. xbindkeys) or absolute value
+
+ARG_PREFIX="${1:0:1}"
+if [ "$ARG_PREFIX" = "+" ] || [ "$ARG_PREFIX" = "-" ]; then
+	# Relative, positive
+	RELATIVE=true
+elif [ -n $(expr index "0123456789" "$ARG_PREFIX")  ]; then
+	# Absolute
+	RELATIVE=false
+else
+	# No idea what this is
+	usage
+	exit 1
+fi
+
+BACKLIGHT_FILE="/sys/class/backlight/intel_backlight/brightness"
+MAX_BRIGHTNESS_FILE="/sys/class/backlight/intel_backlight/max_brightness"
+
+# ----
+
+CURR_BRIGHTNESS=$(cat $BACKLIGHT_FILE)
+MAX_BRIGHTNESS=$(cat $MAX_BRIGHTNESS_FILE)
+NEW_BRIGHTNESS=$1
+
+if $RELATIVE; then
+	NEW_BRIGHTNESS=$(($CURR_BRIGHTNESS + (($1*$MAX_BRIGHTNESS)/100)))
+else
+	NEW_BRIGHTNESS=$((($1*$MAX_BRIGHTNESS)/100))
+fi
+
+if [ $MAX_BRIGHTNESS -lt $NEW_BRIGHTNESS ]; then
+NEW_BRIGHTNESS=$MAX_BRIGHTNESS
+fi
+if [ $NEW_BRIGHTNESS -lt 0 ]; then
+NEW_BRIGHTNESS=0
+fi
+
+echo $NEW_BRIGHTNESS | tee $BACKLIGHT_FILE
