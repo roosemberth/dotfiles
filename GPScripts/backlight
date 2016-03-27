@@ -1,4 +1,7 @@
-# set backlight
+# set backlight script
+BACKLIGHT_FILE="/sys/class/backlight/intel_backlight/brightness"
+MAX_BRIGHTNESS_FILE="/sys/class/backlight/intel_backlight/max_brightness"
+
 
 # Usage Function :D
 usage() {
@@ -33,9 +36,6 @@ else
 	exit 1
 fi
 
-BACKLIGHT_FILE="/sys/class/backlight/intel_backlight/brightness"
-MAX_BRIGHTNESS_FILE="/sys/class/backlight/intel_backlight/max_brightness"
-
 # ----
 
 CURR_BRIGHTNESS=$(cat $BACKLIGHT_FILE)
@@ -53,6 +53,13 @@ NEW_BRIGHTNESS=$MAX_BRIGHTNESS
 fi
 if [ $NEW_BRIGHTNESS -lt 0 ]; then
 NEW_BRIGHTNESS=0
+fi
+
+# Add additional step (1%)
+if [ $NEW_BRIGHTNESS -eq 0 ]; then
+	if [ $CURR_BRIGHTNESS -gt $(($MAX_BRIGHTNESS/100)) ]; then
+		NEW_BRIGHTNESS=$(($MAX_BRIGHTNESS/100))
+	fi
 fi
 
 echo $NEW_BRIGHTNESS | tee $BACKLIGHT_FILE
