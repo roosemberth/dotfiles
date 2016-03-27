@@ -8,9 +8,6 @@ path_syntax=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighti
 [ -e "$path_syntax" ] && . "$path_syntax"
 unset path_syntax
 
-# This will allow "Special dirs" (./ and ../) to be available as autocomplete
-zstyle ':completion:*' special-dirs true
-
 # This pushes current cmd to a stack so I'll let me run something else and restores the cmd on the next shell prompt
 bindkey "^B" push-input
 
@@ -18,18 +15,19 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-# Lines configured by zsh-newuser-install
+# This will allow "Special dirs" (./ and ../) to be available as autocomplete
+zstyle ':completion:*' special-dirs true
+
+
 HISTFILE=~/.histfile
 HISTSIZE=1000000
 SAVEHIST=1000000
-setopt appendhistory beep notify
+setopt appendhistory beep notify HIST_IGNORE_DUPS
+# vim mode
 bindkey -v
-# End of lines configured by zsh-newuser-install
 
 # enable color support of ls and friends
 alias ls='ls --color=auto'
-#alias dir='dir --color=auto'
-#alias vdir='vdir --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
@@ -38,7 +36,10 @@ alias egrep='egrep --color=auto'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+
+# even more aliases
 alias xc='xclip -selection clipboard'
+alias wtf='dmesg|tail -n 20'
 
 # quite handy!
 alias ..="cd .."
@@ -74,7 +75,7 @@ if [[ "$(ps hp $PPID -o comm)" == "$0" ]]; then
 fi
 
 # "Include" custom shell functions. They need to have a proper function declaration
-# ej. --------------------------------------------------------
+# ie. --------------------------------------------------------
 # function myfunc(){
 #	# cool function code here
 # }
@@ -108,7 +109,14 @@ function aps(){
 }
 
 function lastCommand(){
-	history | tail -n 1 | sed 's/[ 0-9]*//'
+	history | tail -n 1 | sed 's/^[ 0-9]*//'
+}
+
+function launch(){
+	cat << SDA | sh &! exit
+$@
+SDA
+
 }
 
 # -------------------------------------------------------------------------------
@@ -126,3 +134,5 @@ if [[ -e ${HOME}/.gem/ruby/2.2.0/bin ]]; then
 	fi
 
 fi
+
+[ -e ~/dotfiles/GPScripts ] && export PATH="$(readlink -f ~/dotfiles/GPScripts):$PATH"
