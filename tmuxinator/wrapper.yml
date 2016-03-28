@@ -8,7 +8,7 @@ root: ~/
 
 # Runs before everything. Use it to start daemons etc.
 # pre: sudo /etc/rc.d/mysqld start
-pre: source ~/.tmuxinator/wrapperHelper.sh
+# pre: source ~/.tmuxinator/wrapperHelper.sh
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
 # pre_window: rbenv shell 2.0.0-p247
@@ -39,7 +39,7 @@ windows:
             - unset TMUX
             - tmux new -s Hub
         - autossh -M 10000 SystechCloudEngine -t "tmux attach -t xComm"
-        - echo $PASS | sudo -S echo; unset PASS; sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ','); sudo -k; clear
-        - echo $PASS | sudo -S echo; unset PASS; sudo iotop; sudo -k; clear
-        - echo $PASS | sudo -S echo; unset PASS; sudo htop; sudo -k; clear
-        - echo $PASS | sudo -S echo; unset PASS; sudo iftop; sudo -k; clear
+        - sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ',')
+        - sudo iotop
+        - sudo htop
+        - sudo iftop
