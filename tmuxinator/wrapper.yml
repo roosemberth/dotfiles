@@ -27,19 +27,18 @@ root: ~/
 
 # Runs after everything. Use it to attach to tmux with custom options etc.
 # post: tmux -CC attach -t wrapper
-post: unset PASS
 
 windows:
-  - editor:
-      layout: b9f9,272x84,0,0{191x84,0,0[191x66,0,0,0,191x17,0,67,1],80x84,192,0[80x26,192,0,2,80x10,192,27,3,80x30,192,38,4,80x15,192,69,5]}
+  - wrapper:
+      layout: 3e1a,410x89,0,0{295x89,0,0[295x74,0,0,1,295x14,0,75,5],114x89,296,0[114x24,296,0,2,114x25,296,25,41,114x29,296,51,4,114x8,296,81,42]}
       panes:
         - Hub:
-            - unset PASS
+            - tmux set prefix M-q
             - tmux set prefix M-q
             - unset TMUX
             - tmux new -s Hub
         - autossh -M 10000 SystechCloudEngine -t "tmux attach -t xComm"
         - sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ',')
-        - sudo iotop
+        - sudo atop
         - sudo htop
-        - sudo iftop
+        - 
