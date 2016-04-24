@@ -1,0 +1,178 @@
+# Reload sxhkd
+super + alt + Home
+    pkill -USR1 -x sxhkd
+
+# Reload BSPWM
+super + ctrl + alt + Home
+    sh ~/.config/bspwm/bspwmrc
+
+# Quit  BSPWM
+super + ctrl + alt + End
+    bspc quit
+
+# Kill the selected window
+#super + ctrl + k
+#    bspc node -k
+
+# Set the focus with the mouse pointer
+~button1
+    bspc pointer -g focus
+
+# Resize a window using the mouse
+super + button{1-3}
+    bspc pointer -g {move,resize_side,resize_corner}
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '^{1-9,10}'
+
+
+# if the current node is automatic, send it to the last manual, otherwise pull the last leaf
+# super + y
+#     bspc query -N -n focused.automatic && bspc node -n last.!automatic || bspc node last.leaf -n focused
+
+## focus the node for the given path jump
+#super + {p,b,comma,period}
+#    bspc node -f @{parent,brother,first,second}
+
+## focus the last node/desktop
+#super + {grave,Tab}
+#    bspc {desktop,node} -f last
+
+## focus the older or newer node in the focus history
+#super + {o,i}
+#    bspc wm -h off; \
+#    bspc node {older,newer} -f; \
+#    bspc wm -h on
+
+## swap the current node and the biggest node
+#super + g
+#    bspc node -s biggest
+
+## preselect the ratio
+#super + ctrl + {1-9}
+#    bspc node -o 0.{1-9}
+#
+## cancel the preselection for the focused node
+#super + ctrl + space
+#    bspc node -p cancel
+#
+## cancel the preselection for the focused desktop
+#super + ctrl + shift + space
+#    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+## move a floating window
+#super + {Left,Down,Up,Right}
+#    xdo move {-x -20,-y +20,-y -20,-x +20}
+
+## Resize a window using keyboard
+#super + alt + {h,j,k,l}
+#    bspc node -e {west -10,south +10,north -10,east +10}
+#
+## Resize a window using keyboard
+#super + alt + shift + {h,j,k,l}
+#    bspc node -e {east -10,north +10,south -10,west +10}
+
+## Adjust the split ratios of the tree of the selected desktop so that all windows occupy the same area
+#super + b
+#    bspc desktop -B
+
+## Send the focused window to the X° desktop
+#super + {_,shift + }{1-9,0}
+#    bspc {desktop -f,node -d} ^{1-9,10}
+
+## Invert the vertical alignment (Or something like that...)
+#super + n
+#    bspc desktop -F vertical
+#
+## Exchange the focused window with the largest window of the desktop (WTF --)
+#super + m
+#    bspc desktop -F horizontal # (--> WTF)
+
+# No idea
+#super + !button{1-3}
+#    bspc pointer -t %i %i
+
+# No idea
+#super + @button{1-3}
+#    bspc pointer -u
+
+# Launcher
+alt + space
+   OLD_ZDOTDIR="$ZDOTDIR" ZDOTDIR="$XDG_CONFIG_HOME/zsh/launcher" urxvt -name Launcher -fn "xft:dejavu sans mono:normal:size=18" -geometry 160x6 -bc -uc -e zsh
+
+# Rofi : Windows list/selector
+super + r
+     rofi -show window -font "snap 12" -fg "#eee8d5" -bg "#073642" -hlfg "#ffb964" -hlbg "#073642" -o 85 
+
+## Rofi : pass
+#super + e
+#     pass-menu
+
+# lock screen
+super + less
+    xtrlock
+
+# Decrease first active card volume
+alt + XF86AudioLowerVolume
+	pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\+//g') -5%
+# Raise first active card volume
+alt + XF86AudioRaiseVolume
+	pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\+//g') +5%
+# Toggle MPD
+{XF86AudioPlay,XF86AudioMicMute}
+	mpc toggle &> /dev/null
+
+# Lower brightness
+{XF86MonBrightnessDown,ctrl + XF86AudioLowerVolume}
+    sudo /home/roosemberth/dotfiles/GPScripts/backlight -10
+# Raise Brigtness
+{XF86MonBrightnessUp, ctrl + XF86AudioRaiseVolume}
+    sudo /home/roosemberth/dotfiles/GPScripts/backlight +10
+
+# Next Prev song on MPD
+shift + {XF86AudioRaiseVolume,XF86AudioLowerVolume}
+    mpc {next,prev} &> /dev/null
+
+# Spawn Scratchpad
+super + space
+   xdotool search --onlyvisible --classname URxvtControlWrapper windowunmap \
+    || xdotool search --classname URxvtControlWrapper windowmap \
+    || urxvt -name URxvtControlWrapper -geometry 410x110
+
+# "False" fullscreen, respects padding/margin, etc.
+super + f
+    bspc desktop -l next
+
+# set the window state
+super + {a,s,d,F}
+    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# focus/preselect/swap the node in the given direction
+super + {_, alt + ,ctrl + }{h,j,k,l}
+    bspc node -{f,p,s} {west,south,north,east}
+
+# expand the tiled space in the given direction
+super + ctrl + alt + {h,j,k,l}
+    bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
+
+# contract the tiled space in the given direction
+super + ctrl + alt + shift + {h,j,k,l}
+    bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
+
+# Move between the desktops of a monitor
+super + {_,alt +,ctrl +,alt + ctrl +} {b,n}
+    bspc {desktop -f,node -f,monitor -f,monitor -m} {prev,next}
+
+# Node flags
+super + {y,x,c,v}
+    bspc node -g {private,urgent,locked,sticky}
+
+# Force close
+super + F4
+    bspc node --close
+
+# Shell
+super + ctrl + Return
+    urxvt
+
