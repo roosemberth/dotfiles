@@ -134,4 +134,4 @@ fi
 [ -f /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh ] \
 	&& source /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh
 
-[ -e ~/dotfiles/GPScripts ] && export PATH="$(readlink -f ~/dotfiles/GPScripts):$PATH"
+[ -e $XDG_CONFIG_HOME/bin ] && export PATH="$(readlink -f $XDG_CONFIG_HOME/bin):$PATH"
