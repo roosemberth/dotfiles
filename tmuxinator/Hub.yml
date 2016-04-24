@@ -1,6 +1,6 @@
-# ~/.tmuxinator/wrapper.yml
+# ~/.tmuxinator/Hub.yml
 
-name: wrapper
+name: Hub
 root: ~/
 
 # Optional tmux socket
@@ -8,7 +8,6 @@ root: ~/
 
 # Runs before everything. Use it to start daemons etc.
 # pre: sudo /etc/rc.d/mysqld start
-# pre: source ~/.tmuxinator/wrapperHelper.sh
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
 # pre_window: rbenv shell 2.0.0-p247
@@ -26,19 +25,19 @@ root: ~/
 # attach: false
 
 # Runs after everything. Use it to attach to tmux with custom options etc.
-# post: tmux -CC attach -t wrapper
+# post: tmux -CC attach -t Hub
 
 windows:
-  - wrapper:
-      layout: 0ddf,410x109,0,0{295x109,0,0[295x94,0,0,0,295x14,0,95,1],114x109,296,0[114x29,296,0,2,114x30,296,30,3,114x34,296,61,4,114x13,296,96,5]}
+  - Media:
+      layout: 4d89,295x93,0,0[295x15,0,0{147x15,0,0,6,147x15,148,0,8},295x27,0,16,9,295x27,0,44,10,295x21,0,72{147x21,0,72,11,147x21,148,72,12}]
       panes:
-        - Hub:
-            - tmux set prefix M-q
-            - tmux set prefix M-q
-            - unset TMUX
-            - mux start Hub
-        - autossh -M 10000 SystechCloudEngine -t "tmux attach -t xComm"
-        - sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ',')
-        - sudo atop
-        - sudo htop
-        - sudo nethogs
+        - mixer
+        - bluetoothctl
+        - mpd && ncmpcpp
+        - 
+        - 
+        - 
+  - Rainbowdash:
+      layout: main-vertical
+      panes:
+        - TERM=screen-256color autossh -M 0 gnugen-rainbowdash -t "tmux attach"
