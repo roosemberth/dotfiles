@@ -1,0 +1,72 @@
+#!/usr/bin/env sh
+# Environment set when logging into a shell.
+# Written by ayekat on a frustrating evening in september 2014.
+
+# ------------------------------------------------------------------------------
+# XDG {{{
+
+# Set XDG variables:
+export XDG_CONFIG_HOME=~/.config
+export XDG_CACHE_HOME=~/.cache
+export XDG_DATA_HOME=~/.local/share
+
+# Fix various applications to respect XDG:
+export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"        # vim
+export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"             # xinit (!startx)
+export XAUTHORITY="$XDG_CACHE_HOME/X11/Xauthority"        # startx
+export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"                 # gpg
+export PGPPATH="$XDG_CONFIG_HOME/gnupg"                   # mutt (pgp)
+export TASKDATA="$XDG_DATA_HOME/task"                     # task-warrior
+export TASKRC="$XDG_CONFIG_HOME/task/taskrc"              # task-warrior
+export RXVT_SOCKET="$HOME/.urxvtd.sock"                   # urxvtd
+export LESSHISTFILE="$XDG_CACHE_HOME/lesshist"            # less
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
+export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"            # gimp
+export MPLAYER_HOME="$XDG_CONFIG_HOME/mplayer"            # mplayer
+export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0" # GTK+
+
+# }}}  -------------------------------------------------------------------------
+
+# DEFAULT APPLICATIONS {{{
+
+# Editor and pager:
+export EDITOR='/usr/bin/vim'
+export VISUAL='/usr/bin/vim'
+export PAGER='/usr/bin/less'
+
+# }}}  -------------------------------------------------------------------------
+
+# APPLICATION-SPECIFIC {{{
+
+export QUOTING_STYLE=literal                  # `ls` in coreutils>=8.25
+
+# }}}  -------------------------------------------------------------------------
+
+# LOOK {{{
+
+# Set colours for less, man:
+if [ "$TERM" = 'linux' ]; then
+	export LESS_TERMCAP_mb=$(printf "\033[34m")
+	export LESS_TERMCAP_md=$(printf "\033[31m")
+	export LESS_TERMCAP_me=$(printf "\033[0m")
+	export LESS_TERMCAP_se=$(printf "\033[0m")
+	export LESS_TERMCAP_so=$(printf "\033[30;43m")
+	export LESS_TERMCAP_ue=$(printf "\033[0m")
+	export LESS_TERMCAP_us=$(printf "\033[32m")
+else
+	export LESS_TERMCAP_mb=$(printf "\033[1;34m")
+	export LESS_TERMCAP_md=$(printf "\033[38;5;9m")
+	export LESS_TERMCAP_me=$(printf "\033[0m")
+	export LESS_TERMCAP_se=$(printf "\033[0m")
+	export LESS_TERMCAP_so=$(printf "\033[30;43m")
+	export LESS_TERMCAP_ue=$(printf "\033[0m")
+	export LESS_TERMCAP_us=$(printf "\033[38;5;10m")
+fi
+
+# Set colours for ls (TODO):
+#export LS_COLORS=''
+
+# Set colours for gcc:
+export GCC_COLORS='error=01;31:warning=33:note=36:caret=01;32:locus=37:quote=32'
+
+# }}}  -------------------------------------------------------------------------
