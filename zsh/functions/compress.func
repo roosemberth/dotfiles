@@ -1,3 +1,8 @@
+#!/usr/bin/env zsh
+# Usage: compress CompressedFileBasename file1 file2 ...
+# for example profileEnv myFile1 myFile2 myfile3
+# Will produce file profileEnv.16.04.12-12.51.51.tar.gz
+
 function compress(){
 	if [[ $# -lt "1" ]]; then
 		echo "Please specify at least one argument!"

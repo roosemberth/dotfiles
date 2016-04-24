@@ -1,7 +1,12 @@
-# The following lines were added by compinstall
+#!/usr/bin/env zsh
+# Zsh default configuration file
+#
+# (C) 2016 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
+# Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
-zstyle :compinstall filename "$XDG_CONFIG_HOME/zsh/default/.zshrc"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+# zstyle :compinstall filename "$XDG_CONFIG_HOME/zsh/default/.zshrc"
 
 # This will import zsh-syntax.completition
 path_syntax=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -65,42 +70,18 @@ fi
 # but only the files ending with '.func' will be included. 
 
 if [ -d "$XDG_CONFIG_HOME/zsh/functions" ]; then
-    ADDITIONAL_FUNCTIONS=$(find $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.func")
-    
-    for newFunction in ${ADDITIONAL_FUNCTIONS}; do
-    	source ${newFunction}
-    	if [[ $? != 0 ]]; then
-    		print "Error processing additional function ${newFunction}" 1>&2
-    	fi
-    done
-    unset ADDITIONAL_FUNCTIONS
+	ADDITIONAL_FUNCTIONS=$(find -L $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.func")
+	
+	for newFunction in ${ADDITIONAL_FUNCTIONS}; do
+		source ${newFunction}
+		if [[ $? != 0 ]]; then
+			print "Error processing additional function ${newFunction}" 1>&2
+		fi
+	done
+	unset ADDITIONAL_FUNCTIONS
 fi
 
-# Space for small functions which do not merite to be in a single file ---------
-function reload(){
-	source ${ZDOTDIR:-~}/.zshrc
-}
-
-function whoIsMyParent(){
-	# Grep is just for coloring...
-	ps hu $PPID | grep $PPID
-}
-
-function aps(){
-	ps aux | grep -v grep | grep -i $1
-}
-
-function lastCommand(){
-	history | tail -n 1 | sed 's/^[ 0-9]*//'
-}
-
-function launch(){
-	cat << SDA | sh &! exit
-$@
-SDA
-
-}
-# }}} --------------------------------------------------------------------------
+# }}}  -------------------------------------------------------------------------
 
 # aliases {{{
 # "Include" custom shell alias groups.
@@ -117,33 +98,33 @@ SDA
 
 # Safer alias function
 safeAlias(){
-    local aliasTarget=$(eval print ${1#*=})
-    local aliasTargetBinary=${aliasTarget%% *}
-    print $aliasTarget >> /tmp/log
-    print $aliasTargetBinary >> /tmp/log
-    if [ -z "$(whence "$aliasTargetBinary")" ]; then
-        print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
-        return
-    fi
-    # It's fine, invoke real alias function
-    \alias "$1"
+	local aliasTarget=$(eval print ${1#*=})
+	local aliasTargetBinary=${aliasTarget%% *}
+	if [ -z "$(whence "$aliasTargetBinary")" ]; then
+		print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
+		return
+	fi
+	# It's fine, invoke real alias function
+	\alias "$1"
 }
 # Override alias to have a safer alias
 alias alias='safeAlias'
 
 if [ -d "$XDG_CONFIG_HOME/zsh/aliases" ]; then
-    ALIAS_GRPS=$(find $XDG_CONFIG_HOME/zsh/aliases -type f -iname "*.aliases")
-    
-    for ALIAS_GRP in ${ALIAS_GRPS}; do
-        MSG="$(source ${ALIAS_GRP})"
-    	if [ -n "$MSG" ]; then
-    		print "Error processing additional alias group ${ALIAS_GRP}:" 1>&2
-            print $MSG
-    	fi
-    done
-    unset ALIAS_GRPS
+	ALIAS_GRPS=$(find -L $XDG_CONFIG_HOME/zsh/aliases -type f -iname "*.aliasgrp")
+
+	for ALIAS_GRP in ${ALIAS_GRPS}; do
+		LOG_FILENAME="$(mktemp)"
+		. ${ALIAS_GRP} > $LOG_FILENAME
+		if [ -n "$(cat $LOG_FILENAME)" ]; then
+			print "Error processing additional alias group ${ALIAS_GRP}:" 1>&2
+			cat $LOG_FILENAME
+		fi
+		[ -f "$LOG_FILENAME" ] && rm $LOG_FILENAME
+	done
+	unset ALIAS_GRPS
 fi
-# }}} -----------------------------------#---------------------------------------
+# }}}  -------------------------------------------------------------------------
 
 # This will load local "Host-dependant" zsh config files, so we won't polute git repo :)
 if [[ -e ~/.zshrc.local ]]; then
@@ -151,6 +132,6 @@ if [[ -e ~/.zshrc.local ]]; then
 fi
 
 [ -f /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh ] \
-    && source /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh
+	&& source /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh
 
 [ -e ~/dotfiles/GPScripts ] && export PATH="$(readlink -f ~/dotfiles/GPScripts):$PATH"

@@ -1,15 +1,20 @@
+#!/usr/bin/env zsh
+# This function makes a new DHCP request. 
+# If no argument given, it takes the interface with the default route, 
+# Otherwise, it uses the specified argument as interface
+
 if [[ ! -x /sbin/shakeInternet ]]; then
 	function shakeInternet(){
 		if [[ -z $1 ]]; then 
 			# If not argument was given shake interfaces holding default route
 			InternetInterfaces="$(route -n | cat | grep -E 'default|^0.0.0.0' | awk '{print $NF}')"
 			if [[ -z "$InternetInterfaces" ]]; then
-				echo "Warning, no default route interfaces found, please specify which interfaces to poke as argument"
+				echo "Warning: no default route interfaces found, please specify which interfaces to poke as argument"
 				return
 			fi
 		else
 			# If an argument was given shake interfaces which match argument
-			InternetInterfaces="$(ls /sys/class/net | cat | grep $1)"
+			InternetInterfaces="$(ls /sys/class/net | cat | grep ${1:-*})"
 			if [[ -z "$InternetInterfaces" ]]; then
 				echo "Error, entered criteria does not match any of the network interfaces, please enter a criteria matching any of the following interfaces"
 				ls /sys/class/net
@@ -18,6 +23,11 @@ if [[ ! -x /sbin/shakeInternet ]]; then
 		fi
 	
 		for Interface in $InternetInterfaces; do
+            if [ -z "$(declare -f aps)" ]; then
+				function aps(){
+				    ps aux | grep -v grep | grep -i $1
+				}
+            fi
 			# Kill dangling dhclient(s)
 			sudo kill -KILL $(aps dhclient ${Interface} | awk '{print $2}' | tr '\n' ' ') &>/dev/null
 			# Run dhclient on selected interface but kill after 6 seconds
