@@ -21,6 +21,8 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 "--Start My Packages ----------------------------------------------------- 
 NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'shougo/vinarise'
+NeoBundle 'guyzmo/vim-etherpad'
 " NeoBundle 'Valloric/YouCompleteMe'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'nathanaelkane/vim-indent-guides'
@@ -54,14 +56,16 @@ filetype plugin indent on
 NeoBundleCheck
 "End NeoBundle Scripts---------------------------------------------------- 
 
-set tabstop=4							" size of a hard tabstop
-set shiftwidth=4						" size of an 'indent'
-set softtabstop=4						" a combination of spaces and tabs
-set shiftwidth=4						" size of an 'autoindent'
-set number								" Line Numbers
-set relativenumber						" Relative numbers
-set showmatch							" Brackets
-set scrolloff=2							" Min Visible Lines Around Cursor
+set tabstop=4						" size of a hard tabstop
+set shiftwidth=4					" size of an 'indent'
+set softtabstop=4					" a combination of spaces and tabs
+set shiftwidth=4					" size of an 'autoindent'
+set number							" Line Numbers
+set relativenumber					" Relative numbers
+set showmatch						" Brackets
+set scrolloff=2						" Min Visible Lines Around Cursor
+set list                            " I wanna see tabs and trailing whitespaces
+set listchars=tab:→\ ,eol:\ ,trail:¬
 
 filetype plugin on
 syntax on
@@ -78,8 +82,14 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" Insert spaced tab TODO: Until I figure out how to do so
+" imap <S-space> '    '
+
 " Avoid launching vim with sudo, but make it less painful to edit config
 cmap w!! w !sudo tee % >/dev/null<CR>
+
+" Souvenirs from my eclipse age... open underlying file in vsplit:
+nmap <F3> :vertical wincmd f<CR>
 
 " folding
 set foldmethod=marker
