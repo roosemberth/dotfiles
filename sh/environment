@@ -9,21 +9,30 @@
 export XDG_CONFIG_HOME=~/.config
 export XDG_CACHE_HOME=~/.cache
 export XDG_DATA_HOME=~/.local/share
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-~/.local/tmp}
 
-# Fix various applications to respect XDG:
+# Configs
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh/default"             # zsh
 export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"        # vim
 export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"             # xinit (!startx)
-export XAUTHORITY="$XDG_CACHE_HOME/X11/Xauthority"        # startx
-export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"                 # gpg
-export PGPPATH="$XDG_CONFIG_HOME/gnupg"                   # mutt (pgp)
-export TASKDATA="$XDG_DATA_HOME/task"                     # task-warrior
 export TASKRC="$XDG_CONFIG_HOME/task/taskrc"              # task-warrior
-export RXVT_SOCKET="$HOME/.urxvtd.sock"                   # urxvtd
-export LESSHISTFILE="$XDG_CACHE_HOME/lesshist"            # less
-export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
-export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"            # gimp
 export MPLAYER_HOME="$XDG_CONFIG_HOME/mplayer"            # mplayer
+export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"            # gimp
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0" # GTK+
+
+# Caches
+export LESSHISTFILE="$XDG_CACHE_HOME/lesshist"            # less
+export HISTFILE="$XDG_CACHE_HOME/history"                 # bash
+
+# Data
+export TASKDATA="$XDG_DATA_HOME/task"                     # task-warrior
+export GNUPGHOME="$XDG_DATA_HOME/gnupg"                   # gpg
+export PGPPATH="$XDG_DATA_HOME/gnupg"                     # mutt (pgp)
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
+
+# Tempfiles
+export RXVT_SOCKET="$XDG_RUNTIME_DIR/.urxvtd.sock"        # urxvtd
+export XAUTHORITY="$XDG_RUNTIME_HOME/X11/Xauthority"      # startx
 
 # }}}  -------------------------------------------------------------------------
 
