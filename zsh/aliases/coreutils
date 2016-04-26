@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+alias ls='ls --color=auto'
+alias l='ls -CF'
+alias ll='ls -alFh'
+alias la='ls -A'

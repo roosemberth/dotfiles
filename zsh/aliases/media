@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+# mixer alias
+if [[ ! -z "$(whence pulsemixer)" ]]; then
+	alias mixer="pulsemixer"
+elif [[ ! -z "$(whence alsamixer)" ]]; then
+	alias mixer="alsamixer"
+fi

@@ -1,18 +1,9 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env sh
 
-# enable color support of ls and friends
-alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-# some more ls aliases
-alias l='ls -CF'
-alias ll='ls -alFh'
-alias la='ls -A'
-
-# even more aliases
-alias xc='xclip -selection clipboard'
 alias wtf='dmesg|tail -n 20'
 alias rm='rm --one-file-system'
 
@@ -21,11 +12,3 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
-
-# mixer alias
-if [[ ! -z "$(whence pulsemixer)" ]]; then
-	alias mixer="pulsemixer"
-elif [[ ! -z "$(whence alsamixer)" ]]; then
-	alias mixer="alsamixer"
-fi
-
