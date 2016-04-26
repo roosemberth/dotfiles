@@ -12,7 +12,7 @@ export XDG_DATA_HOME=~/.local/share
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-~/.local/tmp}
 
 # Configs
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh/default"             # zsh
+export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh/default}" # zsh
 export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"        # vim
 export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"             # xinit (!startx)
 export TASKRC="$XDG_CONFIG_HOME/task/taskrc"              # task-warrior
@@ -32,7 +32,7 @@ export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
 
 # Tempfiles
 export RXVT_SOCKET="$XDG_RUNTIME_DIR/.urxvtd.sock"        # urxvtd
-export XAUTHORITY="$XDG_RUNTIME_HOME/X11/Xauthority"      # startx
+export XAUTHORITY="$XDG_RUNTIME_DIR/X11/Xauthority"      # startx
 
 # }}}  -------------------------------------------------------------------------
 
