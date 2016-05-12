@@ -30,14 +30,14 @@ root: ~/
 
 windows:
   - wrapper:
-      layout: 0ddf,410x109,0,0{295x109,0,0[295x94,0,0,0,295x14,0,95,1],114x109,296,0[114x29,296,0,2,114x30,296,30,3,114x34,296,61,4,114x13,296,96,5]}
+      layout: 9934,410x103,0,0{295x103,0,0[295x88,0,0,0,295x14,0,89,1],114x103,296,0[114x27,296,0,2,114x28,296,28,3,114x33,296,57,4,114x12,296,91,5]}
       panes:
         - Hub:
             - tmux set prefix M-q
             - tmux set prefix M-q
             - unset TMUX
             - mux start Hub
-        - autossh -M 10000 SystechCloudEngine -t "tmux attach -t xComm"
+        - autossh -M 0 SystechCloudEngine -t "tmux attach -t xComm"
         - sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ',')
         - sudo atop
         - sudo htop
