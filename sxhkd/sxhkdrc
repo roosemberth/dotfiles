@@ -113,32 +113,29 @@ super + r
 super + less
     xtrlock
 
-# Decrease first active card volume
-alt + XF86AudioLowerVolume
-	pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\+//g') -5%
 # Raise first active card volume
-alt + XF86AudioRaiseVolume
-	pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\+//g') +5%
+shift + {XF86AudioRaiseVolume,XF86AudioLowerVolume}
+	pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\+//g') {+,-}5%
 # Toggle MPD
 {XF86AudioPlay,XF86AudioMicMute}
 	mpc toggle &> /dev/null
 
 # Lower brightness
 {XF86MonBrightnessDown,ctrl + XF86AudioLowerVolume}
-    sudo /home/roosemberth/dotfiles/GPScripts/backlight -10
+    sudo backlight -10
 # Raise Brigtness
 {XF86MonBrightnessUp, ctrl + XF86AudioRaiseVolume}
-    sudo /home/roosemberth/dotfiles/GPScripts/backlight +10
+    sudo backlight +10
 
 # Next Prev song on MPD
-shift + {XF86AudioRaiseVolume,XF86AudioLowerVolume}
+alt + {XF86AudioRaiseVolume,XF86AudioLowerVolume}
     mpc {next,prev} &> /dev/null
 
 # Spawn Scratchpad
 super + space
    xdotool search --onlyvisible --classname URxvtControlWrapper windowunmap \
     || xdotool search --classname URxvtControlWrapper windowmap \
-    || urxvt -name URxvtControlWrapper -geometry 410x110
+    || urxvt -name URxvtControlWrapper -geometry 410x104
 
 # "False" fullscreen, respects padding/margin, etc.
 super + f
