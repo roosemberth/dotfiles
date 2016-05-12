@@ -1,8 +1,9 @@
-" People from whom --I've stolen config frags-- I'm getting inspired:
-" @nicknisi, @rasendubi, @shougo, @shawncplus
-" And manymore comming! Thanks everyone!
+" Vim main configuration file
+"
+" (C) 2016 - Roosembert Palacios <roosembert.palacios@epfl.ch>
+" Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
-"NeoBundle Scripts-------------------------------------------------------- 
+" NeoBundle Scripts {{{
 if has('vim_starting')
   if &compatible
     set nocompatible               " Be iMproved
@@ -19,27 +20,24 @@ call neobundle#begin(expand('~/.vim/bundle'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-"--Start My Packages ----------------------------------------------------- 
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'shougo/vinarise'
-NeoBundle 'guyzmo/vim-etherpad'
-" NeoBundle 'Valloric/YouCompleteMe'
+" My Packages {{{
 NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'vim-scripts/Align'
 NeoBundle 'Lokaltog/vim-easymotion'
-NeoBundle 'shawncplus/skittles_berry'
-NeoBundle 'powerline/powerline'
 NeoBundle 'vim-scripts/Align'
-NeoBundleLazy 'jeaye/color_coded', {
-  \ 'build': {
-    \   'unix': 'cmake . && make && make install',
-  \ },
-  \ 'autoload': { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] },
-  \ 'build_commands' : ['cmake', 'make']
-\}
+NeoBundle 'sjl/gundo.vim'
+NeoBundle 'shawncplus/skittles_berry'
+NeoBundle 'guyzmo/vim-etherpad'
 
-"--End My Packages ------------------------------------------------------- 
+NeoBundle 'shougo/vinarise'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+" NeoBundle 'Valloric/YouCompleteMe'
+" NeoBundle 'powerline/powerline'
+" NeoBundleLazy 'jeaye/color_coded'
+
+" }}} My Packages --------------------------------------------------------------
+
+" ???
 set laststatus=2
 
 " You can specify revision/branch/tag.
@@ -54,7 +52,7 @@ filetype plugin indent on
 " If there are uninstalled bundles found on startup,
 " this will conveniently prompt you to install them.
 NeoBundleCheck
-"End NeoBundle Scripts---------------------------------------------------- 
+" }}} End NeoBundle Scripts---------------------------------------------------- 
 
 set tabstop=4						" size of a hard tabstop
 set shiftwidth=4					" size of an 'indent'
@@ -91,6 +89,9 @@ cmap w!! w !sudo tee % >/dev/null<CR>
 " Souvenirs from my eclipse age... open underlying file in vsplit:
 nmap <F3> :vertical wincmd f<CR>
 
+nmap <ESC><C-u> :GundoToggle<CR>
+nmap <ESC>é :NERDTreeToggle<CR>
+
 " folding
 set foldmethod=marker
 " show 80 columns delimiter
@@ -105,4 +106,4 @@ set mouse=a
 " Execure the line under the cursor
 vmap ! :!sh<CR>
 
-colorscheme desert
+colorscheme skittles_berry
