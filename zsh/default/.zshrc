@@ -8,11 +8,6 @@ zstyle ':completion:*' completer _expand _complete _ignored _correct _approximat
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # zstyle :compinstall filename "$XDG_CONFIG_HOME/zsh/default/.zshrc"
 
-# This will import zsh-syntax.completition
-path_syntax=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -e "$path_syntax" ] && . "$path_syntax"
-unset path_syntax
-
 # This pushes current cmd to a stack so It'll let me run something else and restores the cmd on the next shell prompt
 bindkey "^B" push-input
 
@@ -28,6 +23,7 @@ HISTFILE=~/.histfile
 HISTSIZE=1000000
 SAVEHIST=1000000
 setopt appendhistory beep notify HIST_IGNORE_DUPS
+
 # vim mode
 bindkey -v
 
@@ -55,6 +51,26 @@ if [[ "$(ps hp $PPID -o comm)" == "$0" ]]; then
 		export MARK=""
 	fi
 fi
+
+# Antigen {{{
+# install if not installed
+[ -f $XDG_CONFIG_HOME/zsh/antigen.zsh ] \
+	|| curl -L "https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh" -o "$XDG_CONFIG_HOME/zsh/antigen.zsh" \
+	|| echo "Problem obtaining antigen script"
+
+if [ -f $XDG_CONFIG_HOME/zsh/antigen.zsh ]; then
+	source $XDG_CONFIG_HOME/zsh/antigen.zsh
+
+	antigen bundle robbyrussell/oh-my-zsh plugins/git
+	antigen bundle robbyrussell/oh-my-zsh plugins/systemd
+
+	antigen bundle zsh-users/antigen
+	antigen bundle zsh-users/zsh-completions src
+	antigen bundle zsh-users/zsh-autosuggestions
+	antigen bundle zsh-users/zsh-syntax-highlighting
+fi
+
+# }}}  -------------------------------------------------------------------------
 
 # functions {{{
 # "Include" custom shell functions.
@@ -100,6 +116,7 @@ fi
 safeAlias(){
 	local aliasTarget=$(eval print ${1#*=})
 	local aliasTargetBinary=${aliasTarget%% *}
+	[ -z "$aliasTargetBinary" ] && print "wtf? Tryed to bind empty alias: $1" && return
 	if [ -z "$(whence "$aliasTargetBinary")" ]; then
 		print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
 		return
@@ -123,15 +140,16 @@ if [ -d "$XDG_CONFIG_HOME/zsh/aliases" ]; then
 		[ -f "$LOG_FILENAME" ] && rm $LOG_FILENAME
 	done
 	unset ALIAS_GRPS
+else
+	echo "Warning, I was not able to find $XDG_CONFIG_HOME/zsh/aliases"
 fi
 # }}}  -------------------------------------------------------------------------
-
-# This will load local "Host-dependant" zsh config files, so we won't polute git repo :)
-if [[ -e ~/.zshrc.local ]]; then
-	source ~/.zshrc.local
-fi
 
 [ -f /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh ] \
 	&& source /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh
 
-[ -e $XDG_CONFIG_HOME/bin ] && export PATH="$(readlink -f $XDG_CONFIG_HOME/bin):$PATH"
+[ -e $XDG_CONFIG_HOME/bin ] \
+	&& export PATH="$(readlink -f $XDG_CONFIG_HOME/bin):$PATH"
+
+[ -f $XDG_DATA_HOME/zsh/.zshrc.local ] \
+	&& source $XDG_DATA_HOME/zsh/.zshrc.local
