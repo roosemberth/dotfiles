@@ -2,8 +2,7 @@
 # Environment set when logging into a shell.
 # Written by ayekat on a frustrating evening in september 2014.
 
-# ------------------------------------------------------------------------------
-# XDG {{{
+# XDG {{{ ----------------------------------------------------------------------
 
 # Set XDG variables:
 export XDG_CONFIG_HOME=~/.config
@@ -32,11 +31,14 @@ export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
 
 # Tempfiles
 export RXVT_SOCKET="$XDG_RUNTIME_DIR/.urxvtd.sock"        # urxvtd
-export XAUTHORITY="$XDG_RUNTIME_DIR/X11/Xauthority"      # startx
+export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"           # startx
 
 # }}}  -------------------------------------------------------------------------
 
-# DEFAULT APPLICATIONS {{{
+# PATH
+export PATH="$HOME/.config/bin/:$PATH"
+
+# DEFAULT APPLICATIONS {{{ -----------------------------------------------------
 
 # Editor and pager:
 export EDITOR='/usr/bin/vim'
@@ -45,7 +47,7 @@ export PAGER='/usr/bin/less'
 
 # }}}  -------------------------------------------------------------------------
 
-# APPLICATION-SPECIFIC {{{
+# APPLICATION-SPECIFIC {{{ -----------------------------------------------------
 
 export QUOTING_STYLE=literal                  # `ls` in coreutils>=8.25
 
