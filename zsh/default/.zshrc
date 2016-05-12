@@ -9,7 +9,8 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # zstyle :compinstall filename "$XDG_CONFIG_HOME/zsh/default/.zshrc"
 
 # This pushes current cmd to a stack so It'll let me run something else and restores the cmd on the next shell prompt
-bindkey "^B" push-input
+bindkey -M viins "^B" push-input
+bindkey -M viins "^R" vi-forward-word				# accept partial suggestions
 
 autoload -Uz compinit promptinit
 compinit
