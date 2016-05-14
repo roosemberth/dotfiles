@@ -86,8 +86,13 @@ nnoremap <C-l> <C-w>l
 " Avoid launching vim with sudo, but make it less painful to edit config
 cmap w!! w !sudo tee % >/dev/null<CR>
 
-" Souvenirs from my eclipse age... open underlying file in vsplit:
-nmap <F3> :vertical wincmd f<CR>
+" Open underlying file in splits:
+nmap <C-w>w :rightbelow wincmd f<CR>
+nmap <C-w>e :rightbelow vertical wincmd f<CR>
+
+" Fullscreen
+nmap <C-w>f <C-w>|
+nmap <C-w>F <C-w>=
 
 nmap <ESC><C-u> :GundoToggle<CR>
 nmap <ESC>é :NERDTreeToggle<CR>
