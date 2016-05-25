@@ -152,5 +152,9 @@ fi
 [ -e $XDG_CONFIG_HOME/bin ] \
 	&& export PATH="$(readlink -f $XDG_CONFIG_HOME/bin):$PATH"
 
+# gem install --user <gem>
+[ -e $HOME/.gem/ruby/2.3.0/bin ] \
+	&& export PATH="$(readlink -f $HOME/.gem/ruby/2.3.0/bin):$PATH"
+
 [ -f $XDG_DATA_HOME/zsh/.zshrc.local ] \
 	&& source $XDG_DATA_HOME/zsh/.zshrc.local
