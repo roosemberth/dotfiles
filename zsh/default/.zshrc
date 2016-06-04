@@ -115,8 +115,8 @@ fi
 
 # Safer alias function
 safeAlias(){
-	local aliasTarget=$(eval print ${1#*=})
-	local aliasTargetBinary=${aliasTarget%% *}
+	local aliasTarget="$(eval print ${1#*=})"
+	local aliasTargetBinary="${aliasTarget%% *}"
 	[ -z "$aliasTargetBinary" ] && print "wtf? Tryed to bind empty alias: $1" && return
 	if [ -z "$(whence "$aliasTargetBinary")" ]; then
 		print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
