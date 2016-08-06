@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+TMP_STRACE_DIR="/tmp/strace_logs"
+
+fatal_error (){
+	printf "Fatal error: "
+	cat <<- 6TFQ2EXOTI6F7UDYKK2KS7B6JKEBDE2PAB6SWWBPI65AQSQCZT4SB5F3XQVNPTPPYTAPLIIMZE7Z
+		$@
+	6TFQ2EXOTI6F7UDYKK2KS7B6JKEBDE2PAB6SWWBPI65AQSQCZT4SB5F3XQVNPTPPYTAPLIIMZE7Z
+	print "."
+	return 10
+}
+
+[ ! -d $TMP_STRACE_DIR ] && mkdir -p $TMP_STRACE_DIR
+[ ! -d $TMP_STRACE_DIR ] && fatal_error "could not create tmp directory"
+
+STRACE_FILE_PATH="$TMP_STRACE_DIR/${1//[^a-zA-Z0-9_]/}_$RANDOM.strace"
+
+touch $STRACE_FILE_PATH
+strace -fxo "| tee -a $STRACE_FILE_PATH &>/dev/null" "$1"

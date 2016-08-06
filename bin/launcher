@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+
+# Launcher script
+# Launches the specified program in a tmux panel on a separate session so that
+# later the user can attach and see the program output if needed.
+#
+# (C) 2016 - Roosembert Palacios <roosembert.palacios@epfl.ch>
+# Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
+
+## Config {{{
+LAUNCHER_TMUX_SOCKET_NAME="launcher-tmux-socket"
+
+## }}}
+
+## Start -----------------------------------------------------------------------
+
+# Get socket location
+LAUNCHER_TMUX_SOCKET="${XDG_RUNTIME_DIR:=/tmp/${USER}}/${LAUNCHER_TMUX_SOCKET_NAME:=launcher-tmux-socket}"
+# Directory does not exist? try to create it, otherwise fall it back home
+[ ! -d "${LAUNCHER_TMUX_SOCKET%/*}" ] && mkdir -p "${LAUNCHER_TMUX_SOCKET%/*}"
+[ ! -d "${LAUNCHER_TMUX_SOCKET%/*}" ] && LAUNCHER_TMUX_SOCKET="~/${LAUNCHER_TMUX_SOCKET##*/}"
+
+# A session for each X11 display. "console" if no display was found.
+LAUNCHER_TMUX_SESSION="${DISPLAY:-console}"
+# Sanitize session name (I'm thinking on you ssh...)
+LAUNCHER_TMUX_SESSION="${LAUNCHER_TMUX_SESSION//[^a-zA-Z0-9]/_}"
+LAUNCHER_TMUX_SESSION="$(echo \"${LAUNCHER_TMUX_SESSION}\" | sed 's/[^a-zA-Z0-9]/_/g')"
+
+TIMESTAMP="$(date +%s)"
+
+# Start a windows on the specified server socket and session
+if ! tmux -S "$LAUNCHER_TMUX_SOCKET" new-window -t "${LAUNCHER_TMUX_SESSION}:${TIMESTAMP}" "$@"
+then
+	# Server probably wasn't running, try to start it
+	if tmux -S "$LAUNCHER_TMUX_SOCKET" new-session -s $LAUNCHER_TMUX_SESSION -d
+	then
+		echo "Started new instance tmux server"
+		tmux -S "$LAUNCHER_TMUX_SOCKET" new-window -t "${LAUNCHER_TMUX_SESSION}:${TIMESTAMP}" "$@"
+	else
+		echo "Could not start server, failed to box command execution" >&2
+		return
+	fi
+fi
+
+echo "Running at $LAUNCHER_TMUX_SOCKET@$LAUNCHER_TMUX_SESSION:$TIMESTAMP"
