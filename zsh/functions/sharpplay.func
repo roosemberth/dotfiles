@@ -5,3 +5,8 @@ function sharpplay(){
 	mpv --no-video "ytdl://ytsearch:${${$(echo -n "$@"):#"-"}:-$(xclip -o)}"
 }
 
+function sharpplayv(){
+	[ "${#${@}}" = 0 ] && echo "Please specify a title to search on youtube or an url" && return
+	mpv "ytdl://ytsearch:${${$(echo -n "$@"):#"-"}:-$(xclip -o)}"
+}
+

@@ -11,11 +11,14 @@ preexec(){
     fi
 
     case "$1" in
-        zsh*|tmux*|bash*)
+        zsh*|tmux*)
+            exec tmux
+            ;;
+        bash*)
             exec "$1"
             ;;
         *)
-            cat << SDA | sh &! 
+            cat << SDA | sh &!
 $1
 SDA
             exit

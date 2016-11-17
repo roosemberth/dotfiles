@@ -4,7 +4,7 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-alias wtf='dmesg|tail -n 20'
+alias wtf='dmesg | tail -n 20'
 alias rm='rm --one-file-system'
 
 # quite handy!

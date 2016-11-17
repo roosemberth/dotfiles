@@ -1,12 +1,26 @@
-hidden partial modifier_keys
-xkb_symbols "swap_caps_escape" {
+xkb_symbols "fr_CH" {
+    // Base keyboard layout
+    include "ch(fr)"
+
+    // Mad swaps
     key <CAPS> { [ Escape ] };
     key <ESC>  { [ Caps_Lock ] };
-};
-
-hidden partial modifier_keys
-xkb_symbols "swap_lshift_lcontrol" {
     key <LFSH> { [ Control_L ] };
-    key <LCTL> { [ Shift_L ] };
-};
+    key <LCTL> { [ Super_L ] };
+    key <LWIN> { [ Shift_L ] };
 
+    key <AC06> { [ h       , H       , Left       , Hstroke   ] };
+    key <AC07> { [ j       , J       , Down       , dead_horn ] };
+    key <AC08> { [ k       , K       , Up         , ampersand ] };
+    key <AC09> { [ l       , L       , Right      , Lstroke   ] };
+
+    key <AD07> { [ u       , U       , Home       ] };
+    key <AD08> { [ i       , I       , Prior      ] };
+    key <AD09> { [ o       , O       , Next       ] };
+    key <AD10> { [ p       , P       , End        ] };
+
+    key <AB07> { [ m       , M       , BackSpace  , mu        ] };
+
+    key <LSGT> { [ Shift_L , Shift_L , less       , greater   ] };
+    key <AE07> { [ 7       , slash   , bar        , backslash ] };
+};

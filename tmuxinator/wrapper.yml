@@ -36,7 +36,7 @@ windows:
             - tmux set prefix M-q
             - tmux set prefix M-q
             - unset TMUX
-            - mux start Hub
+            - tmuxinator start Hub
         - autossh -M 0 SystechCloudEngine -t "tmux attach -t xComm"
         - sudo bmon -p $(ls /sys/class/net | cat | grep -vE "^lo$" | tr '\n' ',')
         - sudo atop

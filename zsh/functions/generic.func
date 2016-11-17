@@ -24,3 +24,7 @@ function launch(){
     $@
 	SDA
 }
+
+function ctmp(){
+	cd $(mktemp -d)
+}

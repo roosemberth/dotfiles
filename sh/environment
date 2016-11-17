@@ -1,37 +1,15 @@
 #!/usr/bin/env sh
 # Environment set when logging into a shell.
 # Written by ayekat on a frustrating evening in september 2014.
+# Modified by Roosembert when procrastinating for his summer exams on june 2016.
 
-# XDG {{{ ----------------------------------------------------------------------
+# XDG Directory Specification {{{ ----------------------------------------------
 
 # Set XDG variables:
-export XDG_CONFIG_HOME=~/.config
-export XDG_CACHE_HOME=~/.cache
-export XDG_DATA_HOME=~/.local/share
-export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-~/.local/tmp}
-
-# Configs
-export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh/default}" # zsh
-export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"        # vim
-export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"             # xinit (!startx)
-export TASKRC="$XDG_CONFIG_HOME/task/taskrc"              # task-warrior
-export MPLAYER_HOME="$XDG_CONFIG_HOME/mplayer"            # mplayer
-export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"            # gimp
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc-2.0" # GTK+
-
-# Caches
-export LESSHISTFILE="$XDG_CACHE_HOME/lesshist"            # less
-export HISTFILE="$XDG_CACHE_HOME/history"                 # bash
-
-# Data
-export TASKDATA="$XDG_DATA_HOME/task"                     # task-warrior
-export GNUPGHOME="$XDG_DATA_HOME/gnupg"                   # gpg
-export PGPPATH="$XDG_DATA_HOME/gnupg"                     # mutt (pgp)
-export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"           # pass
-
-# Tempfiles
-export RXVT_SOCKET="$XDG_RUNTIME_DIR/.urxvtd.sock"        # urxvtd
-export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"           # startx
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-$HOME/.local/tmp}
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
 # }}}  -------------------------------------------------------------------------
 
@@ -42,14 +20,37 @@ export PATH="$HOME/.config/bin/:$PATH"
 
 # Editor and pager:
 export EDITOR='/usr/bin/vim'
-export VISUAL='/usr/bin/vim'
+export VISUAL='/usr/bin/vim -O'
 export PAGER='/usr/bin/less'
 
 # }}}  -------------------------------------------------------------------------
 
 # APPLICATION-SPECIFIC {{{ -----------------------------------------------------
+export QUOTING_STYLE="literal"                          # ls in coreutils>=8.25
 
-export QUOTING_STYLE=literal                  # `ls` in coreutils>=8.25
+export GTK_RC_FILES="$XDG_CONFIG_HOME/gtk-1.0/gtkrc"        # GTK
+export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"       # GTK2
+
+export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh/default}"   # zsh
+export VIMINIT="source $XDG_CONFIG_HOME/vim/vimrc"          # vim
+export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"               # xinit (!startx)
+export TASKRC="$XDG_CONFIG_HOME/task/taskrc"                # task-warrior
+export MPLAYER_HOME="$XDG_CONFIG_HOME/mplayer"              # mplayer
+export GIMP2_DIRECTORY="$XDG_CONFIG_HOME/gimp"              # gimp
+
+# Caches
+export LESSHISTFILE="$XDG_CACHE_HOME/lesshist"              # less
+export HISTFILE="$XDG_CACHE_HOME/history"                   # bash
+
+# Data
+export TASKDATA="$XDG_DATA_HOME/task"                       # task-warrior
+export GNUPGHOME="$XDG_DATA_HOME/gnupg"                     # gpg
+export PGPPATH="$XDG_DATA_HOME/gnupg"                       # mutt (pgp)
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"             # pass
+
+# Tempfiles
+export RXVT_SOCKET="$XDG_RUNTIME_DIR/.urxvtd.sock"          # urxvtd
+export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"             # startx
 
 # }}}  -------------------------------------------------------------------------
 

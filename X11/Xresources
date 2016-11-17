@@ -48,8 +48,9 @@ URxvt.fading: 15
 
 !! -- URxvt
 !! URxvt.font          : xft:dejavu sans mono:normal:size=12
-URxvt.font                : xft:dejavu sans mono:size=12:antialias=false
+!! URxvt.font                : xft:dejavu sans mono:size=12:antialias=false
 !! URxvt.font                : xft:terminus:normal:size=14:antialias=false
+URxvt.font                : xft:dejavu sans mono:size=18:antialias=false
 !! URxvt.letterSpace      : -2
 URxvt.letterSpace         : -1
 URxvt.scrollBar           : false

@@ -4,6 +4,19 @@
 # (C) 2016 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
 # Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
+
+# Profiling: http://stackoverflow.com/a/4351664/2418854 there's a hook at the end aswell.
+if [ ! -z "$ZSH_PROFILING" ]; then
+	# set the trace prompt to include seconds, nanoseconds, script name and line number
+	# This is GNU date syntax; by default Macs ship with the BSD date program, which isn't compatible
+	PS4='+$(date "+%s:%N") %N:%i> '
+	# save file stderr to file descriptor 3 and redirect stderr (including trace 
+	# output) to a file with the script's PID as an extension
+	exec 3>&2 2>/tmp/startlog.$$
+	# set options to turn on tracing and expansion of commands contained in the prompt
+	setopt xtrace prompt_subst
+fi
+
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # zstyle :compinstall filename "$XDG_CONFIG_HOME/zsh/default/.zshrc"
@@ -21,9 +34,9 @@ promptinit
 zstyle ':completion:*' special-dirs true
 
 HISTFILE=~/.histfile
-HISTSIZE=1000000
-SAVEHIST=1000000
-setopt appendhistory beep notify HIST_IGNORE_DUPS
+HISTSIZE=10000000
+SAVEHIST=10000000
+setopt EXTENDED_HISTORY APPEND_HISTORY BEEP NOTIFY HIST_IGNORE_DUPS INC_APPEND_HISTORY
 
 # vim mode
 bindkey -v
@@ -146,6 +159,13 @@ else
 fi
 # }}}  -------------------------------------------------------------------------
 
+# daemons {{{
+# ssh-agent
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/tmp}/ssh-agent-$(id -u)-socket"
+# which ssh &>/dev/null && which ssh-agent &>/dev/null && [ -f "${SSH_AUTH_SOCK}" ]
+
+# }}}  -------------------------------------------------------------------------
+
 [ -f /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh ] \
 	&& source /usr/lib/ruby/gems/2.3.0/gems/tmuxinator-0.7.0/completion/tmuxinator.zsh
 
@@ -155,9 +175,19 @@ fi
 [ -e $XDG_DATA_HOME/bin ] \
 	&& export PATH="$(readlink -f $XDG_DATA_HOME/bin):$PATH"
 
+[ -e $HOME/.local/bin ] \
+	&& export PATH="$(readlink -f $HOME/.local/bin):$PATH"
+
 # gem install --user <gem>
 [ -e $HOME/.gem/ruby/2.3.0/bin ] \
 	&& export PATH="$(readlink -f $HOME/.gem/ruby/2.3.0/bin):$PATH"
 
 [ -f $XDG_DATA_HOME/zsh/.zshrc.local ] \
 	&& source $XDG_DATA_HOME/zsh/.zshrc.local
+
+if [ ! -z "$ZSH_PROFILING" ]; then
+	# turn off tracing
+	unsetopt xtrace
+	# restore stderr to the value saved in FD 3
+	exec 2>&3 3>&-
+fi
