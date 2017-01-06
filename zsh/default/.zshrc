@@ -191,3 +191,7 @@ if [ ! -z "$ZSH_PROFILING" ]; then
 	# restore stderr to the value saved in FD 3
 	exec 2>&3 3>&-
 fi
+
+[ -f ~/.todonow ] \
+	&& echo "Protocol 19507:" \
+	&& cat ~/.todonow
