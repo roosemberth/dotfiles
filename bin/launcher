@@ -32,7 +32,8 @@ TIMESTAMP="$(date +%s)"
 if ! tmux -S "$LAUNCHER_TMUX_SOCKET" new-window -t "${LAUNCHER_TMUX_SESSION}:${TIMESTAMP}" "$@"
 then
 	# Server probably wasn't running, try to start it
-	if tmux -S "$LAUNCHER_TMUX_SOCKET" new-session -s $LAUNCHER_TMUX_SESSION -d
+	TMUX_SOCKET_CONFIG="${XDG_CONFIG_HOME}/tmux/socket.tmux.conf"
+	if tmux -S "$LAUNCHER_TMUX_SOCKET" -f "${TMUX_SOCKET_CONFIG:-~/.tmux.conf}" new-session -s $LAUNCHER_TMUX_SESSION -d
 	then
 		echo "Started new instance tmux server"
 		tmux -S "$LAUNCHER_TMUX_SOCKET" new-window -t "${LAUNCHER_TMUX_SESSION}:${TIMESTAMP}" "$@"
