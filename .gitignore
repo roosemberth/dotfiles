@@ -8,4 +8,4 @@ mpd/pid
 mpd/state
 mpd/sw
 vim/vim/bundle/*
-zsh/antigen.zsh
+zsh/default/.zcompdump
