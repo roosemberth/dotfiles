@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # set backlight script
 BACKLIGHT_FILE="/sys/class/backlight/intel_backlight/brightness"
 MAX_BRIGHTNESS_FILE="/sys/class/backlight/intel_backlight/max_brightness"
