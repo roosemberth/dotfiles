@@ -1,5 +1,9 @@
-" Vim configuration file
-" Initially written by ayekat in a snowy day in january 2010
+" Vim main configuration file
+"
+"     2010-2017 - «ayekat»
+" (C) 2016-2017 - Roosembert Palacios <roosembert.palacios@epfl.ch>
+" Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
+" TODO: Consider changing licence to Apache2
 
 set nocompatible
 set nomodeline
@@ -58,21 +62,34 @@ endif
 " List of bundles I use (including NeoBundle itself): "
 call neobundle#begin(expand('$XDG_DATA_HOME/vim/neobundle/'))
 NeoBundleFetch 'Shougo/neobundle.vim'
-NeoBundle 'Shougo/vinarise.vim'
-NeoBundle 'ayekat/dwm.vim'
+
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'Lokaltog/vim-easymotion'
+NeoBundle 'vim-scripts/Align'
+NeoBundle 'sjl/gundo.vim'
+NeoBundle 'shawncplus/skittles_berry'
+NeoBundle 'mileszs/ack.vim'
+NeoBundle 'benatkin/vim-move-between-tabs'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'tpope/vim-surround'
+NeoBundle 'tpope/vim-tbone'
+NeoBundle 'Shougo/vinarise.vim'        " Hex editor
+NeoBundle 'ap/vim-css-color'
+NeoBundle 'chrisbra/vim-diff-enhanced'
+NeoBundle 'haya14busa/incsearch.vim'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+
 NeoBundle 'scrooloose/syntastic'
+
+NeoBundle 'tpope/vim-surround'
 NeoBundle 'vim-scripts/glsl.vim'
 NeoBundle 'Matt-Stevens/vim-systemd-syntax'
 NeoBundle 'vim-scripts/bbcode'
 NeoBundle 'rust-lang/rust.vim'
 NeoBundle 'rosstimson/scala-vim-support'
 NeoBundle 'EdJoJob/llvmir-vim'
-NeoBundle 'ap/vim-css-color'
-NeoBundle 'honza/dockerfile.vim'
-NeoBundle 'nfnty/vim-nftables'
-NeoBundle 'sjl/gundo.vim'
+
+"NeoBundle 'honza/dockerfile.vim'
+"NeoBundle 'nfnty/vim-nftables'
 
 " Initial run requires NeoBundleInstall, as a simple 'Check' won't suffice:
 if g:bundleinit
@@ -93,6 +110,7 @@ let g:syntastic_python_python_exec = 'python3'
 " Fix include directories:
 let g:syntastic_c_include_dirs = [$HOME.'/.local/include']
 set path +=$HOME/.local/include
+set path +=**
 
 " Disable LaTeX style warnings:
 "let g:syntastic_tex_chktex_args = '-m'
@@ -101,16 +119,13 @@ set path +=$HOME/.local/include
 let g:syntastic_warning_symbol = '!!'
 let g:syntastic_error_symbol = 'XX'
 
-" Don't use default keybindings of DWM plugin; don't auto-arrange at :split:
-let g:dwm_map_keys = 0
-let g:dwm_auto_center = 0
-
 " }}}
 " ------------------------------------------------------------------------------
 " LOOK {{{
 
 " Display and format line numbers:
 set number
+set relativenumber
 set numberwidth=5
 
 " Enable UTF-8 (I wanna see Umlauts!):
@@ -121,6 +136,8 @@ set colorcolumn=81
 au FileType mail,gitcommit setl colorcolumn=73
 au FileType java,cs setl colorcolumn=121
 au FileType asm setl colorcolumn=41,81
+
+hi ColorColumn ctermbg=235
 
 " I wanna see tabs and trailing whitespaces:
 set list
@@ -306,7 +323,7 @@ else
 	" }}}
 endif
 
-
+"colorscheme skittles_berry
 " }}}
 " ------------------------------------------------------------------------------
 " WHITESPACE {{{
@@ -343,11 +360,10 @@ set autoindent
 set copyindent
 
 " Indentation (tabs, spaces):
-set noexpandtab tabstop=4 shiftwidth=4
+set expandtab tabstop=4 shiftwidth=4
 au FileType c setl tabstop=8 shiftwidth=8
-au BufRead $HOME/epfl/courses/prog/* setl tabstop=4 shiftwidth=4
 au FileType scala,tex,nftables setl expandtab tabstop=2 shiftwidth=2
-au FileType ant,cpp,haskell,java,lisp,named,python,sql,xml setl expandtab
+" au FileType ant,cpp,haskell,java,lisp,named,python,sql,xml setl expandtab
 
 " Visually wrap lines and break words:
 set wrap
@@ -367,7 +383,7 @@ au FileType gitcommit,mail setl textwidth=72
 set backspace=indent,eol,start
 
 " Leader key:
-let mapleader='ö'
+let mapleader='é'
 
 " Keep 3 lines 'padding' above/below the cursor:
 set scrolloff=3
@@ -382,16 +398,24 @@ map J 2<C-e>
 map L 4zl
 map H 4zh
 
-" Easy 'back to beginning of line':
-map ä 0
-
 " Remove delay for leaving insert mode:
 set timeoutlen=1000 ttimeoutlen=0
 
-" Split window handling:
-map <leader>j <C-w>w
-map <leader>k <C-w>W
-map <leader><Space> :call DWM_Focus()<CR>
+" Window manipulation: Resize window
+nnoremap <leader>k <C-W>+
+nnoremap <leader>j <C-W>-
+nnoremap <leader>l <C-W>>
+nnoremap <leader>h <C-W><
+
+" Manipulate windows: Move between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Open underlying file in splits:
+nmap <C-w>w :rightbelow wincmd f<CR>
+nmap <C-w>e :rightbelow vertical wincmd f<CR>
 
 " Tabbed window handling:
 map <leader>l :tabnext<CR>
@@ -410,10 +434,39 @@ set cmdwinheight=10
 set tags=./tags;/
 
 " Save a file as root (WARNING: breaks file undo history):
-command! Rw :execute ':silent w !sudo tee % > /dev/null' | :edit!
+" command! Rw :execute ':silent w !sudo tee % > /dev/null' | :edit!
+cmap w!! w !sudo tee % >/dev/null<CR>
 
 " Undo-tree:
 map <leader>u :GundoToggle<CR>
+
+" NERDTree
+nmap <leader>o :NERDTreeToggle<CR>
+
+" Quickfix
+nmap <leader>ö :cclose<CR>
+nmap <leader>à :copen<CR>
+nmap <leader>N :cprevious<CR>
+nmap <leader>n :cnext<CR>
+
+" Incsearch
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+
+" Tweaks for browsing
+let g:netrw_banner=0        " disable annoying banner
+let g:netrw_browse_split=4  " open in prior window
+let g:netrw_altv=1          " open splits to the right
+let g:netrw_liststyle=3     " tree view
+let g:netrw_list_hide=netrw_gitignore#Hide()
+let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
+
+" Execure the line under the cursor
+vmap ! :!sh<CR>
+
+" Enable Mouse Support
+set mouse=a
 
 " }}}
 " ------------------------------------------------------------------------------
