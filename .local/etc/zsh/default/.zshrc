@@ -7,7 +7,6 @@
 
 # ------------------------------------------------------------------------------
 # Profiling: http://stackoverflow.com/a/4351664/2418854 there's a hook at the end aswell. {{{
-echo $PATH
 if [ ! -z "$ZSH_PROFILING" ]; then
 	# set the trace prompt to include seconds, nanoseconds, script name and line number
 	# This is GNU date syntax; by default Macs ship with the BSD date program, which isn't compatible
@@ -24,6 +23,40 @@ fi
 # Shell-agnostic configuration:
 . $XDG_CONFIG_HOME/sh/config
 
+# ------------------------------------------------------------------------------
+# COMPLETION {{{
+
+# Make sure the zsh cache directory exists:
+test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
+
+# The following lines were added by compinstall
+
+#zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
+#zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' format "[%{$fg_bold[default]%}%d%{$reset_color%}]"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' ignore-parents parent pwd
+zstyle ':completion:*' preserve-prefix '//[^/]##/'
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*' squeeze-slashes true
+zstyle :compinstall filename "${XDG_CONFIG_HOME}/zsh/.zshrc"
+
+autoload -Uz compinit
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
+
+# Do not autocomplete when ambiguous (bash-like):
+#setopt no_auto_menu
+
+# Print 'completing ...' when completing:
+expand-or-complete-with-dots () {
+	printf "$fg[blue] completing ...$reset_color\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+	zle expand-or-complete
+	zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots
+
+# }}}
 # ------------------------------------------------------------------------------
 # Antigen {{{
 # install if not installed
@@ -78,10 +111,10 @@ setopt prompt_subst
 # Define prompt colours:
 if [ "$TERM" != 'linux' ]; then
 	pc_vim_normal="$(printf "\033[38;5;22;48;5;148m")"
-	pc_vim_insert="$(printf "\033[38;5;45;48;5;23m")"
+	pc_vim_insert="$(printf "\033[38;5;2;48;5;4m")"
 else
 	pc_vim_normal="$fg[black]$bg[green]"
-	pc_vim_insert="$fg[cyan]$bg[blue]"
+	pc_vim_insert="$fg[green]$bg[blue]"
 fi
 pc_time="$fg[green]"
 pc_retval_bad="$fg_bold[red]"
@@ -261,40 +294,6 @@ TRAPINT() {
 
 # Delay for key sequences:
 KEYTIMEOUT=1
-
-# }}}
-# ------------------------------------------------------------------------------
-# COMPLETION {{{
-
-# Make sure the zsh cache directory exists:
-test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
-
-# The following lines were added by compinstall
-
-#zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
-#zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-zstyle ':completion:*' format "[%{$fg_bold[default]%}%d%{$reset_color%}]"
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' ignore-parents parent pwd
-zstyle ':completion:*' preserve-prefix '//[^/]##/'
-zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' squeeze-slashes true
-zstyle :compinstall filename "${XDG_CONFIG_HOME}/zsh/.zshrc"
-
-autoload -Uz compinit
-compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
-
-# Do not autocomplete when ambiguous (bash-like):
-#setopt no_auto_menu
-
-# Print 'completing ...' when completing:
-expand-or-complete-with-dots () {
-	printf "$fg[blue] completing ...$reset_color\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
-	zle expand-or-complete
-	zle redisplay
-}
-zle -N expand-or-complete-with-dots
-bindkey "^I" expand-or-complete-with-dots
 
 # }}}
 # ------------------------------------------------------------------------------
