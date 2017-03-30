@@ -88,12 +88,13 @@ while true; do
 		xss_lock_pid=$!
 	fi
 
+    echo Executing WM...
 	"$wm"
 
 	cmds_exist xss-lock && kill $xss_lock_pid
 
 	if cmds_exist zenity; then
-		zenity --question --text="$wm exited, do you want to close the X session?"
+		zenity --question --text="$wm exited, do you want to run another WM?"
 		test $? -eq 0 || break
 		new_wm="$(zenity --entry --text="Window manager to start:" --entry-text="$wm")"
 		[ -z "$new_wm" ] && break
