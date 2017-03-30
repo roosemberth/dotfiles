@@ -1,22 +1,68 @@
-# Configuration for interactive zsh.
-# Written by ayekat on a cold night in march 2013.
+#!/usr/bin/env zsh
+# Zsh default configuration file
+#
+#     2013-2017 - «ayekat»
+# (C) 2016-2017 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
+# Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
+
+# ------------------------------------------------------------------------------
+# Profiling: http://stackoverflow.com/a/4351664/2418854 there's a hook at the end aswell. {{{
+if [ ! -z "$ZSH_PROFILING" ]; then
+	# set the trace prompt to include seconds, nanoseconds, script name and line number
+	# This is GNU date syntax; by default Macs ship with the BSD date program, which isn't compatible
+	PS4='+$(date "+%s:%N") %N:%i> '
+	# save file stderr to file descriptor 3 and redirect stderr (including trace 
+	# output) to a file with the script's PID as an extension
+	exec 3>&2 2>/tmp/startlog.$$
+	# set options to turn on tracing and expansion of commands contained in the prompt
+	setopt xtrace prompt_subst
+fi
+# }}}
+# ------------------------------------------------------------------------------
 
 # Shell-agnostic configuration:
 . $XDG_CONFIG_HOME/sh/config
 
 # ------------------------------------------------------------------------------
+# Antigen {{{
+# install if not installed
+if ! [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
+    test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
+    curl -L "https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+    || echo "Problem obtaining antigen script"
+fi
+
+if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>&1; then
+    export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
+    export ADOTDIR="${XDG_CACHE_HOME}/zsh/antigen/repos"
+    export _ANTIGEN_CACHE="${XDG_CACHE_HOME}/zsh/antigen/cache"
+    export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
+
+    source ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh
+    antigen init ${XDG_DATA_HOME}/zsh/antigen/antigenrc
+fi
+
+# }}}  -------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # LOOK & FEEL {{{
 
-# Enable syntax highlighting:
-for hlpath in zsh/plugins/zsh-syntax-highlighting zsh-syntax-highlighting; do
-	if [ -e "/usr/share/$hlpath/zsh-syntax-highlighting.zsh" ]; then
-		. "/usr/share/$hlpath/zsh-syntax-highlighting.zsh"
-		break
-	fi
-done
-
 # Handle IFS correctly:
-setopt SH_WORD_SPLIT
+setopt SH_WORD_SPLIT BEEP NOTIFY
+
+# FIXME: Use build_prompt()....
+# This "marks" the terminal by exporting an non empty variable 
+# so if we nest, we "mark" the nest. Skip alias aliases
+#\alias MARK="MARK="yes" "
+# Check if we're in a nested shell, and add to PS1
+#if [[ "$(ps hp $PPID -o comm)" == "$0" ]]; then
+#    if [[ -z "$MARK" ]]; then
+#        export PS1="-${PS1}"
+#    else
+#        export PS1="|${PS1}"
+#        export MARK=""
+#    fi
+#fi
 
 # }}}
 # ------------------------------------------------------------------------------
@@ -178,11 +224,12 @@ bindkey -M viins '[3~' delete-char
 bindkey -M viins ''    beginning-of-line
 bindkey -M viins ''    end-of-line
 bindkey -M viins ''    kill-line
-bindkey -M viins ''    down-line-or-history
 bindkey -M viins ''    up-line-or-history
-#bindkey -M viins ''    history-incremental-search-backward
+bindkey -M viins ''    down-line-or-history
 bindkey -M viins ''    backward-kill-line
 bindkey -M viins ''    backward-kill-word
+bindkey -M viins ''    vi-forward-word  # accept partial suggestions
+bindkey -M viins ''    push-input       # I forgot to type something before!
 
 # Use vim to edit command lines:
 autoload -U edit-command-line
@@ -223,20 +270,21 @@ test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
 
 # The following lines were added by compinstall
 
+#zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
+#zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' format "[%{$fg_bold[default]%}%d%{$reset_color%}]"
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' ignore-parents parent pwd
 zstyle ':completion:*' preserve-prefix '//[^/]##/'
 zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' squeeze-slashes true
-zstyle :compinstall filename '/home/ayekat/.config/zsh/.zshrc'
+zstyle :compinstall filename "${XDG_CONFIG_HOME}/zsh/.zshrc"
 
 autoload -Uz compinit
-compinit -d $XDG_CACHE_HOME/zsh/zcompdump
-# End of lines added by compinstall
+compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 
 # Do not autocomplete when ambiguous (bash-like):
-setopt no_auto_menu
+#setopt no_auto_menu
 
 # Print 'completing ...' when completing:
 expand-or-complete-with-dots () {
@@ -249,6 +297,79 @@ bindkey "^I" expand-or-complete-with-dots
 
 # }}}
 # ------------------------------------------------------------------------------
+# FUNCTIONS {{{
+# "Include" custom shell functions.
+# They need to have a proper function declaration
+#
+# ------------------------------------------------------------------------------
+# function myfunc(){
+#	# cool function code here
+# }
+# ----------------------------- file: $XDG_CONFIG_HOME/zsh/functions/myfunc.func
+#
+# This functions can be located in subdirectories aswell
+# but only the files ending with '.func' will be included. 
+
+if [ -d "$XDG_CONFIG_HOME/zsh/functions" ]; then
+	ADDITIONAL_FUNCTIONS=$(find -L $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.func")
+	
+	for newFunction in ${ADDITIONAL_FUNCTIONS}; do
+		source ${newFunction}
+		if [[ $? != 0 ]]; then
+			print "Error processing additional function ${newFunction}" 1>&2
+		fi
+	done
+	unset ADDITIONAL_FUNCTIONS
+fi
+
+# }}}
+# ------------------------------------------------------------------------------
+# ALIASES {{{
+# "Include" custom shell alias groups.
+# They should contain legal alias declarations
+#
+# ------------------------------------------------------------------------------
+# alias ll='ls -alFh'
+# alias la='ls -A'
+# alias l='ls -CF'
+# -------------------------- file: $XDG_CONFIG_HOME/zsh/aliases/default.aliasgrp
+#
+# This alias group files can be located in subdirectories aswell
+# but only the files ending with '.aliasgrp' will be included. 
+
+# Safer alias function
+safeAlias(){
+	local aliasTarget="$(eval print ${1#*=})"
+	local aliasTargetBinary="${aliasTarget%% *}"
+	[ -z "$aliasTargetBinary" ] && print "wtf? Tryed to bind empty alias: $1" && return
+	if [ -z "$(whence "$aliasTargetBinary")" ]; then
+		print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
+		return
+	fi
+	# It's fine, invoke real alias function
+	\alias "$1"
+}
+# Override alias to have a safer alias
+alias alias='safeAlias'
+
+if [ -d "$XDG_CONFIG_HOME/zsh/aliases" ]; then
+	ALIAS_GRPS=$(find -L $XDG_CONFIG_HOME/zsh/aliases -type f -iname "*.aliasgrp")
+
+	for ALIAS_GRP in ${ALIAS_GRPS}; do
+		LOG_FILENAME="$(mktemp)"
+		. ${ALIAS_GRP} > $LOG_FILENAME
+		if [ -n "$(cat $LOG_FILENAME)" ]; then
+			print "Error processing additional alias group ${ALIAS_GRP}:" 1>&2
+			cat $LOG_FILENAME
+		fi
+		[ -f "$LOG_FILENAME" ] && rm $LOG_FILENAME
+	done
+	unset ALIAS_GRPS
+else
+	echo "Warning, I was not able to find $XDG_CONFIG_HOME/zsh/aliases"
+fi
+# }}}  -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # HISTORY {{{
 
 # Make sure the zsh log directory exists:
@@ -257,10 +378,11 @@ test -d "$XDG_DATA_HOME/zsh" || mkdir -p "$XDG_DATA_HOME/zsh"
 setopt inc_append_history       # immediately append history to history file
 setopt hist_ignore_dups         # ignore duplicate commands
 setopt hist_ignore_space        # ignore commands with leading space
+setopt extended_history
 
 export HISTFILE="$XDG_DATA_HOME/zsh/zhistory"
 export HISTSIZE=100000          # maximum history size in terminal's memory
-export SAVEHIST=100000          # maximum size of history file
+export SAVEHIST=1000000         # maximum size of history file
 
 # prevent commands from entering the history
 zshaddhistory() {
@@ -272,3 +394,18 @@ zshaddhistory() {
 
 # }}}
 # ------------------------------------------------------------------------------
+
+
+if [ ! -z "$ZSH_PROFILING" ]; then
+	# turn off tracing
+	unsetopt xtrace
+	# restore stderr to the value saved in FD 3
+	exec 2>&3 3>&-
+fi
+
+# Souce local overrides
+[ -f $XDG_DATA_HOME/zsh/.zshrc.local ] \
+	&& source $XDG_DATA_HOME/zsh/.zshrc.local
+
+[ -f ~/.zshrc.local ] \
+	&& source ~/.zshrc.local

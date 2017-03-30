@@ -40,3 +40,6 @@ WINEPREFIX            DEFAULT="${XDG_DATA_HOME}/wine/default"
 XAUTHORITY            DEFAULT="${XDG_RUNTIME_DIR}/Xauthority"
 XINITRC               DEFAULT="${XDG_CONFIG_HOME}/X11/xinitrc"
 ZDOTDIR               DEFAULT="${XDG_CONFIG_HOME}/zsh"
+
+# Other session-wide variables
+SSH_AUTH_SOCK         DEFAULT="${XDG_RUNTIME_DIR}/ssh-agent-@{PAM_USER}-socket"
