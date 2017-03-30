@@ -13,6 +13,7 @@ import qualified XMonad.Actions.GridSelect as GS
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.DynamicLog
 import XMonad.Util.NamedScratchpad
 
 import XMonad.Layout.SubLayouts
@@ -26,11 +27,12 @@ import XMonad.Layout.NoBorders
 longCmds :: String -> String
 longCmds cmd = (M.fromList $ [
       ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
+    , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
     , ("wrapperCmd"   , "urxvt -title Scratchpad-Wrapper -geometry 425x113 -fn \"xft:dejavu sans mono:size=12:antialias=false\" -e tmuxinator start wrapper")
     , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
     , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
     , ("volumeToggle" , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
-    , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
+    , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
     , ("OpenIRC"      , "gajim-remote open_chat $(zenity --list --text='Select channel to join' --column='Channel' --hide-header $(gajim-remote list_contacts | grep biboumi | grep '#' | sed 's/^[^:]*: \\(.*\\)/\\1 /'))")
     ]) M.! cmd
 
@@ -44,6 +46,10 @@ scratchpads =
 --  , NS "stardict" "stardict" (className =? "Stardict") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
+-- | @q =/ x@. if the result of @q@ does not equals @x@, return 'True'.
+(=/) :: Eq a => Query a -> a -> Query Bool
+q =/ x = fmap(/= x) q
+
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
     [ title     =? "launcher" --> doCenterFloat
@@ -54,8 +60,9 @@ myManageHook = composeAll
     , className =? "eog"      --> doCenterFloat
     , className =? "Gajim"   <&&> role =? "roster"    --> doFloatAt (3000/3480) (104/2160)
     , className =? "Gajim"   <&&> role =? "messages"  --> doFloatAt (2000/3480) (550/2160)
-    , className =? "Firefox" <&&> role =? "page-info" --> doCenterFloat
-    , className =? "Firefox" <&&> role =? "Cookies"   --> doCenterFloat
+    , className =? "Gajim"    --> doCenterFloat
+    , className =? "Firefox" <&&> role =/ "browser"   --> doCenterFloat
+    , title     =? ".*float.*"--> doCenterFloat
     , isFullscreen            --> doFullFloat -- Maybe whitelist fullscreen-allowed applications?
     , namedScratchpadManageHook scratchpads
     , manageDocks
@@ -84,16 +91,17 @@ myGsConfig = GS.defaultGSConfig {
 
 -- Subtabbing Layouts
 myLayout = avoidStruts $ lessBorders OnlyFloat
-                       $ windowNavigation $ boringWindows
-                       $ subLayout [0,1,2] (layoutHook defaultConfig)
+--                       $ windowNavigation $ boringWindows
+-- Boring windows fait n'importe quoi avec le floating...
+--                       $ subLayout [0,1,2] (layoutHook defaultConfig)
                        $ layoutHook defaultConfig
 
 -- no boring windows
---doFocusUp   = windows W.focusUp
---doFocusDown = windows W.focusDown
+doFocusUp   = windows W.focusUp
+doFocusDown = windows W.focusDown
 -- boring windows
-doFocusUp   = focusUp
-doFocusDown = focusDown
+--doFocusUp   = focusUp
+--doFocusDown = focusDown
 
 main = do
     xmonad $ defaultConfig
@@ -109,6 +117,7 @@ main = do
         , layoutHook         = myLayout
         } `additionalKeysP` [
           ("M-C-<Return>"    , action "launcher")
+        , ("M-C-S-<Return>"  , action "ulauncher")
         , ("M-<Return>"      , spawn "urxvt -e tmux")
         , ("M-S-a"           , spawn "xtrlock")                       -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
@@ -121,6 +130,7 @@ main = do
         , ("M-k"             , doFocusUp)                             -- %! Move focus to the previous window
         , ("M-j"             , doFocusDown)                           -- %! Move focus to the next window
         , ("M-a"             , windows W.focusMaster)                 -- %! Move focus to the master window
+        , ("M-b"             , sendMessage ToggleStruts)              -- %! Shrink the master area
 
         , ("M-C-h"           , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
         , ("M-C-j"           , sendMessage $ pullGroup D)             -- %! Move window to the down subgroup
@@ -136,19 +146,19 @@ main = do
         , ("M-S-j"           , windows W.swapDown  )                  -- %! Swap the focused window with the next window
         , ("M-S-k"           , windows W.swapUp    )                  -- %! Swap the focused window with the previous window
 
-        , ("M-h"             , toSubl Shrink)                         -- %! Shrink the master area
-        , ("M-l"             , toSubl Expand)                         -- %! Expand the master area
-        , ("M-,"             , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
-        , ("M-."             , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
-        , ("M-<Space>"       , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
+        , ("M-S-h"           , toSubl Shrink)                         -- %! Shrink the master area
+        , ("M-S-l"           , toSubl Expand)                         -- %! Expand the master area
+        , ("M-S-,"           , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
+        , ("M-S-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
+        , ("M-S-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
 
         -- FIXME!
         -- Workaround: toSubl won't call sendMessage if window is not in a sublayout.
-        , ("M-S-h"           , sendMessage Shrink)                    -- %! Shrink the master area
-        , ("M-S-l"           , sendMessage Expand)                    -- %! Expand the master area
-        , ("M-S-,"           , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
-        , ("M-S-."           , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
-        , ("M-S-<Space>"     , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
+        , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
+        , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
+        , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
+        , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
+        , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
 
         , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
         , ("M-q"             , action "reloadXMonad")                 -- %! Reload xmonad
@@ -166,6 +176,7 @@ main = do
         , ("S-<XF86AudioMute>"         , action "volumeToggle")
 
         , ("<XF86AudioMicMute>"        , spawn "mpc toggle")
+        , ("<XF86AudioMute>"           , spawn "mpc toggle")
         , ("S-<XF86AudioPlay>"         , spawn "mpc toggle")
         , ("M1-<XF86AudioRaiseVolume>" , spawn "mpc next")
         , ("M1-<XF86AudioLowerVolume>" , spawn "mpc prev")
