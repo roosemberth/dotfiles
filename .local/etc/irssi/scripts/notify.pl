@@ -25,7 +25,7 @@ sub notify {
     my ($dest, $text, $stripped) = @_;
     my $server = $dest->{server};
 
-	#open(my $fh, '>', '/home/ayekat/irssi_debug');
+	#open(my $fh, '>', '/home/roosemberth/irssi_debug');
 	#print $fh Dumper($dest);
 	#print $fh Dumper($stripped);
 	#print $fh "---------------------------------------------------------\n";

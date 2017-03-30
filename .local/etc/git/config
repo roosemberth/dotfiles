@@ -1,16 +1,14 @@
 [user]
-	name = ayekat
-	email = takeya@bluewin.ch
+	name = Roosembert Palacios
+	email = roosembert.palacios@epfl.ch
 [color]
 	status = auto
 	diff = auto
 	branch = auto
 [core]
 	editor = vim
-	excludesfile = ~/.config/git/ignore
+	excludesfile = ${XDG_CONFIG_DIR}/git/ignore
 [push]
 	default = simple
-[pull]
-	ff = only
 [merge]
 	tool = vimdiff

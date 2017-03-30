@@ -2,9 +2,7 @@
 
 servers = (
   {
-    address = "znc.ayekat.ch";
-    port = "9876";
-    password = "ayekat:ZNC_PASSWORD";
+    address = "chat.freenode.net";
     use_ssl = "yes";
     ssl_verify = "no";
     autoconnect = "yes";
@@ -14,23 +12,10 @@ servers = (
 ignores = (
   {
     channels = (
-      "#archlinux",
-      "#archlinux-arm",
-      "#claws",
-      "#debian",
-      "#gitlab",
       "#gnugeneration",
-      "#netfilter",
-      "#python",
-      "#qemu",
-      "#qutebrowser",
-      "#raspbian",
+      "#debian",
+      "#swisslinux",
       "#systemd",
-      "#ubuntu",
-      "##windows",
-      "#xorg",
-      "#zenoss",
-      "#zsh"
     );
     level = "JOINS PARTS QUITS";
   },

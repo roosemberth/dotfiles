@@ -37,10 +37,7 @@ fi
 
 # INPUT/OUTPUT -----------------------------------------------------------------
 
-setxkbmap ayekat
-ayemouse
-cmds_exist dispwin && lcdadjust
-
+setxkbmap -layout Systech13
 
 # SERVICES ---------------------------------------------------------------------
 
