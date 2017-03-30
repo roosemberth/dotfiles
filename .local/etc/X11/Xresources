@@ -8,13 +8,13 @@
 ! Colour palette:
 #define black        #222222
 #define red          #DD5544
-#define green        #00AA00
+#define green        #00A800
 #define yellow       #BDBD00
-#define blue         #2288CC
+#define blue         #2254CC
 #define magenta      #CC00CC
 #define cyan         #00C0C0
-#define white        #EEEEEE
-#define lightblack   #555555
+#define white        #CCCCCC
+#define lightblack   #545454
 #define lightred     #FF5555
 #define lightgreen   #55FF55
 #define lightyellow  #FFFF55
@@ -63,8 +63,13 @@ xterm.*.background     : termbg
 ! URXVT {{{
 
 ! Look:
-URxvt.font           : -misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1,-gnu-unifont-medium-r-normal--16-160-75-75-c-80-iso10646-1,xft:NotoMono
-URxvt.depth          : 24
+! URxvt.font           : -misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1,-gnu-unifont-medium-r-normal--16-160-75-75-c-80-iso10646-1,xft:NotoMono
+! URxvt.font           : xft:monaco:size=10:antialias=true
+! URxvt.font           : xft:dejavu sans mono:size=12:antialias=false
+! URxvt.font           : xft:terminus:normal:size=14:antialias=false
+URxvt.letterSpace    : -1
+URxvt.font           : xft:dejavu sans mono:size=18:antialias=false
+URxvt.depth          : 32
 URxvt.foreground     : termfg
 URxvt.background     : termbg
 URxvt.cursorBlink    : true
@@ -73,7 +78,7 @@ URxvt.internalBorder : 1
 URxvt.colorBD        : lightwhite
 
 ! Scrollback buffer:
-URxvt.saveLines      : 10000
+! URxvt.saveLines      : 10000
 
 ! Scroll behaviour:
 URxvt.scrollTtyOutput: false
@@ -82,6 +87,7 @@ URxvt.scrollWithBuffer: true
 URxvt.secondaryScroll: true
 
 ! Disable ISO-14755 mode for Ctrl+Shift:
+! FIXME: Can we set other keys instead?
 URxvt.iso14755       : false
 URxvt.iso14755_52    : false
 
@@ -89,21 +95,24 @@ URxvt.iso14755_52    : false
 URxvt.urgentOnBell   : true
 
 ! Settings for perl extensions:
-URxvt.perl-lib       : /home/ayekat/.local/lib/urxvt/perl/
-URxvt.perl-ext       : insamedir,clipboard
-URxvt.perl-ext-common: default,url-select,keyboard-select
+URxvt.perl-lib       : /home/roosemberth/.local/lib/urxvt/perl/
+URxvt.perl-ext       : clipboard
+URxvt.perl-ext-common: default,resize-font,url-select,keyboard-select
 
-! Open new window in same PWD:
-  URxvt.keysym.C-S-N : perl:insamedir:open
 ! Open URLs with keyboard (requires urxvt-perls package):
-  URxvt.url-select.launcher: /usr/bin/xdg-open
-  URxvt.url-select.underline: true
-  URxvt.keysym.C-S-K : perl:url-select:select_next
+  URxvt.url-select.launcher  : /usr/bin/xdg-open
+  URxvt.url-select.underline : true
+  URxvt.keysym.Control-Shift-K : perl:url-select:select_next
 ! Search buffer:
-  URxvt.keysym.C-S-F : perl:keyboard-select:search
+  URxvt.keysym.Control-Shift-7 : perl:keyboard-select:search
 ! Copy+paste:
   URxvt.keysym.Shift-Control-V : perl:clipboard:paste
   URxvt.keysym.Shift-Control-C : perl:clipboard:copy
+! Font size handling
+  URxvt.resize-font.smaller : C-S-Down
+  URxvt.resize-font.bigger  : C-S-Up
+  URxvt.resize-font.reset   : C-S-Left
+  URxvt.resize-font.show    : C-S-Right
 
 !URxvt.keysym.Escape  : \033\000
 

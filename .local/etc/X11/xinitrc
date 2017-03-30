@@ -47,9 +47,6 @@ cmds_exist dispwin && lcdadjust
 # Load X resources:
 cmds_exist xrdb && xrdb "$XDG_CONFIG_HOME/X11/Xresources"
 
-# Start a scratchpad:
-cmds_exist urxvt && urxvt -e tmx SCRATCHPAD &
-
 # Set the wallpaper:
 cmds_exist nitrogen && nitrogen --restore
 
@@ -67,15 +64,18 @@ export FREETYPE_PROPERTIES='truetype:interpreter-version=35'
 
 # WM ---------------------------------------------------------------------------
 
-# If no WM is specified, default to karuiwm:
-[ -z "$wm" ] && wm=karuiwm
+# If no WM is specified, default to xmonad:
+[ -z "$wm" ] && wm=xmonad
 
 # Some Java applications refuse to work correctly when they don't know the WM
 # (happens often with tiling WMs); set the WM name to a value known to Java to
 # fix that:
 if cmds_exist wmname; then
 	case "$wm" in
-		xmonad|dwm|karuiwm) wmname LG3D ;;
+		fvwm|xmonad|i3|dwm|karuiwm)
+			wmname LG3D
+			# export _JAVA_AWT_WM_NONREPARENTING=1
+			;;
 	esac
 fi
 
@@ -85,25 +85,22 @@ session_logfile="${session_logdir}/$(date +%s).log"
 mkdir -p "$session_logdir"
 ln -sf "$session_logfile" "$session_logdir/latest"
 while true; do
-	if cmds_exist karuibar; then
-		karuibar &
-		karuibar_pid=$!
-	fi
-
-	if cmds_exist xss-lock scrlock; then
-		xset s 300
-		xss-lock scrlock &
+	if cmds_exist xss-lock xtrlock; then
+		xset s 60
+		xss-lock xtrlock &
 		xss_lock_pid=$!
 	fi
 
 	"$wm"
 
 	cmds_exist xss-lock && kill $xss_lock_pid
-	cmds_exist karuibar && kill $karuibar_pid
 
 	if cmds_exist zenity; then
-		zenity --question --text="$wm has stopped. Do you want to start again?"
+		zenity --question --text="$wm exited, do you want to close the X session?"
 		test $? -eq 0 || break
+		new_wm="$(zenity --entry --text="Window manager to start:" --entry-text="$wm")"
+		[ -z "$new_wm" ] && break
+		wm="$new_wm"
 	else
 		break
 	fi
