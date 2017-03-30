@@ -1,8 +1,12 @@
 dotfiles
 ========
 
-This is my collection of user/application settings ("dotfiles") and personal
-scripts. They are mostly adapted to my personal needs, and some scripts may make
+This is my collection of user/application settings ("dotfiles") and utilitary
+scripts. It is the product of my old dotfiles repository and [ayekat's dotfiles
+repository](https://github.com/ayekat/dotfiles). Most of the files here come
+from that repository, somewhere on the internet or my own old dolfiles.
+
+These scripts are mostly adapted to my personal needs, and some scripts may make
 [unfortunate assumptions about the environment](#assumptions) (most likely not
 considered "standard"). Nevertheless, I try to keep them as clean and non-WTF as
 possible, and people are invited to take a look at them, get ideas for their own
@@ -104,3 +108,28 @@ Policies
   `profile.d` directory for application-specific profile snippets, while only
   shell-specific configuration (prompts, input, history, etc.) should happen in
   zsh's config.
+
+
+Deployment
+--------
+
+This is mostly a reference and SHOULD NOT be just copied and pasted into a shell.
+```
+~ cd
+~ git clone https://github.com/roosemberth/dotfiles
+~ [ -e .local ] && mv .local local.old
+~ ln -s dotfiles/.pam_environment .pam_environment
+~ ln -s dotfiles/.local .local
+~ ln -sf .local/etc/xmonad .xmonad
+~ ln -sf .local/etc/tmux/def.tmux.conf .tmux.conf
+~ ln -sf .local/etc/tmuxinator .tmuxinator
+~ cd .local
+~ mkdir run tmp var
+```
+On debian, don't forget to add this line on `/etc/pam.d/login`
+```
+session       required   pam_env.so user_readenv=1
+```
+As much as we avoid hardcoding personal information, there are always some bits
+of us written in stone, `grep -Rs "roosemberth" --exclude-dir=var` may help
+finding things you might need to replace for this to work properly.
