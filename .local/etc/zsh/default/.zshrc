@@ -7,6 +7,7 @@
 
 # ------------------------------------------------------------------------------
 # Profiling: http://stackoverflow.com/a/4351664/2418854 there's a hook at the end aswell. {{{
+echo $PATH
 if [ ! -z "$ZSH_PROFILING" ]; then
 	# set the trace prompt to include seconds, nanoseconds, script name and line number
 	# This is GNU date syntax; by default Macs ship with the BSD date program, which isn't compatible
@@ -28,7 +29,7 @@ fi
 # install if not installed
 if ! [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
     test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
-    curl -L "https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
     || echo "Problem obtaining antigen script"
 fi
 
@@ -39,7 +40,7 @@ if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>
     export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
 
     source ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh
-    antigen init ${XDG_DATA_HOME}/zsh/antigen/antigenrc
+    antigen init ${XDG_CONFIG_HOME}/zsh/antigen/antigenrc
 fi
 
 # }}}  -------------------------------------------------------------------------
