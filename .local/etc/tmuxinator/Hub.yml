@@ -33,7 +33,7 @@ windows:
       panes:
         - mixer
         - bluetoothctl
-        - mpd && ncmpcpp
+        - ncmpc
         - 
         - 
         - 
