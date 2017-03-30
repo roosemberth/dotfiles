@@ -1,0 +1,9 @@
+#!/bin/sh
+
+USERNAME="rpalacio"
+FILES_SERVER="8"
+USER_UID="$(id -u)"
+GROUP_UID="$(id -g)"
+
+sudo mkdir -p "/mnt/remote/smbShares/epfl-files${FILES_SERVER}/"
+sudo mount -t cifs //files${FILES_SERVER}.epfl.ch/data/${USERNAME} /mnt/remote/smbShares/epfl-files${FILES_SERVER}/ -o user=rpalacio@INTRANET,rw,noexec,uid=${USER_UID},gid=${GROUP_UID},noperm,forceuid,forcegid
