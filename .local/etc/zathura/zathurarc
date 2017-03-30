@@ -1,0 +1,40 @@
+# Configuration file for zathura.
+# Written by ayekat on a monday night travel in march 2013.
+
+# ------------------------------------------------------------------------------
+# LOOK
+
+set default-bg "#000000"
+
+# Set font (TODO: Fixed SemiCondensed?):
+set font "monospace normal 8"
+
+# Set statusbar colours:
+set statusbar-fg "#CCCCCC"            # statusbar
+set statusbar-bg "#222222"
+set inputbar-fg "#CCCCCC"             # input line
+set inputbar-bg "#111111"
+set completion-fg "#CCCCCC"           # completion; default
+set completion-bg "#222222"
+set completion-highlight-fg "#AFD700" # ... and highlighted
+set completion-highlight-bg "#333333"
+
+# Recoloured ('inverted') colours:
+set recolor false                     # don't recolour by default
+set recolor-darkcolor "#CCCCCC"       # 'foreground'
+set recolor-lightcolor "#111111"      # 'background'
+
+# ------------------------------------------------------------------------------
+# FEEL
+
+# Maximize PDF to fit width (rather than height):
+set adjust-open "width"
+
+# Center PDF horizontally when zooming:
+set zoom-center true
+
+# Begin with first page on the right in dual view:
+set first-page-column 2
+
+# Make ^n open a new document (like atril/evince):
+map <C-n> feedkeys ":exec zathura $FILE<Return>"

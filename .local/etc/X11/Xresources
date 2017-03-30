@@ -1,0 +1,215 @@
+! X resources file.
+! Written by ayekat a long time ago, updated on a sunny wednesday afternoon in
+! september 2014.
+
+! ------------------------------------------------------------------------------
+! COLOURS {{{
+
+! Colour palette:
+#define black        #222222
+#define red          #DD5544
+#define green        #00AA00
+#define yellow       #BDBD00
+#define blue         #2288CC
+#define magenta      #CC00CC
+#define cyan         #00C0C0
+#define white        #EEEEEE
+#define lightblack   #555555
+#define lightred     #FF5555
+#define lightgreen   #55FF55
+#define lightyellow  #FFFF55
+#define lightblue    #4499CC
+#define lightmagenta #FF55FF
+#define lightcyan    #55FFFF
+#define lightwhite   #FFFFFF
+
+#define termfg       #AAAAAA
+#define termbg       #111111
+
+! Black:
+*color0              : black
+*color8              : lightblack
+! Red:
+*color1              : red
+*color9              : lightred
+! Green:
+*color2              : green
+*color10             : lightgreen
+! Yellow:
+*color3              : yellow
+*color11             : lightyellow
+! Blue:
+*color4              : blue
+*color12             : lightblue
+! Magenta:
+*color5              : magenta
+*color13             : lightmagenta
+! Cyan:
+*color6              : cyan
+*color14             : lightcyan
+! White:
+*color7              : white
+*color15             : lightwhite
+
+! }}}
+! ------------------------------------------------------------------------------
+! XTERM {{{
+
+xterm.*.foreground     : termfg
+xterm.*.background     : termbg
+
+! }}}
+! ------------------------------------------------------------------------------
+! URXVT {{{
+
+! Look:
+URxvt.font           : -misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1,-gnu-unifont-medium-r-normal--16-160-75-75-c-80-iso10646-1,xft:NotoMono
+URxvt.depth          : 24
+URxvt.foreground     : termfg
+URxvt.background     : termbg
+URxvt.cursorBlink    : true
+URxvt.scrollBar      : false
+URxvt.internalBorder : 1
+URxvt.colorBD        : lightwhite
+
+! Scrollback buffer:
+URxvt.saveLines      : 10000
+
+! Scroll behaviour:
+URxvt.scrollTtyOutput: false
+URxvt.scrollTtyKeypress: true
+URxvt.scrollWithBuffer: true
+URxvt.secondaryScroll: true
+
+! Disable ISO-14755 mode for Ctrl+Shift:
+URxvt.iso14755       : false
+URxvt.iso14755_52    : false
+
+! Set urgent hint whenever encountering the bell character:
+URxvt.urgentOnBell   : true
+
+! Settings for perl extensions:
+URxvt.perl-lib       : /home/ayekat/.local/lib/urxvt/perl/
+URxvt.perl-ext       : insamedir,clipboard
+URxvt.perl-ext-common: default,url-select,keyboard-select
+
+! Open new window in same PWD:
+  URxvt.keysym.C-S-N : perl:insamedir:open
+! Open URLs with keyboard (requires urxvt-perls package):
+  URxvt.url-select.launcher: /usr/bin/xdg-open
+  URxvt.url-select.underline: true
+  URxvt.keysym.C-S-K : perl:url-select:select_next
+! Search buffer:
+  URxvt.keysym.C-S-F : perl:keyboard-select:search
+! Copy+paste:
+  URxvt.keysym.Shift-Control-V : perl:clipboard:paste
+  URxvt.keysym.Shift-Control-C : perl:clipboard:copy
+
+!URxvt.keysym.Escape  : \033\000
+
+! }}}
+! ------------------------------------------------------------------------------
+! DZEN {{{
+
+dzen2.font           : Fixed-10:Medium:SemiCondensed
+dzen2.background     : black
+dzen2.foreground     : #888888
+
+! }}}
+! ------------------------------------------------------------------------------
+! KARUIBAR {{{
+
+#ifdef SRVR_ixh
+# if DISPLAY_NUM == 0
+karuibar.xgap    : 100
+karuibar.modules : mpd, network, memory, cpu, \
+                   battery, battery_slice, backlight, alsa_out, alsa_in, \
+                   time_date, time_time, capslock
+# else
+karuibar.modules : stdin; cpu, time_date, time_time, capslock
+# endif
+#else
+# ifdef SRVR_phobia
+karuibar.xgap    : 100
+karuibar.modules : network, memory, cpu, alsa_out, time_date, time_time, capslock
+# endif
+#endif
+
+karuibar.foreground  : termfg
+karuibar.background  : black
+karuibar.wsep        : 1
+karuibar.wpad        : 7
+karuibar.bottom      : false
+
+karuibar.stdin.foreground     : #00D7FF
+karuibar.stdin.background     : #005F5F
+
+karuibar.mpd_gnu.host         : mpd.gnugen.ch
+
+karuibar.battery.acpi_use_real: true
+karuibar.battery_slice.id     : BAT1
+karuibar.battery_slice.acpi_use_real: true
+
+!karuibar.backlight.device     : intel_backlight
+karuibar.backlight.device     : acpi_video0
+
+
+karuibar.alsa_in.channel      : Capture
+karuibar.alsa_in.persistent   : false
+karuibar.alsa_in.capture      : true
+
+karuibar.time_date.format     : %Y-%m-%d
+karuibar.time_date.foreground : white
+karuibar.time_date.background : lightblack
+karuibar.time_time.format     : %H:%M
+karuibar.time_time.foreground : lightblack
+karuibar.time_time.background : white
+
+! }}}
+! ------------------------------------------------------------------------------
+! KARUIWM {{{
+
+!karuiwm.client.border.width       : 2
+!karuiwm.client.border.colour      : #FF0000
+!karuiwm.client.focus.border.colour: #00FF00
+karuiwm.monitor.gap.top    : 15
+
+karuiwm.modules            : base, karuibar
+
+karuiwm.layouts            : rstack, monocle
+
+karuiwm.modifier           : A
+
+karuiwm.keysym.M-k         : stepclient:prev
+karuiwm.keysym.M-j         : stepclient:next
+karuiwm.keysym.M-S-k       : shiftclient:prev
+karuiwm.keysym.M-S-j       : shiftclient:next
+karuiwm.keysym.M-Return    : zoom
+karuiwm.keysym.M-S-c       : killclient
+karuiwm.keysym.M-t         : togglefloat
+
+karuiwm.keysym.M-C-h       : stepdesktop:left
+karuiwm.keysym.M-C-j       : stepdesktop:down
+karuiwm.keysym.M-C-k       : stepdesktop:up
+karuiwm.keysym.M-C-l       : stepdesktop:right
+karuiwm.keysym.M-l         : setmfact:+0.05
+karuiwm.keysym.M-h         : setmfact:-0.05
+karuiwm.keysym.M-comma     : setnmaster:+1
+karuiwm.keysym.M-period    : setnmaster:-1
+karuiwm.keysym.M-space     : steplayout:next
+karuiwm.keysym.M-S-space   : steplayout:prev
+karuiwm.keysym.M-r         : setlayout:rstack
+karuiwm.keysym.M-m         : setlayout:monocle
+
+karuiwm.keysym.M-S-b       : karuibar.restart
+
+karuiwm.keysym.M-q         : restart
+karuiwm.keysym.M-S-q       : stop
+
+karuiwm.keysym.M-n         : exec:urxvt
+karuiwm.keysym.M-p         : exec:dmenu_run
+
+karuiwm.button.M-1         : mousemove
+karuiwm.button.M-3         : mouseresize
+
+! }}}

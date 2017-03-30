@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+mutt_account="${1:-ayekat}"
+mutt_config="$XDG_CONFIG_HOME/mutt/${mutt_account}.muttrc"
+
+if [ ! -e "$mutt_config" ]; then
+	echo "$mutt_config: file not found" >&2
+	exit 1
+fi
+
+. "$(dirname "$0")"/path.sh
+exec "$EPATH" -F "$mutt_config"

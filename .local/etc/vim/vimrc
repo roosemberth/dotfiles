@@ -1,0 +1,722 @@
+" Vim configuration file
+" Initially written by ayekat in a snowy day in january 2010
+
+set nocompatible
+set nomodeline
+
+" ------------------------------------------------------------------------------
+" PATHS {{{
+" We like to respect the XDG base directory specifications
+
+" Scripts' location:
+set runtimepath=$XDG_DATA_HOME/vim,$XDG_DATA_HOME/vim/after,$VIM,$VIMRUNTIME
+
+" Backup files:
+set backupdir=$XDG_RUNTIME_DIR/vim/backup
+
+" Swap files:
+set directory=$XDG_DATA_HOME/vim/swap
+
+" Command and undo history:
+set viminfo+=n$XDG_DATA_HOME/vim/viminfo
+set undofile
+au BufWritePre /tmp/*,/dev/shm/*,/run/shm/* setl noundofile
+set undodir=$XDG_DATA_HOME/vim/undo
+
+" netrw plugin history:
+let g:netrw_home=$XDG_DATA_HOME.'/vim'
+
+" Make sure the damn paths exists:
+function! MakeSureTheDamnPathExists(path)
+	if !isdirectory(a:path)
+		call mkdir(a:path, 'p', 0700)
+	endif
+endfunction
+call MakeSureTheDamnPathExists($XDG_RUNTIME_DIR.'/vim')
+call MakeSureTheDamnPathExists($XDG_DATA_HOME.'/vim')
+call MakeSureTheDamnPathExists(&directory)
+call MakeSureTheDamnPathExists(&undodir)
+call MakeSureTheDamnPathExists(&backupdir)
+
+" }}}
+" ------------------------------------------------------------------------------
+" BUNDLES {{{
+
+let g:bundledir=$XDG_DATA_HOME.'/vim/neobundle'
+let g:bundleinit=0
+"
+" Initialise and bootstrap NeoBundle (here goes my thanks to flor):
+if has('vim_starting')
+	if !isdirectory(g:bundledir)
+		let g:bundleinit=1
+		call mkdir(g:bundledir, 'p', 0700)
+		!git clone 'https://github.com/Shougo/neobundle.vim' $XDG_DATA_HOME/vim/neobundle/neobundle.vim
+	endif
+	set runtimepath+=$XDG_DATA_HOME/vim/neobundle/neobundle.vim
+endif
+
+" List of bundles I use (including NeoBundle itself): "
+call neobundle#begin(expand('$XDG_DATA_HOME/vim/neobundle/'))
+NeoBundleFetch 'Shougo/neobundle.vim'
+NeoBundle 'Shougo/vinarise.vim'
+NeoBundle 'ayekat/dwm.vim'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 'vim-scripts/glsl.vim'
+NeoBundle 'Matt-Stevens/vim-systemd-syntax'
+NeoBundle 'vim-scripts/bbcode'
+NeoBundle 'rust-lang/rust.vim'
+NeoBundle 'rosstimson/scala-vim-support'
+NeoBundle 'EdJoJob/llvmir-vim'
+NeoBundle 'ap/vim-css-color'
+NeoBundle 'honza/dockerfile.vim'
+NeoBundle 'nfnty/vim-nftables'
+NeoBundle 'sjl/gundo.vim'
+
+" Initial run requires NeoBundleInstall, as a simple 'Check' won't suffice:
+if g:bundleinit
+	NeoBundleInstall
+else
+	NeoBundleCheck
+endif
+call neobundle#end()
+
+" Disable scala and java syntax checkers, as they are slow as hell:
+let g:syntastic_java_checkers = []
+let g:syntastic_scala_checkers = []
+" C++ projects are usually monsters and require a proper path setup
+let g:syntastic_cpp_checkers = []
+" We want to write python3:
+let g:syntastic_python_python_exec = 'python3'
+
+" Fix include directories:
+let g:syntastic_c_include_dirs = [$HOME.'/.local/include']
+set path +=$HOME/.local/include
+
+" Disable LaTeX style warnings:
+"let g:syntastic_tex_chktex_args = '-m'
+
+" Change Sytastic symbols:
+let g:syntastic_warning_symbol = '!!'
+let g:syntastic_error_symbol = 'XX'
+
+" Don't use default keybindings of DWM plugin; don't auto-arrange at :split:
+let g:dwm_map_keys = 0
+let g:dwm_auto_center = 0
+
+" }}}
+" ------------------------------------------------------------------------------
+" LOOK {{{
+
+" Display and format line numbers:
+set number
+set numberwidth=5
+
+" Enable UTF-8 (I wanna see Umlauts!):
+set encoding=utf8
+
+" Display a bar after a reasonable number of columns:
+set colorcolumn=81
+au FileType mail,gitcommit setl colorcolumn=73
+au FileType java,cs setl colorcolumn=121
+au FileType asm setl colorcolumn=41,81
+
+" I wanna see tabs and trailing whitespaces:
+set list
+set listchars=tab:→\ ,eol:\ ,trail:·
+
+" Window separator:
+if $TERM == 'linux'
+	set fillchars=vert:.
+else
+	set fillchars=vert:│
+endif
+
+" Fold fill characters:
+set fillchars+="fold: "
+
+" Autofold (except in git commit message):
+set foldmethod=marker
+au FileType gitcommit setl foldmethod=manual
+
+" }}}
+" ------------------------------------------------------------------------------
+" SYNTAX {{{
+
+" Without any syntax highlighting, programming is a pain:
+syntax on
+
+" Fix unrecognised file types:
+au BufRead,BufNewFile *.md setl filetype=markdown
+au BufRead,BufNewFile *.tex setl filetype=tex
+au BufRead,BufNewFile *.xbm setl filetype=c
+au BufRead,BufNewFile *.frag,*.vert,*.geom,*.glsl setl filetype=glsl
+au BufRead,BufNewFile dunstrc,redshift.conf setl filetype=cfg
+au BufRead,BufNewFile *.target setl filetype=systemd
+au BufRead,BufNewFile *.muttrc setl filetype=muttrc
+au BufRead,BufNewFile *.tool setl filetype=scala
+au BufRead,BufNewFile *.zone setl filetype=dns
+au BufRead,BufNewFile *.smt setl filetype=lisp
+au BufRead,BufNewFile *.install setl filetype=sh
+au BufRead,BufNewFile *.l3 setl filetype=lisp
+au BufRead,BufNewFile $XDG_LIB_HOME/dotfiles/.local/etc/sh/* setl filetype=sh
+au BufRead,BufNewFile $XDG_LIB_HOME/dotfiles/.local/etc/git/config setl filetype=gitconfig
+
+" Assembly:
+let asmsyntax='nasm'
+
+" C:
+let c_no_curly_error=1 " Allow {} inside [] and () (non-ANSI)
+let c_space_errors=1   " Highlight trailing spaces and spaces before tabs
+let c_syntax_for_h=1   " Treat .h as C header files (instead of C++)
+
+" Make:
+let make_no_commands=1 " Don't highlight commands
+
+" PHP:
+"let php_sql_query=1    " Highlight SQL syntax inside strings
+"let php_htmlInStrings=1         " HTML syntax inside strings
+
+" Shell:
+let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
+
+" }}}
+" ------------------------------------------------------------------------------
+" COLOUR SCHEME {{{
+
+" Prevent vim default colour scheme from overriding this (since 7.4.764):
+color default
+
+" Make visual less penetrant:
+hi Visual cterm=inverse ctermbg=0
+
+" Non-printable characters (tabs, spaces, special keys):
+hi SpecialKey cterm=bold ctermfg=238
+
+" Matching parentheses:
+hi MatchParen cterm=bold ctermfg=4 ctermbg=none
+
+if $TERM != "linux"
+	" Custom colour scheme for X vim {{{
+	" Dropdown menu:
+	hi Pmenu      ctermfg=244 ctermbg=234
+	hi PmenuSel   ctermfg=45  ctermbg=23
+	hi PmenuSbar              ctermbg=234
+	hi PmenuThumb             ctermbg=31
+
+	" Folding:
+	hi Folded     ctermfg=248 ctermbg=236 cterm=none
+
+	" Separate normal text from non-file-text:
+	"hi NonText    ctermfg=0   ctermbg=232 cterm=bold
+
+	" Window separator (XXX inverted for some reason):
+	hi VertSplit  ctermfg=232 ctermbg=236
+
+	" Line numbers and syntastic column:
+	hi SignColumn             ctermbg=none
+	hi LineNr                 ctermbg=0
+
+	" 80 columns indicator:
+	hi ColorColumn ctermbg=235
+
+	" Search:
+	hi Search             ctermfg=0  ctermbg=136
+
+	" Diffs:
+	hi DiffAdd            ctermfg=118 ctermbg=22
+	hi DiffChange                     ctermbg=237
+	hi DiffDelete         ctermfg=52  ctermbg=none
+	hi DiffText           ctermfg=123 ctermbg=24   cterm=none
+
+	" Gitdiffs:
+	hi diffAdded          ctermfg=2
+	hi diffRemoved        ctermfg=1
+
+	" Syntax:
+	hi Comment            ctermfg=243
+	au FileType mail hi Comment ctermfg=34
+	hi Constant           ctermfg=34
+		" any constant | string | 'c' '\n' | 234 0xff | TRUE false | 2.3e10
+		"hi String         ctermfg=
+		"hi Character      ctermfg=
+		"hi Number         ctermfg=
+		"hi Boolean        ctermfg=
+		"hi Float          ctermfg=
+
+	hi Identifier         ctermfg=169
+		" any variable name | function name (also: methods for classes)
+		"hi Function       ctermfg=
+
+	hi Statement          ctermfg=172
+		" any statement | if then else endif switch | for do while |
+		" case default | sizeof + * | any other keyword | exception
+		"hi Conditional    ctermfg=
+		"hi Repeat         ctermfg=
+		"hi Label          ctermfg=
+		"hi Operator       ctermfg=
+		"hi Keyword        ctermfg=
+		"hi Exception      ctermfg=
+
+	hi PreProc            ctermfg=169
+		" any preprocessor | #include | #define | macro | #if #else #endif
+		"hi Include        ctermfg=
+		"hi Define         ctermfg=
+		"hi Macro          ctermfg=
+		"hi PreCondit      ctermfg=
+	au FileType sh hi PreProc ctermfg=38
+
+	hi Type               ctermfg=38
+		" int long char | static register volatile | struct union enum | typedef
+		"hi StorageClass   ctermfg=
+		"hi Structure      ctermfg=
+		"hi Typedef        ctermfg=
+
+	hi Special            ctermfg=136
+		"hi SpecialChar    ctermfg=
+		"hi Tag            ctermfg=
+		"hi Delimiter      ctermfg=
+		"hi SpecialComment ctermfg=
+		"hi Debug          ctermfg=
+
+	hi Todo               ctermfg=148 ctermbg=22
+	hi Error              ctermfg=88  ctermbg=9  cterm=bold
+		"hi SyntasticErrorSign
+	" }}}
+else
+	" Custom colour scheme for TTY vim {{{
+	set background=light
+
+	" Window separator:
+	hi VertSplit ctermfg=4 ctermbg=4 cterm=none
+
+	" Folding:
+	hi Folded ctermfg=3 ctermbg=8 cterm=none
+
+	" Line numbers:
+	hi LineNr ctermfg=3 ctermbg=0
+
+	" Search:
+	hi Search             ctermfg=0  ctermbg=3
+
+	" Syntax:
+	hi Statement ctermfg=3
+	hi Todo ctermbg=3
+	" }}}
+endif
+
+
+" }}}
+" ------------------------------------------------------------------------------
+" WHITESPACE {{{
+
+" Fix trailing whitespaces when saving file with `:W`:
+function! StripTrailingWhitespaces()
+	let _s=@/
+	let l=line('.')
+	let c=col('.')
+	%s/\s\+$//eg
+	call cursor(l,c)
+	let @/=_s
+endfunction
+command! W :call StripTrailingWhitespaces() | :write
+
+" Fold C function implemenations:
+function! CFold()
+	let prevline = getline(v:lnum-1)
+	let nextline = getline(v:lnum+1)
+	if match(nextline, '^{') >= 0
+		return 1
+	elseif match(prevline, '^}') >= 0
+		return 0
+	else
+		return "="
+	endif
+endfunction
+"au FileType c setl foldmethod=expr
+"au FileType c setl foldexpr=CFold()
+
+" Auto-indent, and reuse the same combination of spaces/tabs:
+filetype plugin indent on
+set autoindent
+set copyindent
+
+" Indentation (tabs, spaces):
+set noexpandtab tabstop=4 shiftwidth=4
+au FileType c setl tabstop=8 shiftwidth=8
+au BufRead $HOME/epfl/courses/prog/* setl tabstop=4 shiftwidth=4
+au FileType scala,tex,nftables setl expandtab tabstop=2 shiftwidth=2
+au FileType ant,cpp,haskell,java,lisp,named,python,sql,xml setl expandtab
+
+" Visually wrap lines and break words:
+set wrap
+au FileType html,java,markdown,scala setl nowrap
+au BufRead,BufNewFile /etc/fstab setl nowrap
+set linebreak      " wrap at words (does not work with list)
+
+" Physically wrap lines:
+au FileType markdown,tex,rst setl textwidth=80
+au FileType gitcommit,mail setl textwidth=72
+
+" }}}
+" ------------------------------------------------------------------------------
+" KEY BINDINGS, BEHAVIOUR {{{
+
+" Fix Backspace key to work current edit:
+set backspace=indent,eol,start
+
+" Leader key:
+let mapleader='ö'
+
+" Keep 3 lines 'padding' above/below the cursor:
+set scrolloff=3
+
+" Simple cursor moving on visual lines:
+map k gk
+map j gj
+
+" Simple window scrolling:
+map K 2<C-y>
+map J 2<C-e>
+map L 4zl
+map H 4zh
+
+" Easy 'back to beginning of line':
+map ä 0
+
+" Remove delay for leaving insert mode:
+set timeoutlen=1000 ttimeoutlen=0
+
+" Split window handling:
+map <leader>j <C-w>w
+map <leader>k <C-w>W
+map <leader><Space> :call DWM_Focus()<CR>
+
+" Tabbed window handling:
+map <leader>l :tabnext<CR>
+map <leader>h :tabprevious<CR>
+map <leader>t :tabnew
+set tabpagemax=20
+
+" Show command history:
+nnoremap ; q:
+vnoremap ; q:
+
+" Show 10 last commands in the window
+set cmdwinheight=10
+
+" Search for tags file recursively, up to root:
+set tags=./tags;/
+
+" Save a file as root (WARNING: breaks file undo history):
+command! Rw :execute ':silent w !sudo tee % > /dev/null' | :edit!
+
+" Undo-tree:
+map <leader>u :GundoToggle<CR>
+
+" }}}
+" ------------------------------------------------------------------------------
+" COMMAND LINE FEEDBACK {{{
+
+" Display commands when typing:
+set showcmd
+
+" Highlight search results and display them immediately as they are typed:
+set hlsearch
+set incsearch
+
+" Ignore case when searching, except when explicitely using majuscules:
+set ignorecase
+set smartcase
+
+" Word-breaking characters:
+set iskeyword-=[.]
+
+" Highlight matching parentheses:
+set showmatch
+
+" }}}
+" ------------------------------------------------------------------------------
+" STATUSLINE {{{
+" Written by ayekat on a cold day in december 2012, updated in december 2013
+
+" Always display the statusline:
+set laststatus=2
+
+" Don't display the mode in the ruler; we display it in the statusline:
+set noshowmode
+
+" Separators {{{
+if $TERM == "linux"
+	let gitsym=""
+	let sep="|"
+	let lnum="LN"
+else
+	let gitsym="⎇ "
+	let sep="│"
+	let lnum="␤"
+endif " }}}
+
+" Colours {{{
+if $TERM == 'linux'
+	hi StatusLine   ctermfg=0 ctermbg=7 cterm=none
+	hi StatusLineNC ctermfg=7 ctermbg=4 cterm=none
+else
+	" normal statusline:
+	hi N_mode           ctermfg=22  ctermbg=148
+	hi N_git_branch     ctermfg=148 ctermbg=8
+	hi N_git_sep        ctermfg=236 ctermbg=8
+	hi N_file           ctermfg=247 ctermbg=8
+	hi N_file_emphasise ctermfg=7   ctermbg=8
+	hi N_file_modified  ctermfg=3   ctermbg=8
+	hi N_middle         ctermfg=244 ctermbg=236
+	hi N_middle_sep     ctermfg=8   ctermbg=236
+	hi N_warning        ctermfg=1   ctermbg=236
+	hi N_pos            ctermfg=11  ctermbg=8
+	hi N_cursor         ctermfg=0   ctermbg=7
+	hi N_cursor_line    ctermfg=236 ctermbg=7
+	hi N_cursor_col     ctermfg=8   ctermbg=7
+
+	hi V_mode           ctermfg=52  ctermbg=208
+
+	hi I_mode           ctermfg=8   ctermbg=7
+	hi I_git_branch     ctermfg=7   ctermbg=31
+	hi I_git_sep        ctermfg=23  ctermbg=31
+	hi I_file           ctermfg=249 ctermbg=31
+	hi I_file_emphasise ctermfg=7   ctermbg=31
+	hi I_file_modified  ctermfg=3   ctermbg=31
+	hi I_middle         ctermfg=45  ctermbg=23
+	hi I_middle_sep     ctermfg=31  ctermbg=23
+	hi I_warning        ctermfg=1   ctermbg=23
+	hi I_pos            ctermfg=11  ctermbg=31
+
+	" command statusline:
+	hi cmd_mode              ctermfg=15  ctermbg=64
+	hi cmd_info              ctermfg=7   ctermbg=0
+
+	" default statusline:
+	hi StatusLine            ctermfg=0   ctermbg=236 cterm=none
+	hi StatusLineNC          ctermfg=8   ctermbg=236 cterm=none
+endif
+" }}}
+
+" Active Statusline {{{
+function! StatuslineActive()
+	let l:statusline = ''
+	let l:mode = mode()
+	let l:git_branch = fugitive#head()
+
+	" Mode {{{
+	if l:mode ==? 'v' || l:mode == ''
+		let l:statusline .= '%#V_mode#'
+		if l:mode ==# 'v'
+			let l:statusline .= ' VISUAL '
+		elseif l:mode ==# 'V'
+			let l:statusline .= ' V·LINE '
+		else
+			let l:statusline .= ' V·BLOCK '
+		endif
+	elseif l:mode == 'i'
+		let l:statusline .= '%#I_mode# INSERT '
+	else
+		let l:statusline .= '%#N_mode# NORMAL '
+	endif
+	" }}}
+
+	" Git {{{
+	if l:git_branch != ''
+		if l:mode == 'i'
+			let l:statusline .= '%#I_git_branch# %{gitsym}'
+		else
+			let l:statusline .= '%#N_git_branch# %{gitsym}'
+		endif
+		let l:statusline .= l:git_branch
+		if l:mode == 'i'
+			let l:statusline .= ' %#I_git_sep#%{sep}'
+		else
+			let l:statusline .= ' %#N_git_sep#%{sep}'
+		endif
+	endif " }}}
+
+	" Filename {{{
+	if l:mode == 'i'
+		let l:statusline .= '%#I_file#'
+	else
+		let l:statusline .= '%#N_file#'
+	endif
+	let l:statusline.=' %<%{expand("%:p:h")}/'
+	if l:mode == 'i'
+		let l:statusline.='%#I_file_emphasise#'
+	else
+		let l:statusline.='%#N_file_emphasise#'
+	endif
+	let l:statusline.='%{expand("%:t")} '
+	" }}}
+
+	" Modified {{{
+	if &modified
+		if l:mode == 'i'
+			let l:statusline .= '%#I_file_modified#'
+		else
+			let l:statusline .= '%#N_file_modified#'
+		endif
+		let l:statusline .= '* '
+	endif
+	" }}}
+
+	if l:mode == 'i'
+		let l:statusline .= '%#I_middle# '
+	else
+		let l:statusline .= '%#N_middle# '
+	endif
+
+	" Readonly {{{
+	if &readonly
+		if l:mode == 'i'
+			let l:statusline .= '%#I_warning#X%#I_middle# '
+		else
+			let l:statusline .= '%#N_warning#X%#N_middle# '
+		endif
+	endif
+	" }}}
+
+	let l:statusline .= '%='
+
+	" File format, encoding, type, line count {{{
+	let l:ff = &fileformat
+	let l:fe = &fileencoding
+	let l:ft = &filetype
+	if l:ff != 'unix' && l:ff != ''
+		let l:statusline .= ' '.l:ff.' '
+		if l:mode == 'i'
+			let l:statusline .= '%#I_middle_sep#%{sep}%#I_middle#'
+		else
+			let l:statusline .= '%#N_middle_sep#%{sep}%#N_middle#'
+		endif
+	endif
+	if l:fe != 'utf-8' && l:fe != 'ascii' && l:fe != ''
+		let l:statusline .= ' '.l:fe.' '
+		if l:mode == 'i'
+			let l:statusline .= '%#I_middle_sep#%{sep}%#I_middle#'
+		else
+			let l:statusline .= '%#N_middle_sep#%{sep}%#N_middle#'
+		endif
+	endif
+	if l:ft != ''
+		let l:statusline .= ' '.l:ft.' '
+		if l:mode == 'i'
+			let l:statusline .= '%#I_middle_sep#%{sep}%#I_middle#'
+		else
+			let l:statusline .= '%#N_middle_sep#%{sep}%#N_middle#'
+		endif
+	endif
+	let l:statusline .= ' %{lnum} %L '
+	" }}}
+
+	" Buffer position {{{
+	if l:mode == 'i'
+		let l:statusline .= '%#I_pos#'
+	else
+		let l:statusline .= '%#N_pos#'
+	endif
+	let l:statusline .= ' %P '
+	" }}}
+
+	" Cursor position {{{
+	let l:statusline .= '%#N_cursor_line# %3l'
+	let l:statusline .= '%#N_cursor_col#:%02c %#N_middle#'
+	" }}}
+
+	return l:statusline
+endfunction
+" }}}
+
+" Inactive Statusline {{{
+function! StatuslineInactive()
+	let l:statusline = ''
+	let l:branch = fugitive#head()
+
+	" mode:
+	let l:statusline .= '        %{sep}'
+
+	" filename:
+	let l:statusline.=' %<%t %{sep}'
+
+	" change to the right side:
+	let l:statusline.='%='
+
+	" line count:
+	let l:statusline .= ' %{lnum} %L '
+
+	" buffer position:
+	let l:statusline.='%{sep} %P '
+
+	" cursor position:
+	let l:statusline .= '%{sep} %3l:%02c '
+
+	return l:statusline
+endfunction " }}}
+
+function! StatuslineCommand() " {{{
+	return '%#cmd_mode# COMMAND %#cmd_mode_end#%{sep}'
+endfunction " }}}
+
+" define when which statusline is displayed:
+au! BufEnter,WinEnter * setl statusline=%!StatuslineActive()
+au! BufLeave,WinLeave * set  statusline=%!StatuslineInactive()
+au! CmdwinEnter       * setl statusline=%!StatuslineCommand()
+
+" }}}
+" ------------------------------------------------------------------------------
+" LINE NUMBERS {{{
+" Make line number design change as a function of mode.
+
+if $TERM != 'linux'
+	set cursorline
+
+	hi N_linenr         ctermfg=244 ctermbg=236
+	hi N_linenr_cursor  ctermfg=148 ctermbg=8
+	hi N_cursorline                 ctermbg=none
+	hi V_linenr         ctermfg=208 ctermbg=52
+	hi V_linenr_cursor  ctermfg=52  ctermbg=208
+	hi V_cursorline                 ctermbg=none
+	hi I_linenr         ctermfg=45  ctermbg=23
+	hi I_linenr_cursor  ctermfg=7   ctermbg=31
+	hi I_cursorline                 ctermbg=235
+
+	function! SetLineNr(mode)
+		" TODO: check whether in (in)active window
+		hi clear LineNr
+		hi clear CursorLineNr
+		hi clear CursorLine
+		if a:mode == 'i'
+			hi link LineNr       I_linenr
+			hi link CursorLineNr I_linenr_cursor
+			hi link CursorLine   I_cursorline
+		elseif a:mode == 'v'
+			hi link LineNr       V_linenr
+			hi link CursorLineNr V_linenr_cursor
+			hi link CursorLine   V_cursorline
+		else
+			hi link LineNr       N_linenr
+			hi link CursorLineNr N_linenr_cursor
+			hi link CursorLine   N_cursorline
+		endif
+	endfunction
+
+	" insert mode:
+	au! InsertLeave * call SetLineNr('n')
+	au! InsertEnter * call SetLineNr('i')
+	au BufEnter,WinEnter * call SetLineNr('n')
+
+	" visual mode (ugly, since there is no VisualEnter/VisualLeave):
+	noremap <silent> v :call SetLineNr('v')<CR>v
+	noremap <silent> V :call SetLineNr('v')<CR>V
+	noremap <silent> <C-v> :call SetLineNr('v')<CR><C-v>
+	set updatetime=0
+	au! CursorHold * call SetLineNr('n')
+endif
+
+" }}}
+" ------------------------------------------------------------------------------

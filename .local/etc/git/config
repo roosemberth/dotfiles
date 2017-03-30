@@ -1,0 +1,16 @@
+[user]
+	name = ayekat
+	email = takeya@bluewin.ch
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+[core]
+	editor = vim
+	excludesfile = ~/.config/git/ignore
+[push]
+	default = simple
+[pull]
+	ff = only
+[merge]
+	tool = vimdiff

@@ -1,0 +1,110 @@
+#!/bin/sh
+# Xinit ressource file for starting dwm
+# Written by ayekat on a rainy day in october 2012
+
+cmds_exist() {
+	for c in "$@"; do
+		which "$c" >/dev/null 2>&1 || return 1
+	done
+}
+
+
+# First of all, make sure we are in the home directory, to avoid weird default
+# working directory paths when opening a shell under X:
+cd
+
+
+# SYSTEM-WIDE ------------------------------------------------------------------
+
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+	for f in /etc/X11/xinit/xinitrc.d/*.sh; do
+		if [ -r "$f" ]; then
+			. "$f"
+		fi
+	done
+	unset f
+fi
+
+if [ -d "${XDG_CONFIG_HOME}/X11/xinitrc.d" ]; then
+	for f in "${XDG_CONFIG_HOME}"/X11/xinitrc.d/*.sh; do
+		if [ -r "$f" ]; then
+			. "$f"
+		fi
+	done
+	unset f
+fi
+
+
+# INPUT/OUTPUT -----------------------------------------------------------------
+
+setxkbmap ayekat
+ayemouse
+cmds_exist dispwin && lcdadjust
+
+
+# SERVICES ---------------------------------------------------------------------
+
+# Load X resources:
+cmds_exist xrdb && xrdb "$XDG_CONFIG_HOME/X11/Xresources"
+
+# Start a scratchpad:
+cmds_exist urxvt && urxvt -e tmx SCRATCHPAD &
+
+# Set the wallpaper:
+cmds_exist nitrogen && nitrogen --restore
+
+# Enable Japanese input:
+if cmds_exist ibus-daemon; then
+	export GTK_IM_MODULE=ibus
+	export QT_IM_MODULE=ibus
+	export XMODIFIERS='@im=ibus'
+	ibus-daemon -drx
+fi
+
+# Set the hinting property for freetype (see /etc/profile.d/freetype2.sh):
+export FREETYPE_PROPERTIES='truetype:interpreter-version=35'
+
+
+# WM ---------------------------------------------------------------------------
+
+# If no WM is specified, default to karuiwm:
+[ -z "$wm" ] && wm=karuiwm
+
+# Some Java applications refuse to work correctly when they don't know the WM
+# (happens often with tiling WMs); set the WM name to a value known to Java to
+# fix that:
+if cmds_exist wmname; then
+	case "$wm" in
+		xmonad|dwm|karuiwm) wmname LG3D ;;
+	esac
+fi
+
+# Launch WM and log all of its output:
+session_logdir="$XDG_LOG_HOME/X11/$DISPLAY"
+session_logfile="${session_logdir}/$(date +%s).log"
+mkdir -p "$session_logdir"
+ln -sf "$session_logfile" "$session_logdir/latest"
+while true; do
+	if cmds_exist karuibar; then
+		karuibar &
+		karuibar_pid=$!
+	fi
+
+	if cmds_exist xss-lock scrlock; then
+		xset s 300
+		xss-lock scrlock &
+		xss_lock_pid=$!
+	fi
+
+	"$wm"
+
+	cmds_exist xss-lock && kill $xss_lock_pid
+	cmds_exist karuibar && kill $karuibar_pid
+
+	if cmds_exist zenity; then
+		zenity --question --text="$wm has stopped. Do you want to start again?"
+		test $? -eq 0 || break
+	else
+		break
+	fi
+done >"$session_logfile" 2>"$session_logfile"
