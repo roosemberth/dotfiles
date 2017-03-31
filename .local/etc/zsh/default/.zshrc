@@ -62,13 +62,16 @@ bindkey "^I" expand-or-complete-with-dots
 # install if not installed
 if ! [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
     test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
-    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+# ZCOMPDUMP feature is not (yet) available in master
+#    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+    curl -L "https://raw.githubusercontent.com/zsh-users/antigen/03fb196952d27bf39daff007792d4287412f56d0/bin/antigen.zsh" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
     || echo "Problem obtaining antigen script"
 fi
 
 if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>&1; then
-    export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
     export ADOTDIR="${XDG_CACHE_HOME}/zsh/antigen/repos"
+    #export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
+    export _ANTIGEN_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump"
     export _ANTIGEN_CACHE="${XDG_CACHE_HOME}/zsh/antigen/cache"
     export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
 
@@ -77,7 +80,6 @@ if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>
 fi
 
 # }}}  -------------------------------------------------------------------------
-
 # ------------------------------------------------------------------------------
 # LOOK & FEEL {{{
 

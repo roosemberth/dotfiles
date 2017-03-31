@@ -1,6 +1,6 @@
 antigen bundle robbyrussell/oh-my-zsh plugins/systemd
 antigen bundle robbyrussell/oh-my-zsh plugins/git
-antigen bundle zsh-users/antigen
+#antigen bundle zsh-users/antigen
 antigen bundle zsh-users/zsh-completions src
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-syntax-highlighting
