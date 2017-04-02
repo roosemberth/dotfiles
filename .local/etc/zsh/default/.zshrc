@@ -68,6 +68,9 @@ if ! [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
     || echo "Problem obtaining antigen script"
 fi
 
+# Make sure the zsh log directory exists:
+test -d "${XDG_LOG_HOME}" || mkdir -p "${XDG_LOG_HOME}"
+
 if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>&1; then
     export ADOTDIR="${XDG_CACHE_HOME}/zsh/antigen/repos"
     #export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
