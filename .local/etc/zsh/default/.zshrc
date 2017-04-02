@@ -367,7 +367,7 @@ if [ -d "$XDG_CONFIG_HOME/zsh/aliases" ]; then
 			print "Error processing additional alias group ${ALIAS_GRP}:" 1>&2
 			cat $LOG_FILENAME
 		fi
-		[ -f "$LOG_FILENAME" ] && rm $LOG_FILENAME
+		[ -f "$LOG_FILENAME" ] && rm -f $LOG_FILENAME
 	done
 	unset ALIAS_GRPS
 else
