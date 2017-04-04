@@ -303,20 +303,23 @@ KEYTIMEOUT=1
 # }}}
 # ------------------------------------------------------------------------------
 # FUNCTIONS {{{
-# "Include" custom shell functions.
+# "Include" custom shell function groups.
 # They need to have a proper function declaration
 #
 # ------------------------------------------------------------------------------
-# function myfunc(){
+# function myCoolFunc(){
 #	# cool function code here
 # }
-# ----------------------------- file: $XDG_CONFIG_HOME/zsh/functions/myfunc.func
+# function myCoolerFunc(){
+#	# cooler function code here
+# }
+# ----------------------------- file: $XDG_CONFIG_HOME/zsh/functions/myFunGrp.fg
 #
 # This functions can be located in subdirectories aswell
 # but only the files ending with '.func' will be included. 
 
 if [ -d "$XDG_CONFIG_HOME/zsh/functions" ]; then
-	ADDITIONAL_FUNCTIONS=$(find -L $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.func")
+	ADDITIONAL_FUNCTIONS=$(find -L $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.fg")
 	
 	for newFunction in ${ADDITIONAL_FUNCTIONS}; do
 		source ${newFunction}
