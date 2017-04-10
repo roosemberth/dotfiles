@@ -393,12 +393,6 @@ set scrolloff=3
 map k gk
 map j gj
 
-" Simple window scrolling:
-map K 2<C-y>
-map J 2<C-e>
-map L 4zl
-map H 4zh
-
 " Remove delay for leaving insert mode:
 set timeoutlen=1000 ttimeoutlen=0
 
@@ -423,10 +417,6 @@ map <leader>l :tabnext<CR>
 map <leader>h :tabprevious<CR>
 map <leader>t :tabnew
 set tabpagemax=20
-
-" Show command history:
-nnoremap ; q:
-vnoremap ; q:
 
 " Show 10 last commands in the window
 set cmdwinheight=10
