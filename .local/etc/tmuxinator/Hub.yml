@@ -40,4 +40,4 @@ windows:
   - Rainbowdash:
       layout: main-vertical
       panes:
-        - TERM=screen-256color autossh -M 0 gnugen-rainbowdash -t "tmux attach"
+          - mosh -p 64150:64160 gnugen-rainbowdash -- tmux attach
