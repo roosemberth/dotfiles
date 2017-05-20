@@ -1,10 +1,10 @@
 #!/bin/bash
+# Created by Orbstheorem, after a thoughtful day, very early in the morning at epfl.
 set -e
 
 usage() {
 cat <<- dsa
-    $0 subvolume-to-backup
-
+    $0 backup-name subvolume-to-backup [subvolume-to-backup...]
 dsa
 }
 
@@ -24,13 +24,14 @@ getSubvolumeActivePath(){
 
 getSubvolumeSnapshotDestPath(){
     NAME="${2:-auto}"
-    echo "${SUBVOLUMES_PATH}/snapshots/${1}/$(date +%y%m%d-${NAME})"
+    echo "${SUBVOLUMES_PATH}/snapshots/${1}/$(date +%y%m%d-%H%M-${NAME})"
 }
 
 createSnapshot(){
     SUBVOLUME="$1"
     SNAPSHOT_NAME="${2:-auto}"
     SNAPSHOT_NAME="$(echo "${SNAPSHOT_NAME}" | sed 's/[^a-zA-Z0-9,.]/_/g')"
+
     SOURCE="$(getSubvolumeActivePath "${SUBVOLUME}")"
     DEST="$(getSubvolumeSnapshotDestPath "${SUBVOLUME}" "${SNAPSHOT_NAME}")"
 
@@ -45,10 +46,16 @@ createSnapshot(){
 if [ $(whoami) != "root" ]; then
     exec sudo $0 $@
 fi
-# Check we received a single argument
-if [ $# -lt 1 ]; then
+# Check we received at least two arguments
+if [ $# -lt 2 ]; then
     usage
     fail "Not enough arguments"
 fi
 
-createSnapshot "$@"
+NAME="${1:-auto}"
+shift
+
+while [ $# -gt 0 ]; do
+    createSnapshot "$1" "$NAME"
+    shift
+done
