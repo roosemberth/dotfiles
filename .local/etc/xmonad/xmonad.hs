@@ -16,6 +16,7 @@ import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicLog
 import XMonad.Util.NamedScratchpad
 
+import XMonad.Layout
 import XMonad.Layout.SubLayouts
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
@@ -89,12 +90,22 @@ myGsConfig = GS.defaultGSConfig {
     , GS.gs_cellwidth = 150
 }
 
+defaultLayout = tiled ||| Mirror tiled ||| Full where
+     -- default tiling algorithm partitions the screen into two panes
+     tiled   = Tall nmaster delta ratio
+     -- The default number of windows in the master pane
+     nmaster = 1
+     -- Default proportion of screen occupied by master pane
+     ratio   = 1/2
+     -- Percent of screen to increment by when resizing panes
+     delta   = 3/100
+
 -- Subtabbing Layouts
 myLayout = avoidStruts $ lessBorders OnlyFloat
 --                       $ windowNavigation $ boringWindows
 -- Boring windows fait n'importe quoi avec le floating...
 --                       $ subLayout [0,1,2] (layoutHook defaultConfig)
-                       $ layoutHook defaultConfig
+                       $ defaultLayout
 
 -- no boring windows
 doFocusUp   = windows W.focusUp
@@ -103,9 +114,8 @@ doFocusDown = windows W.focusDown
 --doFocusUp   = focusUp
 --doFocusDown = focusDown
 
-main = do
-    xmonad $ defaultConfig
-        { borderWidth        = 2
+myConfig = defaultConfig
+        { borderWidth        = 1
         , terminal           = "urxvt -e tmux"
         , normalBorderColor  = "#1b1b2e"
         , focusedBorderColor = "#ff0000"
@@ -190,4 +200,12 @@ main = do
         , ("M-S-'"                     , GS.goToSelected myGsConfig)
         ]
 
+
+-- Custom PP, configure it as you like. It determines what is being written to the bar.
+myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "<" ">" }
+
+-- Key binding to toggle the gap for the bar.
+toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
+
+main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
 -- vim: expandtab

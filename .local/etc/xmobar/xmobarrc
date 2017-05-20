@@ -1,0 +1,117 @@
+Config {
+    -- Appearance
+         font               = "xft:Deja Vu Sans Mono:pixelsize=18"
+       , bgColor            = "black"
+       , fgColor            = "grey"
+       , position           = TopW L 100
+    -- general behavior
+       , hideOnStart        = False
+       , allDesktops        = True
+       , overrideRedirect   = True
+       , pickBroadest       = False
+       , persistent         = True
+    -- Commands
+       , commands =
+            -- Battery information
+                [ Run BatteryP  ["BAT0"]
+                                [ "--template", "<acstatus>"
+                                , "--Low"     , "10"
+                                , "--High"    , "80"
+                                , "--low"     , "red"
+                                , "--normal"  , "darkorange"
+                                , "--high"    , "darkgreen"
+                                , "-f"        , "AC/online"
+                                , "--"
+                                    , "-o"  , "<left> (<timeleft>)"
+                                    , "-O"  , "<fc=#dAA520>Charging (<left>)</fc>"
+                                    , "-i"  , "<fc=orange>Charged</fc>"
+                                ] 60
+            -- Weather
+--                , Run Com "sh" ["-c", "curl -s wttr.in | sed 's,\\x1B\\[[0-9;]*[a-zA-Z],,g;s/^.\\{15\\}//;so  \\+oog' | sed -n '1p;3,7p' | tr '\\n' ' '"] "weather" 36000
+                , Run Com "weather-in-a-line" [] "weather" 18000
+            -- Load average
+                , Run Com "sh" ["-c", "awk '{print $1, $2, $3 }' /proc/loadavg"] "loadavg" 10
+            -- Current date
+                , Run Date      "%a %b %_d %Y <fc=#ee9a00>%H:%M:%S</fc>" "date" 10
+            -- Hostname
+                , Run Com "sh" ["-c", "hostname"] "hostname" 600
+            -- The space left on the main device
+                , Run DiskU     [("/", "▣:<free>")]
+                                [ "--Low"   , "10"
+                                , "--High"  , "50"
+                                , "--low"   , "red"
+                                , "--high"  , "darkgreen"
+                                ] 100
+            -- Unread emails in mailboxes/maildirs.
+            -- TODO: Use neomutt 📶 ⛗ ↯
+
+            -- network activity monitor
+            , Run Network "wlp4s0"
+                                 [ "--template" , "☫<tx>▲<rx>▼"
+                                 , "-S"         , "True"       -- Show units
+                                 , "-m"         , "6"
+                                 , "--Low"      , "0"          -- units: B/s
+                                 , "--High"     , "1048576"    -- units: B/s
+                                 , "--low"      , "darkred"
+                                 , "--normal"   , "darkgreen"
+                                 , "--high"     , "darkorange"
+                                 ] 25
+            , Run Network "enp0s31f6"
+                                 [ "--template" , "↯<tx>▲<rx>▼"
+                                 , "-S"         , "True"       -- Show units
+                                 , "-m"         , "6"
+                                 , "--Low"      , "0"          -- units: B/s
+                                 , "--High"     , "1048576"    -- units: B/s
+                                 , "--low"      , "darkred"
+                                 , "--normal"   , "darkgreen"
+                                 , "--high"     , "darkorange"
+                                 ] 20
+
+            -- cpu activity monitor
+            , Run MultiCpu       [ "--template" , ":<total0>%|<total1>%|<total2>%|<total3>%|<total4>%|<total5>%|<total6>%|<total7>%"
+                                 , "-m"         , "2"
+                                 , "--Low"      , "40"         -- units: %
+                                 , "--High"     , "85"         -- units: %
+                                 , "--low"      , "darkgreen"
+                                 , "--normal"   , "darkred"
+                                 , "--high"     , "darkorange"
+                                 ] 10
+
+            -- cpu core temperature monitor
+            , Run CoreTemp       [ "--template" , "<core0>°C"
+                                 , "-m"         , "2"
+                                 , "--Low"      , "70"        -- units: °C
+                                 , "--High"     , "80"        -- units: °C
+                                 , "--low"      , "darkgreen"
+                                 , "--normal"   , "red"
+                                 , "--high"     , "darkorange"
+                                 ] 50
+
+            -- memory usage monitor
+            , Run Memory         [ "--template" ,"Mem: <usedratio>%"
+                                 , "--Low"      , "20"        -- units: %
+                                 , "--High"     , "90"        -- units: %
+                                 , "--low"      , "darkgreen"
+                                 , "--normal"   , "darkorange"
+                                 , "--high"     , "darkred"
+                                 ] 10
+
+            -- ips
+                , Run Com "curl" ["ipaddr.io"] "extip" 50
+                , Run Com "sh" ["-c", "ip route | awk '/default/ { print $5\" \"$9 }' | tr '\n' '|'"] "intip" 50
+
+            -- Current memory consumption
+                , Run Memory    ["-t", "Mem: <usedratio>%"] 10
+            -- Current song information in MPD
+--                , Run MPD       ["-t", "<statei> <fc=lightgrey><title></fc> by <fc=lightgrey><artist></fc>"
+--                                ,"--"
+--                                    , "-P"  , ">>"
+--                                    , "-Z"  , ",,"
+--                                    , "-S"  , "><"
+--                                ] 10
+                , Run StdinReader
+                ]
+       , alignSep = "}{"
+       , template = "%extip% ✈ %weather% -- %StdinReader% } %wlp4s0%|%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | %battery% ><fc=#d6d68f>%date%</fc>"
+
+-- vim: set filetype=haskell :
