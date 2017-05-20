@@ -1,0 +1,26 @@
+directory : /Storage/Media/Music/
+import:
+    move: no
+    write: yes
+    copy: yes
+    resume: no
+
+pluginpath : ~/.local/lib/beets/plugins
+library : ~/.local/lib/beets/library.db
+plugins : chroma fromfilename fetchart 
+
+paths:
+    default: Artists/$albumartist/$album%aunique{}/CD$disc/$track $title
+    singleton: Non-Album/$artist/$title
+    comp: Compilations/$album%aunique{}/$track $title
+    albumtype:soundtrack: Soundtracks/$album/$track $title
+
+asciify_paths: yes
+#replace: 
+#   '[someregex]': 'some string'
+
+ui:
+    color: yes
+
+languages: [en, es, fr, de, it]
+detail: yes
