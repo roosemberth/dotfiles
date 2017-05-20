@@ -435,7 +435,7 @@ map <leader>u :GundoToggle<CR>
 nmap <leader>o :NERDTreeToggle<CR>
 
 " Quickfix
-nmap <leader>ö :cclose<CR>
+nmap <leader>ä :cclose<CR>
 nmap <leader>à :copen<CR>
 nmap <leader>N :cprevious<CR>
 nmap <leader>n :cnext<CR>
