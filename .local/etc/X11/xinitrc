@@ -58,6 +58,8 @@ fi
 # Set the hinting property for freetype (see /etc/profile.d/freetype2.sh):
 export FREETYPE_PROPERTIES='truetype:interpreter-version=35'
 
+# Notifications manager
+cmds_exist dunst && dunst "$XDG_CONFIG_HOME/dunst/dunstrc" &
 
 # WM ---------------------------------------------------------------------------
 
