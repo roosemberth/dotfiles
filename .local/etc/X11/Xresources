@@ -97,7 +97,7 @@ URxvt.urgentOnBell   : true
 ! Settings for perl extensions:
 URxvt.perl-lib       : /home/roosemberth/.local/lib/urxvt/perl/
 URxvt.perl-ext       : clipboard
-URxvt.perl-ext-common: default,resize-font,url-select,keyboard-select
+URxvt.perl-ext-common: default,font-size,url-select,keyboard-select
 
 ! Open URLs with keyboard (requires urxvt-perls package):
   URxvt.url-select.launcher  : /usr/bin/xdg-open
@@ -109,10 +109,10 @@ URxvt.perl-ext-common: default,resize-font,url-select,keyboard-select
   URxvt.keysym.Shift-Control-V : perl:clipboard:paste
   URxvt.keysym.Shift-Control-C : perl:clipboard:copy
 ! Font size handling
-  URxvt.resize-font.smaller : C-S-Down
-  URxvt.resize-font.bigger  : C-S-Up
-  URxvt.resize-font.reset   : C-S-Left
-  URxvt.resize-font.show    : C-S-Right
+  URxvt.keysym.C-S-Up    : font-size:increase
+  URxvt.keysym.C-S-Down  : font-size:decrease
+  URxvt.keysym.C-S-Right : font-size:reset
+  URxvt.keysym.C-S-Left  : font-size:show
 
 !URxvt.keysym.Escape  : \033\000
 
