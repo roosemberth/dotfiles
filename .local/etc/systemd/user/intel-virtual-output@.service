@@ -1,0 +1,8 @@
+[Unit]
+Description=Expose nvidia output as a virtual device for extending to a external screen
+
+[Service]
+Type=simple
+Environment="DISPLAY=:%I"
+Environment="XAUTHORITY=/run/user/1000/Xauthority"
+ExecStart=/usr/bin/intel-virtual-output -f
