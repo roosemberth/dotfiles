@@ -34,7 +34,7 @@ longCmds cmd = (M.fromList $ [
     , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
     , ("volumeToggle" , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
     , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
-    , ("OpenIRC"      , "gajim-remote open_chat $(zenity --list --text='Select channel to join' --column='Channel' --hide-header $(gajim-remote list_contacts | grep biboumi | grep '#' | sed 's/^[^:]*: \\(.*\\)/\\1 /'))")
+    , ("prScrAndPaste", "capture_screen_and_paste.sh | xclip -selection clipboard; notify-send 'Screen captured' \"Available in /tmp/export.png and $(xclip -o -selection clipboard) (copied to clipboard)\"")
     ]) M.! cmd
 
 action :: String -> X ()
@@ -173,9 +173,7 @@ myConfig = defaultConfig
         , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
         , ("M-q"             , action "reloadXMonad")                 -- %! Reload xmonad
 
-        , ("M-S-m C-<Space>" , spawn "gajim-remote toggle_roster_appearance")
-        , ("M-S-m <Space>"   , spawn "gajim-remote show_next_pending_event")
-        , ("M-S-m i"         , action "OpenIRC")
+        , ("M-S-s"           , action "prScrAndPaste")
 
         -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
         -- Scratchpads!
