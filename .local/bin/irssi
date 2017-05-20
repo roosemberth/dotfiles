@@ -16,7 +16,7 @@ IRSSI_CONFIG="$XDG_CONFIG_HOME/irssi/config"
 IRSSI_CONFIG_REAL="$XDG_RUNTIME_DIR/irssi/irssi_config"
 
 # Get password:
-if ! irssi_password=$(pass show 'nodes/rowland/chat/ayekat@znc.ayekat.ch'); then
+if ! irssi_password=$(pass show 'Social/IRC/freenode.net/roosemberth'); then
 	retval=$?
 	echo 'Pass failed.' >&2
 	exit $retval

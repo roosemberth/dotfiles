@@ -6,6 +6,8 @@ servers = (
     use_ssl = "yes";
     ssl_verify = "no";
     autoconnect = "yes";
+    user = roosemberth;
+    password = ZNC_PASSWORD;
   }
 );
 
@@ -192,9 +194,9 @@ statusbar = {
 };
 settings = {
   core = {
-    real_name = "Tinu Weber";
-    user_name = "ayekat";
-    nick = "ayekat";
+    real_name = "Roosembert Palacios";
+    user_name = "roosemberth";
+    nick = "Orbstheorem";
   };
   "fe-text" = { actlist_sort = "refnum"; };
   "fe-common/core" = {
@@ -206,7 +208,7 @@ settings = {
 logs = { };
 hilights = (
   {
-    text = "^[A-Za-z0-9.,:;!?|<>{} ]*([Aa]yekat|[Kk]arui)";
+    text = "^[A-Za-z0-9.,:;!?|<>{} ]*([Rr]oos)";
     nick = "yes";
     word = "yes";
     regexp = "yes";
@@ -220,7 +222,6 @@ windows = {
         type = "CHANNEL";
         chat_type = "IRC";
         name = "#gnugeneration";
-        tag = "znc";
       }
     );
   };
@@ -229,28 +230,7 @@ windows = {
       {
         type = "CHANNEL";
         chat_type = "IRC";
-        name = "#archlinux";
-        tag = "znc";
-      }
-    );
-  };
-  4 = {
-    items = (
-      {
-        type = "CHANNEL";
-        chat_type = "IRC";
-        name = "#qutebrowser";
-        tag = "znc";
-      }
-    );
-  };
-  5 = {
-    items = (
-      {
-        type = "CHANNEL";
-        chat_type = "IRC";
         name = "#epfl";
-        tag = "znc";
       }
     );
   };
