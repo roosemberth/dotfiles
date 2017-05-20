@@ -1,0 +1,21 @@
+[Unit]
+Description=Mopidy music server
+After=avahi-daemon.service
+After=dbus.service
+After=network.target
+After=nss-lookup.target
+After=pulseaudio.service
+After=remote-fs.target
+After=sound.target
+
+[Service]
+#PermissionsStartOnly=true
+#ExecStartPre=/bin/mkdir -p $XDG_CACHE_HOME/mopidy
+#ExecStartPre=/bin/chown mopidy:audio /var/cache/mopidy
+ExecStart=/usr/bin/mopidy --config /usr/share/mopidy/conf.d:/home/roosemberth/.local/etc/mopidy/mopidy.conf
+# allow MPD to use real-time priority 50
+LimitRTPRIO=50
+#LimitRTTIME=-1
+
+[Install]
+WantedBy=default.target
