@@ -1,0 +1,6 @@
+.gitignore
+opt/
+run/
+share/
+tmp/
+var/
