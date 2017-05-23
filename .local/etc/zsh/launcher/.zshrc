@@ -18,7 +18,7 @@ preexec(){
             exec "$1"
             ;;
         *)
-            cat << SDA | sh &!
+            cat << SDA | zsh -s &!
 $1
 SDA
             exit
