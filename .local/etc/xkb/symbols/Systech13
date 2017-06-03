@@ -3,8 +3,8 @@ xkb_symbols "Systech13" {
     include "ch(fr)"
 
     // Esc, Caps
-    key <CAPS> { [ Escape ] };
-    key <ESC>  { [ Caps_Lock ] };
+    key <CAPS> { [ Shift_L ] };
+    key <ESC>  { [ Escape ] };
 
     // Control, Super, Super
     key <LFSH> { [ Control_L ] };
@@ -21,7 +21,7 @@ xkb_symbols "Systech13" {
     key <AB07> { [ m       , M       , BackSpace , mu        ] };
 
     // ⇧7 + <\
-    key <LSGT> { [ Shift_L , Shift_L , less      , greater   ] };
+    //key <LSGT> { [ Shift_L , Shift_L , less      , greater   ] };
     key <AE07> { [ 7       , slash   , bar       , backslash ] };
 
     // uiop + ⇱⇞⇟⇲

@@ -61,6 +61,9 @@ export FREETYPE_PROPERTIES='truetype:interpreter-version=35'
 # Notifications manager
 cmds_exist dunst && dunst "$XDG_CONFIG_HOME/dunst/dunstrc" &
 
+# When pressing Shift_L alone send 'escape' instead
+cmds_exist xcape && xcape -e 'Shift_L=Escape'
+
 # WM ---------------------------------------------------------------------------
 
 # If no WM is specified, default to xmonad:
