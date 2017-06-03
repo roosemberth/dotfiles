@@ -57,7 +57,7 @@ Config {
                                  , "--high"     , "darkorange"
                                  ] 25
             , Run Network "enp0s31f6"
-                                 [ "--template" , "↯<tx>▲<rx>▼"
+                                 [ "--template" , "|↯<tx>▲<rx>▼"
                                  , "-S"         , "True"       -- Show units
                                  , "-m"         , "6"
                                  , "--Low"      , "0"          -- units: B/s
@@ -112,6 +112,6 @@ Config {
                 , Run StdinReader
                 ]
        , alignSep = "}{"
-       , template = "%extip% ✈ %weather% -- %StdinReader% } %wlp4s0%|%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | %battery% ><fc=#d6d68f>%date%</fc>"
+       , template = "%extip% ✈ %weather% -- %StdinReader% } %wlp4s0%%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | %battery% ><fc=#d6d68f>%date%</fc>"
 
 -- vim: set filetype=haskell :
