@@ -62,7 +62,7 @@ export FREETYPE_PROPERTIES='truetype:interpreter-version=35'
 cmds_exist dunst && dunst "$XDG_CONFIG_HOME/dunst/dunstrc" &
 
 # When pressing Shift_L alone send 'escape' instead
-cmds_exist xcape && xcape -e 'Shift_L=Escape'
+cmds_exist xcape && xcape -e 'Control_L=Escape'
 
 # WM ---------------------------------------------------------------------------
 
