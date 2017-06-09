@@ -24,6 +24,10 @@ fi
 . $XDG_CONFIG_HOME/sh/config
 
 # ------------------------------------------------------------------------------
+# Local variables {{{
+alias doNetOps=true
+# }}}
+# ------------------------------------------------------------------------------
 # COMPLETION {{{
 
 # Make sure the zsh cache directory exists:
@@ -130,6 +134,14 @@ vim_mode_normal='CMD'
 vim_mode_insert='INS'
 vim_mode=$vim_mode_insert
 
+# Assist functions {{{
+build_netns_prompt()
+{
+    local ns_name="$(ip netns identify)"
+    echo "$ns_name"
+}
+#}}}
+
 build_prompt() #{{{
 {
 	PROMPT=''
@@ -194,6 +206,9 @@ build_prompt() #{{{
 
 	# Hostname (if SSH):
 	[ -n "$SSH_CONNECTION" ] && PROMPT+="%{$pc_host%}%M:%{$reset_color%}"
+
+	# Network namespace
+    [ -n "$(ip netns identify)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
 
 	# PWD:
 	PROMPT+="%{$pc_pwd%}%~%{$reset_color%} "
