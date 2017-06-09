@@ -63,27 +63,34 @@ bindkey "^I" expand-or-complete-with-dots
 # }}}
 # ------------------------------------------------------------------------------
 # Antigen {{{
-# install if not installed
-if ! [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
-    test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
-# ZCOMPDUMP feature is not (yet) available in master
-#    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
-    curl -L "https://raw.githubusercontent.com/zsh-users/antigen/03fb196952d27bf39daff007792d4287412f56d0/bin/antigen.zsh" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
-    || echo "Problem obtaining antigen script"
-fi
+# Root?
+if [ $(id -u) != 0 ]; then
+    # install if not installed
+    if [ ! -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
+        if [ doNetOps ]; then
+            test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
+    # ZCOMPDUMP feature is not (yet) available in master
+    #    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+            curl -L "https://raw.githubusercontent.com/zsh-users/antigen/03fb196952d27bf39daff007792d4287412f56d0/bin/antigen.zsh" \
+                -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
+            || echo "Problem obtaining antigen script"
+        fi
+    fi
 
-# Make sure the zsh log directory exists:
-test -d "${XDG_LOG_HOME}" || mkdir -p "${XDG_LOG_HOME}"
+    # Make sure the zsh log directory exists:
+    test -d "${XDG_LOG_HOME}" || mkdir -p "${XDG_LOG_HOME}"
 
-if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>&1; then
-    export ADOTDIR="${XDG_CACHE_HOME}/zsh/antigen/repos"
-    #export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
-    export _ANTIGEN_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump"
-    export _ANTIGEN_CACHE="${XDG_CACHE_HOME}/zsh/antigen/cache"
-    export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
+    # If antigen.zsh was just downloaded it will download its bundles, else it will just load them
+    if [ -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ] && which "git" >/dev/null 2>&1; then
+        export ADOTDIR="${XDG_CACHE_HOME}/zsh/antigen/repos"
+        #export ANTIGEN_COMPDUMPFILE="$XDG_CACHE_HOME/zsh/zcompdump"
+        export _ANTIGEN_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump"
+        export _ANTIGEN_CACHE="${XDG_CACHE_HOME}/zsh/antigen/cache"
+        export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
 
-    source ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh
-    antigen init ${XDG_CONFIG_HOME}/zsh/antigen/antigenrc
+        source ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh
+        antigen init ${XDG_CONFIG_HOME}/zsh/antigen/antigenrc
+    fi
 fi
 
 # }}}  -------------------------------------------------------------------------
