@@ -2,12 +2,14 @@ xkb_symbols "Systech13" {
     // Base keyboard layout
     include "ch(fr)"
 
-    // Control in Caps
-    key <CAPS> { [ Control_L ] };
+    // Esc, Caps
+    key <CAPS> { [ Shift_L ] };
+    key <ESC>  { [ Escape ] };
 
     // Control, Super, Super
+    key <LFSH> { [ Control_L ] };
     key <LCTL> { [ Super_L ] };
-    key <LWIN> { [ Caps_Lock ] };
+    key <LWIN> { [ Shift_L ] };
 
     // hjlk + ←↑↓→
     key <AC06> { [ h       , H       , Left      , Hstroke   ] };
@@ -19,6 +21,7 @@ xkb_symbols "Systech13" {
     key <AB07> { [ m       , M       , BackSpace , mu        ] };
 
     // ⇧7 + <\
+    //key <LSGT> { [ Shift_L , Shift_L , less      , greater   ] };
     key <AE07> { [ 7       , slash   , bar       , backslash ] };
 
     // uiop + ⇱⇞⇟⇲
