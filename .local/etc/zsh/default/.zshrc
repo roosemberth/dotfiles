@@ -125,13 +125,8 @@ autoload -U colors && colors
 setopt prompt_subst
 
 # Define prompt colours:
-if [ "$TERM" != 'linux' ]; then
-	pc_vim_normal="$(printf "\033[38;5;22;48;5;148m")"
-	pc_vim_insert="$(printf "\033[38;5;2;48;5;4m")"
-else
-	pc_vim_normal="$fg[black]$bg[green]"
-	pc_vim_insert="$fg[green]$bg[blue]"
-fi
+pc_vim_normal="$fg[black]$bg[green]"
+pc_vim_insert="$fg[green]$bg[blue]"
 pc_time="$fg[green]"
 pc_retval_bad="$fg_bold[red]"
 pc_retval_good="$fg[black]"
@@ -185,8 +180,8 @@ build_prompt() #{{{
 				VCS_PROMPT+="$2"
 			esac
 		}
-		_build_vcs_prompt "$XDG_LIB_HOME/dotfiles" 'd'
-		_build_vcs_prompt "$XDG_LIB_HOME/utils" 'u'
+		_build_vcs_prompt "$HOME/dotfiles" 'd'
+		_build_vcs_prompt "/Storage/Media/Music" 'm'
 		_build_vcs_prompt "$XDG_DATA_HOME/pass" 'p'
 		if [ $_vcs_clean -eq 0 ]; then
 			VCS_PROMPT+="%{$(printf "\033[34m")%}]%{$reset_color%} "
