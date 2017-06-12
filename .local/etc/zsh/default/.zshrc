@@ -287,6 +287,8 @@ bindkey -M viins ''    backward-kill-word
 bindkey -M viins ''    vi-forward-word  # accept partial suggestions
 bindkey -M viins ''    push-input       # I forgot to type something before!
 
+bindkey -M viins '[Z'  vi-forward-word  # accept partial suggestions
+
 # Use vim to edit command lines:
 autoload -U edit-command-line
 zle -N edit-command-line
