@@ -3,4 +3,6 @@
 # Created by Roosemberth in a lonely night at epfl
 # to be used as a helper for xmobar (because their weather applet sucks)
 
-curl -s wttr.in | sed -n '1p;3,5p;7p' | sed -n 's,\x1B\[[0-9;]*[a-zA-Z],,g;s/^.\{15\}//;1s/^ *//;1bp;so \+oog;:p;p' | sed ':a;N;$!ba;s/\n/|/g'
+TEXT=$(curl -m 5 -s wttr.in 2>/dev/null | sed -n '1p;3,5p;7p' | sed -n 's,\x1B\[[0-9;]*[a-zA-Z],,g;s/^.\{15\}//;1s/^ *//;1bp;so \+oog;:p;p' | sed ':a;N;$!ba;s/\n/|/g')
+
+echo ${TEXT:-"Weather and Context unavaliable"}

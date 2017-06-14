@@ -26,9 +26,6 @@ Config {
                                     , "-O"  , "<fc=#dAA520>Charging (<left>)</fc>"
                                     , "-i"  , "<fc=orange>Charged</fc>"
                                 ] 60
-            -- Weather
---                , Run Com "sh" ["-c", "curl -s wttr.in | sed 's,\\x1B\\[[0-9;]*[a-zA-Z],,g;s/^.\\{15\\}//;so  \\+oog' | sed -n '1p;3,7p' | tr '\\n' ' '"] "weather" 36000
-                , Run Com "weather-in-a-line" [] "weather" 18000
             -- Load average
                 , Run Com "sh" ["-c", "awk '{print $1, $2, $3 }' /proc/loadavg"] "loadavg" 10
             -- Current date
@@ -96,9 +93,14 @@ Config {
                                  , "--high"     , "darkred"
                                  ] 10
 
+            -- Weather
+--                , Run Com "sh" ["-c", "curl -s wttr.in | sed 's,\\x1B\\[[0-9;]*[a-zA-Z],,g;s/^.\\{15\\}//;so  \\+oog' | sed -n '1p;3,7p' | tr '\\n' ' '"] "weather" 36000
+                , Run Com "weather-in-a-line" [] "weather" 18000
             -- ips
-                , Run Com "curl" ["ipaddr.io"] "extip" 50
+                --, Run Com "curl" ["-m", "5", "ipaddr.io"] "extip" 50
+                , Run Com "sh" ["-c", "curl -m 5 -s ipaddr.io 2>/dev/null"] "extip" 50
                 , Run Com "sh" ["-c", "ip route | awk '/default/ { print $5\" \"$9 }' | tr '\n' '|'"] "intip" 50
+                , Run Com "sh" ["-c", "mpc | head -n -2 | sed 's,.*/,,' | cut -c-40"] "mpd" 50
 
             -- Current memory consumption
                 , Run Memory    ["-t", "Mem: <usedratio>%"] 10
@@ -112,6 +114,6 @@ Config {
                 , Run StdinReader
                 ]
        , alignSep = "}{"
-       , template = "%extip% ✈ %weather% -- %StdinReader% } %wlp4s0%%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | %battery% ><fc=#d6d68f>%date%</fc>"
+       , template = "%extip% ✈ %weather% -- %StdinReader% -- %mpd% } %wlp4s0%%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | %battery% ><fc=#d6d68f>%date%</fc>"
 
 -- vim: set filetype=haskell :
