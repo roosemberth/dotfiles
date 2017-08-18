@@ -26,5 +26,12 @@ function launch(){
 }
 
 function ctmp(){
-	cd $(mktemp -d)
+    DIR="$(mktemp -d -p /run/user/$(id -u)/)"
+	which lsof &>/dev/null && cat <<- SDA | sh &!
+    while [ -d "$DIR" ]; do
+        sleep 5
+        [ -z "\$(lsof +d '$DIR' 2>/dev/null)" ] && [ -z "\$(lsof +D '$DIR' 2>/dev/null)" ] && rm -fr "$DIR"
+    done
+	SDA
+    cd "$DIR"
 }
