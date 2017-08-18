@@ -59,6 +59,7 @@ myManageHook = composeAll
     , className =? "mpv"      --> doCenterFloat
     , className =? "Shutter"  --> doCenterFloat
     , className =? "eog"      --> doCenterFloat
+    , className =? "Gvncviewer" --> doCenterFloat
     , className =? "Gajim"   <&&> role =? "roster"    --> doFloatAt (3000/3480) (104/2160)
     , className =? "Gajim"   <&&> role =? "messages"  --> doFloatAt (2000/3480) (550/2160)
     , className =? "Gajim"    --> doCenterFloat
