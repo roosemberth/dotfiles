@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+. "$(dirname "$0")"/path.sh
+
+[ -d "$XDG_DATA_HOME/seaf-cli" ] || mkdir -p "$XDG_DATA_HOME/seaf-cli"
+
+export HOME="$XDG_DATA_HOME/seaf-cli"
+exec "$EPATH" "$@" -c "$HOME"
