@@ -78,6 +78,8 @@ NeoBundle 'ap/vim-css-color'
 NeoBundle 'chrisbra/vim-diff-enhanced'
 NeoBundle 'haya14busa/incsearch.vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'jceb/vim-orgmode'
+NeoBundle 'tpope/vim-speeddating'
 
 NeoBundle 'scrooloose/syntastic'
 
