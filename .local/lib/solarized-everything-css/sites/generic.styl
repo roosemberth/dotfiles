@@ -1,0 +1,31 @@
+// * generic.styl
+
+@require mixins
+
+// Generic rules for sites
+
+// ** HTML elements
+*
+    border-color()
+a
+    a()
+a:visited
+    a visited
+
+body
+    background-color()
+    color()
+
+html
+    // Apparently some people set the bgcolor for HTML, not BODY...
+    background-color()
+    
+input
+textarea
+    background-color highlight
+    color()
+
+blockquote,    
+pre
+    background-color highlight
+    color()
