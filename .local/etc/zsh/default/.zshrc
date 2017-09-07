@@ -25,7 +25,11 @@ fi
 
 # ------------------------------------------------------------------------------
 # Local variables {{{
-alias doNetOps=true
+if [ ! -z "$NO_NET" ]; then
+    alias doNetOps=false
+else
+    alias doNetOps=true
+fi
 # }}}
 # ------------------------------------------------------------------------------
 # COMPLETION {{{
@@ -69,9 +73,7 @@ if [ $(id -u) != 0 ]; then
     if [ ! -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
         if [ doNetOps ]; then
             test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
-    # ZCOMPDUMP feature is not (yet) available in master
-    #    curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
-            curl -L "https://raw.githubusercontent.com/zsh-users/antigen/03fb196952d27bf39daff007792d4287412f56d0/bin/antigen.zsh" \
+            curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
                 -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
             || echo "Problem obtaining antigen script"
         fi
@@ -89,7 +91,12 @@ if [ $(id -u) != 0 ]; then
         export _ANTIGEN_LOG="${XDG_LOG_HOME}/antigen"
 
         source ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh
-        antigen init ${XDG_CONFIG_HOME}/zsh/antigen/antigenrc
+
+        antigen bundle zsh-users/zsh-completions src
+        antigen bundle zsh-users/zsh-autosuggestions
+        antigen bundle zsh-users/zsh-syntax-highlighting
+
+        antigen apply
     fi
 fi
 
@@ -287,7 +294,7 @@ bindkey -M viins ''    backward-kill-word
 bindkey -M viins ''    vi-forward-word  # accept partial suggestions
 bindkey -M viins ''    push-input       # I forgot to type something before!
 
-bindkey -M viins '[Z'  vi-forward-word  # accept partial suggestions
+bindkey -M viins ' '   end-of-line
 
 # Use vim to edit command lines:
 autoload -U edit-command-line
