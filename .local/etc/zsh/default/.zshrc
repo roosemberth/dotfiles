@@ -292,6 +292,7 @@ bindkey -M viins ''    down-line-or-history
 bindkey -M viins ''    backward-kill-line
 bindkey -M viins ''    backward-kill-word
 bindkey -M viins ''    vi-forward-word  # accept partial suggestions
+bindkey -M viins '[Z'    vi-forward-word  # accept partial suggestions
 bindkey -M viins ''    push-input       # I forgot to type something before!
 
 bindkey -M viins ' '   end-of-line

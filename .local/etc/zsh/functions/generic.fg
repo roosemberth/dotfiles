@@ -33,6 +33,7 @@ function ctmp(){
         [ -z "\$(lsof +d '$DIR' 2>/dev/null)" ] && [ -z "\$(lsof +D '$DIR' 2>/dev/null)" ] && rm -fr "$DIR"
     done
 	SDA
+	[ -d "${DIR%/*}/latest-ctmp" ] && rm "${DIR%/*}/latest-ctmp"
 	ln -sf "$DIR" "${DIR%/*}/latest-ctmp"
     cd "$DIR"
 }
