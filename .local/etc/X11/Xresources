@@ -72,7 +72,7 @@ xterm.*.background     : termbg
 ! URxvt.font           : xft:dejavu sans mono:size=12:antialias=false
 ! URxvt.font           : xft:terminus:normal:size=14:antialias=false
 URxvt.letterSpace    : -2
-URxvt.font           : xft:dejavu sans mono:size=18:antialias=false
+URxvt.font           : xft:dejavu sans mono:size=9:antialias=false
 URxvt.depth          : 32
 URxvt.foreground     : termfg
 URxvt.background     : termbg
