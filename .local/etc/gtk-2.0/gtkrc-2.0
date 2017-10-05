@@ -1,4 +1,8 @@
-gtk-theme-name="Numix"
+# DO NOT EDIT! This file will be overwritten by LXAppearance.
+# Any customization should be done in ~/.gtkrc-2.0.mine instead.
+
+include "/home/roosemberth/.gtkrc-2.0.mine"
+gtk-theme-name="Adwaita-dark"
 gtk-icon-theme-name="Numix"
 gtk-font-name="Sans 8"
 gtk-cursor-theme-name="Adwaita"
@@ -13,4 +17,3 @@ gtk-xft-antialias=1
 gtk-xft-hinting=1
 gtk-xft-hintstyle="hintfull"
 gtk-xft-rgba="rgb"
-gtk-color-scheme="selected_bg_color:#d64937\ntoolbar_fg_color:#555555\ntooltip_fg_color:#dedede\nlink_color:#fc6f5d\npanel_fg_color:#dcdcdc\nbase_color:#333333333333\nselected_fg_color:#f9f9f9\ntext_color:#eeeeeeeeeeee\ntitlebar_bg_color:#2d2d2d\nmenubar_bg_color:#2d2d2d\nbg_color:#222222222222\ntoolbar_bg_color:#dedede\ntooltip_bg_color:#2d2d2d\nmenu_bg_color:#2d2d2d\ntitlebar_fg_color:#dcdcdc\nmenubar_fg_color:#dcdcdc\npanel_bg_color:#2d2d2d\nmenu_fg_color:#dcdcdc\nfg_color:#bbbbbbbbbbbb\n"
