@@ -75,8 +75,13 @@ for x in $configs; do
         if [[ -z "$old_number" ]]; then
             echo "Will perform initial backup for snapper configuration '$x'. Calculating Transfer size..."
             size=$(btrfs filesystem du -s --raw $new_snapshot | tail -n 1 | awk '{print $1}')
-            echo "Performing initial backup. Transfer size: $size bytes"
-            btrfs send -v $new_snapshot | pv -pbteas $size | btrfs receive -v $backup_location
+            if [-z "$size" ]; then
+                echo "Could not calculate total size, I'll still try to transfer though. ETA unknown"
+                btrfs send -v $new_snapshot | pv -pbtea | btrfs receive -v $backup_location
+            else
+                echo "Performing initial backup. Transfer size: $size bytes"
+                btrfs send -v $new_snapshot | pv -pbteas $size | btrfs receive -v $backup_location
+            fi
             sudo mv "$new_snapshot" "$new_orig_snapshot"
         else
             old_row=$(snapper -c $x list -t single | egrep "^$old_number +\|")
