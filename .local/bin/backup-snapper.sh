@@ -73,15 +73,9 @@ for x in $configs; do
         mv "$new_orig_snapshot" "$new_snapshot"
 
         if [[ -z "$old_number" ]]; then
-            echo "Will perform initial backup for snapper configuration '$x'. Calculating Transfer size..."
-            size=$(btrfs filesystem du -s --raw $new_snapshot | tail -n 1 | awk '{print $1}')
-            if [-z "$size" ]; then
-                echo "Could not calculate total size, I'll still try to transfer though. ETA unknown"
-                btrfs send -v $new_snapshot | pv -pbtea | btrfs receive -v $backup_location
-            else
-                echo "Performing initial backup. Transfer size: $size bytes"
-                btrfs send -v $new_snapshot | pv -pbteas $size | btrfs receive -v $backup_location
-            fi
+            echo "Will perform initial backup for snapper configuration '$x'."
+            echo "Could not calculate total size, I'll still try to transfer though. ETA unknown"
+            btrfs send $new_snapshot | pv -pbtea | btrfs receive $backup_location
             sudo mv "$new_snapshot" "$new_orig_snapshot"
         else
             old_row=$(snapper -c $x list -t single | egrep "^$old_number +\|")
@@ -96,7 +90,7 @@ for x in $configs; do
             # there is an identical subvolume to the old snapshot at the
             # receiving location where it can get its data. This helps speed up
             # the transfer.
-            btrfs send -p $old_orig_snapshot -v $new_snapshot | pv -pbtea | btrfs receive -v $backup_location
+            btrfs send -p $old_orig_snapshot $new_snapshot | pv -pbtea | btrfs receive -v $backup_location
             sudo mv "$new_snapshot" "$new_orig_snapshot"
             cp "$new_orig_info" "$backup_location/$new_snapshot_name.xml"
             snapper -c $x delete $old_number
