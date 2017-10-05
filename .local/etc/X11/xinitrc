@@ -37,7 +37,16 @@ fi
 
 # INPUT/OUTPUT -----------------------------------------------------------------
 
-setxkbmap -layout Systech13
+# Set core keyboard layout to US
+setxkbmap us
+
+# Set Laptop's computer Keyboard to Systech13, if it can't find it, then set the core keyboard to Systech13
+LKBID="$(xinput --list | grep "AT Translated Set 2 keyboard" | grep -oP 'id=\K[0-9]+')"
+if [ -z "$LKBID" ]; then
+    setxkbmap -layout Systech13
+else
+    setxkbmap -device $LKBID -layout Systech13 || setxkbmap -layout Systech13
+fi
 
 # SERVICES ---------------------------------------------------------------------
 
@@ -63,6 +72,8 @@ cmds_exist dunst && dunst "$XDG_CONFIG_HOME/dunst/dunstrc" &
 
 # When pressing Shift_L alone send 'escape' instead
 cmds_exist xcape && xcape -e 'Shift_L=Escape'
+
+cmds_exist lxpolkit && lxpolkit &
 
 # WM ---------------------------------------------------------------------------
 
