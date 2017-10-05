@@ -55,6 +55,7 @@ myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
     [ title     =? "launcher" --> doCenterFloat
     , title     =? "xmessage" --> doCenterFloat
+    , className =? "Pinentry" --> doCenterFloat
     , className =? "Zenity"   --> doCenterFloat
     , className =? "mpv"      --> doCenterFloat
     , className =? "Shutter"  --> doCenterFloat
