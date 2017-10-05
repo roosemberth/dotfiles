@@ -80,6 +80,7 @@ NeoBundle 'haya14busa/incsearch.vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'jceb/vim-orgmode'
 NeoBundle 'tpope/vim-speeddating'
+"NeoBundle 'vim-scripts/diffchar.vim'
 
 NeoBundle 'scrooloose/syntastic'
 
@@ -121,6 +122,11 @@ set path +=**
 " Change Sytastic symbols:
 let g:syntastic_warning_symbol = '!!'
 let g:syntastic_error_symbol = 'XX'
+
+" Use ag instead of ack if possible
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 " }}}
 " ------------------------------------------------------------------------------
