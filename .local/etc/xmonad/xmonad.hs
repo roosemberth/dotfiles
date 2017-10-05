@@ -29,7 +29,7 @@ longCmds :: String -> String
 longCmds cmd = (M.fromList $ [
       ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
     , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
-    , ("wrapperCmd"   , "urxvt -title Scratchpad-Wrapper -geometry 425x113 -fn \"xft:dejavu sans mono:size=12:antialias=false\" -e tmuxinator start wrapper")
+    , ("wrapperCmd"   , "urxvt -title Scratchpad-Wrapper -geometry 425x113 -fn \"xft:dejavu sans mono:size=6:antialias=false\" -e tmuxinator start wrapper")
     , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
     , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
     , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
