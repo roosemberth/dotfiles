@@ -17,7 +17,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Util.NamedScratchpad
 
 import XMonad.Layout
-import XMonad.Layout.SubLayouts
+import XMonad.Layout.SubLayouts as SL
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.NoBorders
@@ -92,7 +92,7 @@ myGsConfig = GS.defaultGSConfig {
     , GS.gs_cellwidth = 150
 }
 
-defaultLayout = tiled ||| Mirror tiled ||| Full where
+layoutAlgorithms = tiled ||| Mirror tiled ||| Full where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
      -- The default number of windows in the master pane
@@ -104,17 +104,11 @@ defaultLayout = tiled ||| Mirror tiled ||| Full where
 
 -- Subtabbing Layouts
 myLayout = avoidStruts $ lessBorders OnlyFloat
---                       $ windowNavigation $ boringWindows
 -- Boring windows fait n'importe quoi avec le floating...
---                       $ subLayout [0,1,2] (layoutHook defaultConfig)
-                       $ defaultLayout
-
--- no boring windows
-doFocusUp   = windows W.focusUp
-doFocusDown = windows W.focusDown
--- boring windows
---doFocusUp   = focusUp
---doFocusDown = focusDown
+                       $ windowNavigation $ subTabbed $ boringWindows
+                       -- ^ Grouping mechanisms + tabs on sublayouts + skip hidden windows.
+                       $ smartBorders
+                       $ layoutAlgorithms
 
 myConfig = defaultConfig
         { borderWidth        = 1
@@ -128,20 +122,18 @@ myConfig = defaultConfig
         , manageHook         = myManageHook <+> manageHook defaultConfig
         , layoutHook         = myLayout
         } `additionalKeysP` [
-          ("M-C-<Return>"    , action "launcher")
-        , ("M-C-S-<Return>"  , action "ulauncher")
+          ("M-C-S-<Return>"  , action "launcher")
+        , ("M-C-<Return>"    , action "ulauncher")
         , ("M-<Return>"      , spawn "urxvt -e tmux")
+        , ("M-S-s"           , action "prScrAndPaste")
         , ("M-S-a"           , spawn "xtrlock")                       -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
-        , ("M-S-c"           , kill)                                  -- %! Close the focused window
+        , ("M-S-f"           , withFocused $ windows . flip W.float (W.RationalRect (1/3) (1/3) (1/3) (1/3)))
+                                                                      -- %! Push window up to floating
         , ("M-f"             , withFocused $ windows . W.sink)        -- %! Push window back into tiling
-        , ("M-t"             , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
         , ("M-n"             , refresh)                               -- %! Resize viewed windows to the correct size
 
-        , ("M-k"             , doFocusUp)                             -- %! Move focus to the previous window
-        , ("M-j"             , doFocusDown)                           -- %! Move focus to the next window
-        , ("M-a"             , windows W.focusMaster)                 -- %! Move focus to the master window
         , ("M-b"             , sendMessage ToggleStruts)              -- %! Shrink the master area
 
         , ("M-C-h"           , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
@@ -149,35 +141,42 @@ myConfig = defaultConfig
         , ("M-C-k"           , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
         , ("M-C-l"           , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
 
-        , ("M-u"             , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
+        , ("M-S-p"           , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
         , ("M-p"             , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
-        , ("M-i"             , onGroup W.focusUp'  )                  -- %! Focus up window inside subgroup
-        , ("M-o"             , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
 
---        , ("M-S-<Space>"     , windows W.swapMaster)                  -- %! Swap the focused window and the master window
-        , ("M-S-j"           , windows W.swapDown  )                  -- %! Swap the focused window with the next window
-        , ("M-S-k"           , windows W.swapUp    )                  -- %! Swap the focused window with the previous window
+        -- v These work even in sublayouts.
+        , ("M-S-k"           , windows W.swapUp)                      -- %! Swap the focused window with the previous window
+        , ("M-S-j"           , windows W.swapDown)                    -- %! Swap the focused window with the next window
+        -- v These will skip hidden windows
+        , ("M-k"             , focusUp)                     -- %! Move focus to the previous window
+        , ("M-j"             , focusDown)                   -- %! Move focus to the next window
+        -- v These will not skip windows, thus effectively changing sublayout windows.
+        , ("M-M1-k"           , windows W.focusUp)                    -- %! Move focus to the previous window
+        , ("M-M1-j"           , windows W.focusDown)                  -- %! Move focus to the next window
 
-        , ("M-S-h"           , toSubl Shrink)                         -- %! Shrink the master area
-        , ("M-S-l"           , toSubl Expand)                         -- %! Expand the master area
-        , ("M-S-,"           , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
-        , ("M-S-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
-        , ("M-S-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
-
-        -- FIXME!
-        -- Workaround: toSubl won't call sendMessage if window is not in a sublayout.
         , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
         , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
         , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
         , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
         , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
+        , ("M-S-<Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
+        , ("M-<Tab>"         , windows W.focusMaster)                 -- %! Move focus to the master window
+
+        , ("M-M1-h"           , toSubl Shrink)                        -- %! Shrink the master area
+        , ("M-M1-l"           , toSubl Expand)                        -- %! Expand the master area
+        , ("M-M1-,"           , toSubl (IncMasterN 1))                -- %! Increment the number of windows in the master area
+        , ("M-M1-."           , toSubl (IncMasterN (-1)))             -- %! Deincrement the number of windows in the master area
+        , ("M-M1-<Space>"     , toSubl NextLayout)                    -- %! Rotate through the available layout algorithms
+--        , ("M-M1-k"           , onGroup W.focusUp')                   -- %! Focus up window inside subgroup
+--        , ("M-M1-j"           , onGroup W.focusDown')                 -- %! Focus down window inside subgroup
+        , ("M-M1-<Tab>"       , onGroup focusMaster')                 -- %! Focus down window inside subgroup
+        , ("M-M1-S-<Tab>"     , onGroup swapMaster')                  -- %! Swap the focused window and the master window
 
         , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
         , ("M-q"             , action "reloadXMonad")                 -- %! Reload xmonad
 
-        , ("M-S-s"           , action "prScrAndPaste")
-
         -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
+
         -- Scratchpads!
         , ("M-M1-e"                    , namedScratchpadAction scratchpads "wrapper")
 
@@ -199,6 +198,12 @@ myConfig = defaultConfig
         , ("C-<XF86AudioLowerVolume>"  , spawn "backlight -10")
         , ("M-S-'"                     , GS.goToSelected myGsConfig)
         ]
+        where
+         -- <Copied from SubLayout.hs...>
+         -- should these go into XMonad.StackSet?
+         focusMaster' st = let (f:fs) = W.integrate st in W.Stack f [] fs
+         swapMaster' (W.Stack f u d) = W.Stack f [] $ reverse u ++ d
+         -- </Copied from SubLayout.hs...>
 
 
 -- Custom PP, configure it as you like. It determines what is being written to the bar.
