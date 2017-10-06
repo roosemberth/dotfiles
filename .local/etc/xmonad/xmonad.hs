@@ -88,8 +88,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 -- Grid Select config
 -- TODO: Change shown strings by something more verbose than zsh...
 myGsConfig = GS.defaultGSConfig {
-      GS.gs_cellheight = 25
-    , GS.gs_cellwidth = 150
+      GS.gs_cellheight = 75
+    , GS.gs_cellwidth = 350
 }
 
 layoutAlgorithms = tiled ||| Mirror tiled ||| Full where
