@@ -1,0 +1,12 @@
+[Shortcuts]
+add_blank_frame=Ctrl+-
+add_duplicate_frame=_
+delete_keyframe=Ctrl+_
+next_favorite_preset=none
+next_frame=.
+next_keyframe=:
+previous_favorite_preset=none
+previous_frame=,
+previous_keyframe=;
+switchToPreviouslyActiveNode=none
+view_zoom_out=Ctrl+Alt+-

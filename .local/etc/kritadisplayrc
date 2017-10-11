@@ -1,0 +1,4 @@
+[General]
+EnableHiDPI=false
+EnableSingleApplication=true
+canvasState=OPENGL_SUCCESS
