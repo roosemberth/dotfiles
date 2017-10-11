@@ -132,7 +132,7 @@ myConfig = defaultConfig
                                                                       -- %! Push window up to floating
         , ("M-f"             , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
-        , ("M-n"             , refresh)                               -- %! Resize viewed windows to the correct size
+        , ("M-n"             , refresh)                               -- %! Check if this can force a texture update to the window
 
         , ("M-b"             , sendMessage ToggleStruts)              -- %! Shrink the master area
 
