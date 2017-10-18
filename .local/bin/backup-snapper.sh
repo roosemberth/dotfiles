@@ -1,28 +1,103 @@
 #!/bin/bash
-# James W. Barnett (2016-2017)
 # Roosembert Palacios (2017)
 
-# Takes snapshots of each snapper configuration. It then sends the snapshot to
-# a location on an external drive. After the initial transfer, it does
-# incremental snapshots on later calls. It's important not to delete the
-# snapshot created on your system since that will be used to determine the
-# difference for the next incremental snapshot.
+# Exit codes
+E_SUCCESS=0
+E_USER=1
+E_NOCMD=127
 
-# Destination subvolume will be renamed to date-description replacing everything
-# but letters and numbers by '_'.
+# It's important not to change this userdata in the snapshots, since that's how
+# we find the previous one.
+OLD_USERDATA="extbackup=yes"
+NEW_USERDATA="extbackup=please"
+CONFIGS="$(find /etc/snapper/configs/* -printf '%f\n')"
 
-# Can set the backup directory here, or in the snapper configuration file with
-# EXT_BACKUP_LOCATION
-if [ -z "$1" ]; then
-    echo "No destination directory specified. I hope you set the variable EXT_BACKUP_LOCATION on /etc/snapper/configs/* for each volume"
-fi
+die()
+{
+    retval="$1"; shift
+    if [ $# -eq 0 ]; then
+        cat <&0 >&2
+    else
+        printf "$@" >&2; echo >&2
+    fi
+    if [ "$retval" = $E_USER ]; then
+        printf "Run with --help for more information.\n" >&2
+    fi
+    exit "$retval"
+}
 
-declare -r MYBACKUPDIR="$1"
+usage()
+{
+    cat <<-EOF
+	$BASENAME: Backups snapper btrfs snapshots.
 
-# You can set a snapper configuration to be excluded by setting EXT_BACKUP="no"
-# in its snapper configuration file.
+	Sends the snapshots configured in /etc/snapper/configs to a local or remote
+	(via ssh) location.
+
+	After doing an initial transfer, it does incremental snapshots subsequent calls.
+	It's important not to delete the snapshot created on your system since that
+	will be used to determine the difference for the next incremental snapshot.
+
+	Only snapshots with 'extbackup=please' in the user_data field will be sent.
+	After successfully sending such snapshot the user_data field will change to
+	'extbackup=yes'. Subsequent calls will use the snapshot marked with such
+	user_data as parent subvolume when invoking btrfs {send,receive}.
+
+	Destination subvolumes will be renamed to the following pattern:
+	\$(date +%y%m%d-%H%M)-\$(echo \${description} | sed 's/[^A-Za-z0-9]/_/g')
+	where description corresponds to the snapper description replacing everything
+	but A-Z a-z 0-9 by '_'. ie. '171006-0130-I_d_cross_the_universe_for_you'
+
+	$BASENAME will ssh multiple times to the remote host. use of an ssh agent is recommended.
+
+	Detected configurations:
+	$CONFIGS
+
+	Configurations containing EXT_BACKUP="no" will be silently skipped.
+
+	Usage:
+	$BASENAME [-h]
+
+	$BASENAME [-r user@host] -d /destination/path
+
+	Options:
+	  -h, --help
+	        Show this help message and exit.
+	  -r, --remote
+	        Destination is in remote host.
+	  -d, --dest
+	        Destination path.
+
+	Example:
+	    $BASENAME --dest /mnt/Freezer/var/stores/Triglav
+	            Will send the btrfs snapshots to a local path.
+	            btrfs-send ... | btrfs-receive /mnt/Freezer/var/stores/Triglav/
+	            ex. Say you have configs "root" and "homes"; whose latest
+	            snapshot description is "Hello World".
+
+	            This will create read-only subvolumes
+	            - /mnt/Freezer/var/stores/Triglav/root/$(date +%y%m%d-%H%M)-Hello_World
+	            - /mnt/Freezer/var/stores/Triglav/homes/$(date +%y%m%d-%H%M)-Hello_World
+
+	    $BASENAME --remote root@10.13.13.1 --dest /mnt/Freezer/var/stores/Triglav
+	            Will send the btrfs snapshots via ssh. ie
+	            btrfs-send ... | ssh root@10.13.13.1 btrfs-receive /mnt/Freezer/var/stores/Triglav/
+	EOF
+}
+
+while [ $# -gt 0 ]; do
+    opt="$1"; shift
+    case "$opt" in
+        (-h|--help) usage; exit ;;
+        (-r|--remote) REMOTE_SSH="$1"; shift ;;
+        (-d|--dest) BACKUPDIR="$1"; shift ;;
+        (-*) die $E_USER 'Unknown option: %s' "$opt" ;;
+        (*) die $E_USER 'Trailing argument: %s' "$opt" ;;
+    esac
+done
 
 #--------------------------------------------------------
+
 set -e
 
 if [ "$(id -u)" != '0' ]; then
@@ -30,11 +105,22 @@ if [ "$(id -u)" != '0' ]; then
     exit
 fi
 
-# It's important not to change this userdata in the snapshots, since that's how
-# we find the previous one.
-declare -r OLD_USERDATA="extbackup=yes"
-declare -r NEW_USERDATA="extbackup=please"
-declare -r CONFIGS="$(find /etc/snapper/configs/* -printf '%f\n')"
+if [ -z $BACKUPDIR ]; then
+    echo "ERROR: External backup location not set!"
+    exit 1
+fi
+
+if [ -z "$REMOTE_SSH" ]; then
+    if [ ! -d $BACKUPDIR ]; then
+        echo "ERROR: $BACKUPDIR is not a directory."
+        exit 1
+    fi
+else
+    if ssh "$REMOTE_SSH" '[ ! -d $BACKUPDIR ]' ; then
+        echo "ERROR: $BACKUPDIR is not a directory on remote location."
+        exit 1
+    fi
+fi
 
 echo "Processing subvolumes $(echo $CONFIGS | tr '\n' ' ')"
 
@@ -44,17 +130,6 @@ for x in $CONFIGS; do
     DO_BACKUP=${EXT_BACKUP:-"yes"}
 
     if [[ $DO_BACKUP == "yes" ]]; then
-
-        BACKUPDIR=${EXT_BACKUP_LOCATION:-"$MYBACKUPDIR"}
-
-        if [ -z $BACKUPDIR ]; then
-            echo "ERROR: External backup location not set!"
-            exit 1
-        elif [ ! -d $BACKUPDIR ]; then
-            echo "ERROR: $BACKUPDIR is not a directory."
-            exit 1
-        fi
-
         OLD_NUMBER=$(snapper -c $x list -t single | grep "$OLD_USERDATA"| awk '/'"$OLD_USERDATA"'/ {print $1}' | head -n 1)
         NEW_NUMBER=$(snapper -c $x list -t single | grep "$NEW_USERDATA"| awk '/'"$NEW_USERDATA"'/ {print $1}' | head -n 1)
 
@@ -64,7 +139,11 @@ for x in $CONFIGS; do
         fi
 
         BACKUP_LOCATION="$BACKUPDIR/$x/"
-        mkdir -p "$BACKUP_LOCATION"
+        if [ -z "$REMOTE_SSH" ]; then
+            mkdir -p "$BACKUP_LOCATION"
+        else
+            ssh "$REMOTE_SSH" mkdir -p "$BACKUP_LOCATION"
+        fi
 
         NEW_ROW=$(snapper -c $x list -t single | egrep "^$NEW_NUMBER +\|")
         NEW_DATE=$(date --date="$(echo $NEW_ROW | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
@@ -76,24 +155,34 @@ for x in $CONFIGS; do
 
         mv "$NEW_ORIG_SNAPSHOT" "$NEW_SNAPSHOT"
 
-        if [[ -z "$OLD_NUMBER" ]]; then
+        if [ -z "$OLD_NUMBER" ]; then
             echo "Will perform initial backup for snapper configuration '$x'."
-            echo "Could not calculate total size, I'll still try to transfer though. ETA unknown"
-            btrfs send $NEW_SNAPSHOT | pv -pbtea | btrfs receive $BACKUP_LOCATION
+
+            if [ -z "$REMOTE_SSH" ]; then
+                btrfs send $NEW_SNAPSHOT | pv -pbtea | btrfs receive $BACKUP_LOCATION
+            else
+                btrfs send $NEW_SNAPSHOT | pv -pbtea | ssh "$REMOTE_SSH" btrfs receive $BACKUP_LOCATION
+            fi
+
             sudo mv "$NEW_SNAPSHOT" "$NEW_ORIG_SNAPSHOT"
         else
             OLD_ROW=$(snapper -c $x list -t single | egrep "^$OLD_NUMBER +\|")
             OLD_DATE=$(date --date="$(echo $OLD_ROW | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
             OLD_ORIG_SNAPSHOT="$SUBVOLUME/.snapshots/$OLD_NUMBER/snapshot"
 
-            # Sends the difference between the new snapshot and old snapshot to
-            # the backup location. Using the -c flag instead of -p tells it that
-            # there is an identical subvolume to the old snapshot at the
-            # receiving location where it can get its data. This helps speed up
-            # the transfer.
-            btrfs send -p $OLD_ORIG_SNAPSHOT $NEW_SNAPSHOT | pv -pbtea | btrfs receive -v $BACKUP_LOCATION
+            if [ -z "$REMOTE_SSH" ]; then
+                btrfs send -p $OLD_ORIG_SNAPSHOT $NEW_SNAPSHOT | pv -pbtea | btrfs receive -v $BACKUP_LOCATION
+            else
+                btrfs send -p $OLD_ORIG_SNAPSHOT $NEW_SNAPSHOT | pv -pbtea | ssh "$REMOTE_SSH" btrfs receive -v $BACKUP_LOCATION
+            fi
+
             sudo mv "$NEW_SNAPSHOT" "$NEW_ORIG_SNAPSHOT"
-            cp "$NEW_ORIG_INFO" "$BACKUP_LOCATION/$NEW_SNAPSHOT_NAME.xml"
+
+            if [ -z "$REMOTE_SSH" ]; then
+                cp "$NEW_ORIG_INFO" "$BACKUP_LOCATION/$NEW_SNAPSHOT_NAME.xml"
+            else
+                cat "$NEW_ORIG_INFO" | ssh "$REMOTE_SSH" tee "$BACKUP_LOCATION/$NEW_SNAPSHOT_NAME.xml" > /dev/null
+            fi
             snapper -c $x delete $OLD_NUMBER
         fi
 
