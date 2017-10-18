@@ -100,25 +100,25 @@ done
 
 set -e
 
+if ! which pv; then
+    die $E_NOCMD "pv must be accessible via PATH"
+fi
+
 if [ "$(id -u)" != '0' ]; then
-    echo "Script must be run as root."
-    exit
+    die $E_USER "Script must be run as root."
 fi
 
 if [ -z $BACKUPDIR ]; then
-    echo "ERROR: External backup location not set!"
-    exit 1
+    die $E_USER "ERROR: External backup location not set!"
 fi
 
 if [ -z "$REMOTE_SSH" ]; then
     if [ ! -d $BACKUPDIR ]; then
-        echo "ERROR: $BACKUPDIR is not a directory."
-        exit 1
+        die $E_USER "ERROR: $BACKUPDIR is not a directory."
     fi
 else
     if ssh "$REMOTE_SSH" '[ ! -d $BACKUPDIR ]' ; then
-        echo "ERROR: $BACKUPDIR is not a directory on remote location."
-        exit 1
+        die $E_USER "ERROR: $BACKUPDIR is not a directory on remote location."
     fi
 fi
 
