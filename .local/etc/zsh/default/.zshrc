@@ -146,7 +146,7 @@ vim_mode=$vim_mode_insert
 # Assist functions {{{
 build_netns_prompt()
 {
-    local ns_name="$(ip netns identify)"
+    local ns_name="$(ip netns identify 2>/dev/null)"
     echo "$ns_name"
 }
 #}}}
@@ -217,7 +217,7 @@ build_prompt() #{{{
 	[ -n "$SSH_CONNECTION" ] && PROMPT+="%{$pc_host%}%M:%{$reset_color%}"
 
 	# Network namespace
-    [ -n "$(ip netns identify)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
+    [ -n "$(ip netns identify 2>/dev/null)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
 
 	# PWD:
 	PROMPT+="%{$pc_pwd%}%~%{$reset_color%} "
