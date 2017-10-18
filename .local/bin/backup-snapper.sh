@@ -13,7 +13,11 @@
 
 # Can set the backup directory here, or in the snapper configuration file with
 # EXT_BACKUP_LOCATION
-declare -r mybackupdir="/mnt/then/var/stores/Triglav"
+if [ -z "$1" ]; then
+    echo "No destination directory specified. I hope you set the variable EXT_BACKUP_LOCATION on /etc/snapper/configs/* for each volume"
+fi
+
+declare -r MYBACKUPDIR="$1"
 
 # You can set a snapper configuration to be excluded by setting EXT_BACKUP="no"
 # in its snapper configuration file.
@@ -21,82 +25,79 @@ declare -r mybackupdir="/mnt/then/var/stores/Triglav"
 #--------------------------------------------------------
 set -e
 
-if [[ $EUID -ne 0 ]]; then
+if [ "$(id -u)" != '0' ]; then
     echo "Script must be run as root."
     exit
 fi
 
 # It's important not to change this userdata in the snapshots, since that's how
 # we find the previous one.
-declare -r old_userdata="extbackup=yes"
-declare -r new_userdata="extbackup=please"
-declare -r configs="$(find /etc/snapper/configs/* -printf '%f\n')"
+declare -r OLD_USERDATA="extbackup=yes"
+declare -r NEW_USERDATA="extbackup=please"
+declare -r CONFIGS="$(find /etc/snapper/configs/* -printf '%f\n')"
 
-echo "Processing subvolumes $(echo $configs | tr '\n' ' ')"
+echo "Processing subvolumes $(echo $CONFIGS | tr '\n' ' ')"
 
-for x in $configs; do
+for x in $CONFIGS; do
     source /etc/snapper/configs/$x
 
-    do_backup=${EXT_BACKUP:-"yes"}
+    DO_BACKUP=${EXT_BACKUP:-"yes"}
 
-    if [[ $do_backup == "yes" ]]; then
+    if [[ $DO_BACKUP == "yes" ]]; then
 
-        BACKUPDIR=${EXT_BACKUP_LOCATION:-"$mybackupdir"}
+        BACKUPDIR=${EXT_BACKUP_LOCATION:-"$MYBACKUPDIR"}
 
-        if [[ -z $BACKUPDIR ]]; then
+        if [ -z $BACKUPDIR ]; then
             echo "ERROR: External backup location not set!"
             exit 1
-        elif [[ ! -d $BACKUPDIR ]]; then
+        elif [ ! -d $BACKUPDIR ]; then
             echo "ERROR: $BACKUPDIR is not a directory."
             exit 1
         fi
 
-        old_number=$(snapper -c $x list -t single | grep "$old_userdata"| awk '/'"$old_userdata"'/ {print $1}' | head -n 1)
-        new_number=$(snapper -c $x list -t single | grep "$new_userdata"| awk '/'"$new_userdata"'/ {print $1}' | head -n 1)
+        OLD_NUMBER=$(snapper -c $x list -t single | grep "$OLD_USERDATA"| awk '/'"$OLD_USERDATA"'/ {print $1}' | head -n 1)
+        NEW_NUMBER=$(snapper -c $x list -t single | grep "$NEW_USERDATA"| awk '/'"$NEW_USERDATA"'/ {print $1}' | head -n 1)
 
-        if [[ -z "$new_number" ]]; then
+        if [[ -z "$NEW_NUMBER" ]]; then
             echo "Target snapshot for configuration $x not found, add extbackup=please as userdata to tag target snapshot. Skipping"
             continue
         fi
 
-        backup_location="$BACKUPDIR/$x/"
-        mkdir -p "$backup_location"
+        BACKUP_LOCATION="$BACKUPDIR/$x/"
+        mkdir -p "$BACKUP_LOCATION"
 
-        new_row=$(snapper -c $x list -t single | egrep "^$new_number +\|")
-        new_date=$(date --date="$(echo $new_row | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
-        new_orig_snapshot="$SUBVOLUME/.snapshots/$new_number/snapshot"
-        new_orig_info="$SUBVOLUME/.snapshots/$new_number/info.xml"
-        new_description="$(echo $new_row | awk -F '|' '{print $4}' | sed 's/^ *//;s/ *$//')"
-        new_snapshot_name="${new_date}-$(echo $new_description | sed 's/[^A-Za-z0-9]/_/g')"
-        new_snapshot="$SUBVOLUME/.snapshots/$new_number/$new_snapshot_name"
+        NEW_ROW=$(snapper -c $x list -t single | egrep "^$NEW_NUMBER +\|")
+        NEW_DATE=$(date --date="$(echo $NEW_ROW | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
+        NEW_ORIG_SNAPSHOT="$SUBVOLUME/.snapshots/$NEW_NUMBER/snapshot"
+        NEW_ORIG_INFO="$SUBVOLUME/.snapshots/$NEW_NUMBER/info.xml"
+        NEW_DESCRIPTION="$(echo $NEW_ROW | awk -F '|' '{print $4}' | sed 's/^ *//;s/ *$//')"
+        NEW_SNAPSHOT_NAME="${NEW_DATE}-$(echo $NEW_DESCRIPTION | sed 's/[^A-Za-z0-9]/_/g')"
+        NEW_SNAPSHOT="$SUBVOLUME/.snapshots/$NEW_NUMBER/$NEW_SNAPSHOT_NAME"
 
-        mv "$new_orig_snapshot" "$new_snapshot"
+        mv "$NEW_ORIG_SNAPSHOT" "$NEW_SNAPSHOT"
 
-        if [[ -z "$old_number" ]]; then
+        if [[ -z "$OLD_NUMBER" ]]; then
             echo "Will perform initial backup for snapper configuration '$x'."
             echo "Could not calculate total size, I'll still try to transfer though. ETA unknown"
-            btrfs send $new_snapshot | pv -pbtea | btrfs receive $backup_location
-            sudo mv "$new_snapshot" "$new_orig_snapshot"
+            btrfs send $NEW_SNAPSHOT | pv -pbtea | btrfs receive $BACKUP_LOCATION
+            sudo mv "$NEW_SNAPSHOT" "$NEW_ORIG_SNAPSHOT"
         else
-            old_row=$(snapper -c $x list -t single | egrep "^$old_number +\|")
-            old_date=$(date --date="$(echo $old_row | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
-            old_orig_snapshot="$SUBVOLUME/.snapshots/$old_number/snapshot"
-            #old_snapshot="$SUBVOLUME/.snapshots/$old_number/${old_date}-$(echo $old_row | awk -F '|' '{print $4}' | sed 's/^ *//;s/ *$//;s/[^A-Za-z0-9]/_/g')"
-
-            #sudo btrfs subvolume snapshot -r "$old_orig_snapshot" "$old_snapshot" || true
+            OLD_ROW=$(snapper -c $x list -t single | egrep "^$OLD_NUMBER +\|")
+            OLD_DATE=$(date --date="$(echo $OLD_ROW | awk -F '|' '{print $2}')" "+%y%m%d-%H%M")
+            OLD_ORIG_SNAPSHOT="$SUBVOLUME/.snapshots/$OLD_NUMBER/snapshot"
 
             # Sends the difference between the new snapshot and old snapshot to
             # the backup location. Using the -c flag instead of -p tells it that
             # there is an identical subvolume to the old snapshot at the
             # receiving location where it can get its data. This helps speed up
             # the transfer.
-            btrfs send -p $old_orig_snapshot $new_snapshot | pv -pbtea | btrfs receive -v $backup_location
-            sudo mv "$new_snapshot" "$new_orig_snapshot"
-            cp "$new_orig_info" "$backup_location/$new_snapshot_name.xml"
-            snapper -c $x delete $old_number
+            btrfs send -p $OLD_ORIG_SNAPSHOT $NEW_SNAPSHOT | pv -pbtea | btrfs receive -v $BACKUP_LOCATION
+            sudo mv "$NEW_SNAPSHOT" "$NEW_ORIG_SNAPSHOT"
+            cp "$NEW_ORIG_INFO" "$BACKUP_LOCATION/$NEW_SNAPSHOT_NAME.xml"
+            snapper -c $x delete $OLD_NUMBER
         fi
 
         # Tag new snapshot as the latest
-        snapper -v -c $x modify -d "$new_description" -u "$old_userdata" -c "" $new_number
+        snapper -v -c $x modify -d "$NEW_DESCRIPTION" -u "$OLD_USERDATA" -c "" $NEW_NUMBER
     fi
 done
