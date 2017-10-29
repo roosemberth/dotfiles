@@ -25,3 +25,6 @@ export OS_NAME
 export EDITOR="$(which vim)"
 export VISUAL="$(which vim) -O"
 export PAGER="$(which less) -j4"
+
+# Honor XDG LIB Home
+export LD_LIBRARY_PATH="${XDG_LIB_HOME}:${LD_LIBRARY_PATH}"
