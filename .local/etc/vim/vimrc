@@ -442,6 +442,9 @@ map <leader>u :GundoToggle<CR>
 " NERDTree
 nmap <leader>o :NERDTreeToggle<CR>
 
+" Fugitive
+nmap <leader>g :Gstatus<CR>
+
 " Quickfix
 nmap <leader>M :cclose<CR>
 nmap <leader>m :copen<CR>
