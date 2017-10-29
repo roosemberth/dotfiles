@@ -22,6 +22,6 @@ fi
 export OS_NAME
 
 # Editor and pager:
-export EDITOR='/usr/bin/vim'
-export VISUAL='/usr/bin/vim -O'
-export PAGER='/usr/bin/less -j4'
+export EDITOR="$(which vim)"
+export VISUAL="$(which vim) -O"
+export PAGER="$(which less) -j4"
