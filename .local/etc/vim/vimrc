@@ -392,7 +392,7 @@ au FileType gitcommit,mail setl textwidth=72
 set backspace=indent,eol,start
 
 " Leader key:
-let mapleader='é'
+let mapleader=';'
 
 " Keep 3 lines 'padding' above/below the cursor:
 set scrolloff=3
@@ -443,8 +443,8 @@ map <leader>u :GundoToggle<CR>
 nmap <leader>o :NERDTreeToggle<CR>
 
 " Quickfix
-nmap <leader>ä :cclose<CR>
-nmap <leader>à :copen<CR>
+nmap <leader>M :cclose<CR>
+nmap <leader>m :copen<CR>
 nmap <leader>N :cprevious<CR>
 nmap <leader>n :cnext<CR>
 
