@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Roosembert Palacios (2017)
 
 # shellcheck source=/dev/null

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # modified from http://ficate.com/blog/2012/10/15/battery-life-in-the-land-of-tmux/
 
 ## FIXME: Deprecated sysfs for upower, more portable... See battery monitor
@@ -31,7 +31,7 @@ fi
 CURRENT_CHARGE=$(cat /sys/class/power_supply/BAT0/energy_now)
 TOTAL_CHARGE=$(cat /sys/class/power_supply/BAT0/energy_full)
 
-if [ -x /usr/bin/bc ]; then
+if [ -x $(which bc) ]; then
 	CHARGE=$(echo "scale=4;((100*$CURRENT_CHARGE)/$TOTAL_CHARGE)" | bc -l)
 else
 	CHARGE=$((100*$CURRENT_CHARGE/$TOTAL_CHARGE))

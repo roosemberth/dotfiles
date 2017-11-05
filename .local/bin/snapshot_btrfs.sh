@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Created by Orbstheorem, after a thoughtful day, very early in the morning at epfl.
 set -e
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: JAIL="ovpn-tb-usa"; sudo openvpn --config "TunnelBear United States.ovpn" --auth-user-pass =(pass show web/tunnelbear.com/1) --route-noexec --ifconfig-noexec --route-up "$(which jailed-openvpn.sh) ${JAIL}" --up "$(which jailed-openvpn.sh) ${JAIL}" --script-security 2
 
 JAIL_NAME=${1:-OpenVPN--tmp}

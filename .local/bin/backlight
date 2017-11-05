@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 # set backlight script
 BACKLIGHT_FILE="/sys/class/backlight/intel_backlight/brightness"
@@ -12,7 +12,7 @@ So here goes some doc, forgive me if I'm sleepy...
 dsa
 }
 
-if [ $(whoami) != "root" ]; then
+if [ $(id -u) != "0" ]; then
 	exec sudo $0 $@
 fi
 

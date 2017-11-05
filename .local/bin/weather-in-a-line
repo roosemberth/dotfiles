@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # Created by Roosemberth in a lonely night at epfl
 # to be used as a helper for xmobar (because their weather applet sucks)
