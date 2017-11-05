@@ -192,10 +192,13 @@ myConfig = defaultConfig
         , ("<XF86AudioNext>"           , spawn "mpc next")
         , ("<XF86AudioPrev>"           , spawn "mpc prev")
 
-        , ("<XF86MonBrightnessUp>"     , spawn "backlight +10")
-        , ("<XF86MonBrightnessDown>"   , spawn "backlight -10")
-        , ("C-<XF86AudioRaiseVolume>"  , spawn "backlight +10")
-        , ("C-<XF86AudioLowerVolume>"  , spawn "backlight -10")
+        , ("<XF86MonBrightnessUp>"     , spawn "xbacklight -inc 10")
+        , ("<XF86MonBrightnessDown>"   , spawn "xbacklight -dec 10")
+        , ("C-<XF86AudioRaiseVolume>"  , spawn "xbacklight -inc 10")
+        , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10")
+
+
+
         , ("M-S-'"                     , GS.goToSelected myGsConfig)
         ]
         where
