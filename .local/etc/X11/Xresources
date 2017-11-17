@@ -1,13 +1,13 @@
 ! X resources file.
-! Written by ayekat a long time ago, updated on a sunny wednesday afternoon in
-! september 2014.
+! Written initially by ayekat a long time ago, modified by Orbstheorem suited and
+! retailored to fill my needs and likings
 ! ------------------------------------------------------------------------------
-! HiDPI {{{
+! HiDPI
 Xft.dpi              : 192
-! }}}
+
 
 ! ------------------------------------------------------------------------------
-! COLOURS {{{
+! COLOURS
 
 ! Colour palette:
 #define black        #222222
@@ -28,10 +28,11 @@ Xft.dpi              : 192
 #define lightwhite   #FFFFFF
 
 #define termfg       #AAAAAA
-#define termbg       #111111
+!#define termbg       #202220
+#define termbg       #202028
 
 ! Black:
-*color0              : black
+*color0              : termbg
 *color8              : lightblack
 ! Red:
 *color1              : red
@@ -55,24 +56,23 @@ Xft.dpi              : 192
 *color7              : white
 *color15             : lightwhite
 
-! }}}
+!
 ! ------------------------------------------------------------------------------
-! XTERM {{{
+! XTERM
 
 xterm.*.foreground     : termfg
 xterm.*.background     : termbg
 
-! }}}
+!
 ! ------------------------------------------------------------------------------
-! URXVT {{{
+! URXVT
 
 ! Look:
 ! URxvt.font           : -misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1,-gnu-unifont-medium-r-normal--16-160-75-75-c-80-iso10646-1,xft:NotoMono
-! URxvt.font           : xft:monaco:size=10:antialias=true
-! URxvt.font           : xft:dejavu sans mono:size=12:antialias=false
-! URxvt.font           : xft:terminus:normal:size=14:antialias=false
 URxvt.letterSpace    : -2
-URxvt.font           : xft:dejavu sans mono:size=9:antialias=false
+URxvt.font           : xft:Dejavu sans mono:size=10:antialias=true
+URxvt.boldFont       : xft:DejaVu Sans Mono:size=10
+!URxvt.font           : xft:DejaVu Sans Mono:size=13
 URxvt.depth          : 32
 URxvt.foreground     : termfg
 URxvt.background     : termbg
@@ -119,110 +119,3 @@ URxvt.perl-ext-common: default,font-size,url-select,keyboard-select
   URxvt.keysym.C-S-Left  : font-size:show
 
 !URxvt.keysym.Escape  : \033\000
-
-! }}}
-! ------------------------------------------------------------------------------
-! DZEN {{{
-
-dzen2.font           : Fixed-10:Medium:SemiCondensed
-dzen2.background     : black
-dzen2.foreground     : #888888
-
-! }}}
-! ------------------------------------------------------------------------------
-! KARUIBAR {{{
-
-#ifdef SRVR_ixh
-# if DISPLAY_NUM == 0
-karuibar.xgap    : 100
-karuibar.modules : mpd, network, memory, cpu, \
-                   battery, battery_slice, backlight, alsa_out, alsa_in, \
-                   time_date, time_time, capslock
-# else
-karuibar.modules : stdin; cpu, time_date, time_time, capslock
-# endif
-#else
-# ifdef SRVR_phobia
-karuibar.xgap    : 100
-karuibar.modules : network, memory, cpu, alsa_out, time_date, time_time, capslock
-# endif
-#endif
-
-karuibar.foreground  : termfg
-karuibar.background  : black
-karuibar.wsep        : 1
-karuibar.wpad        : 7
-karuibar.bottom      : false
-
-karuibar.stdin.foreground     : #00D7FF
-karuibar.stdin.background     : #005F5F
-
-karuibar.mpd_gnu.host         : mpd.gnugen.ch
-
-karuibar.battery.acpi_use_real: true
-karuibar.battery_slice.id     : BAT1
-karuibar.battery_slice.acpi_use_real: true
-
-!karuibar.backlight.device     : intel_backlight
-karuibar.backlight.device     : acpi_video0
-
-
-karuibar.alsa_in.channel      : Capture
-karuibar.alsa_in.persistent   : false
-karuibar.alsa_in.capture      : true
-
-karuibar.time_date.format     : %Y-%m-%d
-karuibar.time_date.foreground : white
-karuibar.time_date.background : lightblack
-karuibar.time_time.format     : %H:%M
-karuibar.time_time.foreground : lightblack
-karuibar.time_time.background : white
-
-! }}}
-! ------------------------------------------------------------------------------
-! KARUIWM {{{
-
-!karuiwm.client.border.width       : 2
-!karuiwm.client.border.colour      : #FF0000
-!karuiwm.client.focus.border.colour: #00FF00
-karuiwm.monitor.gap.top    : 15
-
-karuiwm.modules            : base, karuibar
-
-karuiwm.layouts            : rstack, monocle
-
-karuiwm.modifier           : A
-
-karuiwm.keysym.M-k         : stepclient:prev
-karuiwm.keysym.M-j         : stepclient:next
-karuiwm.keysym.M-S-k       : shiftclient:prev
-karuiwm.keysym.M-S-j       : shiftclient:next
-karuiwm.keysym.M-Return    : zoom
-karuiwm.keysym.M-S-c       : killclient
-karuiwm.keysym.M-t         : togglefloat
-
-karuiwm.keysym.M-C-h       : stepdesktop:left
-karuiwm.keysym.M-C-j       : stepdesktop:down
-karuiwm.keysym.M-C-k       : stepdesktop:up
-karuiwm.keysym.M-C-l       : stepdesktop:right
-karuiwm.keysym.M-l         : setmfact:+0.05
-karuiwm.keysym.M-h         : setmfact:-0.05
-karuiwm.keysym.M-comma     : setnmaster:+1
-karuiwm.keysym.M-period    : setnmaster:-1
-karuiwm.keysym.M-space     : steplayout:next
-karuiwm.keysym.M-S-space   : steplayout:prev
-karuiwm.keysym.M-r         : setlayout:rstack
-karuiwm.keysym.M-m         : setlayout:monocle
-
-karuiwm.keysym.M-S-b       : karuibar.restart
-
-karuiwm.keysym.M-q         : restart
-karuiwm.keysym.M-S-q       : stop
-
-karuiwm.keysym.M-n         : exec:urxvt
-karuiwm.keysym.M-p         : exec:dmenu_run
-
-karuiwm.button.M-1         : mousemove
-karuiwm.button.M-3         : mouseresize
-
-! }}}
