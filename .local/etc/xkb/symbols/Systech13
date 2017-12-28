@@ -1,6 +1,6 @@
 xkb_symbols "Systech13" {
     // Base keyboard layout
-    include "ch(fr)"
+    include "us(intl)"
 
     // Esc, Caps
     key <CAPS> { [ Shift_L ] };
