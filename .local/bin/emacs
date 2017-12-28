@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-. "$(dirname "$0")"/path.sh
-[ ! -d "$XDG_DATA_HOME/emacs/home" ] && mkdir -p "$XDG_DATA_HOME/emacs/home"
-HOME="$XDG_DATA_HOME/emacs/home" exec "$EPATH" "$@"
