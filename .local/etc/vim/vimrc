@@ -82,6 +82,8 @@ NeoBundle 'jceb/vim-orgmode'
 NeoBundle 'tpope/vim-speeddating'
 "NeoBundle 'vim-scripts/diffchar.vim'
 
+NeoBundle 'yuratomo/w3m.vim'
+
 NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'tpope/vim-surround'
