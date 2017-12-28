@@ -95,6 +95,7 @@ if [ $(id -u) != 0 ]; then
         antigen bundle zsh-users/zsh-completions src
         antigen bundle zsh-users/zsh-autosuggestions
         antigen bundle zsh-users/zsh-syntax-highlighting
+        antigen bundle ninrod/pass-zsh-completion
 
         antigen apply
     fi
