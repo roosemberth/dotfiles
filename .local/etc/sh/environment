@@ -1,25 +1,8 @@
 #!/bin/sh
 # Environment set when logging into a shell.
-# PATH is set in profile.
 # Written by ayekat on a frustrating evening in september 2014.
 
-# Set OS name, for OS-specific configuration:
-OS_NAME=''
-if [ -e /etc/arch-release ]; then
-	OS_NAME='arch'
-elif [ -e /etc/debian_version ]; then
-	OS_NAME='debian'
-elif [ -e /etc/gentoo-release ]; then
-	OS_NAME='gentoo'
-elif [ -e /etc/lsb-release ]; then
-	OS_NAME="$(grep -e '^DISTRIB_ID=' /etc/lsb-release | cut -d '=' -f 2 | \
-	           tr '[:upper:]' '[:lower:]')"
-elif [ -e /etc/os-release ]; then
-	OS_NAME="$(grep -e '^ID=' /etc/os-release | cut -d '=' -f 2)"
-else
-	OS_NAME="$(uname)"
-fi
-export OS_NAME
+# PATH is set in profile.
 
 # Editor and pager:
 export EDITOR="$(which vim)"
