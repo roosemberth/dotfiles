@@ -196,7 +196,7 @@ settings = {
   core = {
     real_name = "Roosembert Palacios";
     user_name = "roosemberth";
-    nick = "Orbstheorem";
+    nick = "roosemberth";
   };
   "fe-text" = { actlist_sort = "refnum"; };
   "fe-common/core" = {
