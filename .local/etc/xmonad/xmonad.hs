@@ -35,15 +35,17 @@ longCmds cmd = (M.fromList $ [
     , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
     , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
     , ("prScrAndPaste", "capture_screen_and_paste.sh | xclip -selection clipboard; notify-send 'Screen captured' \"Available in /tmp/export.png and $(xclip -o -selection clipboard) (copied to clipboard)\"")
+    , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
+    , ("layout"       , "feh /Storage/tmp/Ergodox-Base.png")
     ]) M.! cmd
 
 action :: String -> X ()
 action action = spawn $ longCmds action
 
-scratchpads =
-    [
+scratchpads = [
 -- TODO: Split wrapper into multiple scratchpads!
       NS "wrapper" (longCmds "wrapperCmd") (title =? "Scratchpad-Wrapper") doCenterFloat
+    , NS "flyway"  ("urxvt -e tmux new -As flyway") (title =? "Scratchpad-flyway") doCenterFloat
 --  , NS "stardict" "stardict" (className =? "Stardict") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
@@ -60,6 +62,7 @@ myManageHook = composeAll
     , className =? "mpv"      --> doCenterFloat
     , className =? "Shutter"  --> doCenterFloat
     , className =? "eog"      --> doCenterFloat
+    , className =? "feh"      --> doFloatAt (7/10) (1/100)
     , className =? "Gvncviewer" --> doCenterFloat
     , className =? "Gajim"   <&&> role =? "roster"    --> doFloatAt (3000/3480) (104/2160)
     , className =? "Gajim"   <&&> role =? "messages"  --> doFloatAt (2000/3480) (550/2160)
@@ -126,7 +129,7 @@ myConfig = defaultConfig
         , ("M-C-<Return>"    , action "ulauncher")
         , ("M-<Return>"      , spawn "urxvt -e tmux")
         , ("M-S-s"           , action "prScrAndPaste")
-        , ("M-S-a"           , spawn "xtrlock")                       -- %! Lock the screen
+        , ("M-S-a"           , spawn "xlock")                       -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
         , ("M-S-f"           , withFocused $ windows . flip W.float (W.RationalRect (1/3) (1/3) (1/3) (1/3)))
                                                                       -- %! Push window up to floating
@@ -177,8 +180,13 @@ myConfig = defaultConfig
 
         -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
 
+        -- I need to learn my layout ^^
+        , ("M-S-e"                , action "layout")
+        , ("M-S-t"                , action "restoreTmux")
+
         -- Scratchpads!
         , ("M-M1-e"                    , namedScratchpadAction scratchpads "wrapper")
+        , ("M-M1-w"                    , namedScratchpadAction scratchpads "flyway")
 
         , ("S-<XF86AudioRaiseVolume>"  , action "volumeUp")
         , ("S-<XF86AudioLowerVolume>"  , action "volumeDown")
