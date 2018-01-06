@@ -205,6 +205,8 @@ myConfig = defaultConfig
         , ("C-<XF86AudioRaiseVolume>"  , spawn "xbacklight -inc 10")
         , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10")
 
+        , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
+        , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
 
 
         , ("M-S-'"                     , GS.goToSelected myGsConfig)
