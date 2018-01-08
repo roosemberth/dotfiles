@@ -6,9 +6,25 @@
     ];
 
   boot.cleanTmpDir = true;
+  boot.kernel.sysctl."vm.overcommit_memory" = "1";
+  boot.kernelParams = [ "ip=5.2.67.130::5.2.67.1:255.255.255.0:heimdaalr.orbstheorem.ch:eth0" ];
 
   networking = {
-    hostName = "Heimdaalr.orbstheorem.ch"; # Define your hostname.
+    useDHCP = false;
+    hostName = "heimdaalr.orbstheorem.ch"; # Define your hostname.
+    domain = "orbstheorem.ch";
+    enableIPv6 = true;
+    interfaces = {
+      "eth0" = {
+        ip4 = [ { address = "5.2.67.130"; "prefixLength" = 24; } ];
+        ip6 = [ { address = "2a04:52c0:101:25f::a796"; "prefixLength" = 64; } ];
+      };
+    };
+    defaultGateway = { address = "5.2.67.1"; };
+    defaultGateway6 = { address = "2a04:52c0:101::1"; };
+    nameservers = [ "2a01:1b0:7999:446::1:4" "2a00:1ca8:18::1:104" "8.8.8.8" "8.8.4.4" ];
+    useNetworkd = true;
+    usePredictableInterfaceNames = false;
     extraHosts = ''
     '';
     firewall.enable = true;
@@ -20,18 +36,13 @@
   # Set your time zone.
   time.timeZone = "Europe/Zurich";
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop
+    wget vim curl zsh git tmux htop atop iotop dropbear
     hdparm nox cacert tinc_pre
   ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
   programs.bash.enableCompletion = true;
   programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
 
   services = {
     openssh = {
@@ -39,8 +50,6 @@
       gatewayPorts = "yes";
     # forwardX11 = true;
     };
-
-  # xserver.enable = false;
 
   # snapper.configs = let
   #   extraConfig = ''
@@ -58,24 +67,22 @@
   };
 
   users.mutableUsers = false;
-  users.extraUsers.roosemberth =
-  { uid = 1000;
-    description = "Roosemberth Palacios";
+  users.users.roosemberth =
+  { description = "Roosemberth Palacios";
+    extraGroups = [ "wheel" "networkmanager" ];
     hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    packages = with pkgs; [ # TODO: NixUp!
-        ag dmidecode dnsutils file sbt openssl jq gitAndTools.git-annex lshw mr nethogs nfs-utils nix-index libnotify
-        pciutils scala socat sshfs stress tig tinc unzip w3m whois youtube-dl gnupg pass irssi
-    ];
     shell = pkgs.zsh;
-  };
-
-  hardware = {
-    cpu.intel.updateMicrocode = true;
+    uid = 19365;
+    #packages = with pkgs; [ # TODO: NixUp!
+    #    ag dmidecode dnsutils file sbt openssl jq gitAndTools.git-annex lshw mr nethogs nfs-utils nix-index libnotify
+    #    pciutils scala socat sshfs stress tig tinc unzip w3m whois youtube-dl gnupg pass irssi
+    #];
   };
 
   system.stateVersion = "17.09";
+  system.autoUpgrade.enable = true;
+  system.copySystemConfiguration = true;
 
   security.sudo.enable = true;
 }

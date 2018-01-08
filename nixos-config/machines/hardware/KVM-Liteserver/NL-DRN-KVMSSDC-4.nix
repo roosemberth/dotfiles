@@ -2,77 +2,71 @@
 
 {
   imports = [
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
   ];
 
-  swapDevices = [ ];
-
-  nix.maxJobs = lib.mkDefault 8;
-
   boot = {
-    loader.grub.enable = true;
-  # loader = {
-  #   systemd-boot.enable = true;
-  #   grub = {
-  #     enable = true;
-  #     version = 2;
-  #     efiSupport = false;
-  #   };
-  # };
+    loader.grub = {
+      enable = true;
+      version = 2;
+      device = "/dev/sda";
+      timeout = 1;
+      splashImage = null;
+    };
+
     initrd = {
+      availableKernelModules = [ "ata_piix" "uhci_hcd" "sd_mod" "sr_mod" ];
+
       network = {
         enable = true;
         ssh.enable = true;
-        ssh.shell = "${pkgs.bash}/bin/bash";
-        ssh.authorizedKeys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD7lvqvX2oolM2JFRjkC41etZ7GPUWsMxxkINwXPgtXLeqyArb/rwnRR46tzJhwwvl6o4ZOEPs4clrbwKS6iI1UoSP8VZKCtNUrIxSxoBV/oVgurl5QY1qTfNtJeMqcHjwNxVcc6kJE0a7aI1TnfKUaN+kalwX68/bEyOxq7JeAou+rbfSKPCCP/TkQNZmwH6kbDe59O1/Ye9esB2Ri15U6POVTSt/FdvVpcVFa4YuuU2/EqQSAGtIX48FusAPUyNnsEyxH/bd3JiuxpNHJDSLIeLka1ePNpZ6Iql/mF4v+Rc8X1zDTltRk9eU67fYndPplzSWBB+ORcaoVIhtltSeN roosemberth@Azulejo-Main-Engine" ];
+        ssh.authorizedKeys = [ "${builtins.readFile /etc/nixos/roos_rsa.pub}" ];
+	ssh.hostRSAKey = "/etc/nixos/dropbear_rsa"; # generate with # dropbearkey -t rsa  -f /etc/nixos/dropbear_rsa
       };
-      luks = {
-        cryptoModules = [ "dm_crypt" "cbc" "aes_x86_64" ];
-        devices = [
-          { name = "Heimdaalr";
-            device = "/dev/disk/by-uuid/FC04005E-B90C-41F3-95F8-EF73A7ABA827";
-          }
-        ];
-      };
-      supportedFilesystems = [ "btrfs" ];
+
+      luks.devices."Heimdaalr".device = "/dev/disk/by-uuid/73a68e6f-eba9-4398-bcfc-bce06ee2efbc";
+      supportedFilesystems = [ "btrfs" "ext4" ];
     };
   };
 
   fileSystems = {
     "/boot" = {
-      fsType = "vfat";
-      mountPoint = "/boot";
+      fsType = "ext4";
       device = "/dev/sda1";
     };
     "/" = {
       fsType = "btrfs";
-      mountPoint = "/";
       device = "/dev/mapper/Heimdaalr";
       options = ["subvol=/var/machines/Heimdaalr/subvolumes/.__active__/rootfs" "defaults" "noatime" "compress=zlib" "autodefrag"];
     };
     "/home" = {
       fsType = "btrfs";
-      mountPoint = "/home";
       device = "/dev/mapper/Heimdaalr";
       options = ["subvol=/var/machines/Heimdaalr/subvolumes/.__active__/homes" "defaults" "noatime" "compress=zlib" "autodefrag"];
     };
     "/var" = {
       fsType = "btrfs";
-      mountPoint = "/var";
       device = "/dev/mapper/Heimdaalr";
-      options = ["subvol=/var/machines/Heimdaalr/subvolumes/.__active__/var" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/var/machines/Heimdaalr/subvolumes/.__active__/var" "defaults" "noatime" "nodatacow" "compress=zlib" "autodefrag"];
     };
     "/.snapshots" = {
       fsType = "btrfs";
-      mountPoint = "/.snapshots";
       device = "/dev/mapper/Heimdaalr";
       options = ["subvol=/var/machines/Heimdaalr/subvolumes/snapshots/rootfs" "defaults" "noatime"];
     };
     "/home/.snapshots" = {
       fsType = "btrfs";
-      mountPoint = "/home/.snapshots";
       device = "/dev/mapper/Heimdaalr";
       options = ["subvol=/var/machines/Heimdaalr/subvolumes/snapshots/homes" "defaults" "noatime"];
     };
   };
+
+  swapDevices = [
+    { device = "/dev/sda2";
+      randomEncryption = { enable = true; cipher = "serpent-xts"; };
+    # randomEncryption = true;
+    }
+  ];
+
+  nix.maxJobs = lib.mkDefault 1;
 }
