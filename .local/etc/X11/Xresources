@@ -10,7 +10,7 @@ Xft.dpi              : 192
 ! COLOURS
 
 ! Colour palette:
-#define black        #222222
+#define black        #202028
 #define red          #DD5544
 #define green        #00A800
 #define yellow       #BDBD00
@@ -28,11 +28,10 @@ Xft.dpi              : 192
 #define lightwhite   #FFFFFF
 
 #define termfg       #AAAAAA
-!#define termbg       #202220
-#define termbg       #202028
+#define termbg       black
 
 ! Black:
-*color0              : termbg
+*color0              : black
 *color8              : lightblack
 ! Red:
 *color1              : red
