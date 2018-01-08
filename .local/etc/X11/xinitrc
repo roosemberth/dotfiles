@@ -37,16 +37,18 @@ fi
 
 # INPUT/OUTPUT -----------------------------------------------------------------
 
+# FIXME: Need to properly deploy my layout on nixos (A package maybe?).
 # Set core keyboard layout to US
-setxkbmap us
-
-# Set Laptop's computer Keyboard to Systech13, if it can't find it, then set the core keyboard to Systech13
-LKBID="$(xinput --list | grep "AT Translated Set 2 keyboard" | grep -oP 'id=\K[0-9]+')"
-if [ -z "$LKBID" ]; then
-    setxkbmap -layout Systech13
-else
-    setxkbmap -device $LKBID -layout Systech13 || setxkbmap -layout Systech13
-fi
+#setxkbmap us
+#
+## Set Laptop's computer Keyboard to Systech13, if it can't find it, then set the core keyboard to Systech13
+#LKBID="$(xinput --list | grep "AT Translated Set 2 keyboard" | grep -oP 'id=\K[0-9]+')"
+#if [ -z "$LKBID" ]; then
+#    setxkbmap -layout Systech13
+#else
+#    setxkbmap -device $LKBID -layout Systech13 || setxkbmap -layout Systech13
+#fi
+setxkbmap us intl -option caps:swapescape
 
 # SERVICES ---------------------------------------------------------------------
 
