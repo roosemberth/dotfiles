@@ -26,9 +26,9 @@ fi
 # ------------------------------------------------------------------------------
 # Local variables {{{
 if [ ! -z "$NO_NET" ]; then
-    alias doNetOps=false
+    alias netOps=false
 else
-    alias doNetOps=true
+    alias netOps=true
 fi
 # }}}
 # ------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ bindkey "^I" expand-or-complete-with-dots
 if [ $(id -u) != 0 ]; then
     # install if not installed
     if [ ! -f ${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh ]; then
-        if [ doNetOps ]; then
+        if netOps; then
             test -d "$XDG_CACHE_HOME/zsh/antigen" || mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
             curl -L "https://git.io/antigen" -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
                 -o "${XDG_CACHE_HOME}/zsh/antigen/antigen.zsh" \
