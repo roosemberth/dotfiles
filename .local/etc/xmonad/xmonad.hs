@@ -133,9 +133,9 @@ myConfig = defaultConfig
         , ("M-S-c"           , action "prScrAndPaste")
         , ("M-S-x"           , spawn "xlock")                         -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
-        , ("M-g"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
+        , ("M-S-g"           , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                       -- %! Push window up to floating
-        , ("M-f"             , withFocused $ windows . W.sink)        -- %! Push window back into tiling
+        , ("M-S-f"           , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
         , ("M-n"             , refresh)                               -- %! Check if this can force a texture update to the window
 
@@ -169,11 +169,10 @@ myConfig = defaultConfig
 
     -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
     -- TODO: Include v in ^
-        , ("M-S-a"           , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
-        , ("M-S-s"           , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
-        , ("M-S-d"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
-        -- v This is not working, I should probably debug it...
-        , ("M-S-f"           , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
+        , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
+        , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
+        , ("M-d"             , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
+        , ("M-f"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
 
         , ("M-M1-h"          , toSubl Shrink)                         -- %! Shrink the master area
         , ("M-M1-l"          , toSubl Expand)                         -- %! Expand the master area
