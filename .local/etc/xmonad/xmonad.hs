@@ -1,4 +1,4 @@
-import XMonad
+import XMonad hiding ( (|||) )
 import XMonad.Util.EZConfig(additionalKeysP)
 
 import System.Exit
@@ -16,7 +16,9 @@ import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicLog
 import XMonad.Util.NamedScratchpad
 
-import XMonad.Layout
+import XMonad.Layout hiding ( (|||) )
+import XMonad.Layout.LayoutCombinators
+import XMonad.Layout.SimplestFloat
 import XMonad.Layout.SubLayouts as SL
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
@@ -36,7 +38,7 @@ longCmds cmd = (M.fromList $ [
     , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
     , ("prScrAndPaste", "capture_screen_and_paste.sh | xclip -selection clipboard; notify-send 'Screen captured' \"Available in /tmp/export.png and $(xclip -o -selection clipboard) (copied to clipboard)\"")
     , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
-    , ("layout"       , "feh /Storage/tmp/Ergodox-Base.png")
+    , ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
     ]) M.! cmd
 
 action :: String -> X ()
@@ -45,8 +47,8 @@ action action = spawn $ longCmds action
 scratchpads = [
 -- TODO: Split wrapper into multiple scratchpads!
       NS "wrapper" (longCmds "wrapperCmd") (title =? "Scratchpad-Wrapper") doCenterFloat
-    , NS "flyway"  ("urxvt -e tmux new -As flyway") (title =? "Scratchpad-flyway") doCenterFloat
---  , NS "stardict" "stardict" (className =? "Stardict") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
+    , NS "flyway"  ("urxvt -title Scratchpad-flyway -e tmux new -As flyway")
+        (title =? "Scratchpad-flyway") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
 -- | @q =/ x@. if the result of @q@ does not equals @x@, return 'True'.
@@ -95,7 +97,7 @@ myGsConfig = GS.defaultGSConfig {
     , GS.gs_cellwidth = 350
 }
 
-layoutAlgorithms = tiled ||| Mirror tiled ||| Full where
+layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| simplestFloat where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
      -- The default number of windows in the master pane
@@ -128,10 +130,10 @@ myConfig = defaultConfig
           ("M-C-S-<Return>"  , action "launcher")
         , ("M-C-<Return>"    , action "ulauncher")
         , ("M-<Return>"      , spawn "urxvt -e tmux")
-        , ("M-S-s"           , action "prScrAndPaste")
-        , ("M-S-a"           , spawn "xlock")                       -- %! Lock the screen
+        , ("M-S-c"           , action "prScrAndPaste")
+        , ("M-S-x"           , spawn "xlock")                         -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
-        , ("M-S-f"           , withFocused $ windows . flip W.float (W.RationalRect (1/3) (1/3) (1/3) (1/3)))
+        , ("M-g"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                       -- %! Push window up to floating
         , ("M-f"             , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
@@ -151,11 +153,11 @@ myConfig = defaultConfig
         , ("M-S-k"           , windows W.swapUp)                      -- %! Swap the focused window with the previous window
         , ("M-S-j"           , windows W.swapDown)                    -- %! Swap the focused window with the next window
         -- v These will skip hidden windows
-        , ("M-k"             , focusUp)                     -- %! Move focus to the previous window
-        , ("M-j"             , focusDown)                   -- %! Move focus to the next window
+        , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
+        , ("M-j"             , focusDown)                             -- %! Move focus to the next window
         -- v These will not skip windows, thus effectively changing sublayout windows.
-        , ("M-M1-k"           , windows W.focusUp)                    -- %! Move focus to the previous window
-        , ("M-M1-j"           , windows W.focusDown)                  -- %! Move focus to the next window
+        , ("M-M1-k"          , windows W.focusUp)                     -- %! Move focus to the previous window
+        , ("M-M1-j"          , windows W.focusDown)                   -- %! Move focus to the next window
 
         , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
         , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
@@ -165,28 +167,36 @@ myConfig = defaultConfig
         , ("M-S-<Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
         , ("M-<Tab>"         , windows W.focusMaster)                 -- %! Move focus to the master window
 
-        , ("M-M1-h"           , toSubl Shrink)                        -- %! Shrink the master area
-        , ("M-M1-l"           , toSubl Expand)                        -- %! Expand the master area
-        , ("M-M1-,"           , toSubl (IncMasterN 1))                -- %! Increment the number of windows in the master area
-        , ("M-M1-."           , toSubl (IncMasterN (-1)))             -- %! Deincrement the number of windows in the master area
-        , ("M-M1-<Space>"     , toSubl NextLayout)                    -- %! Rotate through the available layout algorithms
---        , ("M-M1-k"           , onGroup W.focusUp')                   -- %! Focus up window inside subgroup
---        , ("M-M1-j"           , onGroup W.focusDown')                 -- %! Focus down window inside subgroup
-        , ("M-M1-<Tab>"       , onGroup focusMaster')                 -- %! Focus down window inside subgroup
-        , ("M-M1-S-<Tab>"     , onGroup swapMaster')                  -- %! Swap the focused window and the master window
+    -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
+    -- TODO: Include v in ^
+        , ("M-S-a"           , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
+        , ("M-S-s"           , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
+        , ("M-S-d"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
+        -- v This is not working, I should probably debug it...
+        , ("M-S-f"           , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
+
+        , ("M-M1-h"          , toSubl Shrink)                         -- %! Shrink the master area
+        , ("M-M1-l"          , toSubl Expand)                         -- %! Expand the master area
+        , ("M-M1-,"          , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
+        , ("M-M1-."          , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
+        , ("M-M1-<Space>"    , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
+     -- , ("M-M1-k"          , onGroup W.focusUp')                    -- %! Focus up window inside subgroup
+     -- , ("M-M1-j"          , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
+        , ("M-M1-<Tab>"      , onGroup focusMaster')                  -- %! Focus down window inside subgroup
+        , ("M-M1-S-<Tab>"    , onGroup swapMaster')                   -- %! Swap the focused window and the master window
 
         , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
         , ("M-q"             , action "reloadXMonad")                 -- %! Reload xmonad
 
         -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
 
-        -- I need to learn my layout ^^
-        , ("M-S-e"                , action "layout")
+        -- I need to learn my new keyboard layout ^^
+        , ("M-S-r"                , action "klayout")
         , ("M-S-t"                , action "restoreTmux")
 
         -- Scratchpads!
-        , ("M-M1-e"                    , namedScratchpadAction scratchpads "wrapper")
-        , ("M-M1-w"                    , namedScratchpadAction scratchpads "flyway")
+     -- , ("M-S-e"                    , namedScratchpadAction scratchpads "wrapper")
+        , ("M-S-w"                    , namedScratchpadAction scratchpads "flyway")
 
         , ("S-<XF86AudioRaiseVolume>"  , action "volumeUp")
         , ("S-<XF86AudioLowerVolume>"  , action "volumeDown")
