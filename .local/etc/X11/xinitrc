@@ -56,7 +56,7 @@ setxkbmap us intl -option caps:swapescape
 cmds_exist xrdb && xrdb "$XDG_CONFIG_HOME/X11/Xresources"
 
 # Set the wallpaper:
-cmds_exist nitrogen && nitrogen --restore
+cmds_exist nitrogen && nitrogen --set-auto background-images/venice.png
 
 # Enable Japanese input:
 if cmds_exist ibus-daemon; then
@@ -97,12 +97,13 @@ fi
 # Launch WM and log all of its output:
 session_logdir="$XDG_LOG_HOME/X11/$DISPLAY"
 session_logfile="${session_logdir}/$(date +%s).log"
+session_lockapp="xtrlock-pam"
 mkdir -p "$session_logdir"
 ln -sf "$session_logfile" "$session_logdir/latest"
 while true; do
-	if cmds_exist xss-lock xtrlock; then
+	if cmds_exist xss-lock "$session_lockapp"; then
 		xset s 60
-		xss-lock xtrlock &
+		xss-lock "$session_lockapp" &
 		xss_lock_pid=$!
 	fi
 
