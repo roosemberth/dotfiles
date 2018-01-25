@@ -31,7 +31,6 @@ longCmds :: String -> String
 longCmds cmd = (M.fromList $ [
       ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
     , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
-    , ("wrapperCmd"   , "urxvt -title Scratchpad-Wrapper -geometry 425x113 -fn \"xft:dejavu sans mono:size=6:antialias=false\" -e tmuxinator start wrapper")
     , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
     , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
     , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
@@ -45,10 +44,10 @@ action :: String -> X ()
 action action = spawn $ longCmds action
 
 scratchpads = [
--- TODO: Split wrapper into multiple scratchpads!
-      NS "wrapper" (longCmds "wrapperCmd") (title =? "Scratchpad-Wrapper") doCenterFloat
-    , NS "flyway"  ("urxvt -title Scratchpad-flyway -e tmux new -As flyway")
+-- TODO: More scratchpads!: System status (spawn detached on boot?), soundctl, ???
+      NS "flyway"  ("urxvt -title Scratchpad-flyway -e tmux new -As flyway")
         (title =? "Scratchpad-flyway") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
+ -- , NS "wrapper" (longCmds "wrapperCmd") (title =? "Scratchpad-Wrapper") doCenterFloat
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
 -- | @q =/ x@. if the result of @q@ does not equals @x@, return 'True'.
@@ -155,6 +154,8 @@ myConfig = defaultConfig
         -- v These will skip hidden windows
         , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
         , ("M-j"             , focusDown)                             -- %! Move focus to the next window
+        , ("M-S-<Tab>"       , focusUp)                               -- %! Move focus to the previous window
+        , ("M-<Tab>"         , focusDown)                             -- %! Move focus to the next window
         -- v These will not skip windows, thus effectively changing sublayout windows.
         , ("M-M1-k"          , windows W.focusUp)                     -- %! Move focus to the previous window
         , ("M-M1-j"          , windows W.focusDown)                   -- %! Move focus to the next window
@@ -164,8 +165,8 @@ myConfig = defaultConfig
         , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
         , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
         , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
-        , ("M-S-<Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
-        , ("M-<Tab>"         , windows W.focusMaster)                 -- %! Move focus to the master window
+        , ("M-C-S-<Tab>"     , windows W.swapMaster)                  -- %! Swap the focused window and the master window
+        , ("M-C-<Tab>"       , windows W.focusMaster)                 -- %! Move focus to the master window
 
     -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
     -- TODO: Include v in ^
@@ -194,8 +195,8 @@ myConfig = defaultConfig
         , ("M-S-t"                , action "restoreTmux")
 
         -- Scratchpads!
-     -- , ("M-S-e"                    , namedScratchpadAction scratchpads "wrapper")
-        , ("M-S-w"                    , namedScratchpadAction scratchpads "flyway")
+        , ("M-S-w"                     , namedScratchpadAction scratchpads "flyway")
+        , ("M-w"                       , spawn "tmux detach-client -s flyway") -- "hide" flyway
 
         , ("S-<XF86AudioRaiseVolume>"  , action "volumeUp")
         , ("S-<XF86AudioLowerVolume>"  , action "volumeDown")
@@ -228,11 +229,11 @@ myConfig = defaultConfig
          -- </Copied from SubLayout.hs...>
 
 
--- Custom PP, configure it as you like. It determines what is being written to the bar.
 myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "<" ">" }
 
 -- Key binding to toggle the gap for the bar.
 toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
 
 main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
+
 -- vim: expandtab
