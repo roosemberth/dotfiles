@@ -1,9 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-  ];
+  imports = [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix> ];
 
   swapDevices = [ ];
 
@@ -24,12 +22,8 @@
       efi.canTouchEfiVariables = true;
     };
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "kvm-intel" ];
-    kernelParams = [ "nouveau.runpm=0" /* "nopti" */];
     initrd = {
-      availableKernelModules = [
-        "xhci_pci" "ahci" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" "dm_crypt" "cbc" "aes_x86_64"
-      ];
+      kernelModules = ["dm_crypt" "cbc" "aes_x86_64"];
       luks = {
         devices = [
           { name = "Lenstra";
