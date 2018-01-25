@@ -11,17 +11,22 @@
     ];
 
   boot.cleanTmpDir = true;
+  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelParams = [ "nouveau.runpm=0" /* "nopti" */];
 
   networking = {
     hostName = "Triglav"; # Define your hostname.
     extraHosts = ''
-      127.0.0.2 Vesna vesna.roaming.orbstheorem.ch
-      127.0.0.3 Triglav-1v3 triglav.roaming.orbstheorem.ch
+      127.0.0.1 Triglav triglav.roaming.orbstheorem.ch
+      5.2.74.181 Hellendaal hellendaal.orbstheorem.ch
+      46.101.112.218 Heisenberg heisenberg.orbstheorem.ch
+      95.183.51.23 Dellingr dellingr.orbstheorem.ch
     '';
     networkmanager.enable = true;
   # isolateExternalNetworking.enable = true;
     isolateExternalNetworking.whitelist = [ "wlp4s0" ];
     firewall.enable = true;
+    firewall.checkReversePath = false; # libvirt...
     firewall.allowPing = false;
     firewall.allowedTCPPorts = [ 22 ];
   # firewall.allowedUDPPorts = [ ... ];
@@ -57,6 +62,9 @@
 
   services = {
     logind.lidSwitch = "ignore";
+    logind.extraConfig = ''
+      HandlePowerKey="ignore"
+    '';
 
     openssh = {
       enable = true;
@@ -112,16 +120,20 @@
     };
   };
 
+  virtualisation.libvirtd.enable = true;
+# nixup.enable = true;
+  nix.package = pkgs.nixUnstable;
+
   users.mutableUsers = false;
   users.extraUsers.roosemberth =
   { uid = 1000;
     description = "Roosemberth Palacios";
     hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "networkmanager" "libvirtd" ];
     packages = with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock krita
+        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock # krita
         libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
         offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
         scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xlockmore xorg.libXpm
@@ -133,8 +145,13 @@
   hardware = {
     pulseaudio.enable = true;
     pulseaudio.package = pkgs.pulseaudioFull;
+    pulseaudio.support32Bit = true;     # Steam...
+    opengl.driSupport32Bit = true;      # Steam...
     bluetooth.enable = true;
     cpu.intel.updateMicrocode = true;
+  # bumblebee.enable = true;
+  # bumblebee.driver = "nvidia";
+  # bumblebee.connectDisplay = false;   # Else bumblebee doesn't work...
   };
 
   system = {
