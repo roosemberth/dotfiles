@@ -144,8 +144,8 @@ set numberwidth=5
 set encoding=utf8
 
 " Display a bar after a reasonable number of columns:
-set colorcolumn=81
-au FileType mail,gitcommit setl colorcolumn=73
+set colorcolumn=81,121
+au FileType mail,gitcommit setl colorcolumn=87
 au FileType java,cs setl colorcolumn=121
 au FileType asm setl colorcolumn=41,81
 
@@ -384,8 +384,8 @@ au BufRead,BufNewFile /etc/fstab setl nowrap
 set linebreak      " wrap at words (does not work with list)
 
 " Physically wrap lines:
-au FileType markdown,tex,rst setl textwidth=80
-au FileType gitcommit,mail setl textwidth=72
+au FileType markdown,tex,rst setl textwidth=120
+au FileType gitcommit,mail setl textwidth=86
 
 " }}}
 " ------------------------------------------------------------------------------
