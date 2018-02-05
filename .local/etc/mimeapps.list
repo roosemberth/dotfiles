@@ -1,11 +1,3 @@
-[Added Associations]
-x-scheme-handler/about=qutebrowser.desktop
-x-scheme-handler/feed=thunderbird.desktop
-x-scheme-handler/ftp=qutebrowser.desktop
-x-scheme-handler/http=qutebrowser.desktop
-x-scheme-handler/https=qutebrowser.desktop
-x-scheme-handler/mailto=thunderbird.desktop
-
 [Default Applications]
 image/vnd.djvu=evince.desktop
 application/pdf=zathura.desktop
@@ -19,3 +11,8 @@ image/x-ms-bmp=eog.desktop
 message/rfc822=thunderbird.desktop
 text/html=qutebrowser.desktop
 text/xml=qutebrowser.desktop
+x-scheme-handler/http=qutebrowser.desktop
+x-scheme-handler/https=qutebrowser.desktop
+x-scheme-handler/feed=thunderbird.desktop
+x-scheme-handler/ftp=qutebrowser.desktop
+x-scheme-handler/mailto=thunderbird.desktop
