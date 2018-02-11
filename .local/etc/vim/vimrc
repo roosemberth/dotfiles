@@ -110,48 +110,6 @@ endif
 
 " }}}
 " ------------------------------------------------------------------------------
-" LOOK {{{
-
-" Colors, after syntax!, `syntax enable` doesn't seems to work...
-source $XDG_CONFIG_HOME/vim/colors.vim
-
-" statusline!
-source $XDG_CONFIG_HOME/vim/statusline.vim
-
-" Display and format line numbers:
-set number
-set relativenumber
-set numberwidth=5
-
-" Enable UTF-8 (I wanna see Umlauts!):
-set encoding=utf8
-
-" Display a bar after a reasonable number of columns:
-set colorcolumn=81,121
-au FileType mail,gitcommit setl colorcolumn=87
-au FileType java,cs setl colorcolumn=121
-au FileType asm setl colorcolumn=41,81
-
-" I wanna see tabs and trailing whitespaces:
-set list
-set listchars=tab:→\ ,eol:\ ,trail:·
-
-" Window separator:
-if $TERM == 'linux'
-	set fillchars=vert:.
-else
-	set fillchars=vert:│
-endif
-
-" Fold fill characters:
-set fillchars+="fold: "
-
-" Autofold (except in git commit message):
-set foldmethod=marker
-au FileType gitcommit setl foldmethod=manual
-
-" }}}
-" ------------------------------------------------------------------------------
 " SYNTAX {{{
 
 " Without any syntax highlighting, programming is a pain:
@@ -222,6 +180,48 @@ set linebreak      " wrap at words (does not work with list)
 " Physically wrap lines:
 au FileType markdown,tex,rst setl textwidth=120
 au FileType gitcommit,mail setl textwidth=86
+" }}}
+" ------------------------------------------------------------------------------
+" LOOK {{{
+
+" Colors, after syntax!, `syntax enable` doesn't seems to work...
+source $XDG_CONFIG_HOME/vim/colors.vim
+
+" statusline!
+source $XDG_CONFIG_HOME/vim/statusline.vim
+
+" Display and format line numbers:
+set number
+set relativenumber
+set numberwidth=5
+
+" Enable UTF-8 (I wanna see Umlauts!):
+set encoding=utf8
+
+" Display a bar after a reasonable number of columns:
+set colorcolumn=81,121
+au FileType mail,gitcommit setl colorcolumn=87
+au FileType java,cs setl colorcolumn=121
+au FileType asm setl colorcolumn=41,81
+
+" I wanna see tabs and trailing whitespaces:
+set list
+set listchars=tab:→\ ,eol:\ ,trail:·
+
+" Window separator:
+if $TERM == 'linux'
+	set fillchars=vert:.
+else
+	set fillchars=vert:│
+endif
+
+" Fold fill characters:
+set fillchars+="fold: "
+
+" Autofold (except in git commit message):
+set foldmethod=marker
+au FileType gitcommit setl foldmethod=manual
+
 " }}}
 " ------------------------------------------------------------------------------
 " KEY BINDINGS, BEHAVIOUR {{{
