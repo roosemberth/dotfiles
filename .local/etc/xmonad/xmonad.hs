@@ -130,7 +130,7 @@ myConfig = defaultConfig
         , ("M-C-<Return>"    , action "ulauncher")
         , ("M-<Return>"      , spawn "urxvt -e tmux")
         , ("M-S-c"           , action "prScrAndPaste")
-        , ("M-S-x"           , spawn "xlock")                         -- %! Lock the screen
+        , ("M-S-x"           , spawn "xtrlock-pam")                         -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
         , ("M-S-g"           , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                       -- %! Push window up to floating
