@@ -311,7 +311,7 @@ set showcmd
 set hlsearch
 set incsearch
 
-" Ignore case when searching, except when explicitely using majuscules:
+" Ignore case when searching, except when explicitely using uppercase:
 set ignorecase
 set smartcase
 
