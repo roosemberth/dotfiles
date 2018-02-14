@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -80,6 +76,11 @@
       # Suspend on low battery TODO: pre-death clock instead...
       SUBSYSTEM=="power_supply", ATTRS{capacity}=="4", ATTRS{status}=="Discharging", RUN+="${config.systemd.package}/bin/systemctl suspend"
      '';
+
+    postgresql = {
+      enable = true;
+      package = pkgs.postgresql100;
+    };
 
     xserver = {
       # Enable the X11 windowing system.
