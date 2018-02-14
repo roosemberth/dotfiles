@@ -126,7 +126,10 @@
     docker.enable = true;
   };
 # nixup.enable = true;
-  nix.package = pkgs.nixUnstable;
+  nix = {
+    package = pkgs.nixUnstable;
+    trustedUsers = [ "roosemberth" ];
+  };
 
   users.mutableUsers = false;
   users.extraUsers.roosemberth =
@@ -137,10 +140,10 @@
     extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker"];
     packages = with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock # krita
+        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock krita
         libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
         offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
-        scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xlockmore xorg.libXpm
+        scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xtrlock-pam xorg.libXpm
         xorg.xbacklight xorg.xev xorg.xkbcomp xorg.xkill xournal zathura zip libnotify xclip youtube-dl gnupg pass irssi
     ];
     shell = pkgs.zsh;
