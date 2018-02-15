@@ -5,6 +5,9 @@ XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 # History location:
 export LESSHISTFILE="$XDG_DATA_HOME/lesshist"
 
+# Pad search results
+export LESS="-j5"
+
 # Colours:
 LESS_TERMCAP_me="$(printf "\033[0m")"
 LESS_TERMCAP_se="$(printf "\033[0m")"
