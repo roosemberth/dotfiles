@@ -3,12 +3,15 @@ import XMonad.Util.EZConfig(additionalKeysP)
 
 import System.Exit
 
+import Data.List (isInfixOf, nub)
 import Data.String (String)
 import qualified Data.Map as M
 import qualified Data.Monoid(Endo, All)
 
-import qualified XMonad.StackSet as W
 import qualified XMonad.Actions.GridSelect as GS
+import qualified XMonad.Actions.DynamicWorkspaces as DW
+import qualified XMonad.StackSet as W
+import XMonad.Prompt
 
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -23,8 +26,6 @@ import XMonad.Layout.SubLayouts as SL
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.BoringWindows
 import XMonad.Layout.NoBorders
---import XMonad.Layout.Simplest
---import XMonad.Layout.Circle
 
 -- Contains long complicated shell commands used all over the config.
 longCmds :: String -> String
@@ -79,15 +80,15 @@ myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     -- mod-[0-9] %! Switch to workspace N
     -- mod-shift-[0-9] %! Move client to workspace N
-    [((m .|. modMask, k), windows $ f i)
-        | (i, k) <- zip (XMonad.workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+    [((m .|. modMask, k), DW.removeEmptyWorkspaceAfter $ DW.withNthWorkspace f n)
+        | (n, k) <- zip [0..] ([xK_1 .. xK_9] ++ [xK_0])
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
     ++
     -- mod-control-[0-9]       %! Switch to physical/Xinerama screens ...
     -- mod-control-shift-[0-9] %! Move client to screen 1, 2, or 3
-    [((m .|. modMask .|. controlMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip ([xK_1 .. xK_9] ++ [xK_0]) [0..]
-        , (f, m) <- zip [W.view, W.shift] [0, shiftMask]]
+    [((m .|. modMask .|. controlMask, k), (screenWorkspace n >>= flip whenJust (windows . f)))
+        | (n, k) <- zip [0..] ([xK_1 .. xK_9] ++ [xK_0])
+        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 -- Grid Select config
 -- TODO: Change shown strings by something more verbose than zsh...
@@ -95,6 +96,24 @@ myGsConfig = GS.defaultGSConfig {
       GS.gs_cellheight = 75
     , GS.gs_cellwidth = 350
 }
+
+myXPconfig = defaultXPConfig
+        { font              = "xft:Deja Vu Sans Mono:pixelsize=18"
+        , bgColor           = "black"
+        , fgColor           = "grey"
+        , fgHLight          = "black"
+        , bgHLight          = "grey"
+        , borderColor       = "lightblue"
+        , promptBorderWidth = 1
+        , position          = Top -- ^ Position: 'Top', 'Bottom', or 'CenteredAt'
+        , height            = 26
+        , historyFilter     = nub
+                            -- TODO: Add C-r for searching...
+     -- , promptKeymap      :: M.Map (KeyMask,KeySym) (XP ())  -- ^ Mapping from key combinations to actions
+        , completionKey     = (0, xK_Tab)
+        , autoComplete      = Just 1      -- delay 1µs
+        , searchPredicate   = isInfixOf
+        }
 
 layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| simplestFloat where
      -- default tiling algorithm partitions the screen into two panes
@@ -132,9 +151,14 @@ myConfig = defaultConfig
         , ("M-S-c"           , action "prScrAndPaste")
         , ("M-S-x"           , spawn "xtrlock-pam")                         -- %! Lock the screen
         , ("M-<F4>"          , kill)                                  -- %! Close the focused window
-        , ("M-S-g"           , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
+        , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                       -- %! Push window up to floating
         , ("M-S-f"           , withFocused $ windows . W.sink)        -- %! Push window back into tiling
+
+        , ("M-<F2>"          , DW.renameWorkspace myXPconfig)
+        , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
+        , ("M-g"             , DW.removeEmptyWorkspaceAfter $ DW.selectWorkspace myXPconfig)
+        , ("M-S-g"           , DW.withWorkspace myXPconfig (windows . W.shift))
 
         , ("M-n"             , refresh)                               -- %! Check if this can force a texture update to the window
 
@@ -171,9 +195,9 @@ myConfig = defaultConfig
     -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
     -- TODO: Include v in ^
         , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
+        , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
         , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
-        , ("M-d"             , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
-        , ("M-f"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
+        , ("M-d"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
 
         , ("M-M1-h"          , toSubl Shrink)                         -- %! Shrink the master area
         , ("M-M1-l"          , toSubl Expand)                         -- %! Expand the master area
