@@ -240,6 +240,7 @@ myConfig = defaultConfig
         , ("<XF86MonBrightnessDown>"   , spawn "xbacklight -dec 10")
         , ("C-<XF86AudioRaiseVolume>"  , spawn "xbacklight -inc 10")
         , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10")
+        , ("M-<KP_End>"                , spawn "xbacklight -set 1")
 
         , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
         , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
