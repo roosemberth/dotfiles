@@ -2,7 +2,7 @@
 # Zsh default configuration file
 #
 #     2013-2017 - «ayekat»
-# (C) 2016-2017 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
+# (C) 2016-2018 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
 # Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
 # ------------------------------------------------------------------------------
@@ -218,10 +218,13 @@ build_prompt() #{{{
 	[ -n "$SSH_CONNECTION" ] && PROMPT+="%{$pc_host%}%M:%{$reset_color%}"
 
 	# Network namespace
-    [ -n "$(ip netns identify 2>/dev/null)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
+	[ -n "$(ip netns identify 2>/dev/null)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
 
 	# PWD:
 	PROMPT+="%{$pc_pwd%}%~%{$reset_color%} "
+
+	# Nix shell
+	[ -n "${IN_NIX_SHELL}" ] && PROMPT+="%{$fg[cyan]%}÷${${IN_NIX_SHELL:#1}:-nix}»%{$reset_color %}"
 
 	# Root?
 	if [ $(id -u) = 0 ]; then
