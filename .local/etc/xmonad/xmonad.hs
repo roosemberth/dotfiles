@@ -164,10 +164,10 @@ myConfig = defaultConfig
 
         , ("M-b"             , sendMessage ToggleStruts)              -- %! Shrink the master area
 
-        , ("M-C-h"           , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
-        , ("M-C-j"           , sendMessage $ pullGroup D)             -- %! Move window to the down subgroup
-        , ("M-C-k"           , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
-        , ("M-C-l"           , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
+        , ("M-M1-h"          , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
+        , ("M-M1-j"          , sendMessage $ pullGroup D)             -- %! Move window to the down subgroup
+        , ("M-M1-k"          , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
+        , ("M-M1-l"          , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
 
         , ("M-S-p"           , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
         , ("M-p"             , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
@@ -181,8 +181,8 @@ myConfig = defaultConfig
         , ("M-S-<Tab>"       , focusUp)                               -- %! Move focus to the previous window
         , ("M-<Tab>"         , focusDown)                             -- %! Move focus to the next window
         -- v These will not skip windows, thus effectively changing sublayout windows.
-        , ("M-M1-k"          , windows W.focusUp)                     -- %! Move focus to the previous window
-        , ("M-M1-j"          , windows W.focusDown)                   -- %! Move focus to the next window
+        , ("M-C-k"           , windows W.focusUp)                     -- %! Move focus to the previous window
+        , ("M-C-j"           , windows W.focusDown)                   -- %! Move focus to the next window
 
         , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
         , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
@@ -199,11 +199,11 @@ myConfig = defaultConfig
         , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
         , ("M-d"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
 
-        , ("M-M1-h"          , toSubl Shrink)                         -- %! Shrink the master area
-        , ("M-M1-l"          , toSubl Expand)                         -- %! Expand the master area
-        , ("M-M1-,"          , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
-        , ("M-M1-."          , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
-        , ("M-M1-<Space>"    , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
+        , ("M-C-h"           , toSubl Shrink)                         -- %! Shrink the master area
+        , ("M-C-l"           , toSubl Expand)                         -- %! Expand the master area
+        , ("M-C-,"           , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
+        , ("M-C-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
+        , ("M-C-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
      -- , ("M-M1-k"          , onGroup W.focusUp')                    -- %! Focus up window inside subgroup
      -- , ("M-M1-j"          , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
         , ("M-M1-<Tab>"      , onGroup focusMaster')                  -- %! Focus down window inside subgroup
