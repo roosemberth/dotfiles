@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 import XMonad hiding ( (|||) )
 import XMonad.Util.EZConfig(additionalKeysP)
 
@@ -10,8 +11,8 @@ import qualified Data.Monoid(Endo, All)
 
 import qualified XMonad.Actions.GridSelect as GS
 import qualified XMonad.Actions.DynamicWorkspaces as DW
+import qualified XMonad.Prompt as PT
 import qualified XMonad.StackSet as W
-import XMonad.Prompt
 
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -97,22 +98,22 @@ myGsConfig = GS.defaultGSConfig {
     , GS.gs_cellwidth = 350
 }
 
-myXPconfig = defaultXPConfig
-        { font              = "xft:Deja Vu Sans Mono:pixelsize=18"
-        , bgColor           = "black"
-        , fgColor           = "grey"
-        , fgHLight          = "black"
-        , bgHLight          = "grey"
-        , borderColor       = "lightblue"
-        , promptBorderWidth = 1
-        , position          = Top -- ^ Position: 'Top', 'Bottom', or 'CenteredAt'
-        , height            = 26
-        , historyFilter     = nub
-                            -- TODO: Add C-r for searching...
-     -- , promptKeymap      :: M.Map (KeyMask,KeySym) (XP ())  -- ^ Mapping from key combinations to actions
-        , completionKey     = (0, xK_Tab)
-        , autoComplete      = Just 1      -- delay 1µs
-        , searchPredicate   = isInfixOf
+myXPconfig = PT.defaultXPConfig
+        { PT.font              = "xft:Deja Vu Sans Mono:pixelsize=18"
+        , PT.bgColor           = "black"
+        , PT.fgColor           = "grey"
+        , PT.fgHLight          = "black"
+        , PT.bgHLight          = "grey"
+        , PT.borderColor       = "lightblue"
+        , PT.promptBorderWidth = 1
+        , PT.position          = PT.Top -- ^ Position: 'Top', 'Bottom', or 'CenteredAt'
+        , PT.height            = 26
+        , PT.historyFilter     = nub
+                               -- TODO: Add C-r for searching...
+     -- , PT.promptKeymap      :: M.Map (KeyMask,KeySym) (XP ())  -- ^ Mapping from key combinations to actions
+        , PT.completionKey     = (0, xK_Tab)
+        , PT.autoComplete      = Nothing --Just 1      -- delay 1µs
+        , PT.searchPredicate   = isInfixOf
         }
 
 layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| simplestFloat where
@@ -172,6 +173,7 @@ myConfig = defaultConfig
         , ("M-S-p"           , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
         , ("M-p"             , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
 
+
         -- v These work even in sublayouts.
         , ("M-S-k"           , windows W.swapUp)                      -- %! Swap the focused window with the previous window
         , ("M-S-j"           , windows W.swapDown)                    -- %! Swap the focused window with the next window
@@ -189,8 +191,8 @@ myConfig = defaultConfig
         , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
         , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
         , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
-        , ("M-C-S-<Tab>"     , windows W.swapMaster)                  -- %! Swap the focused window and the master window
-        , ("M-C-<Tab>"       , windows W.focusMaster)                 -- %! Move focus to the master window
+        , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
+        , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
 
     -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
     -- TODO: Include v in ^
@@ -204,13 +206,13 @@ myConfig = defaultConfig
         , ("M-C-,"           , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
         , ("M-C-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
         , ("M-C-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
-     -- , ("M-M1-k"          , onGroup W.focusUp')                    -- %! Focus up window inside subgroup
-     -- , ("M-M1-j"          , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
-        , ("M-M1-<Tab>"      , onGroup focusMaster')                  -- %! Focus down window inside subgroup
-        , ("M-M1-S-<Tab>"    , onGroup swapMaster')                   -- %! Swap the focused window and the master window
+     -- , ("M-C-k"           , onGroup W.focusUp')                    -- %! Focus up window inside subgroup
+     -- , ("M-C-j"           , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
+        , ("M-C-w <Tab>"     , onGroup swapMaster')                   -- %! Swap the focused window and the master window
+        , ("M-C-w S-<Tab>"   , onGroup focusMaster')                  -- %! Focus down window inside subgroup
 
-        , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
-        , ("M-q"             , action "reloadXMonad")                 -- %! Reload xmonad
+     -- , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
+        , ("M-C-S-q"         , action "reloadXMonad")                 -- %! Reload xmonad
 
         -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
 
@@ -219,8 +221,8 @@ myConfig = defaultConfig
         , ("M-S-t"                , action "restoreTmux")
 
         -- Scratchpads!
-        , ("M-S-w"                     , namedScratchpadAction scratchpads "flyway")
-        , ("M-w"                       , spawn "tmux detach-client -s flyway") -- "hide" flyway
+        , ("M-S-q"                     , namedScratchpadAction scratchpads "flyway")
+        , ("M-q"                       , spawn "tmux detach-client -s flyway") -- "hide" flyway
 
         , ("S-<XF86AudioRaiseVolume>"  , action "volumeUp")
         , ("S-<XF86AudioLowerVolume>"  , action "volumeDown")
