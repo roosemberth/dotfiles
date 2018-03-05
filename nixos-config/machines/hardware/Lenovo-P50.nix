@@ -6,7 +6,17 @@
   swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 8;
-  powerManagement.cpuFreqGovernor = "powersave";
+  powerManagement = {
+    cpuFreqGovernor = "powersave";
+    resumeCommands =
+    ''
+      ${config.systemd.package}/bin/systemctl restart bluetooth.service
+    '';
+    powerDownCommands =
+    ''
+      ${config.systemd.package}/bin/systemctl stop bluetooth.service
+    '';
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot = {
