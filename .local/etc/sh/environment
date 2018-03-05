@@ -7,7 +7,7 @@
 # Editor and pager:
 export EDITOR="$(which vim)"
 export VISUAL="$(which vim) -O"
-export PAGER="$(which less) -j4"
+export PAGER="$(which less) -j.3"
 
 # Honor XDG LIB Home
 export LD_LIBRARY_PATH="${XDG_LIB_HOME}:${LD_LIBRARY_PATH}"
