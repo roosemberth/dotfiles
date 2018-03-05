@@ -66,6 +66,7 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating'
 Plug 'LnL7/vim-nix'
+Plug 'sophacles/vim-processing'
 
 call plug#end()
 
