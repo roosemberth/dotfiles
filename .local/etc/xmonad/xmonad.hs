@@ -237,7 +237,7 @@ myXPconfig = PT.defaultXPConfig
                                -- TODO: Add C-r for searching...
      -- , PT.promptKeymap      :: M.Map (KeyMask,KeySym) (XP ())  -- ^ Mapping from key combinations to actions
         , PT.completionKey     = (0, xK_Tab)
-        , PT.autoComplete      = Nothing --Just 1      -- delay 1µs
+        , PT.autoComplete      = Just 1      -- delay 1µs
         , PT.searchPredicate   = isInfixOf
         }
 
