@@ -223,8 +223,11 @@ build_prompt() #{{{
 	# PWD:
 	PROMPT+="%{$pc_pwd%}%~%{$reset_color%} "
 
+	# Python virtualenv
+	[ -n "${VIRTUAL_ENV}" ] && PROMPT+="%{$fg[green]%}÷(${VIRTUAL_ENV##*/})%{$reset_color%} "
+
 	# Nix shell
-	[ -n "${IN_NIX_SHELL}" ] && PROMPT+="%{$fg[cyan]%}÷${${IN_NIX_SHELL:#1}:-nix}»%{$reset_color %}"
+	[ -n "${IN_NIX_SHELL}" ] && PROMPT+="%{$fg[cyan]%}÷${${IN_NIX_SHELL:#1}:-nix}»%{$reset_color%} "
 
 	# Root?
 	if [ $(id -u) = 0 ]; then
