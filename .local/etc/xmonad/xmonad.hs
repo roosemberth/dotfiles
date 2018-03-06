@@ -112,7 +112,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-C-<Return>"    , action "ulauncher")
       , ("M-<Return>"      , spawn "urxvt -e tmux")
       , ("M-S-c"           , action "prScrAndPaste")
-      , ("M-S-x"           , spawn "xtrlock-pam")                   -- %! Lock the screen
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
       , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                     -- %! Push window up to floating
@@ -209,6 +208,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       , ("M-w w"                     , GS.goToSelected myGsConfig)
 
+      , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")        -- %! Lock the screen
       ]
     )) where
       -- <Copied from SubLayout.hs...>
