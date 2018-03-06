@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+. "$(dirname "$0")"/path.sh
+export TIMEWARRIORDB="$XDG_DATA_HOME/timewarrior"
+exec "$EPATH" "$@"
