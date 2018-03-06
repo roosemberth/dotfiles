@@ -206,8 +206,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
       , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
 
-      , ("M-w w"                     , GS.goToSelected myGsConfig)
-
+      , ("<F11>"                     , GS.goToSelected myGsConfig)
       , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")        -- %! Lock the screen
       ]
     )) where
