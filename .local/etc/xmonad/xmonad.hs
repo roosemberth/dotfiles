@@ -102,9 +102,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
     ) `M.union` mkKeymap conf (
     ( autoremoveEmptyWorkspaces
-      [ ("M-g"             , DW.selectWorkspace myXPconfig)
-      , ("M-S-h"           , windows $ W.greedyView "home")
-      , ("M-S-t"           , windows $ W.greedyView "temp")
+      [ ("M-<Escape>"      , DW.selectWorkspace myXPconfig)
+      , ("M-<Backspace>"   , DW.addWorkspace "home")
+      , ("M-t"             , DW.addWorkspace "temp")
+      , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
       ]
     ) ++ (
       [ ("M-C-S-<Return>"  , action "launcher")
@@ -118,8 +119,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-f"           , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
       , ("M-<F2>"          , DW.renameWorkspace myXPconfig)
-      , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
-      , ("M-S-g"           , DW.withWorkspace myXPconfig (windows . W.shift))
+      , ("M-g"             , DW.withWorkspace myXPconfig (windows . W.shift))
 
       , ("M-n"             , refresh)                               -- %! Check if this can force a texture update to the window
 
