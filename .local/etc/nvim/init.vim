@@ -21,9 +21,9 @@ au BufWritePre /tmp/*,/dev/shm/*,/run/shm/* setl noundofile
 
 " Make sure the damn paths exists:
 function! MakeSureTheDamnPathExists(path)
-	if !isdirectory(a:path)
-		call mkdir(a:path, 'p', 0700)
-	endif
+  if !isdirectory(a:path)
+    call mkdir(a:path, 'p', 0700)
+  endif
 endfunction
 
 call MakeSureTheDamnPathExists($XDG_RUNTIME_DIR.'/vim')
@@ -39,10 +39,10 @@ call MakeSureTheDamnPathExists(&backupdir)
 let g:bundledir=$XDG_DATA_HOME.'/nvim/vim-plug'
 
 if has('vim_starting')
-	if !filereadable($XDG_DATA_HOME.'/nvim/site/autoload/plug.vim')
-		!curl -fLo $XDG_DATA_HOME/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	endif
-	set runtimepath+=$XDG_DATA_HOME/nvim/site
+  if !filereadable($XDG_DATA_HOME.'/nvim/site/autoload/plug.vim')
+    !curl -fLo $XDG_DATA_HOME/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  endif
+  set runtimepath+=$XDG_DATA_HOME/nvim/site
 endif
 
 call plug#begin(g:bundledir)
@@ -107,26 +107,26 @@ let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 
 " Fix trailing whitespaces when saving file with `:W`:
 function! StripTrailingWhitespaces()
-	let _s=@/
-	let l=line('.')
-	let c=col('.')
-	%s/\s\+$//eg
-	call cursor(l,c)
-	let @/=_s
+  let _s=@/
+  let l=line('.')
+  let c=col('.')
+  %s/\s\+$//eg
+  call cursor(l,c)
+  let @/=_s
 endfunction
 command! W :call StripTrailingWhitespaces() | :write
 
 " Fold C function implemenations:
 function! CFold()
-	let prevline = getline(v:lnum-1)
-	let nextline = getline(v:lnum+1)
-	if match(nextline, '^{') >= 0
-		return 1
-	elseif match(prevline, '^}') >= 0
-		return 0
-	else
-		return "="
-	endif
+  let prevline = getline(v:lnum-1)
+  let nextline = getline(v:lnum+1)
+  if match(nextline, '^{') >= 0
+    return 1
+  elseif match(prevline, '^}') >= 0
+    return 0
+  else
+    return "="
+  endif
 endfunction
 au FileType c setl foldmethod=expr
 au FileType c setl foldexpr=CFold()
@@ -174,9 +174,9 @@ set listchars=tab:→\ ,eol:\ ,trail:·
 
 " Window separator:
 if $TERM == 'linux'
-	set fillchars=vert:.
+  set fillchars=vert:.
 else
-	set fillchars=vert:│
+  set fillchars=vert:│
 endif
 
 " Fold fill characters:
