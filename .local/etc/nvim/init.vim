@@ -67,6 +67,7 @@ Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating'
 Plug 'LnL7/vim-nix'
 Plug 'sophacles/vim-processing'
+Plug 'chrisbra/vim-diff-enhanced'
 
 call plug#end()
 
