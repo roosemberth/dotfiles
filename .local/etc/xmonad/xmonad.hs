@@ -109,6 +109,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
       , ("M-<F5>"          , prevWS)
       , ("M-<F6>"          , nextWS)
+      , ("<F10>"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
       , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_grave)
       ]
     ) ++ (
@@ -131,8 +132,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       -- v These operations act on windows cluster (M-w *).
       , ("M-w S-m"         , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
       , ("M-w m"           , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
-                                                                    -- %! Goto window.
-      , ("M-w l"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
       , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
       , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
 
