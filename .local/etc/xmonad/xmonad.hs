@@ -129,11 +129,14 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-M1-k"          , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
       , ("M-M1-l"          , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
 
-      , ("M-S-p"           , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
-      , ("M-p"             , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
+      -- v This operations act on windows cluster (M-w *).
+      , ("M-w S-m"         , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
+      , ("M-w m"           , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
+      , ("M-w l"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
+      , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
+      , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
 
       , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_grave)
-      , ("M-w l"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
 
       -- v These work even in sublayouts.
       , ("M-S-k"           , windows W.swapUp)                      -- %! Swap the focused window with the previous window
@@ -152,8 +155,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
       , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
       , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
-      , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
-      , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
 
   -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
   -- TODO: Include v in ^
