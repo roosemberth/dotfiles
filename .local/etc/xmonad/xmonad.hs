@@ -14,7 +14,8 @@ import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
 import qualified XMonad.StackSet as W
-import XMonad.Actions.CycleRecentWS
+import XMonad.Actions.CycleRecentWS(cycleRecentWS)
+import XMonad.Actions.CycleWS(nextWS,prevWS)
 
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -106,6 +107,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<Backspace>"   , DW.addWorkspace "home")
       , ("M-t"             , DW.addWorkspace "temp")
       , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
+      , ("M-<F5>"          , prevWS)
+      , ("M-<F6>"          , nextWS)
+      , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_grave)
       ]
     ) ++ (
       [ ("M-C-S-<Return>"  , action "launcher")
@@ -135,8 +139,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-w l"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
       , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
       , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
-
-      , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_grave)
 
       -- v These work even in sublayouts.
       , ("M-S-k"           , windows W.swapUp)                      -- %! Swap the focused window with the previous window
