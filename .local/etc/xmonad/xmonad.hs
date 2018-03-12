@@ -116,25 +116,21 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<Return>"      , spawn "urxvt -e tmux")
       , ("M-S-c"           , action "prScrAndPaste")
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
-      , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
                                                                     -- %! Push window up to floating
+      , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
       , ("M-S-f"           , withFocused $ windows . W.sink)        -- %! Push window back into tiling
 
+      , ("M-b"             , sendMessage ToggleStruts)              -- %! Collapse/Expand the status bar zone
+      , ("M-n"             , refresh)                               -- %! ???
+
+      -- v Candidates to a workspace cluster (M-S-w *).
       , ("M-<F2>"          , DW.renameWorkspace myXPconfig)
       , ("M-g"             , DW.withWorkspace myXPconfig (windows . W.shift))
 
-      , ("M-n"             , refresh)                               -- %! Check if this can force a texture update to the window
-
-      , ("M-b"             , sendMessage ToggleStruts)              -- %! Shrink the master area
-
-      , ("M-M1-h"          , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
-      , ("M-M1-j"          , sendMessage $ pullGroup D)             -- %! Move window to the down subgroup
-      , ("M-M1-k"          , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
-      , ("M-M1-l"          , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
-
-      -- v This operations act on windows cluster (M-w *).
+      -- v These operations act on windows cluster (M-w *).
       , ("M-w S-m"         , withFocused $ sendMessage . MergeAll)  -- %! Merge focused windows into a subgroup
       , ("M-w m"           , withFocused $ sendMessage . UnMerge)   -- %! Unmerge a subgroup into windows
+                                                                    -- %! Goto window.
       , ("M-w l"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
       , ("M-w <Tab>"       , windows W.swapMaster)                  -- %! Swap the focused window and the master window
       , ("M-w S-<Tab>"     , windows W.focusMaster)                 -- %! Move focus to the master window
@@ -145,9 +141,22 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       -- v These will skip hidden windows
       , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
       , ("M-j"             , focusDown)                             -- %! Move focus to the next window
-      -- v These will not skip windows, thus effectively changing sublayout windows.
+      -- v FIXME: These shortcuts should only wotk inside the sublayout.
       , ("M-C-k"           , windows W.focusUp)                     -- %! Move focus to the previous window
       , ("M-C-j"           , windows W.focusDown)                   -- %! Move focus to the next window
+
+      -- Sublayout grouping
+      , ("M-M1-h"          , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
+      , ("M-M1-j"          , sendMessage $ pullGroup D)             -- %! Move window to the down subgroup
+      , ("M-M1-k"          , sendMessage $ pullGroup U)             -- %! Move window to the up subgroup
+      , ("M-M1-l"          , sendMessage $ pullGroup R)             -- %! Move window to the right subgroup
+
+      -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
+      -- TODO: Include v in ^
+      , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
+      , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
+      , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
+      , ("M-d"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
 
       , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
       , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
@@ -155,22 +164,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
       , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
 
-  -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
-  -- TODO: Include v in ^
-      , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
-      , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
-      , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
-      , ("M-d"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
-
       , ("M-C-h"           , toSubl Shrink)                         -- %! Shrink the master area
       , ("M-C-l"           , toSubl Expand)                         -- %! Expand the master area
       , ("M-C-,"           , toSubl (IncMasterN 1))                 -- %! Increment the number of windows in the master area
       , ("M-C-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
       , ("M-C-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
-   -- , ("M-C-k"           , onGroup W.focusUp')                    -- %! Focus up window inside subgroup
-   -- , ("M-C-j"           , onGroup W.focusDown')                  -- %! Focus down window inside subgroup
-      , ("M-C-w <Tab>"     , onGroup swapMaster')                   -- %! Swap the focused window and the master window
-      , ("M-C-w S-<Tab>"   , onGroup focusMaster')                  -- %! Focus down window inside subgroup
 
    -- , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
       , ("M-C-S-q"         , action "reloadXMonad")                 -- %! Reload xmonad
@@ -206,7 +204,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
       , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
 
-      , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")        -- %! Lock the screen
+      , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")
       ]
     )) where
       -- <Copied from SubLayout.hs...>
