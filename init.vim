@@ -261,5 +261,8 @@ set ignorecase smartcase
 " Highlight matching open parentheses when closing:
 set showmatch
 
+" enable mouse everywhere but in command-line mode
+set mouse=nvi
+
 " }}}
 " ------------------------------------------------------------------------------
