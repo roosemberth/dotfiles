@@ -144,8 +144,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       -- v These will skip hidden windows
       , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
       , ("M-j"             , focusDown)                             -- %! Move focus to the next window
-      , ("M-S-<Tab>"       , focusUp)                               -- %! Move focus to the previous window
-      , ("M-<Tab>"         , focusDown)                             -- %! Move focus to the next window
       -- v These will not skip windows, thus effectively changing sublayout windows.
       , ("M-C-k"           , windows W.focusUp)                     -- %! Move focus to the previous window
       , ("M-C-j"           , windows W.focusDown)                   -- %! Move focus to the next window
