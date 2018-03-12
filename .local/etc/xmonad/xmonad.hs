@@ -15,6 +15,7 @@ import qualified XMonad.Prompt.Window as PTW
 import qualified XMonad.StackSet as W
 import XMonad.Actions.CycleRecentWS(cycleRecentWS)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
+import XMonad.Prompt.Pass(passPrompt)
 
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -175,9 +176,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
 
-      -- I need to learn my new keyboard layout ^^
-      , ("M-S-r"                , action "klayout")
-      , ("M-S-t"                , action "restoreTmux")
+      -- Tools
+      , ("M-S-r"                     , action "klayout")
+      , ("M-S-t"                     , action "restoreTmux")
+      , ("M-p"                       , passPrompt myXPconfig)
 
       -- Scratchpads!
       , ("M-S-q"                     , namedScratchpadAction scratchpads "flyway")
