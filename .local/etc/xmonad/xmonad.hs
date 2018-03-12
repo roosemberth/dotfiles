@@ -9,7 +9,6 @@ import Data.String (String)
 import qualified Data.Map as M
 import qualified Data.Monoid(Endo, All)
 
-import qualified XMonad.Actions.GridSelect as GS
 import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
@@ -207,7 +206,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
       , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
 
-      , ("<F11>"                     , GS.goToSelected myGsConfig)
       , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")        -- %! Lock the screen
       ]
     )) where
@@ -216,13 +214,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       focusMaster' st = let (f:fs) = W.integrate st in W.Stack f [] fs
       swapMaster' (W.Stack f u d) = W.Stack f [] $ reverse u ++ d
       -- </Copied from SubLayout.hs...>
-
--- Grid Select config
--- TODO: Change shown strings by something more verbose than zsh...
-myGsConfig = GS.defaultGSConfig {
-      GS.gs_cellheight = 75
-    , GS.gs_cellwidth = 350
-}
 
 myXPconfig = PT.defaultXPConfig
         { PT.font              = "xft:Deja Vu Sans Mono:pixelsize=18"
