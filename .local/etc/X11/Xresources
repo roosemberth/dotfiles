@@ -80,7 +80,7 @@ URxvt.scrollBar      : false
 URxvt.internalBorder : 1
 URxvt.colorBD        : lightwhite
 URxvt.transparent    : True
-URxvt.shading        : 35
+URxvt.shading        : 15
 
 ! Scrollback buffer:
 ! URxvt.saveLines      : 10000
