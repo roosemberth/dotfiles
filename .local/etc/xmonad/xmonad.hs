@@ -40,7 +40,6 @@ longCmds cmd = (M.fromList $ [
     , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
     , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
     , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
-    , ("prScrAndPaste", "capture_screen_and_paste.sh | xclip -selection clipboard; notify-send 'Screen captured' \"Available in /tmp/export.png and $(xclip -o -selection clipboard) (copied to clipboard)\"")
     , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
     , ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
     ]) M.! cmd
@@ -116,7 +115,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       [ ("M-C-S-<Return>"  , action "launcher")
       , ("M-C-<Return>"    , action "ulauncher")
       , ("M-<Return>"      , spawn "urxvt -e tmux")
-      , ("M-S-c"           , action "prScrAndPaste")
+      , ("M-<Print>"       , spawn "screen-capture.sh")
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
                                                                     -- %! Push window up to floating
       , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
