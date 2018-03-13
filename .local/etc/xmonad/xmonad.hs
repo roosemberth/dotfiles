@@ -204,7 +204,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
       , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
 
-      , ("<F12>"                     , spawn "sleep 1 && xtrlock-pam")
+      , ("<F7>"                      , spawn "xset s off")
+      , ("S-<F7>"                    , spawn "xset s on")
+      , ("<F12>"                     , spawn "xset s 1; sleep 2; xset s default") -- For some reason, xset s activate corrupts fb...
       ]
     )) where
       -- <Copied from SubLayout.hs...>
