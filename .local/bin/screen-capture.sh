@@ -1,5 +1,6 @@
 #/usr/bin/env sh
 
+date > /tmp/log
 DIR="$(mktemp -d -p /run/user/$(id -u)/)"
 cd "$DIR"
 
