@@ -198,7 +198,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("<XF86MonBrightnessUp>"     , spawn "xbacklight -inc 10")
       , ("<XF86MonBrightnessDown>"   , spawn "xbacklight -dec 10")
       , ("C-<XF86AudioRaiseVolume>"  , spawn "xbacklight -inc 10")
-      , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10")
+      , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10") 
       , ("M-<KP_End>"                , spawn "xbacklight -set 1")
 
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
@@ -206,7 +206,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       , ("<F7>"                      , spawn "xset s off")
       , ("S-<F7>"                    , spawn "xset s on")
-      , ("<F12>"                     , spawn "xset s 1; sleep 2; xset s default") -- For some reason, xset s activate corrupts fb...
+      , ("<F12>"                     , spawn "sleep 0.1; xset s activate")
       ]
     )) where
       -- <Copied from SubLayout.hs...>
