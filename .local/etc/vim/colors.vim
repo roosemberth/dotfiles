@@ -43,7 +43,7 @@ if $TERM != "linux"
 	hi ColorColumn ctermbg=235
 
 	" Search:
-	hi Search             ctermfg=0  ctermbg=136
+	hi Search             ctermfg=0  ctermbg=26
 
 	" Diffs:
 	hi DiffAdd            ctermfg=118 ctermbg=22
