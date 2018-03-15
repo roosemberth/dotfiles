@@ -102,7 +102,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
     ) `M.union` mkKeymap conf (
     ( autoremoveEmptyWorkspaces
-      [ ("M-<Escape>"      , DW.selectWorkspace myXPconfig)
+      [ ("M-<Escape>"      , DW.selectWorkspace myXPconfig { PT.autoComplete = Just 1 }) -- %! Quickjump
       , ("M-<Backspace>"   , DW.addWorkspace "home")
       , ("M-t"             , DW.addWorkspace "temp")
       , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
@@ -229,7 +229,7 @@ myXPconfig = PT.defaultXPConfig
                                -- TODO: Add C-r for searching...
      -- , PT.promptKeymap      :: M.Map (KeyMask,KeySym) (XP ())  -- ^ Mapping from key combinations to actions
         , PT.completionKey     = (0, xK_Tab)
-        , PT.autoComplete      = Just 1      -- delay 1µs
+        , PT.autoComplete      = Nothing
         , PT.searchPredicate   = isInfixOf
         }
 
