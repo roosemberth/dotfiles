@@ -1,4 +1,4 @@
-import XMonad hiding ( (|||) )
+import XMonad hiding ((|||))
 
 import qualified Data.Map as M
 import qualified Data.Monoid(Endo)
@@ -24,17 +24,17 @@ import XMonad.Hooks.UrgencyHook(readUrgents)
 
 import qualified XMonad.Util.NamedWindows as NW
 import XMonad.Util.EZConfig(mkKeymap)
-import XMonad.Util.NamedScratchpad  -- TODO: Purge?
+import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
 import XMonad.Util.Run(spawnPipe, hPutStrLn)
 
-import XMonad.Layout hiding ( (|||) )
-import XMonad.Layout.BoringWindows
-import XMonad.Layout.LayoutCombinators
+import XMonad.Layout hiding ((|||))
+import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
+import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
 import XMonad.Layout.LayoutModifier(ModifiedLayout)
-import XMonad.Layout.NoBorders
-import XMonad.Layout.SimplestFloat
-import XMonad.Layout.SubLayouts as SL
-import XMonad.Layout.WindowNavigation
+import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyFloat))
+import XMonad.Layout.SimplestFloat(simplestFloat)
+import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
+import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
 
 -- Contains long complicated shell commands used all over the config.
 longCmds :: String -> String
