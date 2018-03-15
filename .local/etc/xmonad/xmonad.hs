@@ -17,10 +17,10 @@ import XMonad.Actions.CycleRecentWS(cycleRecentWS)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
 import XMonad.Prompt.Pass(passPrompt)
 
+import qualified XMonad.Hooks.DynamicLog as DL
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.DynamicLog
 import XMonad.Util.NamedScratchpad
 
 import XMonad.Layout hiding ( (|||) )
@@ -266,11 +266,11 @@ myConfig = defaultConfig
         }
 
 
-myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "<" ">" }
+myPP = DL.xmobarPP { DL.ppCurrent = DL.xmobarColor "#429942" "" . DL.wrap "<" ">" }
 
 -- Key binding to toggle the gap for the bar.
 toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
 
-main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
+main = xmonad =<< DL.statusBar "xmobar" myPP toggleStrutsKey myConfig
 
 -- vim: expandtab
