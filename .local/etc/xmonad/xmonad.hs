@@ -1,13 +1,14 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts #-}
 import XMonad hiding ( (|||) )
 import XMonad.Util.EZConfig(mkKeymap)
 
 import System.Exit
 
-import Data.List (isInfixOf, nub)
-import Data.String (String)
+import Control.Monad(liftM)
+import Data.List(isInfixOf, nub, stripPrefix, elemIndex, splitAt)
+import Data.Maybe(fromMaybe)
 import qualified Data.Map as M
-import qualified Data.Monoid(Endo, All)
+import qualified Data.Monoid(Endo)
 
 import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
@@ -22,14 +23,16 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.NamedScratchpad
+import XMonad.Util.Run(spawnPipe, hPutStrLn)
 
 import XMonad.Layout hiding ( (|||) )
+import XMonad.Layout.BoringWindows
 import XMonad.Layout.LayoutCombinators
+import XMonad.Layout.LayoutModifier(ModifiedLayout)
+import XMonad.Layout.NoBorders
 import XMonad.Layout.SimplestFloat
 import XMonad.Layout.SubLayouts as SL
 import XMonad.Layout.WindowNavigation
-import XMonad.Layout.BoringWindows
-import XMonad.Layout.NoBorders
 
 -- Contains long complicated shell commands used all over the config.
 longCmds :: String -> String
@@ -265,12 +268,23 @@ myConfig = defaultConfig
         , workspaces         = ["home"]
         }
 
+myPP = DL.xmobarPP
+    { DL.ppCurrent = DL.xmobarColor "#429942" "" . DL.wrap "<" ">"
+    , DL.ppHidden = const "~"
+    }
 
-myPP = DL.xmobarPP { DL.ppCurrent = DL.xmobarColor "#429942" "" . DL.wrap "<" ">" }
+compactWorkspaces :: String -> String
+compactWorkspaces s = cf $ splitAt (fromMaybe 0 (elemIndex ':' s)) s
+    where cf (workspaces, rest) = compact "~ " 0 workspaces ++ rest
 
--- Key binding to toggle the gap for the bar.
-toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
+compact :: String -> Int -> String -> String
+compact prefix n "" = " (" ++ prefix ++ ":" ++ show n ++ ")"
+compact prefix n str@(h: t) =
+    fromMaybe (h:cont n t) $ liftM (cont (n+1)) (stripPrefix prefix str)
+    where cont = compact prefix
 
-main = xmonad =<< DL.statusBar "xmobar" myPP toggleStrutsKey myConfig
+main = do
+    xmobar <- spawnPipe "xmobar"
+    xmonad $ docks $ myConfig { logHook = DL.dynamicLogWithPP myPP { DL.ppOutput = hPutStrLn xmobar . compactWorkspaces } }
 
 -- vim: expandtab
