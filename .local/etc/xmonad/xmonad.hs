@@ -1,14 +1,12 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts #-}
 import XMonad hiding ( (|||) )
-import XMonad.Util.EZConfig(mkKeymap)
 
-import System.Exit
-
-import Control.Monad(liftM)
-import Data.List(isInfixOf, nub, stripPrefix, elemIndex, splitAt)
-import Data.Maybe(fromMaybe)
 import qualified Data.Map as M
 import qualified Data.Monoid(Endo)
+import Codec.Binary.UTF8.String(encodeString)
+import Control.Monad(liftM)
+import Data.List(isInfixOf, nub, stripPrefix, elemIndex, splitAt, intersperse, intercalate)
+import Data.Maybe(fromMaybe)
+import System.Exit
 
 import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
@@ -18,11 +16,15 @@ import XMonad.Actions.CycleRecentWS(cycleRecentWS)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
 import XMonad.Prompt.Pass(passPrompt)
 
-import qualified XMonad.Hooks.DynamicLog as DL
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Util.NamedScratchpad
+import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
+import XMonad.Hooks.EwmhDesktops(fullscreenEventHook)
+import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
+import XMonad.Hooks.ManageHelpers(doCenterFloat, doFloatAt, doFullFloat, isFullscreen)
+import XMonad.Hooks.UrgencyHook(readUrgents)
+
+import qualified XMonad.Util.NamedWindows as NW
+import XMonad.Util.EZConfig(mkKeymap)
+import XMonad.Util.NamedScratchpad  -- TODO: Purge?
 import XMonad.Util.Run(spawnPipe, hPutStrLn)
 
 import XMonad.Layout hiding ( (|||) )
@@ -268,23 +270,28 @@ myConfig = defaultConfig
         , workspaces         = ["home"]
         }
 
-myPP = DL.xmobarPP
-    { DL.ppCurrent = DL.xmobarColor "#429942" "" . DL.wrap "<" ">"
-    , DL.ppHidden = const "~"
-    }
+wrap :: String -> String -> String -> String
+wrap _ _ "" = ""
+wrap l r m  = l ++ m ++ r
 
-compactWorkspaces :: String -> String
-compactWorkspaces s = cf $ splitAt (fromMaybe 0 (elemIndex ':' s)) s
-    where cf (workspaces, rest) = compact "~ " 0 workspaces ++ rest
+pprWindowSet s = intercalate " " [current, visibles, nHidden]
+    where current  = xmobarColor "#429942" "" $ wrap "<" ">" $ W.currentTag s
+          visibles = intercalate " " $ map (wrap "(" ")" . W.tag . W.workspace) (W.visible s)
+          nHidden  = wrap "(+" ")" $ show $ length (W.hidden s)
 
-compact :: String -> Int -> String -> String
-compact prefix n "" = " (" ++ prefix ++ ":" ++ show n ++ ")"
-compact prefix n str@(h: t) =
-    fromMaybe (h:cont n t) $ liftM (cont (n+1)) (stripPrefix prefix str)
-    where cont = compact prefix
+dynamicLogString = do
+    winset <- gets windowset
+    urgentW <- readUrgents -- TODO: Handle urgent windows
+    wintitle <- maybe (return "") (fmap show . NW.getName) . W.peek $ winset
+
+    let workspaces = pprWindowSet winset
+    let layout     = description . W.layout . W.workspace . W.current $ winset
+    let title      = xmobarColor "green" "" $ xmobarStrip wintitle
+
+    return $ encodeString . intercalate " : " . filter (not . null) $ [ workspaces , layout , title ]
 
 main = do
     xmobar <- spawnPipe "xmobar"
-    xmonad $ docks $ myConfig { logHook = DL.dynamicLogWithPP myPP { DL.ppOutput = hPutStrLn xmobar . compactWorkspaces } }
+    xmonad $ docks $ myConfig { logHook = dynamicLogString >>= io . hPutStrLn xmobar }
 
 -- vim: expandtab
