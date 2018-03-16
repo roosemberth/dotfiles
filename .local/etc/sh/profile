@@ -1,8 +1,22 @@
+#!/bin/sh
 # Profile loaded when logging into a shell.
-# Written by ayekat on a cold morning in january 2017.
+
+non_duplicating_add_path()
+(
+  # TODO: Fixme
+  #echo ":$2:" | sed -e "s|:\\($1:\\)\\+|:|g;s|^:||;s|:\$||" | read PPATH
+  #printf '%s:%s\n' "$1" "$PPATH"
+  printf '%s:%s\n' "$1" "$2"
+)
+
+WRAPPERS="${XDG_RUNTIME_DIR}/bin"
+if [ ! -d "${WRAPPERS}" ]; then
+  ${XDG_CONFIG_HOME}/sh/wrappers.sh || echo "Warning: Could not generate wrappers." >&2
+fi
 
 # Set user-path:
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$(non_duplicating_add_path ${HOME}/.local/bin ${PATH})"
+export PATH="$(non_duplicating_add_path ${WRAPPERS} ${PATH})"
 
 # Load profiles in profile.d:
 if [ -d "$XDG_CONFIG_HOME/sh/profile.d" ]; then
