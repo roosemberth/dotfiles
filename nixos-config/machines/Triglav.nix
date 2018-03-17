@@ -69,6 +69,8 @@
     };
 
     udev.extraRules = ''
+      ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6108", MODE="666", SYMLINK+="LimeSDR"
+      ATTRS{idVendor}=="04b4", ATTRS{idProduct}=="00f3", MODE="666", SYMLINK+="FX3"
       #Bus 003 Device 055: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
       ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="666", SYMLINK+="ttyUSB-odroid0"
       #Bus 001 Device 005: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
