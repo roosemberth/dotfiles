@@ -21,11 +21,17 @@
     networkmanager.enable = true;
   # isolateExternalNetworking.enable = true;
     isolateExternalNetworking.whitelist = [ "wlp4s0" ];
-    firewall.enable = true;
-    firewall.checkReversePath = false; # libvirt...
-    firewall.allowPing = false;
-    firewall.allowedTCPPorts = [ 22 ];
-  # firewall.allowedUDPPorts = [ ... ];
+    firewall = {
+      enable = true;
+      checkReversePath = false; # libvirt...
+      allowPing = false;
+      allowedTCPPorts = [ 22 ];
+  #   allowedUDPPorts = [ ... ];
+      trustedInterfaces = [ "Feigenbaum" ];
+      extraCommands = ''
+        ip46tables -A nixos-fw -p gre -j nixos-fw-accept
+      '';
+    };
   };
 
   # Select internationalisation properties.
