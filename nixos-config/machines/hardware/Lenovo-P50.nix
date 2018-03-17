@@ -31,7 +31,6 @@
       };
       efi.canTouchEfiVariables = true;
     };
-    kernelPackages = pkgs.linuxPackages_latest;
     initrd = {
       kernelModules = ["dm_crypt" "cbc" "aes_x86_64"];
       luks = {
