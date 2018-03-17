@@ -44,7 +44,6 @@
     wget vim curl zsh git tmux htop atop iotop
     libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
     firefox thunderbird rxvt_unicode-with-plugins
-    (qutebrowser.override{withWebEngineDefault=true;})
     hdparm
     nox cacert
     tinc_pre
