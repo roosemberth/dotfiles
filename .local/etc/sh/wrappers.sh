@@ -47,8 +47,9 @@ _wrap()
 
 wrap()
 (
+  CFG="$(cat)"
   for app in $@; do
-    _wrap "$app"
+    echo "$CFG" | _wrap "$app"
   done
 )
 
@@ -115,7 +116,7 @@ wrap wget <<- parw
 parw
 
 # less & friends #######################
-tr '\n' ' ' <<- pihs | read LESS_ENV
+LESS_ENV="$(tr '\n' ' ' <<- pihs
 LESS_TERMCAP_me="$(printf "\033[0m")"
 LESS_TERMCAP_se="$(printf "\033[0m")"
 LESS_TERMCAP_so="$(printf "\033[30;43m")"
@@ -126,6 +127,7 @@ LESS_TERMCAP_md="$(printf "\033[31m")"
 LESS="-j.3"
 LESSHISTFILE="$XDG_DATA_HOME/lesshist"
 pihs
+)"
 
 wrap less man <<- parw
 $LESS_ENV
