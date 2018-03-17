@@ -1,6 +1,15 @@
 #!/bin/sh
-# Xinit ressource file for starting dwm
 # Written by ayekat on a rainy day in october 2012
+
+# The display manage doesn't usually run us on a login shell, souce what's missing.
+if [ -f ${HOME}/dotfiles/sh_environment ]; then
+	. ${HOME}/dotfiles/sh_environment
+fi
+
+# 
+if [ -f ${XDG_CONFIG_HOME}/sh/profile ]; then
+	. ${XDG_CONFIG_HOME}/sh/profile
+fi
 
 cmds_exist() {
 	for c in "$@"; do
@@ -107,7 +116,7 @@ while true; do
 		xss_lock_pid=$!
 	fi
 
-    echo Executing WM...
+	echo Executing WM...
 	"$wm"
 
 	cmds_exist xss-lock && kill $xss_lock_pid
