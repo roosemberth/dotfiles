@@ -366,52 +366,6 @@ fi
 
 # }}}
 # ------------------------------------------------------------------------------
-# ALIASES {{{
-# "Include" custom shell alias groups.
-# They should contain legal alias declarations
-#
-# ------------------------------------------------------------------------------
-# alias ll='ls -alFh'
-# alias la='ls -A'
-# alias l='ls -CF'
-# -------------------------- file: $XDG_CONFIG_HOME/zsh/aliases/default.aliasgrp
-#
-# This alias group files can be located in subdirectories aswell
-# but only the files ending with '.aliasgrp' will be included. 
-
-# Safer alias function
-safeAlias(){
-	local aliasTarget="$(eval print ${1#*=})"
-	local aliasTargetBinary="${aliasTarget%% *}"
-	[ -z "$aliasTargetBinary" ] && print "wtf? Tryed to bind empty alias: $1" && return
-	if [ -z "$(whence "$aliasTargetBinary")" ]; then
-		print "Couldn't resolve Alias Target: \"$aliasTargetBinary\"" 1>&2
-		return
-	fi
-	# It's fine, invoke real alias function
-	\alias "$1"
-}
-# Override alias to have a safer alias
-alias alias='safeAlias'
-
-if [ -d "$XDG_CONFIG_HOME/zsh/aliases" ]; then
-	ALIAS_GRPS=$(find -L $XDG_CONFIG_HOME/zsh/aliases -type f -iname "*.aliasgrp")
-
-	for ALIAS_GRP in ${ALIAS_GRPS}; do
-		LOG_FILENAME="$(mktemp)"
-		. ${ALIAS_GRP} > $LOG_FILENAME
-		if [ -n "$(cat $LOG_FILENAME)" ]; then
-			print "Error processing additional alias group ${ALIAS_GRP}:" 1>&2
-			cat $LOG_FILENAME
-		fi
-		[ -f "$LOG_FILENAME" ] && rm -f $LOG_FILENAME
-	done
-	unset ALIAS_GRPS
-else
-	echo "Warning, I was not able to find $XDG_CONFIG_HOME/zsh/aliases"
-fi
-# }}}  -------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 # HISTORY {{{
 
 # Make sure the zsh log directory exists:
@@ -436,7 +390,6 @@ zshaddhistory() {
 
 # }}}
 # ------------------------------------------------------------------------------
-
 
 if [ ! -z "$ZSH_PROFILING" ]; then
 	# turn off tracing

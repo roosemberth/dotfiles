@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-alias xc='xclip -selection clipboard'
-alias startx='startx $(readlink -f $XINITRC)'

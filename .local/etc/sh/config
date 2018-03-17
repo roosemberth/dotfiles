@@ -1,13 +1,63 @@
+#!/bin/sh
 # Configuration for interactive shells.
+# Expects to be sourced after profile.
 # Written by ayekat on a warm summer day in 2013.
 
 # Helper:
-cmd_exists()
-{
-	for c in "$@"; do
-		which "$c" >/dev/null 2>&1 || return 1
-	done
+safeAlias(){
+	local aliasTarget="$(printf '%s' "${1#*=}")"
+	local aliasTargetBinary="${aliasTarget%% *}"
+	[ -z "$aliasTargetBinary" ] && \alias && return # Query installed aliases.
+	if [ -z "$(command -v "$aliasTargetBinary")" ]; then
+		echo "Cannot resolve alias target $aliasTargetBinary" >&2
+		return
+	fi
+	# It's fine, invoke real alias function
+	\alias "$1"
 }
+# Override alias to have a safer alias
+alias alias='safeAlias'
+
+# }}}
+# ------------------------------------------------------------------------------
+# ALIASES {{{
+
+# quite handy!
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+alias cp='cp -i'
+alias df='df -h'
+alias fi.in='find . -iname'
+alias fi.n='find . -name'
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias l='ls -vCF'
+alias ll='ls -valFh'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias rlf='readlink -f'
+alias rm='rm --one-file-system'
+alias todo='grep -n -R "TODO\|FIXME\|XXX" .'
+alias view="${EDITOR:=vim} -R"
+alias wtf='dmesg | tail -n 20'
+
+alias info='info --vi-keys' 2> /dev/null
+
+alias xc='xclip -selection clipboard' 2> /dev/null
+
+alias mixer="alsamixer"  2> /dev/null
+alias mixer="pulsemixer" 2> /dev/null
+alias mixer="pamix"      2> /dev/null
+
+alias pacman='pacman --color always' 2> /dev/null
+
+# Server only aliases (mostly additional security):
+if [ -n "$SSH_CONNECTION" ]; then
+	alias rm='rm -i'
+fi
 
 # }}}
 # ------------------------------------------------------------------------------
@@ -15,23 +65,6 @@ cmd_exists()
 
 # Set colours for gcc:
 export GCC_COLORS='error=01;31:warning=33:note=36:caret=01;32:locus=37:quote=32'
-
-# Aliases:
-alias cp='cp -i'
-alias grep='grep --color=auto'
-alias info='info --vi-keys'
-alias la='ls -A'
-alias lah='ll -A'
-alias laht='ll -At'
-alias ll='ls -lh --time-style=long-iso'
-alias mv='mv -i'
-alias todo='grep -n -R "TODO\|FIXME\|XXX" .'
-alias view='vim -R'
-
-# Server only aliases (mostly additional security):
-if [ -n "$SSH_CONNECTION" ]; then
-	alias rm='rm -i'
-fi
 
 # }}}
 # ------------------------------------------------------------------------------
