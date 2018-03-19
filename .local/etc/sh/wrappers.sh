@@ -87,7 +87,7 @@ NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
 parw
 
 wrap pass <<- parw
-PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass"
+PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass" GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 parw
 
 wrap python python3 <<-parw
