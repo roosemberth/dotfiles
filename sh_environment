@@ -27,3 +27,4 @@ export ZDOTDIR="${XDG_CONFIG_HOME}/zsh/default"
 
 # Other session-wide variables
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent-${USER}-socket"
+export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/pass"
