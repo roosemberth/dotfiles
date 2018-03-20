@@ -101,6 +101,47 @@ let c_syntax_for_h=1   " Treat .h as C header files (instead of C++)
 " Shell:
 let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 
+au FileType vhdl call FT_vhdl()
+" }}}
+" ------------------------------------------------------------------------------
+" LANGUAGE-SPECIFIC {{{
+function! s:GenTags(sources)
+  echoerr "Error, no GenTags function defined for this language"
+endfunction
+
+" -> VHDL {{{
+function! FT_vhdl()
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  if exists("+omnifunc")
+    setlocal omnifunc=syntaxcomplete#Complete
+  endif
+  setlocal errorformat=**\ Error:\ %f(%l):\ %m
+  let g:vhdl_indent_genportmap=0
+  map <buffer> <F4> :execute ':!vsim -c -do "run -all;exit" '.expand("%:t:r")<CR>
+  " for taglist
+  let g:tlist_vhdl_settings = 'vhdl;d:package declarations;b:package bodies;e:entities;a:architecture specifications;t:type declarations;p:processes;f:functions;r:procedures'
+  " abbreviations
+  iabbr dt downto
+  iabbr sig signal
+  iabbr gen generate
+  iabbr ot others
+  iabbr sl std_logic
+  iabbr slv std_logic_vector
+  iabbr uns unsigned
+  iabbr toi to_integer
+  iabbr tos to_unsigned
+  iabbr tou to_unsigned
+
+  function! s:GenTags(sources)
+    let temp_tags_file=tempname()
+    execute "!echo ctags --options=$HOME/.local/lib/ctags/vhdl -R " . a:sources . " -f " . temp_tags_file
+    execute "set tags=" . temp_tags_file
+  endfunction
+endfunction
+" }}} <- VHDL
+
+command! -nargs=1 -complete=dir GenTags call s:GenTags("<args>")
 " }}}
 " ------------------------------------------------------------------------------
 " WHITESPACE {{{

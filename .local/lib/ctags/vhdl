@@ -1,0 +1,16 @@
+--langdef=vhdl
+--langmap=vhdl:.vhd
+--regex-vhdl=/^[ \t]*package[ \t]+([^ ]+) is/\1/d,package declarations/i
+--regex-vhdl=/^[ \t]*package[ \t]+body[ \t]+([^ ]+) is/\1/b,package bodies/i
+--regex-vhdl=/^[ \t]*architecture[ \t]+([^ ]+) of/\1/a,architecture specifications/i
+--regex-vhdl=/^[ \t]*entity[ \t]+([^ ]+) is/\1/e,entities/i
+--regex-vhdl=/^[ \t]*([^ \t:]+)[ \t]*:[ \t]*process[ \t]*\(/\1/p,processes/i
+--regex-vhdl=/^[ \t]*function[ \t]+([a-z0-9_]+)/\1/f,functions/i
+--regex-vhdl=/^[ \t]*procedure[ \t]+([a-z0-9_]+)/\1/r,procedures/i
+--regex-vhdl=/^[ \t]*type[ \t]+([^ ]+) is/\1/t,type declarations/i
+
+--langdef=unused
+--regex-vhdl=/^[ \t]*function[ \t]+([a-z0-9_]+) *(\([^\)]\))?[ \t]*return [^ \t]+[ \t]*;/\1/x,function declarations/i
+--regex-vhdl=/^[ \t]*function[ \t]+([a-z0-9_]+) *(\([^\)]\))?[ \t]*return [^ \t]+[ \t]+is/\1/y,function bodies/i
+--regex-vhdl=/^[ \t]*procedure[ \t]+([a-z0-9_]+) *(\([^\)]\))?[ \t]*;/\1/x,procedure declarations/i
+--regex-vhdl=/^[ \t]*procedure[ \t]+([a-z0-9_]+) *(\([^\)]\))?[ \t]+is/\1/y,procedure bodies/i
