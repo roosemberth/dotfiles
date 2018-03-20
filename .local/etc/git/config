@@ -1,6 +1,7 @@
 [user]
 	name = Roosembert Palacios
 	email = roosembert.palacios@epfl.ch
+	signingkey = 78D91871D059663B61177532CAAAECE5C2242BB7
 [color]
 	status = auto
 	diff = auto
