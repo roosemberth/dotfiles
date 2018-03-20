@@ -277,7 +277,8 @@ cmap w!! w !sudo tee % >/dev/null<CR>
 nmap <leader>o :NERDTreeToggle<CR>
 
 " Denite
-nmap <leader>g :DeniteProjectDir file_rec<CR>
+nmap <leader>f :DeniteProjectDir file_rec -auto-preview<CR>
+nmap <leader>b :DeniteBufferDir buffer -auto-preview<CR>
 
 " Fugitive
 nmap <leader>s :Gstatus<CR>
