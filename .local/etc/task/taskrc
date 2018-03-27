@@ -37,3 +37,9 @@ report.list.labels = ID,Proj,Tags,Pri,A,Description,Due,
 # Make EPFL projects appear as more urgent:
 urgency.user.project.epfl.coefficient=4.5
 
+context.gnu=project:gnugen
+context.agepoly=project:agepoly
+context.bity=project:bity
+context.epfl=project:epfl
+
+color.tag.nohl=blue
