@@ -116,7 +116,7 @@ function! FT_vhdl()
   if exists("+omnifunc")
     setlocal omnifunc=syntaxcomplete#Complete
   endif
-  setlocal errorformat=**\ Error:\ %f(%l):\ %m
+  setlocal errorformat=**\ Error:\ %f(%l):\ %m,**\ Warning:\ %f(%l):\ %m
   let g:vhdl_indent_genportmap=0
   map <buffer> <F4> :execute ':!vsim -c -do "run -all;exit" '.expand("%:t:r")<CR>
   " for taglist
