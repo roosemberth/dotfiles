@@ -1,0 +1,28 @@
+[default]
+highlight_event_days = True
+print_new = event
+timedelta = 5d
+default_calendar = private
+
+[calendars]
+
+[[private]]
+path = /home/roosemberth/.local/var/lib/khal/calendars/private
+type = calendar
+
+[[agepoly]]
+path = /home/roosemberth/.local/var/lib/khal/calendars/agepoly
+type = calendar
+color = light blue
+
+[[epfl]]
+path = /home/roosemberth/.local/var/lib/khal/calendars/epfl
+type = calendar
+color = dark green
+
+[locale]
+timeformat = %H:%M
+dateformat = %d/%m/%Y
+longdateformat = %d/%m/%Y
+datetimeformat = %d/%m/%Y %H:%M
+longdatetimeformat = %d/%m/%Y %H:%M
