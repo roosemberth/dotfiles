@@ -12,9 +12,11 @@ import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
 import qualified XMonad.StackSet as W
-import XMonad.Actions.CycleRecentWS(cycleRecentWS)
+import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
 import XMonad.Prompt.Pass(passPrompt)
+import XMonad.Prompt(XPConfig, mkXPrompt)
+import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
 import XMonad.Hooks.EwmhDesktops(fullscreenEventHook)
@@ -89,6 +91,10 @@ autoremoveEmptyWorkspaces :: [(a, X ())] -> [(a, X ())]
 autoremoveEmptyWorkspaces = map fp
   where fp (keys, action) = (keys, DW.removeEmptyWorkspaceAfter action)
 
+cycleRecentWS = cycleWindowSets options
+ where options w = map (W.view `flip` w) (recentTags w)
+       recentTags w = map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
+
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     M.fromList (
@@ -114,7 +120,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<F5>"          , prevWS)
       , ("M-<F6>"          , nextWS)
       , ("<F10>"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
-      , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_grave)
+      , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_1)
       ]
     ) ++ (
       [ ("M-C-S-<Return>"  , action "launcher")
