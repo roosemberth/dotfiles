@@ -102,6 +102,7 @@ let c_syntax_for_h=1   " Treat .h as C header files (instead of C++)
 let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 
 au FileType vhdl call FT_vhdl()
+au FileType c call FT_c()
 " }}}
 " ------------------------------------------------------------------------------
 " LANGUAGE-SPECIFIC {{{
@@ -141,6 +142,17 @@ function! FT_vhdl()
   endfunction
 endfunction
 " }}} <- VHDL
+
+" -> C {{{
+function! FT_c()
+  function! s:GenTags(sources)
+    let temp_tags_file=tempname()
+    execute "!ctags -f " . temp_tags_file . " -R " . a:sources
+    execute "set tags=" . temp_tags_file
+    set notagrelative
+  endfunction
+endfunction
+" }}} <- C
 
 command! -nargs=1 -complete=dir GenTags call s:GenTags("<args>")
 " }}}
