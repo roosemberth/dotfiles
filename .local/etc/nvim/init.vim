@@ -135,8 +135,9 @@ function! FT_vhdl()
 
   function! s:GenTags(sources)
     let temp_tags_file=tempname()
-    execute "!echo ctags --options=$HOME/.local/lib/ctags/vhdl -R " . a:sources . " -f " . temp_tags_file
+    execute "!ctags --options=$HOME/.local/lib/ctags/vhdl -f " . temp_tags_file . " -R " . a:sources
     execute "set tags=" . temp_tags_file
+    set notagrelative
   endfunction
 endfunction
 " }}} <- VHDL
