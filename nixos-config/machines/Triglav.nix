@@ -47,7 +47,7 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop
+    wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
     libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
     firefox thunderbird rxvt_unicode-with-plugins
     hdparm
@@ -148,7 +148,7 @@
     extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker"];
     packages = with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock krita
+        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock
         libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
         offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
         scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xtrlock-pam xorg.libXpm
