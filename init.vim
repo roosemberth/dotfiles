@@ -103,6 +103,7 @@ let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 
 au FileType vhdl call FT_vhdl()
 au FileType c call FT_c()
+au FileType python call FT_python()
 " }}}
 " ------------------------------------------------------------------------------
 " LANGUAGE-SPECIFIC {{{
@@ -153,6 +154,17 @@ function! FT_c()
   endfunction
 endfunction
 " }}} <- C
+
+" -> Python {{{
+function! FT_python()
+  function! s:GenTags(sources)
+    let temp_tags_file=tempname()
+    execute "!ctags -f " . temp_tags_file . " -R " . a:sources
+    execute "set tags=" . temp_tags_file
+    set notagrelative
+  endfunction
+endfunction
+" }}} <- Python
 
 command! -nargs=1 -complete=dir GenTags call s:GenTags("<args>")
 " }}}
