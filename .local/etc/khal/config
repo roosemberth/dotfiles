@@ -2,13 +2,14 @@
 highlight_event_days = True
 print_new = event
 timedelta = 5d
-default_calendar = private
+default_calendar = roos
 
 [calendars]
 
-[[private]]
-path = /home/roosemberth/.local/var/lib/khal/calendars/private
+[[roos]]
+path = /home/roosemberth/.local/var/lib/khal/calendars/roos
 type = calendar
+color = light magenta
 
 [[agepoly]]
 path = /home/roosemberth/.local/var/lib/khal/calendars/agepoly
