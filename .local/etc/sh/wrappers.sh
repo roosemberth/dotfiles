@@ -58,7 +58,8 @@ finalise()
   cat <<- end >> "$DEST_PATH"
 
 CMD="wrapped_\$(echo \$0 | sed 's|.*/||g')"
-if [ "\$(command -v \$CMD)" = "\$CMD" ]; then "\$CMD" \$@; fi
+BIN="\$(basename \$0)"
+if [ -z "\$NO_WRAPPERS" -a "\$(command -v \$CMD)" = "\$CMD" ]; then "\$CMD" \$@; else "\$(find_real_exec "\$BIN")" \$@; fi
 end
 )
 
