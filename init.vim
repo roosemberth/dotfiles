@@ -166,7 +166,15 @@ function! FT_python()
 endfunction
 " }}} <- Python
 
-command! -nargs=1 -complete=dir GenTags call s:GenTags("<args>")
+function! s:_GenTags(...)
+  if a:0 == 1
+    call s:GenTags(a:1)
+  else
+    call s:GenTags(".")
+  endif
+endfunction
+
+command! -nargs=? -complete=dir GenTags call s:_GenTags("<args>")
 " }}}
 " ------------------------------------------------------------------------------
 " WHITESPACE {{{
