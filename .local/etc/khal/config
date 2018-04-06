@@ -21,6 +21,11 @@ path = /home/roosemberth/.local/var/lib/khal/calendars/epfl
 type = calendar
 color = dark green
 
+[[events]]
+path = /home/roosemberth/.local/var/lib/khal/calendars/events
+type = calendar
+color = dark gray
+
 [locale]
 timeformat = %H:%M
 dateformat = %d/%m/%Y
