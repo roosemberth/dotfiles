@@ -7,12 +7,32 @@
 
 set nocompatible
 set nomodeline
+"
+" Make sure the damn paths exists:
+function! MakeSureTheDamnPathExists(path)
+	if !isdirectory(a:path)
+		call mkdir(a:path, 'p', 0700)
+	endif
+endfunction
 
 " ------------------------------------------------------------------------------
 " PATHS {{{
 " We like to respect the XDG base directory specifications
 
 " Scripts' location:
+if empty($XDG_DATA_HOME)
+  let $XDG_DATA_HOME = $HOME."/run"
+endif
+call MakeSureTheDamnPathExists($XDG_DATA_HOME)
+if empty($XDG_RUNTIME_DIR)
+  let $XDG_RUNTIME_DIR = $HOME."/run"
+endif
+call MakeSureTheDamnPathExists($XDG_RUNTIME_DIR)
+if empty($XDG_CONFIG_HOME )
+  let $XDG_CONFIG_HOME = $HOME."/run"
+endif
+call MakeSureTheDamnPathExists($XDG_CONFIG_HOME)
+
 set runtimepath=$XDG_DATA_HOME/vim,$XDG_DATA_HOME/vim/after,$VIM,$VIMRUNTIME
 
 " Backup files:
@@ -27,12 +47,6 @@ set undofile
 au BufWritePre /tmp/*,/dev/shm/*,/run/shm/* setl noundofile
 set undodir=$XDG_DATA_HOME/vim/undo
 
-" Make sure the damn paths exists:
-function! MakeSureTheDamnPathExists(path)
-	if !isdirectory(a:path)
-		call mkdir(a:path, 'p', 0700)
-	endif
-endfunction
 call MakeSureTheDamnPathExists($XDG_RUNTIME_DIR.'/vim')
 call MakeSureTheDamnPathExists($XDG_DATA_HOME.'/vim')
 call MakeSureTheDamnPathExists(&directory)
@@ -185,10 +199,18 @@ au FileType gitcommit,mail setl textwidth=86
 " LOOK {{{
 
 " Colors, after syntax!, `syntax enable` doesn't seems to work...
-source $XDG_CONFIG_HOME/vim/colors.vim
+if exists($XDG_CONFIG_HOME."/vim/colors.vim")
+  source $XDG_CONFIG_HOME/vim/colors.vim
+elseif exists($HOME."/colors.vim")
+  source $HOME/colors.vim
+endif
 
 " statusline!
-source $XDG_CONFIG_HOME/vim/statusline.vim
+if exists($XDG_CONFIG_HOME."/vim/statusline.vim")
+  source $XDG_CONFIG_HOME/vim/statusline.vim
+elseif exists($HOME."/statusline.vim")
+  source $HOME/statusline.vim
+endif
 
 " Display and format line numbers:
 set number
