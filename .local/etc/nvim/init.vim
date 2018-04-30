@@ -59,6 +59,7 @@ Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-tbone'
 Plug 'tpope/vim-surround'
+Plug 'yuratomo/w3m.vim'
 
 Plug 'Shougo/vinarise.vim'        " Hex editor
 Plug 'ap/vim-css-color'
