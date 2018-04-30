@@ -154,7 +154,7 @@ function! FT_c()
   endfunction
 
   function! s:SetSingletonMake()
-    let &l:makeprg="gcc " . expand("%") ." -o " . expand("%:r") . " -W -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wconversion -Wwrite-strings -Wfloat-equal -Wpointer-arith -Wformat=2 -Winit-self -Wuninitialized -Wshadow -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wno-unused-parameter -Wbad-function-cast -Wunreachable-code"
+    let &l:makeprg="gcc " . expand("%") ." -o " . expand("%:r") . " -W -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wconversion -Wwrite-strings -Wfloat-equal -Wpointer-arith -Wformat=2 -Winit-self -Wuninitialized -Wshadow -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wno-unused-parameter -Wbad-function-cast -Wunreachable-code -O0 -g"
   endfunction
   command! SetSingletonMake call s:SetSingletonMake()
 endfunction
