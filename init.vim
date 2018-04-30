@@ -270,7 +270,7 @@ au FileType gitcommit setl foldmethod=manual
 " KEY BINDINGS, BEHAVIOUR {{{
 
 " Leader key:
-let mapleader=';'
+let mapleader=' '
 
 " Keep 3 lines 'padding' above/below the cursor:
 set scrolloff=3
