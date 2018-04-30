@@ -50,6 +50,7 @@ call plug#begin(g:bundledir)
 Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree'
 Plug 'brooth/far.vim'
+Plug 'vim-scripts/Mark'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/denite.nvim'
@@ -323,10 +324,10 @@ nmap <leader>b :DeniteBufferDir buffer -auto-preview<CR>
 nmap <leader>s :Gstatus<CR>
 
 " Quickfix
-nmap <leader>M :cclose<CR>
-nmap <leader>m :copen<CR>
-nmap <leader>N :cprevious<CR>
-nmap <leader>n :cnext<CR>
+nmap <leader>L :cclose<CR>
+nmap <leader>l :copen<CR>
+nmap <leader>k :cprevious<CR>
+nmap <leader>j :cnext<CR>
 
 " Incsearch
 map /  <Plug>(incsearch-forward)
