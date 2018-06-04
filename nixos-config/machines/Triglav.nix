@@ -4,6 +4,7 @@
   imports =
     [ ./hardware/Lenovo-P50.nix
       ../modules/isolated-external-networking.nix
+      ./override-xmonad.nix
     ];
 
   boot.cleanTmpDir = true;
@@ -103,8 +104,6 @@
 
       displayManager.slim.enable = true;
       displayManager.slim.defaultUser = "roosemberth";
-      windowManager.xmonad.enable = true;
-      windowManager.xmonad.enableContribAndExtras = true;
     };
 
     snapper.configs = let
@@ -126,6 +125,16 @@
       "DevelHub" = {
         subvolume = "/Storage/DevelHub";
         inherit extraConfig;
+      };
+      "var" = {
+        subvolume = "/var";
+        extraConfig = ''
+          ALLOW_GROUPS="wheel"
+          NUMBER_LIMIT=3
+          TIMELINE_CREATE="yes"
+          TIMELINE_CLEANUP="yes"
+          EMPTY_PRE_POST_CLEANUP="yes"
+        '';
       };
     };
   };
@@ -175,7 +184,7 @@
     # compatible, in order to avoid breaking some software such as database
     # servers. You should change this only after NixOS release notes say you
     # should.
-    stateVersion = "17.09"; # Did you read the comment?
+    stateVersion = "18.03"; # Did you read the comment?
     autoUpgrade.enable = true;
     copySystemConfiguration = true;
   };
