@@ -35,26 +35,17 @@
     };
   };
 
-  # Select internationalisation properties.
-  # i18n = {
-  #   consoleFont = "Lat2-Terminus16";
-  #   consoleKeyMap = "us";
-  #   defaultLocale = "en_US.UTF-8";
-  # };
-
   # Set your time zone.
   time.timeZone = "Europe/Zurich";
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
     libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
     firefox thunderbird rxvt_unicode-with-plugins
     hdparm
     nox cacert
     tinc_pre
-  ];
+  ]);
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -86,11 +77,6 @@
       # Suspend on low battery TODO: pre-death clock instead...
       SUBSYSTEM=="power_supply", ATTRS{capacity}=="10", ATTRS{status}=="Discharging", RUN+="${config.systemd.package}/bin/systemctl suspend"
      '';
-
-    postgresql = {
-      enable = true;
-      package = pkgs.postgresql100;
-    };
 
     xserver = {
       # Enable the X11 windowing system.
@@ -137,6 +123,7 @@
         '';
       };
     };
+    upower.enable = true;
   };
 
   virtualisation = {
@@ -156,14 +143,16 @@
     hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker"];
-    packages = with pkgs; [ # TODO: NixUp!
+    packages = (with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs haskellPackages.xmobar i3 i3lock
+        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs
         libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
         offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
         scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xtrlock-pam xorg.libXpm
         xorg.xbacklight xorg.xev xorg.xkbcomp xorg.xkill xournal zathura zip libnotify xclip youtube-dl gnupg pass irssi
-    ];
+      ]) ++ (with pkgs.haskellPackages; [
+        xmobar # hsqml
+      ]);
     shell = pkgs.zsh;
   };
 
