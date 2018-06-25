@@ -61,15 +61,18 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-tbone'
 Plug 'tpope/vim-surround'
 Plug 'yuratomo/w3m.vim'
+Plug 'w0rp/ale'
 
 Plug 'Shougo/vinarise.vim'        " Hex editor
 Plug 'ap/vim-css-color'
 Plug 'haya14busa/incsearch.vim'
+Plug 'chrisbra/vim-diff-enhanced'
+
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating'
 Plug 'LnL7/vim-nix'
 Plug 'sophacles/vim-processing'
-Plug 'chrisbra/vim-diff-enhanced'
+Plug 'idris-hackers/idris-vim'
 
 call plug#end()
 
@@ -110,7 +113,10 @@ au FileType python call FT_python()
 " ------------------------------------------------------------------------------
 " LANGUAGE-SPECIFIC {{{
 function! s:GenTags(sources)
-  echoerr "Error, no GenTags function defined for this language"
+  let temp_tags_file=tempname()
+  execute "!ctags -f " . temp_tags_file . " -R " . a:sources
+  execute "set tags=" . temp_tags_file
+  set notagrelative
 endfunction
 
 " -> VHDL {{{
@@ -148,13 +154,6 @@ endfunction
 
 " -> C {{{
 function! FT_c()
-  function! s:GenTags(sources)
-    let temp_tags_file=tempname()
-    execute "!ctags -f " . temp_tags_file . " -R " . a:sources
-    execute "set tags=" . temp_tags_file
-    set notagrelative
-  endfunction
-
   function! s:SetSingletonMake()
     let &l:makeprg="gcc " . expand("%") ." -o " . expand("%:r") . " -W -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wconversion -Wwrite-strings -Wfloat-equal -Wpointer-arith -Wformat=2 -Winit-self -Wuninitialized -Wshadow -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wno-unused-parameter -Wbad-function-cast -Wunreachable-code -O0 -g"
   endfunction
