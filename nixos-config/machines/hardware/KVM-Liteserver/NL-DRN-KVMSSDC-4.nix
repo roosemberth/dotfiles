@@ -6,11 +6,11 @@
   ];
 
   boot = {
+    loader.timeout = 1;
     loader.grub = {
       enable = true;
       version = 2;
       device = "/dev/sda";
-      timeout = 1;
       splashImage = null;
     };
 
@@ -21,7 +21,7 @@
         enable = true;
         ssh.enable = true;
         ssh.authorizedKeys = [ "${builtins.readFile /etc/nixos/roos_rsa.pub}" ];
-	ssh.hostRSAKey = "/etc/nixos/dropbear_rsa"; # generate with # dropbearkey -t rsa  -f /etc/nixos/dropbear_rsa
+        ssh.hostRSAKey = "/etc/nixos/dropbear_rsa"; # generate with # dropbearkey -t rsa  -f /etc/nixos/dropbear_rsa
       };
 
       luks.devices."Heimdaalr".device = "/dev/disk/by-uuid/73a68e6f-eba9-4398-bcfc-bce06ee2efbc";

@@ -21,17 +21,15 @@
   # Use the systemd-boot EFI boot loader.
   boot = {
     loader = {
-   #  systemd-boot.enable = true;
       grub = {
         enable = true;
-        version = 2;
         efiSupport = true;
         device = "nodev";
         gfxmodeEfi = "1280x1024x32,1024x768x32,auto";
       };
       efi.canTouchEfiVariables = true;
     };
-    kernelPackages = pkgs.linuxPackages_4_9;
+    kernelPackages = pkgs.linuxPackages_latest;
     initrd = {
       kernelModules = ["dm_crypt" "cbc" "aes_x86_64"];
       luks = {
