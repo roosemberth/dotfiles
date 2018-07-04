@@ -218,6 +218,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("<F7>"                      , spawn "xset s off")
       , ("S-<F7>"                    , spawn "xset s on")
       , ("<F12>"                     , spawn "sleep 0.1; xset s activate")
+      , ("M-<F7>"                    , spawn "sm")
       ]
     )) where
       -- <Copied from SubLayout.hs...>
