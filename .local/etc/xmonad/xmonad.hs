@@ -4,7 +4,7 @@ import qualified Data.Map as M
 import qualified Data.Monoid(Endo)
 import Codec.Binary.UTF8.String(encodeString)
 import Control.Monad(liftM)
-import Data.List(isInfixOf, nub, stripPrefix, elemIndex, splitAt, intersperse, intercalate)
+import Data.List(elemIndex, intercalate, intersperse, isInfixOf, isPrefixOf, nub, splitAt, stripPrefix)
 import Data.Maybe(fromMaybe)
 import System.Exit
 
@@ -95,6 +95,23 @@ cycleRecentWS = cycleWindowSets options
  where options w = map (W.view `flip` w) (recentTags w)
        recentTags w = map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
 
+headSplitOn :: Eq a => a -> [a] -> [a]
+headSplitOn c = takeWhile (/= c)
+
+currentTopic :: W.StackSet [Char] l a sid sd -> [Char]
+currentTopic w = headSplitOn ':' $ W.tag $ W.workspace (W.current w)
+
+cycleTopicWS = cycleWindowSets options
+ where options w = map (W.view `flip` w) (recentTags w)
+       recentTags w = filter (isPrefixOf (currentTopic w)) $ map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
+
+selectWorkspace :: X ()
+selectWorkspace = workspacePrompt myXPconfig { PT.autoComplete = Just 1 } $ \w ->
+                  do s <- gets windowset
+                     if W.tagMember w s
+                       then windows $ W.greedyView w
+                       else DW.addWorkspace w
+
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     M.fromList (
@@ -113,14 +130,16 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
     ) `M.union` mkKeymap conf (
     ( autoremoveEmptyWorkspaces
-      [ ("M-<Escape>"      , DW.selectWorkspace myXPconfig { PT.autoComplete = Just 1 }) -- %! Quickjump
+      [ ("M-<Escape>"      , selectWorkspace) -- %! Quickjump
+      , ("M-<Tab>"         , cycleTopicWS [xK_Super_L] xK_Tab xK_1)
       , ("M-<Backspace>"   , DW.addWorkspace "home")
       , ("M-t"             , DW.addWorkspace "temp")
       , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
       , ("M-<F5>"          , prevWS)
       , ("M-<F6>"          , nextWS)
       , ("<F10>"           , PTW.windowPrompt myXPconfig PTW.Goto PTW.allWindows)
-      , ("M-<Tab>"         , cycleRecentWS [xK_Super_L] xK_Tab xK_1)
+      , ("M-S-<Tab>"       , cycleRecentWS [xK_Super_L] xK_Tab xK_1)
+      , ("M-S-<Escape>"    , DW.selectWorkspace myXPconfig { PT.autoComplete = Just 1 }) -- %! Quickjump
       ]
     ) ++ (
       [ ("M-C-S-<Return>"  , action "launcher")
