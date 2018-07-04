@@ -73,6 +73,7 @@ Plug 'tpope/vim-speeddating'
 Plug 'LnL7/vim-nix'
 Plug 'sophacles/vim-processing'
 Plug 'idris-hackers/idris-vim'
+Plug 'IN3D/vim-raml'
 
 call plug#end()
 
