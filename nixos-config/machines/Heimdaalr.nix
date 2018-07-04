@@ -16,8 +16,8 @@
     enableIPv6 = true;
     interfaces = {
       "eth0" = {
-        ip4 = [ { address = "5.2.67.130"; "prefixLength" = 24; } ];
-        ip6 = [ { address = "2a04:52c0:101:25f::a796"; "prefixLength" = 64; } ];
+        ipv4.addresses = [ { address = "5.2.67.130"; "prefixLength" = 24; } ];
+        ipv6.addresses = [ { address = "2a04:52c0:101:25f::a796"; "prefixLength" = 64; } ];
       };
     };
     defaultGateway = { address = "5.2.67.1"; };
@@ -37,8 +37,7 @@
   time.timeZone = "Europe/Zurich";
 
   environment.systemPackages = with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop dropbear
-    hdparm nox cacert tinc_pre
+    wget vim curl zsh git tmux htop atop iotop dropbear hdparm nox cacert
   ];
 
   programs.bash.enableCompletion = true;
@@ -74,13 +73,13 @@
     isNormalUser = true;
     shell = pkgs.zsh;
     uid = 19365;
-    #packages = with pkgs; [ # TODO: NixUp!
-    #    ag dmidecode dnsutils file sbt openssl jq gitAndTools.git-annex lshw mr nethogs nfs-utils nix-index libnotify
-    #    pciutils scala socat sshfs stress tig tinc unzip w3m whois youtube-dl gnupg pass irssi
-    #];
+    packages = with pkgs; [ # TODO: NixUp!
+        ag dmidecode dnsutils file sbt openssl jq gitAndTools.git-annex lshw mr nethogs nfs-utils nix-index libnotify
+        pciutils scala socat sshfs stress tig tinc unzip w3m whois youtube-dl gnupg pass irssi
+    ];
   };
 
-  system.stateVersion = "17.09";
+  system.nixos.stateVersion = "18.03";
   system.autoUpgrade.enable = true;
   system.copySystemConfiguration = true;
 
