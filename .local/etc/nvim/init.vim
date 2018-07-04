@@ -109,6 +109,10 @@ let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 au FileType vhdl call FT_vhdl()
 au FileType c call FT_c()
 au FileType python call FT_python()
+
+" linting
+let g:ale_lint_on_insert_leave=1
+let g:ale_lint_on_text_changed="normal"
 " }}}
 " ------------------------------------------------------------------------------
 " LANGUAGE-SPECIFIC {{{
