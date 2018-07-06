@@ -76,16 +76,14 @@ Config {
             , "--high"     , "darkred"
             ] 10
         , Run Com "sh" ["-c", "awk '{print $1, $2, $3 }' /proc/loadavg"] "loadavg" 10
-        , Run Com "sh" ["-c", "curl -m 5 -s ipaddr.io 2>/dev/null"] "extip" 50
         , Run Com "sh" ["-c", "hostname"] "hostname" 600
         , Run Com "sh" ["-c", "ip route | grep -oP 'default.*via \\K[^ ]+' | tr '\\n' '|'"] "intip" 50
         , Run Com "sh" ["-c", "mpc | head -n -2 | sed 's,.*/,,' | cut -c-40"] "mpd" 50
         , Run Com "sh" ["-c", "timew :yes get dom.active.{duration,tag.1,tag.2} 2>/dev/null || echo None"] "task" 50
         , Run Com "sh" ["-c", "xset q | grep 'Screen Saver' -A 2 | grep -oP 'timeout: *\\K[^ ]+'"] "screentimeout" 5
-        , Run Com "weather-in-a-line" [] "weather" 18000
         , Run Date "%a %b %_d %Y <fc=#ee9a00>%H:%M:%S</fc>" "date" 10
         , Run StdinReader
         ]
-    , template = "%extip% ✈ %weather% -- %task% -- %StdinReader% -- %mpd% } %wlp4s0%%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | ☽ %screentimeout% | %battery% ><fc=#d6d68f>%date%</fc>"
+    , template = "%task% -- %StdinReader% -- %mpd% } %wlp2s0%%enp0s31f6% { |%intip%|%loadavg%|%multicpu%|%coretemp%|%memory%| %disku% | ☽ %screentimeout% | %battery% ><fc=#d6d68f>%date%</fc>"
 }
 -- vim: set filetype=haskell :
