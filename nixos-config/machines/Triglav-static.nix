@@ -1,49 +1,56 @@
 { config, lib, pkgs, ... }:
 
+let
+  hostname = config.networking.hostName;
+  uuid = {
+    lenstra = "031796d1-9617-402e-a106-7c5a622ebdd0";
+    triglav = "cd56ef5b-74bd-426e-96de-c1ccd2b0de72";
+  };
+  partuuid = {
+    boot = "6283960e-0d80-4455-a72a-3318c34cd1fb";
+  };
+  secrets = import ../secrets.nix { inherit lib; };
+in
 {
   imports = [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix> ];
 
-  swapDevices = [ ];
-
-  nix.maxJobs = lib.mkDefault 8;
-  powerManagement = {
-    cpuFreqGovernor = "powersave";
-    resumeCommands =
-    ''
-      ${config.systemd.package}/bin/systemctl restart bluetooth.service
-    '';
-    powerDownCommands =
-    ''
-      ${config.systemd.package}/bin/systemctl stop bluetooth.service
-    '';
-  };
-
-  # Use the systemd-boot EFI boot loader.
   boot = {
+    cleanTmpDir = true;
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ "nouveau.runpm=0" /* "nopti" */];
+    initrd = {
+      kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel"];
+      luks = {
+        devices = [
+          { name = "Lenstra";
+            device = "/dev/disk/by-uuid/${uuid.lenstra}";
+          } {
+            name = "Triglav";
+            device = "/dev/disk/by-uuid/${uuid.triglav}";
+          }
+        ];
+      };
+      network = {
+        enable = true;
+        ssh.enable = true;
+        ssh.authorizedKeys = secrets.adminPubKeys;
+        ssh.hostRSAKey = secrets.machines."${hostname}".hostInitrdRSAKey; 
+      };
+      preDeviceCommands = "ip a || true";
+      supportedFilesystems = [ "btrfs" "ext4" ];
+    };
     loader = {
       grub = {
         enable = true;
         efiSupport = true;
+        efiInstallAsRemovable = true;
         device = "nodev";
         gfxmodeEfi = "1280x1024x32,1024x768x32,auto";
       };
-      efi.canTouchEfiVariables = true;
-    };
-    kernelPackages = pkgs.linuxPackages_latest;
-    initrd = {
-      kernelModules = ["dm_crypt" "cbc" "aes_x86_64"];
-      luks = {
-        devices = [
-          { name = "Lenstra";
-            device = "/dev/disk/by-uuid/031796d1-9617-402e-a106-7c5a622ebdd0";
-          } {
-            name = "Triglav";
-            device = "/dev/disk/by-uuid/cd56ef5b-74bd-426e-96de-c1ccd2b0de72";
-          }
-        ];
-      };
     };
   };
+
+  swapDevices = [ ];
 
   fileSystems = {
     "/" = {
@@ -61,7 +68,7 @@
     "/boot" = {
       fsType = "vfat";
       mountPoint = "/boot";
-      device = "/dev/sda1";
+      device = "/dev/disk/by-partuuid/${partuuid.boot}";
     };
     "/var" = {
       fsType = "btrfs";
@@ -142,4 +149,6 @@
       options = ["nodatacow" "noatime" "noexec"];
     };
   };
+
+  powerManagement.cpuFreqGovernor = "powersave";
 }

@@ -10,6 +10,9 @@ in
       # `dropbearkey -t rsa -f secrets/machines/lappie/ssh-keys/initramfs`
       hostInitrdRSAKey = secrets/machines/lappie/ssh-keys/initramfs;
     };
+    Triglav = {
+      hostInitrdRSAKey = secrets/machines/triglav/ssh-keys/initramfs;
+    };
   };
   #adminPubKeys = map builtins.readFile (listFilesInDir secrets/admins/ssh-keys);
   adminPubKeys = [ (builtins.readFile secrets/admins/ssh-keys/roosemberth.pub) ];

@@ -1,15 +1,29 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ ./hardware/Lenovo-P50.nix
-      ../modules/isolated-external-networking.nix
-      ./override-xmonad.nix
-    ];
+  imports = [
+    ./Triglav-static.nix
+    ../modules/isolated-external-networking.nix
+    ./override-xmonad.nix
+  ];
 
-  boot.cleanTmpDir = true;
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.kernelParams = [ "nouveau.runpm=0" /* "nopti" */];
+  environment.systemPackages = (with pkgs; [
+    wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
+    libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
+    firefox thunderbird rxvt_unicode-with-plugins
+    hdparm
+    nox cacert
+    tinc_pre
+  ]);
+
+  hardware = {
+    bluetooth.enable = true;
+    cpu.intel.updateMicrocode = true;
+    opengl.driSupport32Bit = true;      # Steam...
+    pulseaudio.enable = true;
+    pulseaudio.package = pkgs.pulseaudioFull;
+    pulseaudio.support32Bit = true;     # Steam...
+  };
 
   networking = {
     hostName = "Triglav"; # Define your hostname.
@@ -35,23 +49,35 @@
     };
   };
 
-  # Set your time zone.
-  time.timeZone = "Europe/Zurich";
+  nix = {
+    buildCores = 8;
+    trustedUsers = [ "roosemberth" ];
+  };
 
-  environment.systemPackages = (with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
-    libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
-    firefox thunderbird rxvt_unicode-with-plugins
-    hdparm
-    nox cacert
-    tinc_pre
-  ]);
+  nixpkgs.config = {
+    packageOverrides = pkgs: {
+      unstable = import <nixos-unstable>;
+    };
+  };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.bash.enableCompletion = true;
-  programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
+  powerManagement = {
+    resumeCommands = ''
+      ${config.systemd.package}/bin/systemctl restart bluetooth.service
+    '';
+    powerDownCommands = ''
+      ${config.systemd.package}/bin/systemctl stop bluetooth.service
+    '';
+  };
+
+  programs = {
+    bash.enableCompletion = true;
+    mtr.enable = true;
+  };
+
+  security.sudo = {
+    enable = true;
+    extraConfig = ''%wheel  ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild'';
+  };
 
   services = {
     logind.lidSwitch = "ignore";
@@ -79,9 +105,7 @@
      '';
 
     xserver = {
-      # Enable the X11 windowing system.
       enable = true;
-      enableTCP = true;
       layout = "us";
       xkbVariant = "intl";
 
@@ -126,15 +150,13 @@
     upower.enable = true;
   };
 
-  virtualisation = {
-    libvirtd.enable = true;
-    docker.enable = true;
+  system = {
+    stateVersion = "18.03";
+    autoUpgrade.enable = true;
+    copySystemConfiguration = true;
   };
-# nixup.enable = true;
-  nix = {
-    package = pkgs.nixUnstable;
-    trustedUsers = [ "roosemberth" ];
-  };
+
+  time.timeZone = "Europe/Zurich";
 
   users.mutableUsers = false;
   users.extraUsers.roosemberth =
@@ -145,7 +167,7 @@
     extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker"];
     packages = (with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs
+        gitAndTools.git-annex gitAndTools.git-crypt gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs
         libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
         offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
         scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xtrlock-pam xorg.libXpm
@@ -156,44 +178,8 @@
     shell = pkgs.zsh;
   };
 
-  hardware = {
-    pulseaudio.enable = true;
-    pulseaudio.package = pkgs.pulseaudioFull;
-    pulseaudio.support32Bit = true;     # Steam...
-    opengl.driSupport32Bit = true;      # Steam...
-    bluetooth.enable = true;
-    cpu.intel.updateMicrocode = true;
-  # bumblebee.enable = true;
-  # bumblebee.driver = "nvidia";
-  # bumblebee.connectDisplay = false;   # Else bumblebee doesn't work...
-  };
-
-  system = {
-    # This value determines the NixOS release with which your system is to be
-    # compatible, in order to avoid breaking some software such as database
-    # servers. You should change this only after NixOS release notes say you
-    # should.
-    stateVersion = "18.03"; # Did you read the comment?
-    autoUpgrade.enable = true;
-    copySystemConfiguration = true;
-  };
-
-  security.sudo = {
-    enable = true;
-    #extraConfig = ''
-    #    %wheel  ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild switch
-    #'';
-  };
-
-  nixpkgs.config = {
-  # allowUnfree = true;
-    # Create an alias for the unstable channel
-    packageOverrides = pkgs: {
-      unstable = import <nixos-unstable> {
-        # pass the nixpkgs config to the unstable alias
-        # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config;
-      };
-    };
+  virtualisation = {
+    libvirtd.enable = true;
+    docker.enable = true;
   };
 }
