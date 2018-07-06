@@ -196,4 +196,4 @@ for x in $CONFIGS; do
     fi
 done
 
-return $E_SUCCESS
+exit $E_SUCCESS
