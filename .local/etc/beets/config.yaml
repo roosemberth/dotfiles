@@ -7,11 +7,11 @@ import:
 
 pluginpath : ~/.local/lib/beets/plugins
 library : ~/.local/lib/beets/library.db
-plugins : chroma fromfilename fetchart 
+plugins : chroma fromfilename fetchart
 
 paths:
     default: Artists/$albumartist/$album%aunique{}/CD$disc/$track $title
-    singleton: Non-Album/$artist/$title
+    singleton: Artists/$artist/singles/$title
     comp: Compilations/$album%aunique{}/$track $title
     albumtype:soundtrack: Soundtracks/$album/$track $title
 
