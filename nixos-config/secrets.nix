@@ -6,6 +6,9 @@ let
 in
 {
   machines = {
+    Heimdaalr = {
+      hostInitrdRSAKey = secrets/machines/heimdaalr/ssh-keys/initramfs;
+    };
     Lappie = {
       # `dropbearkey -t rsa -f secrets/machines/lappie/ssh-keys/initramfs`
       hostInitrdRSAKey = secrets/machines/lappie/ssh-keys/initramfs;

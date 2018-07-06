@@ -1,9 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ ./hardware/KVM-Liteserver/NL-DRN-KVMSSDC-4.nix
-    ];
+  imports = [ ./Heimdaalr-static.nix ];
 
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."vm.overcommit_memory" = "1";
@@ -43,26 +41,19 @@
   programs.bash.enableCompletion = true;
   programs.mtr.enable = true;
 
+  security.sudo.enable = true;
+
   services = {
     openssh = {
       enable = true;
       gatewayPorts = "yes";
-    # forwardX11 = true;
     };
+  };
 
-  # snapper.configs = let
-  #   extraConfig = ''
-  #     ALLOW_GROUPS="wheel"
-  #     TIMELINE_CREATE="yes"
-  #     TIMELINE_CLEANUP="yes"
-  #     EMPTY_PRE_POST_CLEANUP="yes"
-  #   '';
-  # in {
-  #   "home" = {
-  #     subvolume = "/home";
-  #     inherit extraConfig;
-  #   };
-  # };
+  system = {
+    stateVersion = "18.03";
+    autoUpgrade.enable = true;
+    copySystemConfiguration = true;
   };
 
   users.mutableUsers = false;
@@ -78,10 +69,4 @@
         pciutils scala socat sshfs stress tig tinc unzip w3m whois youtube-dl gnupg pass irssi
     ];
   };
-
-  system.nixos.stateVersion = "18.03";
-  system.autoUpgrade.enable = true;
-  system.copySystemConfiguration = true;
-
-  security.sudo.enable = true;
 }
