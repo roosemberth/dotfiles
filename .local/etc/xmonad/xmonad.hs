@@ -300,10 +300,17 @@ wrap :: String -> String -> String -> String
 wrap _ _ "" = ""
 wrap l r m  = l ++ m ++ r
 
+filterTags :: (i -> Bool) -> W.StackSet i l a s sd -> [i]
+filterTags f s = filter f $ map W.tag $ W.workspaces s
+
+pprWindowSet :: W.StackSet [Char] l a s sd -> String
 pprWindowSet s = intercalate " " [current, visibles, nHidden]
-    where current  = xmobarColor "#429942" "" $ wrap "<" ">" $ W.currentTag s
-          visibles = intercalate " " $ map (wrap "(" ")" . W.tag . W.workspace) (W.visible s)
-          nHidden  = wrap "(+" ")" $ show $ length (W.hidden s)
+    where topicSiblings = filterTags (isInfixOf $ currentTopic s) s
+          tagAndTopicSiblingsStr tag = show (length $ filterTags (isInfixOf $ headSplitOn ':' tag) s) ++ "/" ++ tag
+          current  = xmobarColor "#429942" "" $ wrap "<" ">" $ tagAndTopicSiblingsStr $ W.currentTag s
+          visibles = intercalate " " $ map (wrap "(" ")" . tagAndTopicSiblingsStr . W.tag . W.workspace) (W.visible s)
+          nTopics = length . nub $ map (headSplitOn ':' . W.tag) (W.workspaces s)
+          nHidden  = wrap "(+" ")" $ (show $ length $ W.hidden s) ++ "/" ++ (show nTopics)
 
 dynamicLogString = do
     winset <- gets windowset
