@@ -56,37 +56,35 @@ longCmds cmd = (M.fromList $ [
 action :: String -> X ()
 action action = spawn $ longCmds action
 
+floatingOverlay = customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
+
 scratchpads = [
 -- TODO: More scratchpads!: System status (spawn detached on boot?), soundctl, ???
       NS "flyway"  ("urxvt -title Scratchpad-flyway -e tmux new -As flyway")
-        (title =? "Scratchpad-flyway") (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
- -- , NS "wrapper" (longCmds "wrapperCmd") (title =? "Scratchpad-Wrapper") doCenterFloat
+        (title =? "Scratchpad-flyway") floatingOverlay
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
--- | @q =/ x@. if the result of @q@ does not equals @x@, return 'True'.
-(=/) :: Eq a => Query a -> a -> Query Bool
-q =/ x = fmap(/= x) q
+centerFloatByTitle = [ "launcher", "xmessage" ]
+centerFloatByClassNameLike =
+  [ "Gajim" , "Gnome-calendar", "Gvncviewer"
+  , "Pinentry", "Shutter", "Zenity"
+  , "eog", "feh", "mpv"
+  ]
 
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
-myManageHook = composeAll
-    [ title     =? "launcher" --> doCenterFloat
-    , title     =? "xmessage" --> doCenterFloat
-    , className =? "Pinentry" --> doCenterFloat
-    , className =? "Zenity"   --> doCenterFloat
-    , className =? "mpv"      --> doCenterFloat
-    , className =? "Shutter"  --> doCenterFloat
-    , className =? "eog"      --> doCenterFloat
-    , className =? "feh"      --> doFloatAt (7/10) (1/100)
-    , className =? "Gvncviewer" --> doCenterFloat
-    , className =? "Gajim"   <&&> role =? "roster"    --> doFloatAt (3000/3480) (104/2160)
-    , className =? "Gajim"   <&&> role =? "messages"  --> doFloatAt (2000/3480) (550/2160)
-    , className =? "Gajim"    --> doCenterFloat
-    , className =? "Firefox" <&&> role =/ "browser"   --> doCenterFloat
-    , title     =? ".*float.*"--> doCenterFloat
-    , isFullscreen            --> doFullFloat -- Maybe whitelist fullscreen-allowed applications?
+myManageHook = composeAll $
+    (map (--> doCenterFloat) [
+      title ~~ flip elem centerFloatByTitle
+    , className ~~ (flip any centerFloatByClassNameLike . isInfixOf)
+    , className =? "Firefox" <&&> role ~~ (/= "browser")
+    ]) ++ [
+      title ~~ isInfixOf "overlay" --> floatingOverlay
     , namedScratchpadManageHook scratchpads
+    , isFullscreen --> doFullFloat
     , manageDocks
     ] where role = stringProperty "WM_WINDOW_ROLE"
+            (~~) :: (Query a) -> (a -> Bool) -> (Query Bool)
+            (~~) = flip liftM
 
 
 autoremoveEmptyWorkspaces :: [(a, X ())] -> [(a, X ())]
