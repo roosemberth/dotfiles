@@ -233,7 +233,15 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<KP_End>"                , spawn "xbacklight -set 1")
 
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
-      , ("M-<KP_Right>"              , spawn "redshift -O 6500K")
+      , ("M-S-<KP_Prior>"            , spawn "redshift -O 6500K")
+      , ("M-<KP_Right>"              , spawn "xbacklight -set 1")
+      , ("M-S-<KP_Right>"            , spawn "xbacklight -set 100")
+      , ("M-<KP_End>"                , spawn "xrandr --output eDP1 --auto --below DP-1-2 --below DP-1-3")
+      , ("M-S-<KP_End>"              , spawn "xrandr --output eDP1 --off")
+      , ("M-<KP_Down>"               , spawn "xrandr --output DP-1-2 --auto --above eDP1")
+      , ("M-S-<KP_Down>"             , spawn "xrandr --output DP-1-2 --off")
+      , ("M-<KP_Next>"               , spawn "xrandr --output DP-1-3 --auto --above eDP1")
+      , ("M-S-<KP_Next>"             , spawn "xrandr --output DP-1-3 --off")
 
       , ("<F7>"                      , spawn "xset s off")
       , ("S-<F7>"                    , spawn "xset s on")
