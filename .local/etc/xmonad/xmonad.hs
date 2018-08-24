@@ -38,6 +38,7 @@ import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyFloat))
 import XMonad.Layout.SimplestFloat(simplestFloat)
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
+import XMonad.Layout.Grid
 
 -- Contains long complicated shell commands used all over the config.
 longCmds :: String -> String
@@ -273,7 +274,7 @@ myXPconfig = PT.defaultXPConfig
         , PT.searchPredicate   = isInfixOf
         }
 
-layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| simplestFloat where
+layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid ||| simplestFloat where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
      -- The default number of windows in the master pane
