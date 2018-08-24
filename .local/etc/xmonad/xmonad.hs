@@ -12,6 +12,7 @@ import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
 import qualified XMonad.StackSet as W
+import qualified XMonad.Actions.UpdateFocus as UpF
 import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
 import XMonad.Prompt.Pass(passPrompt)
@@ -19,7 +20,7 @@ import XMonad.Prompt(XPConfig, mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
-import XMonad.Hooks.EwmhDesktops(fullscreenEventHook)
+import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
 import XMonad.Hooks.ManageHelpers(doCenterFloat, doFloatAt, doFullFloat, isFullscreen)
 import XMonad.Hooks.UrgencyHook(readUrgents)
@@ -282,17 +283,18 @@ myLayout = avoidStruts $ lessBorders OnlyFloat
                        $ smartBorders
                        $ layoutAlgorithms
 
-myConfig = defaultConfig
+myConfig = ewmh $ defaultConfig
         { borderWidth        = 1
-        , terminal           = "urxvt -e tmux"
-        , normalBorderColor  = "#1b1b2e"
+        , focusFollowsMouse  = True
         , focusedBorderColor = "#ff0000"
-        , focusFollowsMouse  = False
-        , modMask            = mod4Mask
+        , handleEventHook    = fullscreenEventHook <+> UpF.focusOnMouseMove
         , keys               = myKeys
-        , handleEventHook    = fullscreenEventHook
-        , manageHook         = myManageHook <+> manageHook defaultConfig
         , layoutHook         = myLayout
+        , manageHook         = myManageHook <+> manageHook defaultConfig
+        , modMask            = mod4Mask
+        , normalBorderColor  = "#1b1b2e"
+        , startupHook        = UpF.adjustEventInput
+        , terminal           = "urxvt -e tmux"
         , workspaces         = ["home"]
         }
 
