@@ -16,7 +16,7 @@ import qualified XMonad.Actions.UpdateFocus as UpF
 import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
 import XMonad.Prompt.Pass(passPrompt)
-import XMonad.Prompt(XPConfig, mkXPrompt)
+import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
@@ -40,21 +40,35 @@ import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
 import XMonad.Layout.Grid
 
--- Contains long complicated shell commands used all over the config.
-longCmds :: String -> String
-longCmds cmd = (M.fromList $ [
-      ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
-    , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
-    , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
-    , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
-    , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
-    , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
-    , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
-    , ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
-    ]) M.! cmd
+actionsList :: M.Map String (X())
+actionsList = M.fromList
+  ((map (mapResult spawn) [
+    ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
+  , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
+  , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
+  , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
+  , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
+  , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
+  , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
+  , ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
+  ]) ++ (map (mapResult cmdInTmpTmux) [
+    ("dico"         , "dico \"$(read)\"")
+  , ("wn"           , "wn \"$(read -e)\" -over")
+  ])) where cmdInTmpTmux cmd = spawn $ "urxvt -title overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
+            mapResult fn (k, v) = (k, fn v)
 
 action :: String -> X ()
-action action = spawn $ longCmds action
+action action = actionsList M.! action
+
+data ActionRef = ActionRef String
+
+instance XPrompt ActionRef where
+    showXPrompt (ActionRef name) = name
+
+actionsPrompt:: XPConfig -> X()
+actionsPrompt c = mkXPrompt (ActionRef "") c (mkComplFunFromList' keys) $ runAction
+  where keys = M.keys actionsList
+        runAction ref = actionsList M.! ref
 
 floatingOverlay = customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
 
@@ -190,7 +204,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
       , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
       , ("M-,"             , sendMessage (IncMasterN 1))            -- %! Increment the number of windows in the master area
-      , ("M-."             , sendMessage (IncMasterN (-1)))         -- %! Deincrement the number of windows in the master area
+      , ("M-."             , sendMessage (IncMasterN (-1)))            -- %! Increment the number of windows in the master area
+      , ("M-o"             , sendMessage (IncMasterN (-1)))            -- %! Increment the number of windows in the master area
       , ("M-<Space>"       , sendMessage NextLayout)                -- %! Rotate through the available layout algorithms
 
       , ("M-C-h"           , toSubl Shrink)                         -- %! Shrink the master area
@@ -208,6 +223,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-r"                     , action "klayout")
       , ("M-S-t"                     , action "restoreTmux")
       , ("M-p"                       , passPrompt myXPconfig)
+      , ("M-r"                       , actionsPrompt myXPconfig { PT.autoComplete = Just 1 })
 
       -- Scratchpads!
       , ("M-S-q"                     , namedScratchpadAction scratchpads "flyway")
@@ -229,7 +245,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("<XF86MonBrightnessDown>"   , spawn "xbacklight -dec 10")
       , ("C-<XF86AudioRaiseVolume>"  , spawn "xbacklight -inc 10")
       , ("C-<XF86AudioLowerVolume>"  , spawn "xbacklight -dec 10")
-      , ("M-<KP_End>"                , spawn "xbacklight -set 1")
 
       , ("M-<KP_Prior>"              , spawn "redshift -O 2000K")
       , ("M-S-<KP_Prior>"            , spawn "redshift -O 6500K")
