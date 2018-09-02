@@ -35,7 +35,6 @@ import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
 import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
 import XMonad.Layout.LayoutModifier(ModifiedLayout)
 import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyFloat))
-import XMonad.Layout.SimplestFloat(simplestFloat)
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
 import XMonad.Layout.Grid
@@ -199,7 +198,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
       , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
       , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
-      , ("M-d"             , sendMessage $ JumpToLayout "SimplestFloat") -- %! Jump directly to layout
 
       , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
       , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
@@ -287,7 +285,7 @@ myXPconfig = PT.defaultXPConfig
         , PT.searchPredicate   = isInfixOf
         }
 
-layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid ||| simplestFloat where
+layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
      -- The default number of windows in the master pane
