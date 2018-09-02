@@ -13,8 +13,10 @@ import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
 import qualified XMonad.StackSet as W
 import qualified XMonad.Actions.UpdateFocus as UpF
+
 import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
+import XMonad.Operations(rescreen)
 import XMonad.Prompt.Pass(passPrompt)
 import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
@@ -34,6 +36,7 @@ import XMonad.Layout hiding ((|||))
 import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
 import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
 import XMonad.Layout.LayoutModifier(ModifiedLayout)
+import XMonad.Layout.LayoutScreens(layoutSplitScreen)
 import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyFloat))
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
@@ -81,7 +84,7 @@ centerFloatByTitle = [ "launcher", "xmessage" ]
 centerFloatByClassNameLike =
   [ "Gajim" , "Gnome-calendar", "Gvncviewer"
   , "Pinentry", "Shutter", "Zenity"
-  , "eog", "feh", "mpv"
+  , "eog", "feh", "mpv", "vlc"
   ]
 
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
@@ -195,9 +198,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       -- TODO: Extract bindings shared by toSubl and sendMessage into another array and "compile" the both layouts...
       -- TODO: Include v in ^
-      , ("M-a"             , sendMessage $ JumpToLayout "Tall")          -- %! Jump directly to layout
-      , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout
-      , ("M-s"             , sendMessage $ JumpToLayout "Full")          -- %! Jump directly to layout
+      , ("M-a"             , sendMessage $ JumpToLayout "Tall")     -- %! Jump directly to layout vertical
+      , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout horizontal
+      , ("M-s"             , sendMessage $ JumpToLayout "Full")     -- %! Jump directly to layout single window
+      , ("M-d"             , sendMessage $ JumpToLayout "Grid")     -- %! Jump directly to layout grid
+      , ("M-<F12>"         , rescreen)                              -- %! Force screens state update (eg. undo layoutSplitScreen)
+      , ("M-S-<F12>"       , layoutSplitScreen 4 Grid)              -- %! Break a screen into 4 workspaces
 
       , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
       , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
