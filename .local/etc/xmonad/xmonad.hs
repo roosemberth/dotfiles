@@ -54,7 +54,7 @@ actionsList = M.fromList
   , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
   , ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
   ]) ++ (map (mapResult cmdInTmpTmux) [
-    ("dico"         , "dico \"$(read)\"")
+    ("dico"         , "dico \"$(read -e)\"")
   , ("wn"           , "wn \"$(read -e)\" -over")
   ])) where cmdInTmpTmux cmd = spawn $ "urxvt -title overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
             mapResult fn (k, v) = (k, fn v)
@@ -108,17 +108,17 @@ autoremoveEmptyWorkspaces = map fp
   where fp (keys, action) = (keys, DW.removeEmptyWorkspaceAfter action)
 
 cycleRecentWS = cycleWindowSets options
- where options w = map (W.view `flip` w) (recentTags w)
+ where options w = map (`W.view` w) (recentTags w)
        recentTags w = map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
 
 headSplitOn :: Eq a => a -> [a] -> [a]
 headSplitOn c = takeWhile (/= c)
 
-currentTopic :: W.StackSet [Char] l a sid sd -> [Char]
+currentTopic :: W.StackSet String l a sid sd -> String
 currentTopic w = headSplitOn ':' $ W.tag $ W.workspace (W.current w)
 
 cycleTopicWS = cycleWindowSets options
- where options w = map (W.view `flip` w) (recentTags w)
+ where options w = map (`W.view` w) (recentTags w)
        recentTags w = filter (isPrefixOf (currentTopic w)) $ map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
 
 selectWorkspace :: X ()
@@ -331,7 +331,7 @@ wrap l r m  = l ++ m ++ r
 filterTags :: (i -> Bool) -> W.StackSet i l a s sd -> [i]
 filterTags f s = filter f $ map W.tag $ W.workspaces s
 
-pprWindowSet :: W.StackSet [Char] l a s sd -> String
+pprWindowSet :: W.StackSet String l a s sd -> String
 pprWindowSet s = intercalate " " [current, visibles, nHidden]
     where topicSiblings = filterTags (isInfixOf $ currentTopic s) s
           tagAndTopicSiblingsStr tag = show (length $ filterTags (isInfixOf $ headSplitOn ':' tag) s) ++ "/" ++ tag
