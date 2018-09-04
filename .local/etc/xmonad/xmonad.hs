@@ -1,11 +1,13 @@
 import XMonad hiding ((|||))
 
 import qualified Data.Map as M
-import qualified Data.Monoid(Endo)
 import Codec.Binary.UTF8.String(encodeString)
-import Control.Monad(liftM)
-import Data.List(elemIndex, intercalate, intersperse, isInfixOf, isPrefixOf, nub, splitAt, stripPrefix)
-import Data.Maybe(fromMaybe)
+import Control.Monad(liftM, mfilter)
+import Data.Foldable(asum)
+import Data.Maybe(fromMaybe, fromJust)
+import Data.List
+import Data.Monoid(Endo(..), mempty, mconcat)
+import Data.Tuple(fst, snd, uncurry)
 import System.Exit
 
 import qualified XMonad.Actions.DynamicWorkspaces as DW
@@ -16,7 +18,7 @@ import qualified XMonad.Actions.UpdateFocus as UpF
 
 import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
-import XMonad.Operations(rescreen)
+import XMonad.Operations(rescreen, windows)
 import XMonad.Prompt.Pass(passPrompt)
 import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
@@ -87,7 +89,32 @@ centerFloatByClassNameLike =
   , "eog", "feh", "mpv", "vlc"
   ]
 
-myManageHook :: Query (Data.Monoid.Endo WindowSet)
+breakAtSublist :: Eq a => [a] -> [a] -> Maybe ([a], [a])
+breakAtSublist sl l = gashAndRemoveSubListAtIdx <$> sublistIdx
+  where subListIsAtIdx sl idx l = isPrefixOf sl $ drop idx l
+        trisectL len1 len2 l = (take len1 l, take len2 $ drop len1 l, drop (len1 + len2) l)
+        gashAndRemoveSubListAtIdx idx = (\(a, _, c) -> (a, c)) $ trisectL idx slLen l
+        sublistIdx = findIndex (\i -> subListIsAtIdx sl i l) [0..(length l)-slLen]
+        slLen = length sl
+
+-- ## Windows title hints
+-- `${wsh}` is an existing workspace or it's of the form `${ws}:...` and `${ws}` is an existing workspace.
+workspaceFromTitleHint :: String -> [String] -> Maybe String
+workspaceFromTitleHint title wsNames = fst <$> (breakAtSublist "|::|" title) >>= wsFromNameHint
+  where wsFromNameHint nameHint = mfilter (flip elem wsTopics . topicFromWsName) (Just nameHint) >>= findTarget
+        wsTopics = nub $ map topicFromWsName wsNames
+        topicFromWsName wn = headSplitOn ':' wn
+        findTarget :: String -> Maybe String
+        findTarget nameHint = find subpathExists (mkparentpaths nameHint) >>= (`find` wsNames) . isPrefixOf
+        subpathExists s = or $ map (isPrefixOf s) wsNames
+        mkparentpaths subpath = map (uncurry take) $ reverse (elemIndices ':' subpath ++ [length subpath]) `zip` repeat subpath
+
+queryFromLookupInWindowSet :: (WindowSet -> Maybe b) -> [(b -> WindowSet -> WindowSet)] -> Query (Endo WindowSet)
+queryFromLookupInWindowSet lu actions = doF $ \ws -> case lu ws of { Nothing -> ws; Just b -> batchActions b ws actions }
+  where batchActions :: b -> a -> [b -> a -> a] -> a
+        batchActions ws = foldl' (\z fn -> fn ws z)
+
+myManageHook :: Query (Endo WindowSet)
 myManageHook = composeAll $
     (map (--> doCenterFloat) [
       title ~~ flip elem centerFloatByTitle
@@ -97,11 +124,20 @@ myManageHook = composeAll $
       title ~~ isInfixOf "overlay" --> floatingOverlay
     , namedScratchpadManageHook scratchpads
     , isFullscreen --> doFullFloat
+    , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [W.shift, W.greedyView]
     , manageDocks
     ] where role = stringProperty "WM_WINDOW_ROLE"
-            (~~) :: (Query a) -> (a -> Bool) -> (Query Bool)
+            (~~) :: (Query a) -> (a -> b) -> (Query b)
             (~~) = flip liftM
+            getWorkspaces = map W.tag . W.workspaces
 
+honorWindowTitleHintInCurrentWs :: X()
+honorWindowTitleHintInCurrentWs = withFocused $ (>>= XMonad.Operations.windows) . mkX
+  where mkX :: Window -> X(WindowSet -> WindowSet)
+        mkX = (appEndo <$>) . runQuery (title >>= mkQuery)
+        mkQuery :: String -> Query(Endo WindowSet)
+        mkQuery t = queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [W.shift]
+        getWorkspaces = map W.tag . W.workspaces
 
 autoremoveEmptyWorkspaces :: [(a, X ())] -> [(a, X ())]
 autoremoveEmptyWorkspaces = map fp
@@ -202,6 +238,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout horizontal
       , ("M-s"             , sendMessage $ JumpToLayout "Full")     -- %! Jump directly to layout single window
       , ("M-d"             , sendMessage $ JumpToLayout "Grid")     -- %! Jump directly to layout grid
+      , ("M-<F11>"         , honorWindowTitleHintInCurrentWs)       -- %! See [windows title hints]
       , ("M-<F12>"         , rescreen)                              -- %! Force screens state update (eg. undo layoutSplitScreen)
       , ("M-S-<F12>"       , layoutSplitScreen 4 Grid)              -- %! Break a screen into 4 workspaces
 
@@ -290,6 +327,9 @@ myXPconfig = PT.defaultXPConfig
         , PT.autoComplete      = Nothing
         , PT.searchPredicate   = isInfixOf
         }
+
+-- gimpLayout = withIM 0.11 (Role "gimp-toolbox") $ reflectHoriz
+--       $ withIM 0.15 (Role "gimp-dock") (trackFloating simpleTabbed)
 
 layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid where
      -- default tiling algorithm partitions the screen into two panes
