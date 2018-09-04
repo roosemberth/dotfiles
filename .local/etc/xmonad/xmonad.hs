@@ -98,14 +98,20 @@ breakAtSublist sl l = gashAndRemoveSubListAtIdx <$> sublistIdx
         slLen = length sl
 
 -- ## Windows title hints
--- `${wsh}` is an existing workspace or it's of the form `${ws}:...` and `${ws}` is an existing workspace.
+-- If the window title is of the form `${wsh}|::|...` then `${wsh}` is used as a workspace hint and is resolved as follows:
+-- If `${wsh}` is an existing workspace then use as is.
+-- If `${wsh}` is of the form `(?<p1>.*):(.*:)*...`; within the existing workspaces, we try to find one for whom hint is a
+--  prefix path. If no existing workspace is found, we remove the last particle and recurse until the hint is empty. If
+--  a workspace is found, we return the found prefix path (which may or may not exist).
+-- Else return Nothing.
+--
 workspaceFromTitleHint :: String -> [String] -> Maybe String
 workspaceFromTitleHint title wsNames = fst <$> (breakAtSublist "|::|" title) >>= wsFromNameHint
   where wsFromNameHint nameHint = mfilter (flip elem wsTopics . topicFromWsName) (Just nameHint) >>= findTarget
         wsTopics = nub $ map topicFromWsName wsNames
         topicFromWsName wn = headSplitOn ':' wn
         findTarget :: String -> Maybe String
-        findTarget nameHint = find subpathExists (mkparentpaths nameHint) >>= (`find` wsNames) . isPrefixOf
+        findTarget nameHint = find subpathExists (mkparentpaths nameHint)  -- >>= (`find` wsNames) . isPrefixOf
         subpathExists s = or $ map (isPrefixOf s) wsNames
         mkparentpaths subpath = map (uncurry take) $ reverse (elemIndices ':' subpath ++ [length subpath]) `zip` repeat subpath
 
@@ -124,19 +130,20 @@ myManageHook = composeAll $
       title ~~ isInfixOf "overlay" --> floatingOverlay
     , namedScratchpadManageHook scratchpads
     , isFullscreen --> doFullFloat
-    , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [W.shift, W.greedyView]
+    , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
     , manageDocks
     ] where role = stringProperty "WM_WINDOW_ROLE"
             (~~) :: (Query a) -> (a -> b) -> (Query b)
             (~~) = flip liftM
             getWorkspaces = map W.tag . W.workspaces
+            mkws = addWorkspaceIfNotExist
 
-honorWindowTitleHintInCurrentWs :: X()
-honorWindowTitleHintInCurrentWs = withFocused $ (>>= XMonad.Operations.windows) . mkX
+wrapWindowToWorspaceInTitleHint :: X()
+wrapWindowToWorspaceInTitleHint = withFocused $ (>>= XMonad.Operations.windows) . mkX
   where mkX :: Window -> X(WindowSet -> WindowSet)
         mkX = (appEndo <$>) . runQuery (title >>= mkQuery)
         mkQuery :: String -> Query(Endo WindowSet)
-        mkQuery t = queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [W.shift]
+        mkQuery t = queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [addWorkspaceIfNotExist, W.shift]
         getWorkspaces = map W.tag . W.workspaces
 
 autoremoveEmptyWorkspaces :: [(a, X ())] -> [(a, X ())]
@@ -156,6 +163,12 @@ currentTopic w = headSplitOn ':' $ W.tag $ W.workspace (W.current w)
 cycleTopicWS = cycleWindowSets options
  where options w = map (`W.view` w) (recentTags w)
        recentTags w = filter (isPrefixOf (currentTopic w)) $ map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
+
+addWorkspaceIfNotExist :: String -> WindowSet -> WindowSet
+addWorkspaceIfNotExist tag ws = if W.tagMember tag ws then ws else addWorkspace tag ws
+  where addWorkspace tag ss@(W.StackSet { W.hidden = old }) = ss { W.hidden = (W.Workspace tag (cl ss) Nothing) : old }
+        cl :: WindowSet -> Layout Window
+        cl ss = W.layout $ W.workspace $ W.current ss
 
 selectWorkspace :: X ()
 selectWorkspace = workspacePrompt myXPconfig { PT.autoComplete = Just 1 } $ \w ->
@@ -238,7 +251,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout horizontal
       , ("M-s"             , sendMessage $ JumpToLayout "Full")     -- %! Jump directly to layout single window
       , ("M-d"             , sendMessage $ JumpToLayout "Grid")     -- %! Jump directly to layout grid
-      , ("M-<F11>"         , honorWindowTitleHintInCurrentWs)       -- %! See [windows title hints]
+      , ("M-<F11>"         , wrapWindowToWorspaceInTitleHint)       -- %! See [windows title hints]
       , ("M-<F12>"         , rescreen)                              -- %! Force screens state update (eg. undo layoutSplitScreen)
       , ("M-S-<F12>"       , layoutSplitScreen 4 Grid)              -- %! Break a screen into 4 workspaces
 
