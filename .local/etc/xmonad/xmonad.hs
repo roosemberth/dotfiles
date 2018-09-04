@@ -100,7 +100,7 @@ breakAtSublist sl l = gashAndRemoveSubListAtIdx <$> sublistIdx
 -- ## Windows title hints
 -- If the window title is of the form `${wsh}|::|...` then `${wsh}` is used as a workspace hint and is resolved as follows:
 -- If `${wsh}` is an existing workspace then use as is.
--- If `${wsh}` is of the form `(?<p1>.*):(.*:)*...`; within the existing workspaces, we try to find one for whom hint is a
+-- If `${wsh}` is of the form `(?<p1>.*)/(.*/)*...`; within the existing workspaces, we try to find one for whom hint is a
 --  prefix path. If no existing workspace is found, we remove the last particle and recurse until the hint is empty. If
 --  a workspace is found, we return the found prefix path (which may or may not exist).
 -- Else return Nothing.
@@ -109,11 +109,11 @@ workspaceFromTitleHint :: String -> [String] -> Maybe String
 workspaceFromTitleHint title wsNames = fst <$> (breakAtSublist "|::|" title) >>= wsFromNameHint
   where wsFromNameHint nameHint = mfilter (flip elem wsTopics . topicFromWsName) (Just nameHint) >>= findTarget
         wsTopics = nub $ map topicFromWsName wsNames
-        topicFromWsName wn = headSplitOn ':' wn
+        topicFromWsName wn = headSplitOn '/' wn
         findTarget :: String -> Maybe String
         findTarget nameHint = find subpathExists (mkparentpaths nameHint)  -- >>= (`find` wsNames) . isPrefixOf
         subpathExists s = or $ map (isPrefixOf s) wsNames
-        mkparentpaths subpath = map (uncurry take) $ reverse (elemIndices ':' subpath ++ [length subpath]) `zip` repeat subpath
+        mkparentpaths subpath = map (uncurry take) $ reverse (elemIndices '/' subpath ++ [length subpath]) `zip` repeat subpath
 
 queryFromLookupInWindowSet :: (WindowSet -> Maybe b) -> [(b -> WindowSet -> WindowSet)] -> Query (Endo WindowSet)
 queryFromLookupInWindowSet lu actions = doF $ \ws -> case lu ws of { Nothing -> ws; Just b -> batchActions b ws actions }
@@ -158,7 +158,7 @@ headSplitOn :: Eq a => a -> [a] -> [a]
 headSplitOn c = takeWhile (/= c)
 
 currentTopic :: W.StackSet String l a sid sd -> String
-currentTopic w = headSplitOn ':' $ W.tag $ W.workspace (W.current w)
+currentTopic w = headSplitOn '/' $ W.tag $ W.workspace (W.current w)
 
 cycleTopicWS = cycleWindowSets options
  where options w = map (`W.view` w) (recentTags w)
@@ -387,10 +387,10 @@ filterTags f s = filter f $ map W.tag $ W.workspaces s
 pprWindowSet :: W.StackSet String l a s sd -> String
 pprWindowSet s = intercalate " " [current, visibles, nHidden]
     where topicSiblings = filterTags (isInfixOf $ currentTopic s) s
-          tagAndTopicSiblingsStr tag = show (length $ filterTags (isInfixOf $ headSplitOn ':' tag) s) ++ "/" ++ tag
+          tagAndTopicSiblingsStr tag = show (length $ filterTags (isInfixOf $ headSplitOn '/' tag) s) ++ "/" ++ tag
           current  = xmobarColor "#429942" "" $ wrap "<" ">" $ tagAndTopicSiblingsStr $ W.currentTag s
           visibles = intercalate " " $ map (wrap "(" ")" . tagAndTopicSiblingsStr . W.tag . W.workspace) (W.visible s)
-          nTopics = length . nub $ map (headSplitOn ':' . W.tag) (W.workspaces s)
+          nTopics = length . nub $ map (headSplitOn '/' . W.tag) (W.workspaces s)
           nHidden  = wrap "(+" ")" $ (show $ length $ W.hidden s) ++ "/" ++ (show nTopics)
 
 dynamicLogString = do
