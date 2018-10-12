@@ -372,10 +372,22 @@ myConfig = ewmh $ defaultConfig
         , manageHook         = myManageHook <+> manageHook defaultConfig
         , modMask            = mod4Mask
         , normalBorderColor  = "#1b1b2e"
-        , startupHook        = UpF.adjustEventInput
+        , startupHook        = gnomeRegister >> UpF.adjustEventInput
         , terminal           = "urxvt -e tmux"
         , workspaces         = ["home"]
         }
+
+gnomeRegister :: MonadIO m => m ()
+gnomeRegister = io $ do
+    x <- lookup "DESKTOP_AUTOSTART_ID" `fmap` getEnvironment
+    whenJust x $ \sessionId -> safeSpawn "dbus-send"
+            ["--session"
+            ,"--print-reply=literal"
+            ,"--dest=org.gnome.SessionManager"
+            ,"/org/gnome/SessionManager"
+            ,"org.gnome.SessionManager.RegisterClient"
+            ,"string:xmonad"
+            ,"string:"++sessionId]
 
 wrap :: String -> String -> String -> String
 wrap _ _ "" = ""
