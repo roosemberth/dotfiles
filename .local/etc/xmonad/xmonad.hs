@@ -107,13 +107,13 @@ breakAtSublist sl l = gashAndRemoveSubListAtIdx <$> sublistIdx
 --
 workspaceFromTitleHint :: String -> [String] -> Maybe String
 workspaceFromTitleHint title wsNames = fst <$> (breakAtSublist "|::|" title) >>= wsFromNameHint
-  where wsFromNameHint nameHint = mfilter (flip elem wsTopics . topicFromWsName) (Just nameHint) >>= findTarget
-        wsTopics = nub $ map topicFromWsName wsNames
-        topicFromWsName wn = headSplitOn '/' wn
+  where wsFromNameHint hintPath = mfilter (flip elem rootPaths . getRootPath) (Just hintPath) >>= findTarget
+        rootPaths = nub $ map getRootPath wsNames
+        getRootPath = head . splitDirectories
         findTarget :: String -> Maybe String
-        findTarget nameHint = find subpathExists (mkparentpaths nameHint)  -- >>= (`find` wsNames) . isPrefixOf
+        findTarget hintPath = find subpathExists (mkparentpaths hintPath)  -- >>= (`find` wsNames) . isPrefixOf
         subpathExists s = or $ map (isPrefixOf s) wsNames
-        mkparentpaths subpath = map (uncurry take) $ reverse (elemIndices '/' subpath ++ [length subpath]) `zip` repeat subpath
+        mkparentpaths = reverse . scanl1 combine . splitDirectories
 
 queryFromLookupInWindowSet :: (WindowSet -> Maybe b) -> [(b -> WindowSet -> WindowSet)] -> Query (Endo WindowSet)
 queryFromLookupInWindowSet lu actions = doF $ \ws -> case lu ws of { Nothing -> ws; Just b -> batchActions b ws actions }
@@ -130,7 +130,7 @@ myManageHook = composeAll $
       title ~~ isInfixOf "overlay" --> floatingOverlay
     , namedScratchpadManageHook scratchpads
     , isFullscreen --> doFullFloat
-    , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
+--  , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
     , manageDocks
     ] where role = stringProperty "WM_WINDOW_ROLE"
             (~~) :: (Query a) -> (a -> b) -> (Query b)
@@ -157,12 +157,12 @@ cycleRecentWS = cycleWindowSets options
 headSplitOn :: Eq a => a -> [a] -> [a]
 headSplitOn c = takeWhile (/= c)
 
-currentTopic :: W.StackSet String l a sid sd -> String
-currentTopic w = headSplitOn '/' $ W.tag $ W.workspace (W.current w)
+currentWsPath :: W.StackSet String l a sid sd -> String
+currentWsPath w = takeDirectory $ W.tag $ W.workspace $ W.current w
 
-cycleTopicWS = cycleWindowSets options
+cycleWsSibilings = cycleWindowSets options
  where options w = map (`W.view` w) (recentTags w)
-       recentTags w = filter (isPrefixOf (currentTopic w)) $ map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
+       recentTags w = filter (isPrefixOf (currentWsPath w)) $ map W.tag $ (W.hidden w) ++ [W.workspace (W.current w)]
 
 addWorkspaceIfNotExist :: String -> WindowSet -> WindowSet
 addWorkspaceIfNotExist tag ws = if W.tagMember tag ws then ws else addWorkspace tag ws
@@ -196,7 +196,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     ) `M.union` mkKeymap conf (
     ( autoremoveEmptyWorkspaces
       [ ("M-<Escape>"      , selectWorkspace) -- %! Quickjump
-      , ("M-<Tab>"         , cycleTopicWS [xK_Super_L] xK_Tab xK_1)
+      , ("M-<Tab>"         , cycleWsSibilings [xK_Super_L] xK_Tab xK_1)
       , ("M-<Backspace>"   , DW.addWorkspace "home")
       , ("M-t"             , DW.addWorkspace "temp")
       , ("M-S-="           , DW.addWorkspacePrompt myXPconfig)
@@ -386,12 +386,11 @@ filterTags f s = filter f $ map W.tag $ W.workspaces s
 
 pprWindowSet :: W.StackSet String l a s sd -> String
 pprWindowSet s = intercalate " " [current, visibles, nHidden]
-    where topicSiblings = filterTags (isInfixOf $ currentTopic s) s
-          tagAndTopicSiblingsStr tag = show (length $ filterTags (isInfixOf $ headSplitOn '/' tag) s) ++ "/" ++ tag
-          current  = xmobarColor "#429942" "" $ wrap "<" ">" $ tagAndTopicSiblingsStr $ W.currentTag s
-          visibles = intercalate " " $ map (wrap "(" ")" . tagAndTopicSiblingsStr . W.tag . W.workspace) (W.visible s)
-          nTopics = length . nub $ map (headSplitOn '/' . W.tag) (W.workspaces s)
-          nHidden  = wrap "(+" ")" $ (show $ length $ W.hidden s) ++ "/" ++ (show nTopics)
+    where wsFamilySizeAndNameStr tag = show (length $ filterTags ((tag `isPrefixOf`) . takeDirectory) s) ++ "/" ++ tag
+          current  = xmobarColor "#429942" "" $ wrap "<" ">" $ wsFamilySizeAndNameStr $ W.currentTag s
+          visibles = intercalate " " $ map (wrap "(" ")" . wsFamilySizeAndNameStr . W.tag . W.workspace) (W.visible s)
+          nRootWs = length . nub $ map (headSplitOn '/' . W.tag) (W.workspaces s)
+          nHidden  = wrap "(+" ")" $ (show $ length $ W.hidden s) ++ "/" ++ (show nRootWs)
 
 dynamicLogString = do
     winset <- gets windowset
