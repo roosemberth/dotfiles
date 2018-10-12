@@ -317,6 +317,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("S-<F7>"                    , spawn "xset s on")
       , ("<F12>"                     , spawn "sleep 0.1; xset s activate")
       , ("M-<F7>"                    , spawn "sm")
+      , ("M-v"                       , spawn "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
       ]
     )) where
       -- <Copied from SubLayout.hs...>
