@@ -376,7 +376,7 @@ myConfig = ewmh $ defaultConfig
         , normalBorderColor  = "#1b1b2e"
         , startupHook        = gnomeRegister >> UpF.adjustEventInput
         , terminal           = "urxvt -e tmux"
-        , workspaces         = ["home"]
+        , workspaces         = ["home", "stack", "mail"]
         }
 
 gnomeRegister :: MonadIO m => m ()
