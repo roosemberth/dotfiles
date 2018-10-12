@@ -269,7 +269,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-C-."           , toSubl (IncMasterN (-1)))              -- %! Deincrement the number of windows in the master area
       , ("M-C-<Space>"     , toSubl NextLayout)                     -- %! Rotate through the available layout algorithms
 
-   -- , ("M-S-q"           , io (exitWith ExitSuccess))             -- %! Quit xmonad
+      , ("M-M1-C-S-<F4>"   , io (exitWith ExitSuccess))             -- %! Quit xmonad
       , ("M-C-S-q"         , action "reloadXMonad")                 -- %! Reload xmonad
 
       -- Consider using mod4+shift+{button1,button2} for prev, next workspace.
