@@ -1,5 +1,11 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let
+  bleedingEdge =
+    let try = builtins.tryEval <nixpkgs-unstable>;
+    in if try.success then builtins.trace "Using nixos-unstable for bleeding edge" (import try.value {}) else pkgs;
+  wireguardTriglav = import ./systech-wireguard.nix {inherit lib config;};
+in
 {
   imports = [
     ./Triglav-static.nix
