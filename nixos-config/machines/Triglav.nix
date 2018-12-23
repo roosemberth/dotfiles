@@ -109,6 +109,8 @@
       ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="666", SYMLINK+="ttyUSB-odroid0"
       #Bus 001 Device 005: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
       ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE="666", SYMLINK+="ttyUSB-odroid1"
+      # Honor 8
+      ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="666"
       # Suspend on low battery TODO: pre-death clock instead...
       SUBSYSTEM=="power_supply", ATTRS{capacity}=="10", ATTRS{status}=="Discharging", RUN+="${config.systemd.package}/bin/systemctl suspend"
      '';
