@@ -3,7 +3,6 @@
 let
   hostname = config.networking.hostName;
   uuid = {
-    lenstra = "031796d1-9617-402e-a106-7c5a622ebdd0";
     triglav = "cd56ef5b-74bd-426e-96de-c1ccd2b0de72";
   };
   partuuid = {
@@ -18,12 +17,10 @@ in
     cleanTmpDir = true;
     kernelPackages = pkgs.linuxPackages_latest;
     initrd = {
-      kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel"];
+      kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel" "e1000e"];
       luks = {
         devices = [
-          { name = "Lenstra";
-            device = "/dev/disk/by-uuid/${uuid.lenstra}";
-          } {
+          {
             name = "Triglav";
             device = "/dev/disk/by-uuid/${uuid.triglav}";
           }
@@ -55,14 +52,14 @@ in
     "/" = {
       fsType = "btrfs";
       mountPoint = "/";
-      device = "/dev/mapper/Lenstra";
-      options = ["subvol=/var/machines/Vesna/subvolumes/.__active__/rootfs" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      device = "/dev/mapper/Triglav";
+      options = ["subvol=/subvolumes/.__active__/rootfs" "defaults" "noatime" "compress=zlib" "autodefrag"];
     };
     "/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/.snapshots";
-      device = "/dev/mapper/Lenstra";
-      options = ["subvol=/var/machines/Vesna/subvolumes/snapshots/rootfs" "defaults" "noatime"];
+      device = "/dev/mapper/Triglav";
+      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults" "noatime"];
     };
     "/boot" = {
       fsType = "vfat";
@@ -72,33 +69,9 @@ in
     "/var" = {
       fsType = "btrfs";
       mountPoint = "/var";
-      device = "/dev/mapper/Lenstra";
-      options = ["subvol=/var/machines/Vesna/subvolumes/.__active__/var" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      device = "/dev/mapper/Triglav";
+      options = ["subvol=/subvolumes/.__active__/var" "defaults" "noatime" "compress=zlib" "autodefrag"];
     };
-  # "/home" = {
-  #   fsType = "btrfs";
-  #   mountPoint = "/home";
-  #   device = "/dev/mapper/Lenstra";
-  #   options = ["subvol=/var/machines/Vesna/subvolumes/.__active__/homes" "defaults" "noatime" "compress=zlib" "autodefrag"];
-  # };
-  # "/Storage" = {
-  #   fsType = "btrfs";
-  #   mountPoint = "/Storage";
-  #   device = "/dev/mapper/Lenstra";
-  #   options = ["subvol=/var/machines/Vesna/subvolumes/.__active__/Storage" "defaults" "noatime" "compress=zlib" "autodefrag"];
-  # };
-  # "/home/.snapshots" = {
-  #   fsType = "btrfs";
-  #   mountPoint = "/home/.snapshots";
-  #   device = "/dev/mapper/Lenstra";
-  #   options = ["subvol=/var/machines/Vesna/subvolumes/snapshots/homes" "defaults" "noatime"];
-  # };
-  # "/Storage/.snapshots" = {
-  #   fsType = "btrfs";
-  #   mountPoint = "/Storage/.snapshots";
-  #   device = "/dev/mapper/Lenstra";
-  #   options = ["subvol=/var/machines/Vesna/subvolumes/snapshots/Storage" "defaults" "noatime"];
-  # };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
@@ -134,12 +107,6 @@ in
       mountPoint = "/Storage/DevelHub/.snapshots";
       device = "/dev/mapper/Triglav";
       options = ["subvol=/subvolumes/snapshots/DevelHub" "defaults" "noatime"];
-    };
-    "/mnt/root-btrfs-Lenstra" = {
-      fsType = "btrfs";
-      mountPoint = "/mnt/root-btrfs-Lenstra";
-      device = "/dev/mapper/Lenstra";
-      options = ["nodatacow" "noatime" "noexec"];
     };
     "/mnt/root-btrfs-Triglav" = {
       fsType = "btrfs";
