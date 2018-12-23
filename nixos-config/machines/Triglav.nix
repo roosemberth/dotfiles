@@ -13,11 +13,11 @@ in
 
   environment.systemPackages = (with pkgs; [
     wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
-    libevdev xorg.xf86inputevdev xclip xlibs.xmessage xmonad-with-packages
+    nfs-utils ethtool hdparm ntopng netdata
+    linuxPackages.tp_smapi
+    libevdev xorg.xf86inputevdev xclip xlibs.xmessage
     firefox thunderbird rxvt_unicode-with-plugins
-    hdparm
     nox cacert
-    tinc_pre
   ]);
 
   hardware = {
@@ -198,16 +198,66 @@ in
     hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
     isNormalUser = true;
     extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
-    packages = (with pkgs; [ # TODO: NixUp!
-        ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
-        gitAndTools.git-annex gitAndTools.git-crypt gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs
-        libnfs libpulseaudio lshw minicom mr msmtp ncmpcpp neomutt nethogs nfs-utils nitrogen nix-index gimp libnotify
-        offlineimap openconnect openjdk pamix pavucontrol pciutils proxychains redshift rfkill rxvt_unicode-with-plugins
-        scala scrot socat sshfs stress tig tinc tor unzip usbutils vpnc w3m whois xbindkeys xcape xtrlock-pam xorg.libXpm
-        xorg.xbacklight xorg.xev xorg.xkbcomp xorg.xkill xournal zathura zip libnotify xclip youtube-dl gnupg pass irssi
-      ]) ++ (with pkgs.haskellPackages; [
-        xmobar # hsqml
-      ]);
+    packages = (with pkgs; [ # Legacy
+      astyle baobab bc beets bind blender bluez coreutils cpufrequtils
+      darktable dfu-util dico dmidecode dnsutils docker dolphin doxygen dunst
+      enlightenment.terminology evtest exfat exif fbida fbterm feh ffmpeg file
+      firefox firejail fontforge fortune geteltorito gftp ghostscript gimp
+      gitAndTools.git-annex gitAndTools.git-crypt glxinfo gnupg go-mtpfs
+      gparted graphviz gucharmap hack-font i3 i7z imagemagick imv intel-gpu-tools
+      iw jq khal kicad # libnfs
+      libnotify libreoffice libtool libvirt libxml2 lm_sensors lshw lxappearance
+      man-pages megatools minicom mkpasswd moreutils mosh mpc_cli mpd mr
+      mtpfs mypy ncftp ncmpc ncmpcpp neomutt neovim nethogs nfs-utils nitrogen
+      nmap nss numix-solarized-gtk-theme oathToolkit offlineimap openconnect
+      openjdk openssh openssl openvpn pamix pandoc pass patchelf pavucontrol
+      pbzip2 pciutils pdftk picocom pipenv postgresql powerline-fonts powertop
+      ppp pptp profont proxychains psmisc pv python3 qutebrowser radare2 ranger
+      read-edid redshift remmina rfkill rtorrent rxvt_unicode-with-plugins s3cmd
+      sakura screen-message scrot shutter silver-searcher smartmontools socat
+      source-code-pro splint sshfs sshfs-fuse ssvnc stack stdman stress sway
+      swig sysstat tasknc taskwarrior tcpdump terminus_font_ttf
+      texstudio timewarrior tlp tor transmission trayer tree unzip usbutils
+      valgrind vim_configurable virtmanager virtviewer vlock w3m weechat whois
+      wmname x11_ssh_askpass xbindkeys xcape xclip xdotool
+      xlockmore xml2 xournal xrestop xss-lock xtrlock-pam youtube-dl
+      zathura zip zsh-completions
+    ] ++ (with pkgs.xorg;[ # xorg
+      libXpm xbacklight xev xf86videointel xkbcomp xkill xprop
+    ]) ++ (with pkgs.gnome3;[ # gnome
+      baobab california cheese eog evince evolution gedit gnome-contacts
+      gnome-control-center networkmanagerapplet
+      gnome-documents gnome-online-accounts gnome-maps gnome-settings-daemon
+      gnome-system-monitor gnome-tweak-tool nautilus
+    ]) ++ (with pkgs.aspellDicts;[ # dictionaries
+      fr en-science en-computers es en de
+    ]) ++ [ # Nix
+      nix-bundle nix-index nix-prefetch-scripts nix-zsh-completions
+  # ] ++ [ # Debian
+  #   apt aptly debian-devscripts debianutils debootstrap dpkg
+    ] ++ (with python3Packages; [  # python
+      ipython parse requests tox virtualenv notebook ipykernel
+    ]) ++ [ # Electronics
+      pulseview
+    ] ++ [ # sysadmin
+      lsof
+    ] ++ [ # drawing
+      inkscape krita
+    ] ++ [ # Triglav
+      arandr argyllcms adbfs-rootless enchant msmtp mymopidy tdesktop
+      rxvt_unicode-with-plugins taffybar upower vlc wordnet
+    ] ++ [ # Dev
+      ag arduino binutils
+      cmake ctags elfutils gcc gdb gnumake gpgme idris libgpgerror
+      lua luaPackages.luacheck
+      sbt scala shellcheck
+      tig
+    ]) ++ (with pkgs.haskellPackages; [
+      xmobar # hsqml leksah
+    ]) ++ (with bleedingEdge; [
+    # pkgs.soapysdr-with-plugins
+      mpv youtube-dl
+    ]);
     shell = pkgs.zsh;
   };
 
