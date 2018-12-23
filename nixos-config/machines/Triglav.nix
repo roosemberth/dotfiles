@@ -25,6 +25,8 @@
     pulseaudio.support32Bit = true;     # Steam...
   };
 
+  i18n.consoleFont = "sun12x22";
+
   networking = {
     hostName = "Triglav"; # Define your hostname.
     extraHosts = ''
