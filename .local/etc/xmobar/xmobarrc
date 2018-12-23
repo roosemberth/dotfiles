@@ -64,16 +64,16 @@ Config {
             , "--Low"      , "70"        -- units: °C
             , "--High"     , "80"        -- units: °C
             , "--low"      , "darkgreen"
-            , "--normal"   , "red"
-            , "--high"     , "darkorange"
+            , "--normal"   , "darkorange"
+            , "--high"     , "red"
             ] 50
         , Run Memory
             [ "--template" ,"Mem: <usedratio>%"
-            , "--Low"      , "20"        -- units: %
-            , "--High"     , "90"        -- units: %
+            , "--Low"      , "70"        -- units: %
+            , "--High"     , "95"        -- units: %
             , "--low"      , "darkgreen"
-            , "--normal"   , "darkorange"
-            , "--high"     , "darkred"
+            , "--normal"   , "orange"
+            , "--high"     , "red"
             ] 10
         , Run Com "sh" ["-c", "awk '{print $1, $2, $3 }' /proc/loadavg"] "loadavg" 10
         , Run Com "sh" ["-c", "hostname"] "hostname" 600
