@@ -96,6 +96,10 @@
       forwardX11 = true;
     };
 
+    postgresql = {
+      enable = true;
+    };
+
     udev.extraRules = ''
       ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6108", MODE="666", SYMLINK+="LimeSDR"
       ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6001", MODE="666", SYMLINK+="EPFL-Gecko4Education"
