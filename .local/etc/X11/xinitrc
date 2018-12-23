@@ -6,7 +6,7 @@ if [ -f ${HOME}/dotfiles/sh_environment ]; then
 	. ${HOME}/dotfiles/sh_environment
 fi
 
-# 
+# The display manage doesn't usually run us on a login shell, souce what's missing.
 if [ -f ${XDG_CONFIG_HOME}/sh/profile ]; then
 	. ${XDG_CONFIG_HOME}/sh/profile
 fi
