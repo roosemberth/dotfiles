@@ -43,12 +43,13 @@
       checkReversePath = false; # libvirt...
       allowPing = false;
       allowedTCPPorts = [ 22 ];
-  #   allowedUDPPorts = [ ... ];
-      trustedInterfaces = [ "Feigenbaum" ];
+      allowedUDPPorts = [ 61573 ];
+      trustedInterfaces = [ "Bifrost" "Feigenbaum" ];
       extraCommands = ''
         ip46tables -A nixos-fw -p gre -j nixos-fw-accept
       '';
     };
+    wireguard.interfaces."Bifrost" = wireguardTriglav;
   };
 
   nix = {
