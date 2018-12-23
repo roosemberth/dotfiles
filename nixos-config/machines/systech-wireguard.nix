@@ -26,7 +26,7 @@ let
       endpoint = builtins.getAttr host networkEndpoints;
       persistentKeepalive = 1;
     });
-in {
+in if !secrets.secretsAvailable then {} else {
   ips = builtins.getAttr hostname networkMap;
   listenPort = 61573;
   privateKey = (builtins.getAttr hostname secrets.machines).wireguardKeys.private;

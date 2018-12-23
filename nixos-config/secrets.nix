@@ -2,8 +2,7 @@
 
 with lib;
 
-let try = builtins.tryEval ./secrets/secrets-available.nix;
-in if !try.success then builtins.trace { secretsAvailable = false; } else
+if (builtins.getEnv("NIX_NO_SECRETS") != "") then builtins.trace "Building without secrets" { secretsAvailable = false; } else
 let
   listFilesInDir = dir:
     mapAttrsToList (p: _: dir + "/" + p)

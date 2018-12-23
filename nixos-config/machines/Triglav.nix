@@ -4,6 +4,7 @@ let
   bleedingEdge =
     let try = builtins.tryEval <nixpkgs-unstable>;
     in if try.success then builtins.trace "Using nixos-unstable for bleeding edge" (import try.value {}) else pkgs;
+  secrets = import ../secrets.nix { inherit lib; };
   wireguardTriglav = import ./systech-wireguard.nix {inherit lib config;};
 in
 {
@@ -51,7 +52,7 @@ in
         ip46tables -A nixos-fw -p gre -j nixos-fw-accept
       '';
     };
-    wireguard.interfaces."Bifrost" = wireguardTriglav;
+    wireguard.interfaces = if !secrets.secretsAvailable then {} else {"Bifrost" = wireguardTriglav;};
   };
 
   nix = {

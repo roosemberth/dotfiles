@@ -26,7 +26,7 @@ in
           }
         ];
       };
-      network = {
+      network = if !secrets.secretsAvailable then {} else {
         enable = true;
         ssh.enable = true;
         ssh.authorizedKeys = secrets.adminPubKeys;
