@@ -169,16 +169,6 @@ in
         subvolume = "/Storage/DevelHub";
         inherit extraConfig;
       };
-      "var" = {
-        subvolume = "/var";
-        extraConfig = ''
-          ALLOW_GROUPS="wheel"
-          NUMBER_LIMIT=3
-          TIMELINE_CREATE="yes"
-          TIMELINE_CLEANUP="yes"
-          EMPTY_PRE_POST_CLEANUP="yes"
-        '';
-      };
     };
     upower.enable = true;
   };
