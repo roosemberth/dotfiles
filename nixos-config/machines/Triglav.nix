@@ -61,9 +61,33 @@ in
     trustedUsers = [ "roosemberth" ];
   };
 
-  nixpkgs.config = {
-    packageOverrides = pkgs: {
-      unstable = import <nixos-unstable>;
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+      packageOverrides = pkgs: {
+        gitAndTools = pkgs.gitAndTools // ({
+          git-annex = with pkgs; (haskell.lib.overrideSrc gitAndTools.git-annex
+            (let version = "6.20180901-1"; in {
+              inherit version;
+              src = fetchgit {
+                name = "git-annex-${version}";
+                url = "git://git-annex.branchable.com/";
+                rev = "522c5cce58c9f19d78a868ab3b1e3399ae09a1d5";
+                sha256 = "0hmqphgnrbhhi11x34j8244h3nnnsnal212iwjshp3wqf957dl1g";
+              };
+          }));
+        });
+        mymopidy = with pkgs; buildEnv {
+          name = "mopidy-with-extensions";
+          paths = lib.closePropagation (with pkgs; [mopidy-spotify mopidy-iris]);
+          pathsToLink = [ "/${python.sitePackages}" ];
+          buildInputs = [ makeWrapper ];
+          postBuild = ''
+            makeWrapper ${mopidy}/bin/mopidy $out/bin/mopidy \
+            --prefix PYTHONPATH : $out/${python.sitePackages}
+          '';
+        };
+      };
     };
   };
 
