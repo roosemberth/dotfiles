@@ -52,6 +52,7 @@ actionsList = M.fromList
     ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
   , ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 170x10 -title launcher -e zsh")
   , ("mpv"          , "mpv \"$(xclip -o -selection clipboard)\" --load-unsafe-playlists  '--ytdl-format=bestvideo[height<=?2160]+bestaudio/best' --force-seekable --cache=1048576 --cache-seek-min=1048576")
+  , ("vlc"          , "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
   , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
   , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
   , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
@@ -59,7 +60,7 @@ actionsList = M.fromList
   , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
   , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
   ]) ++ (map (mapResult cmdInTmpTmux) [
-    ("dico"         , "dico \"$(read -e)\"")
+    ("dico"         , "dico  --database=gcide \"$(read -e)\"")
   , ("wn"           , "wn \"$(read -e)\" -over")
   ])) where cmdInTmpTmux cmd = spawn $ "urxvt -title overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
             mapResult fn (k, v) = (k, fn v)
@@ -257,6 +258,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<F11>"         , wrapWindowToWorspaceInTitleHint)       -- %! See [windows title hints]
       , ("M-<F12>"         , rescreen)                              -- %! Force screens state update (eg. undo layoutSplitScreen)
       , ("M-S-<F12>"       , layoutSplitScreen 4 Grid)              -- %! Break a screen into 4 workspaces
+      , ("M-C-S-<F12>"     , layoutSplitScreen 3 (Tall 2 (1/300) (1/2)))
 
       , ("M-h"             , sendMessage Shrink)                    -- %! Shrink the master area
       , ("M-l"             , sendMessage Expand)                    -- %! Expand the master area
@@ -316,10 +318,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-<KP_Next>"             , spawn "xrandr --output DP-1-3 --off")
 
       , ("<F7>"                      , spawn "xset s off")
+      , ("M-<F8>"                    , spawn "systemctl suspend; xtrlock-pam")
       , ("S-<F7>"                    , spawn "xset s on")
       , ("<F12>"                     , spawn "sleep 0.1; xset s activate")
       , ("M-<F7>"                    , spawn "sm")
-      , ("M-v"                       , spawn "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
+      , ("M-v"                       , action "mpv")
       ]
     )) where
       -- <Copied from SubLayout.hs...>
