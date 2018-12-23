@@ -1,51 +1,35 @@
 { lib }:
 
+with lib;
+
+let try = builtins.tryEval ./secrets/secrets-available.nix;
+in if !try.success then builtins.trace { secretsAvailable = false; } else
 let
-  listFilesInDir = dir: lib.mapAttrsToList (p: _: dir + "/" + p)
-    (lib.filterAttrs (path: type: type == "regular") (builtins.readDir dir));
-  readSecretPath = path: lib.strings.fileContents (builtins.toString ./secrets + "/" + path);
-  wireguardSecrets = hostname: {
-      private = readSecretPath "machines/${hostname}/wireguard-keys/private";
+  listFilesInDir = dir:
+    mapAttrsToList (p: _: dir + "/" + p)
+      (filterAttrs (path: type: type == "regular") (builtins.readDir dir));
+  mkMachine = givenName:
+    let machine = strings.toLower givenName;
+    in {
+      hostInitrdRSAKey = (toString ./secrets/machines) + "/" + machine + "/ssh-keys/initramfs";
+      wireguardKeys = wireguardSecrets machine;
+    };
+  readSecretPath = path: strings.fileContents (toString ./secrets + "/" + path);
+  wireguardSecrets = hostname:
+    { private = readSecretPath "machines/${hostname}/wireguard-keys/private";
       public = readSecretPath "machines/${hostname}/wireguard-keys/public";
     };
-in
-{
-  machines = {
-    Azulejo = {
-      hostInitrdRSAKey = secrets/machines/azulejo/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "azulejo";
-    };
-    Dellingr = {
-      hostInitrdRSAKey = secrets/machines/dellingr/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "dellingr";
-    };
-    Heimdaalr = {
-      hostInitrdRSAKey = secrets/machines/heimdaalr/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "heimdaalr";
-    };
-    Heisenberg = {
-      hostInitrdRSAKey = secrets/machines/heisenberg/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "heisenberg";
-    };
-    Hellendaal = {
-      hostInitrdRSAKey = secrets/machines/hellendaal/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "hellendaal";
-    };
-    Lappie = {
-      # `dropbearkey -t rsa -f secrets/machines/lappie/ssh-keys/initramfs`
-      hostInitrdRSAKey = secrets/machines/lappie/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "lappie";
-    };
-    Triglav = {
-      hostInitrdRSAKey = secrets/machines/triglav/ssh-keys/initramfs;
-      wireguardKeys = wireguardSecrets "triglav";
-    };
-  };
-  #adminPubKeys = map builtins.readFile (listFilesInDir secrets/admins/ssh-keys);
-  adminPubKeys = [ (builtins.readFile secrets/admins/ssh-keys/roosemberth.pub) ];
+in {
+  secretsAvailable = true;
+  machines = recursiveUpdate
+      (listToAttrs (map (m: { name = m; value = mkMachine m; })
+        ["Azulejo" "Dellingr" "Heimdaalr" "Heisenberg" "Hellendaal" "Lappie" "Triglav"]))
+      { # Azulejo.sdasd.dd = 5;  # This will add attr `sdasd.dd` to `Azulejo`
+      };
+  adminPubKeys = [ (readFile secrets/admins/ssh-keys/roosemberth.pub) ];
   users = {
     roosemberth = {
-      sshPubKey = [ (builtins.readFile secrets/admins/ssh-keys/roosemberth.pub) ];
+      sshPubKey = [ (readFile secrets/admins/ssh-keys/roosemberth.pub) ];
     };
   };
 }
