@@ -193,7 +193,7 @@
     description = "Roosemberth Palacios";
     hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker"];
+    extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
     packages = (with pkgs; [ # TODO: NixUp!
         ag argyllcms astyle bc bluez dfu-util dmidecode dnsutils dunst enlightenment.terminology file sbt mpd openssl jq
         gitAndTools.git-annex gitAndTools.git-crypt gnome3.eog gnome3.evince gnome3.nautilus go-mtpfs
