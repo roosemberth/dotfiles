@@ -8,6 +8,8 @@ import Data.Maybe(fromMaybe, fromJust)
 import Data.List
 import Data.Monoid(Endo(..), mempty, mconcat)
 import Data.Tuple(fst, snd, uncurry)
+import System.FilePath  -- FIXME: Restrict
+import System.Environment(getEnvironment)
 import System.Exit
 
 import qualified XMonad.Actions.DynamicWorkspaces as DW
@@ -32,7 +34,7 @@ import XMonad.Hooks.UrgencyHook(readUrgents)
 import qualified XMonad.Util.NamedWindows as NW
 import XMonad.Util.EZConfig(mkKeymap)
 import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
-import XMonad.Util.Run(spawnPipe, hPutStrLn)
+import XMonad.Util.Run(hPutStrLn, safeSpawn, spawnPipe)
 
 import XMonad.Layout hiding ((|||))
 import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
