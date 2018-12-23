@@ -136,6 +136,13 @@
 
       displayManager.slim.enable = true;
       displayManager.slim.defaultUser = "roosemberth";
+      windowManager.xmonad.enable = true;
+      windowManager.default = "xmonad";
+      windowManager.xmonad.extraPackages =
+        haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras];
+      desktopManager.default = "gnome3";
+      desktopManager.gnome3.enable = true;
+      desktopManager.gnome3.debug = true;
     };
 
     snapper.configs = let
