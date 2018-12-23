@@ -40,8 +40,6 @@ in
       95.183.51.23 Dellingr dellingr.orbstheorem.ch
     '';
     networkmanager.enable = true;
-  # isolateExternalNetworking.enable = true;
-    isolateExternalNetworking.whitelist = [ "wlp4s0" ];
     firewall = {
       enable = true;
       checkReversePath = false; # libvirt...
