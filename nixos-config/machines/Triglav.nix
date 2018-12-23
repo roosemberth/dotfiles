@@ -75,6 +75,8 @@
   programs = {
     bash.enableCompletion = true;
     mtr.enable = true;
+    wireshark.enable = true;
+    wireshark.package = pkgs.wireshark;
   };
 
   security.sudo = {
