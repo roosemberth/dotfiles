@@ -9,8 +9,6 @@ in
 {
   imports = [
     ./Triglav-static.nix
-    ../modules/isolated-external-networking.nix
-    ./override-xmonad.nix
   ];
 
   environment.systemPackages = (with pkgs; [
