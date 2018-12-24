@@ -10,4 +10,7 @@
   '';
   users.extraUsers.roosemberth.hashedPassword =
     lib.mkForce "$6$FRRhyJnGdPTm5UM2$cPFoqHq9Av.EFIrJ1c5Poj7quICfGeu7iWTkXhJcsNBed94Gl5ZKgo8YRFcLcd3FWm2pEuspBSHvi6nCxTCm60";
+
+  boot.loader.grub.splashImage =
+    "${pkgs.nixos-artwork.wallpapers.simple-red}/share/artwork/gnome/nix-wallpaper-simple-red.png";
 }
