@@ -251,12 +251,12 @@ in
     ]) ++ [ # Electronics
       pulseview
     ] ++ [ # sysadmin
-      lsof
+      lsof screen
     ] ++ [ # drawing
       inkscape krita
     ] ++ [ # Triglav
       arandr argyllcms adbfs-rootless enchant msmtp mymopidy tdesktop
-      rxvt_unicode-with-plugins taffybar upower vlc wordnet
+      rxvt_unicode-with-plugins taffybar upower vlc wordnet tigervnc
     ] ++ [ # Dev
       ag arduino binutils
       cmake ctags elfutils gcc gdb gnumake gpgme idris libgpgerror
