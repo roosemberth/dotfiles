@@ -267,7 +267,8 @@ in
       ghc cabal-install
       xmobar # hsqml leksah
     ]) ++ (with bleedingEdge; [
-    # pkgs.soapysdr-with-plugins
+      gnuradio-with-packages
+      soapysdr-with-plugins
       mpv youtube-dl
     ]);
     shell = pkgs.zsh;
