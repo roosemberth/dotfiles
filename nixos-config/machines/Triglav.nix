@@ -264,6 +264,7 @@ in
       sbt scala shellcheck
       tig
     ]) ++ (with pkgs.haskellPackages; [
+      ghc cabal-install
       xmobar # hsqml leksah
     ]) ++ (with bleedingEdge; [
     # pkgs.soapysdr-with-plugins
