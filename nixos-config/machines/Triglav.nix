@@ -258,7 +258,7 @@ in
       arandr argyllcms adbfs-rootless enchant msmtp mymopidy tdesktop
       rxvt_unicode-with-plugins taffybar upower vlc wordnet tigervnc
     ] ++ [ # Dev
-      ag arduino binutils
+      ag arduino binutils platformio
       cmake ctags elfutils gcc gdb gnumake gpgme idris libgpgerror
       lua luaPackages.luacheck
       sbt scala shellcheck
