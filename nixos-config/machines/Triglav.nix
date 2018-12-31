@@ -123,9 +123,7 @@ in
       forwardX11 = true;
     };
 
-    postgresql = {
-      enable = true;
-    };
+    postgresql.enable = true;
 
     udev.extraRules = ''
       ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6108", MODE="666", SYMLINK+="LimeSDR"
