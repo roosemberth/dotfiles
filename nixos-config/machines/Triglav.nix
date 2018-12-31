@@ -167,7 +167,7 @@ in
       windowManager.default = "xmonad";
       windowManager.xmonad.extraPackages =
         haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras];
-      desktopManager.default = "gnome3";
+      desktopManager.default = "none";
       desktopManager.gnome3.enable = true;
       desktopManager.gnome3.debug = true;
     };
