@@ -295,6 +295,7 @@ nmap <C-w>e :rightbelow vertical wincmd f<CR>
 set cmdwinheight=10
 
 cmap w!! w !sudo tee % >/dev/null<CR>
+vmap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 
 " NERDTree
 nmap <leader>o :NERDTreeToggle<CR>
