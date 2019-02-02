@@ -212,20 +212,17 @@ au FileType c setl foldexpr=CFold()
 
 " Auto-indent, and reuse the same combination of spaces/tabs:
 filetype plugin indent on
-set autoindent
-set copyindent
+set autoindent copyindent
 
 " Indentation (tabs, spaces):
 set expandtab tabstop=2 shiftwidth=2
 au FileType c setl tabstop=4 shiftwidth=4
 
 " Visually wrap lines and break words:
-set wrap
+set wrap linebreak
 au FileType html,java,markdown,scala setl nowrap
-set linebreak      " wrap at words (does not work with list)
 
 " Physically wrap lines:
-au FileType markdown setl textwidth=120
 au FileType gitcommit setl textwidth=86
 " }}}
 " ------------------------------------------------------------------------------
@@ -239,17 +236,13 @@ source $XDG_CONFIG_HOME/vim/colors.vim
 "source $XDG_CONFIG_HOME/vim/statusline.vim
 
 " Display and format line numbers:
-set number
-set relativenumber
-set numberwidth=5
+set number relativenumber numberwidth=5
 
 " Display a bar after a reasonable number of columns:
 set colorcolumn=81,121
 au FileType mail,gitcommit setl colorcolumn=87
 
-" I wanna see tabs and trailing whitespaces:
-set list
-set listchars=tab:→\ ,eol:\ ,trail:·
+set list listchars=tab:→\ ,eol:\ ,trail:·
 
 " Window separator:
 if $TERM == 'linux'
@@ -298,17 +291,9 @@ nnoremap <C-l> <C-w>l
 nmap <C-w>w :rightbelow wincmd f<CR>
 nmap <C-w>e :rightbelow vertical wincmd f<CR>
 
-" Tabbed window handling:
-map <leader>l :tabnext<CR>
-map <leader>h :tabprevious<CR>
-map <leader>t :tabnew<CR>
-set tabpagemax=20
-
 " Show 10 last commands in the window
 set cmdwinheight=10
 
-" Save a file as root (WARNING: breaks file undo history):
-" command! Rw :execute ':silent w !sudo tee % > /dev/null' | :edit!
 cmap w!! w !sudo tee % >/dev/null<CR>
 
 " NERDTree
