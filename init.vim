@@ -4,20 +4,11 @@
 " ------------------------------------------------------------------------------
 " PATHS: XDG <3 {{{
 
-" Scripts' location:
 set runtimepath=$XDG_DATA_HOME/nvim,$XDG_DATA_HOME/nvim/after,$VIM,$VIMRUNTIME
-
-" Backup files:
-set backupdir=$XDG_RUNTIME_DIR/nvim/backup
-
-" Swap files:
+set backupdir=$XDG_DATA_HOME/nvim/backup
 set directory=$XDG_DATA_HOME/nvim/swap
-
-" Command and undo history:
-set viminfo+=n$XDG_DATA_HOME/nvim/viminfo
-set undofile
-set undodir=$XDG_DATA_HOME/nvim/undo
-au BufWritePre /tmp/*,/dev/shm/*,/run/shm/* setl noundofile
+set shada='1000,f1,<10,:10000,@100,/100,r/Storage/box,r/mnt,n$XDG_DATA_HOME/nvim/shada
+set undofile undodir=$XDG_DATA_HOME/nvim/undo
 
 " Make sure the damn paths exists:
 function! MakeSureTheDamnPathExists(path)
@@ -26,11 +17,12 @@ function! MakeSureTheDamnPathExists(path)
   endif
 endfunction
 
-call MakeSureTheDamnPathExists($XDG_RUNTIME_DIR.'/vim')
-call MakeSureTheDamnPathExists($XDG_DATA_HOME.'/vim')
+call MakeSureTheDamnPathExists($XDG_DATA_HOME.'/nvim')
 call MakeSureTheDamnPathExists(&directory)
 call MakeSureTheDamnPathExists(&undodir)
 call MakeSureTheDamnPathExists(&backupdir)
+
+au BufWritePre /tmp/*,/dev/shm/*,/run/shm/* setl noundofile
 
 " }}}
 " ------------------------------------------------------------------------------
@@ -40,7 +32,8 @@ let g:bundledir=$XDG_DATA_HOME.'/nvim/vim-plug'
 
 if has('vim_starting')
   if !filereadable($XDG_DATA_HOME.'/nvim/site/autoload/plug.vim')
-    !curl -fLo $XDG_DATA_HOME/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    !curl -fLo $XDG_DATA_HOME/nvim/site/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   endif
   set runtimepath+=$XDG_DATA_HOME/nvim/site
 endif
