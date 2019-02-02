@@ -42,6 +42,7 @@ call plug#begin(g:bundledir)
 
 Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree'
+Plug 'majutsushi/tagbar'
 Plug 'brooth/far.vim'
 Plug 'vim-scripts/Mark'
 
@@ -299,6 +300,7 @@ vmap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 
 " NERDTree
 nmap <leader>o :NERDTreeToggle<CR>
+nmap <leader>t :Tagbar<CR>
 
 " Denite
 nmap <leader>f :DeniteProjectDir file_rec -auto-preview<CR>
