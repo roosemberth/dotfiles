@@ -139,6 +139,7 @@ in
       ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="666"
       # Suspend on low battery TODO: pre-death clock instead...
       SUBSYSTEM=="power_supply", ATTRS{capacity}=="10", ATTRS{status}=="Discharging", RUN+="${config.systemd.package}/bin/systemctl suspend"
+      SUBSYSTEM=="usb", ATTRS{idVendor}=="0765", ATTRS{idProduct}=="5010", ATTR{authorized}="0"
      '';
 
     xserver = {
