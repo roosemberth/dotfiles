@@ -2,8 +2,9 @@
 
 let
   bleedingEdge =
-    let try = builtins.tryEval <nixpkgs-unstable>;
-    in if try.success then builtins.trace "Using nixos-unstable for bleeding edge" (import try.value {}) else pkgs;
+    let try = builtins.tryEval <nixos-unstable>;
+    in if try.success then (import try.value { config = { allowUnfree = true; }; })
+       else builtins.trace "Using pkgs for bleeding edge" pkgs;
   secrets = import ../secrets.nix { inherit lib; };
   wireguardTriglav = import ./systech-wireguard.nix {inherit lib config;};
 in
