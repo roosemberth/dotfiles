@@ -323,13 +323,15 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<F7>"                    , spawn "sm -i")
       , ("M-S-<F7>"                  , spawn "sm")
       , ("M-v"                       , action "mpv")
+
+      , ("M-C-f"                     , spawn "firefox")
+
+      , ("M-S-<Print>"               , unGrab >> (spawn $ "import png:-" |> xc_png))
+      , ("M-C-<Print>"               , spawn $ "import -quality 30 -window root png:-" |> xc_png)
       ]
     )) where
-      -- <Copied from SubLayout.hs...>
-      -- should these go into XMonad.StackSet?
-      focusMaster' st = let (f:fs) = W.integrate st in W.Stack f [] fs
-      swapMaster' (W.Stack f u d) = W.Stack f [] $ reverse u ++ d
-      -- </Copied from SubLayout.hs...>
+      a |> b = a ++ " | " ++ b
+      xc_png = "xclip -i -selection clipboard -t image/png"
 
 myXPconfig = PT.defaultXPConfig
         { PT.font              = "xft:Deja Vu Sans Mono:pixelsize=18"
