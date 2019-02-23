@@ -41,7 +41,7 @@ import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
 import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
 import XMonad.Layout.LayoutModifier(ModifiedLayout)
 import XMonad.Layout.LayoutScreens(layoutSplitScreen)
-import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyFloat))
+import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyScreenFloat))
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
 import XMonad.Layout.Grid
@@ -363,7 +363,7 @@ layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid where
      delta   = 3/100
 
 -- Subtabbing Layouts
-myLayout = avoidStruts $ lessBorders OnlyFloat
+myLayout = avoidStruts $ lessBorders OnlyScreenFloat
 -- Boring windows fait n'importe quoi avec le floating...
                        $ windowNavigation $ subTabbed $ boringWindows
                        -- ^ Grouping mechanisms + tabs on sublayouts + skip hidden windows.
