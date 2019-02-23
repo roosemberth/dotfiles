@@ -35,6 +35,7 @@ import qualified XMonad.Util.NamedWindows as NW
 import XMonad.Util.EZConfig(mkKeymap)
 import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
 import XMonad.Util.Run(hPutStrLn, safeSpawn, spawnPipe)
+import XMonad.Util.Ungrab(unGrab)
 
 import XMonad.Layout hiding ((|||))
 import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
@@ -318,9 +319,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-<KP_Next>"             , spawn "xrandr --output DP-1-3 --off")
 
       , ("<F7>"                      , spawn "xset s off")
-      , ("M-<F8>"                    , spawn "systemctl suspend; xtrlock-pam")
+      , ("M-<F8>"                    , unGrab >> spawn "systemctl suspend; xtrlock-pam")
       , ("S-<F7>"                    , spawn "xset s on")
-      , ("<F12>"                     , spawn "sleep 0.1; xset s activate")
+      , ("<F12>"                     , unGrab >> spawn "xset s activate")
       , ("M-<F7>"                    , spawn "sm")
       , ("M-v"                       , action "mpv")
       ]
