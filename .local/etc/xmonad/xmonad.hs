@@ -322,7 +322,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-<F8>"                    , unGrab >> spawn "systemctl suspend; xtrlock-pam")
       , ("S-<F7>"                    , spawn "xset s on")
       , ("<F12>"                     , unGrab >> spawn "xset s activate")
-      , ("M-<F7>"                    , spawn "sm")
+      , ("M-<F7>"                    , spawn "sm -i")
+      , ("M-S-<F7>"                  , spawn "sm")
       , ("M-v"                       , action "mpv")
       ]
     )) where
