@@ -10,7 +10,7 @@ in
 
   boot = {
     cleanTmpDir = true;
-    kernelPackages = pkgs.linuxPackages_4_18;
+    kernelPackages = pkgs.linuxPackages_testing;
     initrd = {
       kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel" "e1000e"];
       luks = {
@@ -48,7 +48,7 @@ in
       fsType = "btrfs";
       mountPoint = "/";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/rootfs" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/rootfs" "defaults" "lazytime" "compress=zlib" "autodefrag"];
     };
     "/.snapshots" = {
       fsType = "btrfs";
@@ -65,25 +65,25 @@ in
       fsType = "btrfs";
       mountPoint = "/var";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/var" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/var" "defaults" "lazytime" "compress=zlib" "autodefrag"];
     };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/homes" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/homes" "defaults" "relatime" "compress=zlib" "autodefrag"];
     };
     "/Storage" = {
       fsType = "btrfs";
       mountPoint = "/Storage";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/Storage" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/Storage" "defaults" "relatime" "compress=zlib" "autodefrag"];
     };
     "/Storage/DevelHub" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/DevelHub" "defaults" "noatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/DevelHub" "defaults" "lazytime" "compress=zlib" "autodefrag"];
     };
     "/home/.snapshots" = {
       fsType = "btrfs";
