@@ -10,7 +10,6 @@ in
 
   boot = {
     cleanTmpDir = true;
-    kernelPackages = pkgs.linuxPackages_testing;
     initrd = {
       kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel" "e1000e"];
       luks = {
@@ -48,13 +47,13 @@ in
       fsType = "btrfs";
       mountPoint = "/";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/rootfs" "defaults" "lazytime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/rootfs" "compress=zlib"];
     };
     "/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults" "noatime"];
+      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults"];
     };
     "/boot" = {
       fsType = "vfat";
@@ -65,43 +64,43 @@ in
       fsType = "btrfs";
       mountPoint = "/var";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/var" "defaults" "lazytime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/var" "compress=zlib"];
     };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/homes" "defaults" "relatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/homes" "compress=zlib" "autodefrag"];
     };
     "/Storage" = {
       fsType = "btrfs";
       mountPoint = "/Storage";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/Storage" "defaults" "relatime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/Storage" "compress=zlib" "autodefrag"];
     };
     "/Storage/DevelHub" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/DevelHub" "defaults" "lazytime" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/DevelHub" "compress=zlib"];
     };
     "/home/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/home/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/homes" "defaults" "noatime"];
+      options = ["subvol=/subvolumes/snapshots/homes" "defaults"];
     };
     "/Storage/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/Storage/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/Storage" "defaults" "noatime"];
+      options = ["subvol=/subvolumes/snapshots/Storage" "defaults"];
     };
     "/Storage/DevelHub/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/DevelHub" "defaults" "noatime"];
+      options = ["subvol=/subvolumes/snapshots/DevelHub" "defaults"];
     };
     "/mnt/root-btrfs" = {
       fsType = "btrfs";
