@@ -25,6 +25,7 @@ import XMonad.Prompt.Pass(passPrompt)
 import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
+import System.Taffybar.Support.PagerHints (pagerHints)
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
 import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
@@ -372,7 +373,7 @@ myLayout = avoidStruts $ lessBorders OnlyScreenFloat
                        $ smartBorders
                        $ layoutAlgorithms
 
-myConfig = ewmh $ defaultConfig
+myConfig = ewmh $ pagerHints $ defaultConfig
         { borderWidth        = 1
         , focusFollowsMouse  = True
         , focusedBorderColor = "#ff0000"
@@ -426,7 +427,6 @@ dynamicLogString = do
     return $ encodeString . intercalate " : " . filter (not . null) $ [ workspaces , layout , title ]
 
 main = do
-    xmobar <- spawnPipe "xmobar"
-    xmonad $ docks $ myConfig { logHook = dynamicLogString >>= io . hPutStrLn xmobar }
+    xmonad $ docks $ myConfig
 
 -- vim: expandtab
