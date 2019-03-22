@@ -385,7 +385,7 @@ myConfig = ewmh $ pagerHints $ defaultConfig
         , normalBorderColor  = "#1b1b2e"
         , startupHook        = gnomeRegister >> UpF.adjustEventInput
         , terminal           = "urxvt -e tmux"
-        , workspaces         = ["home", "stack", "mail"]
+        , workspaces         = ["home", "mail"]
         }
 
 gnomeRegister :: MonadIO m => m ()
