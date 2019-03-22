@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
+
 import XMonad hiding ((|||))
 
 import qualified Data.Map as M
@@ -42,13 +44,16 @@ import XMonad.Util.Ungrab(unGrab)
 
 import XMonad.Layout hiding ((|||))
 import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
+import XMonad.Layout.Grid
 import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
-import XMonad.Layout.LayoutModifier(ModifiedLayout)
+import XMonad.Layout.LayoutModifier(ModifiedLayout(..), LayoutModifier, handleMessOrMaybeModifyIt)
 import XMonad.Layout.LayoutScreens(layoutSplitScreen)
 import XMonad.Layout.NoBorders(lessBorders, smartBorders, Ambiguity(OnlyScreenFloat))
+import XMonad.Layout.OneBig(OneBig(..))
+import XMonad.Layout.Reflect(reflectHoriz)
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
+import XMonad.Layout.ThreeColumns(ThreeCol(ThreeColMid))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
-import XMonad.Layout.Grid
 
 actionsList :: M.Map String (X())
 actionsList = M.fromList
@@ -257,7 +262,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-a"             , sendMessage $ JumpToLayout "Tall")     -- %! Jump directly to layout vertical
       , ("M-S-a"           , sendMessage $ JumpToLayout "Mirror Tall")   -- %! Jump directly to layout horizontal
       , ("M-s"             , sendMessage $ JumpToLayout "Full")     -- %! Jump directly to layout single window
-      , ("M-d"             , sendMessage $ JumpToLayout "Grid")     -- %! Jump directly to layout grid
+      , ("M-S-s a"         , sendMessage $ JumpToLayout "Grid")     -- %! Jump directly to layout grid
+      , ("M-S-s s"         , sendMessage $ JumpToLayout "ThreeCol") -- %! Jump directly to three column layout
       , ("M-<F11>"         , wrapWindowToWorspaceInTitleHint)       -- %! See [windows title hints]
       , ("M-<F12>"         , rescreen)                              -- %! Force screens state update (eg. undo layoutSplitScreen)
       , ("M-S-<F12>"       , layoutSplitScreen 4 Grid)              -- %! Break a screen into 4 workspaces
@@ -283,7 +289,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       -- Tools
       , ("M-S-r"                     , action "klayout")
-      , ("M-S-t"                     , action "restoreTmux")
       , ("M-p"                       , passPrompt myXPconfig)
       , ("M-r"                       , actionsPrompt myXPconfig { PT.autoComplete = Just 1 })
 
@@ -353,18 +358,18 @@ myXPconfig = PT.defaultXPConfig
         , PT.searchPredicate   = isInfixOf
         }
 
--- gimpLayout = withIM 0.11 (Role "gimp-toolbox") $ reflectHoriz
---       $ withIM 0.15 (Role "gimp-dock") (trackFloating simpleTabbed)
+data SwapSizeMessages a = SwapSizeMessages deriving (Show, Read)
 
-layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid where
-     -- default tiling algorithm partitions the screen into two panes
-     tiled   = Tall nmaster delta ratio
-     -- The default number of windows in the master pane
-     nmaster = 1
-     -- Default proportion of screen occupied by master pane
-     ratio   = 1/2
-     -- Percent of screen to increment by when resizing panes
-     delta   = 3/100
+instance LayoutModifier SwapSizeMessages a where
+  handleMessOrMaybeModifyIt _ msg = return ((Right . SomeMessage . swap) `fmap` fromMessage msg)
+    where swap Shrink = Expand
+          swap Expand = Shrink
+
+layoutAlgorithms = tiled ||| Full ||| Mirror tiled ||| Grid ||| three ||| fixbox
+  where fixbox  = ModifiedLayout SwapSizeMessages $ reflectHoriz . Mirror $ OneBig (3/5) (3/5)
+        three   = ThreeColMid 1 delta (2/5)
+        tiled   = Tall 1 delta (1/2)
+        delta   = 3/100
 
 -- Subtabbing Layouts
 myLayout = avoidStruts $ lessBorders OnlyScreenFloat
