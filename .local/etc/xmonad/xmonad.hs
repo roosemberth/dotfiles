@@ -216,7 +216,6 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       [ ("M-C-S-<Return>"  , action "launcher")
       , ("M-C-<Return>"    , action "ulauncher")
       , ("M-<Return>"      , spawn "urxvt -e tmux")
-      , ("M-<Print>"       , spawn "screen-capture.sh")
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
                                                                     -- %! Push window up to floating
       , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
@@ -327,7 +326,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
       , ("M-C-f"                     , spawn "firefox")
 
-      , ("M-S-<Print>"               , unGrab >> (spawn $ "import png:-" |> xc_png))
+      , ("M-<Print>"                 , unGrab >> (spawn $ "import png:-" |> xc_png))
       , ("M-C-<Print>"               , spawn $ "import -quality 30 -window root png:-" |> xc_png)
       ]
     )) where
