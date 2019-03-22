@@ -12,6 +12,8 @@ import System.FilePath  -- FIXME: Restrict
 import System.Environment(getEnvironment)
 import System.Exit
 
+import System.Taffybar.Support.PagerHints(pagerHints)
+
 import qualified XMonad.Actions.DynamicWorkspaces as DW
 import qualified XMonad.Prompt as PT
 import qualified XMonad.Prompt.Window as PTW
@@ -25,7 +27,6 @@ import XMonad.Prompt.Pass(passPrompt)
 import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
 import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
-import System.Taffybar.Support.PagerHints (pagerHints)
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
 import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
