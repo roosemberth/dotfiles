@@ -29,6 +29,7 @@ import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
 
 import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
 import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
+import XMonad.Hooks.InsertPosition(insertPosition, Position(..), Focus(..))
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
 import XMonad.Hooks.ManageHelpers(doCenterFloat, doFloatAt, doFullFloat, isFullscreen)
 import XMonad.Hooks.UrgencyHook(readUrgents)
@@ -380,7 +381,7 @@ myConfig = ewmh $ pagerHints $ defaultConfig
         , handleEventHook    = fullscreenEventHook <+> UpF.focusOnMouseMove
         , keys               = myKeys
         , layoutHook         = myLayout
-        , manageHook         = myManageHook <+> manageHook defaultConfig
+        , manageHook         = insertPosition Below Newer <+> myManageHook
         , modMask            = mod4Mask
         , normalBorderColor  = "#1b1b2e"
         , startupHook        = gnomeRegister >> UpF.adjustEventInput
@@ -429,4 +430,4 @@ dynamicLogString = do
 main = do
     xmonad $ docks $ myConfig
 
--- vim: expandtab
+-- vim: expandtab nowrap
