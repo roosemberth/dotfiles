@@ -58,7 +58,8 @@ actionsList = M.fromList
   , ("vlc"          , "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
   , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
   , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
-  , ("ulauncher"    , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
+  , ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
+  , ("break-tmux-pane", "urxvt -e tmux new 'tmux swapp; exit'")
   , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
   , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
   , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
@@ -214,8 +215,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-S-<Escape>"    , DW.selectWorkspace myXPconfig { PT.autoComplete = Just 1 }) -- %! Quickjump
       ]
     ) ++ (
-      [ ("M-C-S-<Return>"  , action "launcher")
-      , ("M-C-<Return>"    , action "ulauncher")
+      [ ("M-C-<Return>"    , action "launcher")
+      , ("M-C-S-<Return>"  , action "break-tmux-pane")
       , ("M-<Return>"      , spawn "urxvt -e tmux")
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
                                                                     -- %! Push window up to floating
