@@ -1,50 +1,31 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
-import XMonad hiding ((|||))
+import Control.Monad(liftM, mfilter)
+import Data.List
+import Data.Monoid(Endo(..))
+import Data.Tuple(fst)
+import System.Environment(getEnvironment)
+import System.Exit(exitWith, ExitCode(..))
+import System.FilePath(combine, splitDirectories, takeDirectory)
 
 import qualified Data.Map as M
-import Codec.Binary.UTF8.String(encodeString)
-import Control.Monad(liftM, mfilter)
-import Data.Foldable(asum)
-import Data.Maybe(fromMaybe, fromJust)
-import Data.List
-import Data.Monoid(Endo(..), mempty, mconcat)
-import Data.Tuple(fst, snd, uncurry)
-import System.FilePath  -- FIXME: Restrict
-import System.Environment(getEnvironment)
-import System.Exit
 
 import System.Taffybar.Support.PagerHints(pagerHints)
 
-import qualified XMonad.Actions.DynamicWorkspaces as DW
-import qualified XMonad.Prompt as PT
-import qualified XMonad.Prompt.Window as PTW
-import qualified XMonad.StackSet as W
-import qualified XMonad.Actions.UpdateFocus as UpF
+import XMonad hiding ((|||))
 
 import XMonad.Actions.CycleRecentWS(cycleWindowSets)
 import XMonad.Actions.CycleWS(nextWS,prevWS)
-import XMonad.Operations(rescreen, windows)
-import XMonad.Prompt.Pass(passPrompt)
-import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
-import XMonad.Prompt.Workspace(Wor(Wor), workspacePrompt)
+import XMonad.Actions.UpdateFocus(adjustEventInput, focusOnMouseMove)
+import qualified XMonad.Actions.DynamicWorkspaces as DW
 
-import XMonad.Hooks.DynamicLog(xmobarColor, xmobarStrip)
 import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
 import XMonad.Hooks.InsertPosition(insertPosition, Position(..), Focus(..))
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
-import XMonad.Hooks.ManageHelpers(doCenterFloat, doFloatAt, doFullFloat, isFullscreen)
-import XMonad.Hooks.UrgencyHook(readUrgents)
+import XMonad.Hooks.ManageHelpers(doCenterFloat, doFullFloat, isFullscreen)
 
-import qualified XMonad.Util.NamedWindows as NW
-import XMonad.Util.EZConfig(mkKeymap)
-import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
-import XMonad.Util.Run(hPutStrLn, safeSpawn, spawnPipe)
-import XMonad.Util.Ungrab(unGrab)
-
-import XMonad.Layout hiding ((|||))
-import XMonad.Layout.BoringWindows (boringWindows, focusUp, focusDown)
-import XMonad.Layout.Grid
+import XMonad.Layout.BoringWindows(boringWindows, focusUp, focusDown)
+import XMonad.Layout.Grid(Grid(..))
 import XMonad.Layout.LayoutCombinators((|||), JumpToLayout(..))
 import XMonad.Layout.LayoutModifier(ModifiedLayout(..), LayoutModifier, handleMessOrMaybeModifyIt)
 import XMonad.Layout.LayoutScreens(layoutSplitScreen)
@@ -54,6 +35,22 @@ import XMonad.Layout.Reflect(reflectHoriz)
 import XMonad.Layout.SubLayouts(toSubl, subTabbed, pullGroup, GroupMsg(..))
 import XMonad.Layout.ThreeColumns(ThreeCol(ThreeColMid))
 import XMonad.Layout.WindowNavigation(windowNavigation, Direction2D(..))
+
+import XMonad.Operations(rescreen, windows)
+
+import qualified XMonad.Prompt as PT
+import qualified XMonad.Prompt.Window as PTW
+import XMonad.Prompt.Pass(passPrompt)
+import XMonad.Prompt(XPConfig, XPrompt, mkComplFunFromList', mkXPrompt)
+import XMonad.Prompt.Workspace(workspacePrompt)
+
+import qualified XMonad.StackSet as W
+
+import qualified XMonad.Util.NamedWindows as NW
+import XMonad.Util.EZConfig(mkKeymap)
+import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
+import XMonad.Util.Run(safeSpawn)
+import XMonad.Util.Ungrab(unGrab)
 
 actionsList :: M.Map String (X())
 actionsList = M.fromList
@@ -383,13 +380,13 @@ myConfig = ewmh $ pagerHints $ defaultConfig
         { borderWidth        = 1
         , focusFollowsMouse  = True
         , focusedBorderColor = "#ff0000"
-        , handleEventHook    = fullscreenEventHook <+> UpF.focusOnMouseMove
+        , handleEventHook    = fullscreenEventHook <+> focusOnMouseMove
         , keys               = myKeys
         , layoutHook         = myLayout
         , manageHook         = insertPosition Below Newer <+> myManageHook
         , modMask            = mod4Mask
         , normalBorderColor  = "#1b1b2e"
-        , startupHook        = gnomeRegister >> UpF.adjustEventInput
+        , startupHook        = gnomeRegister >> adjustEventInput
         , terminal           = "urxvt -e tmux"
         , workspaces         = ["home", "mail"]
         }
@@ -406,33 +403,6 @@ gnomeRegister = io $ do
             ,"string:xmonad"
             ,"string:"++sessionId]
 
-wrap :: String -> String -> String -> String
-wrap _ _ "" = ""
-wrap l r m  = l ++ m ++ r
-
-filterTags :: (i -> Bool) -> W.StackSet i l a s sd -> [i]
-filterTags f s = filter f $ map W.tag $ W.workspaces s
-
-pprWindowSet :: W.StackSet String l a s sd -> String
-pprWindowSet s = intercalate " " [current, visibles, nHidden]
-    where wsFamilySizeAndNameStr tag = show (length $ filterTags ((tag `isPrefixOf`) . takeDirectory) s) ++ "/" ++ tag
-          current  = xmobarColor "#429942" "" $ wrap "<" ">" $ wsFamilySizeAndNameStr $ W.currentTag s
-          visibles = intercalate " " $ map (wrap "(" ")" . wsFamilySizeAndNameStr . W.tag . W.workspace) (W.visible s)
-          nRootWs = length . nub $ map (headSplitOn '/' . W.tag) (W.workspaces s)
-          nHidden  = wrap "(+" ")" $ (show $ length $ W.hidden s) ++ "/" ++ (show nRootWs)
-
-dynamicLogString = do
-    winset <- gets windowset
-    urgentW <- readUrgents -- TODO: Handle urgent windows
-    wintitle <- maybe (return "") (fmap show . NW.getName) . W.peek $ winset
-
-    let workspaces = pprWindowSet winset
-    let layout     = description . W.layout . W.workspace . W.current $ winset
-    let title      = xmobarColor "green" "" $ xmobarStrip wintitle
-
-    return $ encodeString . intercalate " : " . filter (not . null) $ [ workspaces , layout , title ]
-
-main = do
-    xmonad $ docks $ myConfig
+main = xmonad $ docks $ myConfig
 
 -- vim: expandtab nowrap
