@@ -2,6 +2,7 @@
 
 import Control.Monad(liftM, mfilter)
 import Data.List
+import Data.Maybe
 import Data.Monoid(Endo(..))
 import Data.Tuple(fst)
 import System.Environment(getEnvironment)
@@ -130,6 +131,11 @@ queryFromLookupInWindowSet lu actions = doF $ \ws -> case lu ws of { Nothing -> 
   where batchActions :: b -> a -> [b -> a -> a] -> a
         batchActions ws = foldl' (\z fn -> fn ws z)
 
+qCurrentWinIsTiled :: Query Bool
+qCurrentWinIsTiled = liftX $ withWindowSet $ return . focusedWindowInWsIsTiled
+  where focusedWindowInWsIsTiled ws = fromMaybe True $ flip M.notMember (W.floating ws) <$> (focusedWindow ws)
+        focusedWindow ws = W.focus <$> (W.stack $ W.workspace $ W.current ws)
+
 myManageHook :: Query (Endo WindowSet)
 myManageHook = composeAll $
     (map (--> doCenterFloat) [
@@ -142,6 +148,7 @@ myManageHook = composeAll $
     , isFullscreen --> doFullFloat
 --  , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
     , manageDocks
+    , qCurrentWinIsTiled --> insertPosition Below Newer
     ] where role = stringProperty "WM_WINDOW_ROLE"
             (~~) :: (Query a) -> (a -> b) -> (Query b)
             (~~) = flip liftM
@@ -383,7 +390,7 @@ myConfig = ewmh $ pagerHints $ defaultConfig
         , handleEventHook    = fullscreenEventHook <+> focusOnMouseMove
         , keys               = myKeys
         , layoutHook         = myLayout
-        , manageHook         = insertPosition Below Newer <+> myManageHook
+        , manageHook         = myManageHook
         , modMask            = mod4Mask
         , normalBorderColor  = "#1b1b2e"
         , startupHook        = gnomeRegister >> adjustEventInput
