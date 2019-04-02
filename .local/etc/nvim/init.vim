@@ -70,6 +70,7 @@ Plug 'sophacles/vim-processing'
 Plug 'idris-hackers/idris-vim'
 Plug 'IN3D/vim-raml'
 Plug 'vim-scripts/deb.vim'
+Plug 'lervag/vimtex'
 
 call plug#end()
 
