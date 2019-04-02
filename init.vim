@@ -339,14 +339,13 @@ set showmatch
 set mouse=nvi
 
 " emacs-like navigation in command-line mode
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-cnoremap <M-b> <S-Left>
-cnoremap <M-f> <S-Right>
+map! <C-a> <Home>
+map! <C-e> <End>
+map! <C-b> <Left>
+map! <M-b> <S-Left>
+map! <M-f> <S-Right>
+" C-f only in insert mode, C-f in command mode triggers cedit
+imap <C-f> <Right>
 
 " }}}
 " ------------------------------------------------------------------------------
