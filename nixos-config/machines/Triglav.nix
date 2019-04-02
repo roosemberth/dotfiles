@@ -5,8 +5,7 @@ let
     let try = builtins.tryEval <nixos-unstable>;
     in if try.success then (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
-  secrets = import ../secrets.nix { inherit lib; };
-  wireguardTriglav = import ./systech-wireguard.nix {inherit lib config;};
+  mkWireguardCfg = pkgs.callPackage ./systech-wireguard.nix {};
 in
 {
   imports = [
@@ -37,7 +36,7 @@ in
 
   i18n.consoleFont = "sun12x22";
 
-  networking = {
+  networking = rec {
     hostName = "Triglav"; # Define your hostname.
     extraHosts = ''
       127.0.0.1 Triglav triglav.roaming.orbstheorem.ch
@@ -57,7 +56,7 @@ in
         ip46tables -A nixos-fw -p gre -j nixos-fw-accept
       '';
     };
-    wireguard.interfaces = if !secrets.secretsAvailable then {} else {"Bifrost" = wireguardTriglav;};
+    wireguard.interfaces."Bifrost" = mkWireguardCfg { hostname = hostName; };
   };
 
   nix = {
