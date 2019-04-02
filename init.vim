@@ -45,6 +45,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'majutsushi/tagbar'
 Plug 'brooth/far.vim'
 Plug 'vim-scripts/Mark'
+Plug 'junegunn/vim-easy-align'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/denite.nvim'
@@ -305,6 +306,11 @@ nmap <leader>t :Tagbar<CR>
 " Denite
 nmap <leader>f :DeniteProjectDir file_rec -auto-preview<CR>
 nmap <leader>b :DeniteBufferDir buffer -auto-preview<CR>
+
+" EasyAlign: start interactive in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" EasyAlign: start interactive for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 " Fugitive
 nmap <leader>s :Gstatus<CR>
