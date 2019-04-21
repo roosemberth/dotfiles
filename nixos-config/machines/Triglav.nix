@@ -5,7 +5,7 @@ let
     let try = builtins.tryEval <nixos-unstable>;
     in if try.success then (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
-  mkWireguardCfg = pkgs.callPackage ./systech-wireguard.nix {};
+  mkWireguardCfg = (pkgs.callPackage ./systech-wireguard.nix {}).mkWireguardCfgForHost;
 in
 {
   imports = [
@@ -56,7 +56,7 @@ in
         ip46tables -A nixos-fw -p gre -j nixos-fw-accept
       '';
     };
-    wireguard.interfaces."Bifrost" = mkWireguardCfg { hostname = hostName; };
+    wireguard.interfaces."Bifrost" = mkWireguardCfg hostName;
   };
 
   nix = {

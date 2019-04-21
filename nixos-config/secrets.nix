@@ -7,16 +7,16 @@ let
   listFilesInDir = dir:
     mapAttrsToList (p: _: dir + "/" + p)
       (filterAttrs (path: type: type == "regular") (builtins.readDir dir));
-  mkMachine = givenName:
-    let machine = strings.toLower givenName;
-    in {
-      hostInitrdRSAKey = (toString ./secrets/machines) + "/" + machine + "/ssh-keys/initramfs";
-      wireguardKeys = wireguardSecrets machine;
-    };
   readSecretPath = path: strings.fileContents (toString ./secrets + "/" + path);
-  wireguardSecrets = hostname:
-    { private = readSecretPath "machines/${hostname}/wireguard-keys/private";
-      public = readSecretPath "machines/${hostname}/wireguard-keys/public";
+  mkMachine = givenName:
+    let hostname_l = strings.toLower givenName;
+    in {
+      hostInitrdRSAKey = readSecretPath "machines/${hostname_l}/ssh-keys/initramfs";
+      wireguardKeys = wireguardSecrets hostname_l;
+    };
+  wireguardSecrets = hostname_l:
+    { private = readSecretPath "machines/${hostname_l}/wireguard-keys/private";
+      public = readSecretPath "machines/${hostname_l}/wireguard-keys/public";
     };
 in {
   secretsAvailable = true;
@@ -31,4 +31,5 @@ in {
       sshPubKey = [ (readFile secrets/admins/ssh-keys/roosemberth.pub) ];
     };
   };
+  network = import ./secrets/network.nix;
 }
