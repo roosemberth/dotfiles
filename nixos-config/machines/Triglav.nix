@@ -96,6 +96,9 @@ in
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     postgresql.enable = true;
+    redshift.enable = true;
+    redshift.latitude = "47.36";
+    redshift.longitude = "8.55";
     tlp.enable = true;
     upower.enable = true;
     # xbacklight doesn't work with modesetting driver: https://gitlab.freedesktop.org/xorg/xserver/issues/47
