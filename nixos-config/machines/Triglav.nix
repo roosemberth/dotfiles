@@ -70,6 +70,7 @@ in
 
   programs = {
     bash.enableCompletion = true;
+    dconf.enable = true;
     mtr.enable = true;
     wireshark.enable = true;
     wireshark.package = pkgs.wireshark;
@@ -79,6 +80,7 @@ in
     enable = true;
     extraConfig = ''%wheel  ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild'';
   };
+  security.pam.services.login.enableGnomeKeyring = true;
 
   roos = {
     firewall.enable = true;
