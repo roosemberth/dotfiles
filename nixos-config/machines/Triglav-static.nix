@@ -84,6 +84,12 @@ in
       device = "/dev/mapper/" + hostname;
       options = ["subvol=/subvolumes/.__active__/DevelHub" "compress=zlib"];
     };
+    "/Storage/DevelHub/5-VMs" = {
+      fsType = "btrfs";
+      mountPoint = "/Storage/DevelHub/5-VMs";
+      device = "/dev/mapper/" + hostname;
+      options = ["subvol=/subvolumes/.__active__/VMs" "nodatacow"];
+    };
     "/home/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/home/.snapshots";
