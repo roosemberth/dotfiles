@@ -5,6 +5,7 @@ let
     let try = builtins.tryEval <nixos-unstable>;
     in if try.success then (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
+  sandbox = pkgs.callPackage ../pkgs/sandbox.nix {};
 in
 {
   imports = [
