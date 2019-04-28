@@ -59,15 +59,6 @@ in
     };
   };
 
-  powerManagement = {
-    resumeCommands = ''
-      ${config.systemd.package}/bin/systemctl restart bluetooth.service
-    '';
-    powerDownCommands = ''
-      ${config.systemd.package}/bin/systemctl stop bluetooth.service
-    '';
-  };
-
   programs = {
     bash.enableCompletion = true;
     dconf.enable = true;
