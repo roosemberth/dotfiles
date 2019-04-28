@@ -110,5 +110,27 @@ in
     };
   };
 
-  powerManagement.cpuFreqGovernor = "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
+  services.snapper.configs = let
+    extraConfig = ''
+      ALLOW_GROUPS="wheel"
+      TIMELINE_CREATE="yes"
+      TIMELINE_CLEANUP="yes"
+      EMPTY_PRE_POST_CLEANUP="yes"
+    '';
+  in {
+    "home" = {
+      subvolume = "/home";
+      inherit extraConfig;
+    };
+    "Storage" = {
+      subvolume = "/Storage";
+      inherit extraConfig;
+    };
+    "DevelHub" = {
+      subvolume = "/Storage/DevelHub";
+      inherit extraConfig;
+    };
+  };
 }

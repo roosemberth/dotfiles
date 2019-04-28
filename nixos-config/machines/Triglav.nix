@@ -1,15 +1,16 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, mylib, ... }:
 
 let
   bleedingEdge =
     let try = builtins.tryEval <nixos-unstable>;
     in if try.success then (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
-  mkWireguardCfg = (pkgs.callPackage ./systech-wireguard.nix {}).mkWireguardCfgForHost;
 in
 {
   imports = [
     ./Triglav-static.nix
+    ../modules
+    ../lib
   ];
 
   environment.systemPackages = (with pkgs; [
@@ -24,10 +25,8 @@ in
   hardware = {
     bluetooth.enable = true;
     cpu.intel.updateMicrocode = true;
-    opengl.driSupport32Bit = true;      # Steam...
     pulseaudio.enable = true;
     pulseaudio.package = pkgs.pulseaudioFull;
-    pulseaudio.support32Bit = true;     # Steam...
 
     bumblebee.enable = true;
     bumblebee.connectDisplay = true;
@@ -38,25 +37,7 @@ in
 
   networking = rec {
     hostName = "Triglav"; # Define your hostname.
-    extraHosts = ''
-      127.0.0.1 Triglav triglav.roaming.orbstheorem.ch
-      5.2.74.181 Hellendaal hellendaal.orbstheorem.ch
-      46.101.112.218 Heisenberg heisenberg.orbstheorem.ch
-      95.183.51.23 Dellingr dellingr.orbstheorem.ch
-    '';
-    networkmanager.enable = true;
-    firewall = {
-      enable = true;
-      checkReversePath = false; # libvirt...
-      allowPing = false;
-      allowedTCPPorts = [ 22 ];
-      allowedUDPPorts = [ 61573 ];
-      trustedInterfaces = [ "Bifrost" "Feigenbaum" ];
-      extraCommands = ''
-        ip46tables -A nixos-fw -p gre -j nixos-fw-accept
-      '';
-    };
-    wireguard.interfaces."Bifrost" = mkWireguardCfg hostName;
+    wireguard.interfaces."Bifrost" = mylib.wireguard.mkWireguardCfgForHost hostName;
   };
 
   nix = {
@@ -103,91 +84,30 @@ in
     extraConfig = ''%wheel  ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild'';
   };
 
-  services = {
-    kubernetes = {
-      roles = ["master" "node"];
-    };
+  roos = {
+    firewall.enable = true;
+    udev.enable = true;
+    user-profiles.roosemberth.enable = true;
+    x11.enable = true;
+  };
 
-    logind.lidSwitch = "ignore";
+  users.extraUsers.roosemberth.packages = ((with pkgs; [
+      kdeconnect mpv youtube-dl
+    ]) ++ (with bleedingEdge; [
+    ]) ++ (with sandbox; [
+      indicator-kdeconnect
+    ])
+  );
+
+  services = {
     logind.extraConfig = ''
       HandlePowerKey="ignore"
     '';
-
-    openssh = {
-      enable = true;
-      gatewayPorts = "no";
-      forwardX11 = true;
-    };
-
+    logind.lidSwitch = "ignore";
+    openssh.enable = true;
+    openssh.gatewayPorts = "yes";
     postgresql.enable = true;
-
-    udev.extraRules = ''
-      ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6108", MODE="666", SYMLINK+="LimeSDR"
-      ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6001", MODE="666", SYMLINK+="EPFL-Gecko4Education"
-      ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6101", MODE="666", SYMLINK+="EPFL-Gecko4Education"
-      ATTRS{idVendor}=="04b4", ATTRS{idProduct}=="00f3", MODE="666", SYMLINK+="FX3"
-      #Bus 003 Device 055: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
-      ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="666", SYMLINK+="ttyUSB-odroid0"
-      #Bus 001 Device 005: ID 067b:2303 Prolific Technology, Inc. PL2303 Serial Port
-      ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE="666", SYMLINK+="ttyUSB-odroid1"
-      # Honor 8
-      ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="666"
-      # Suspend on low battery TODO: pre-death clock instead...
-      SUBSYSTEM=="power_supply", ATTRS{capacity}=="10", ATTRS{status}=="Discharging", RUN+="${config.systemd.package}/bin/systemctl suspend"
-      SUBSYSTEM=="usb", ATTRS{idVendor}=="0765", ATTRS{idProduct}=="5010", ATTR{authorized}="0"
-     '';
-
-    xserver = {
-      enable = true;
-      layout = "us";
-      xkbVariant = "intl";
-
-      # Enable touchpad support.
-      libinput.enable = true;
-
-      displayManager.sessionCommands = ''
-        . $HOME/dotfiles/sh_environment
-        . $XDG_CONFIG_HOME/sh/profile
-        export XDG_CURRENT_DESKTOP=GNOME
-        ${pkgs.nitrogen}/bin/nitrogen --set-auto background-images/venice.png
-        ${pkgs.xcape}/bin/xcape -e 'Shift_L=Escape'
-        ${pkgs.xorg.setxkbmap}/bin/setxkbmap us intl -option caps:escape -option shift:both_capslock
-        ${pkgs.xorg.xrdb}/bin/xrdb $XDG_CONFIG_HOME/X11/Xresources
-        ${pkgs.xss-lock}/bin/xss-lock ${pkgs.xtrlock-pam}/bin/xtrlock-pam &!
-      '';
-
-      displayManager.slim.enable = true;
-      displayManager.slim.defaultUser = "roosemberth";
-      windowManager.xmonad.enable = true;
-      windowManager.default = "xmonad";
-      windowManager.xmonad.extraPackages =
-        haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras];
-      desktopManager.default = "none";
-      desktopManager.gnome3.enable = true;
-      desktopManager.gnome3.debug = true;
-    };
-
-    snapper.configs = let
-      extraConfig = ''
-        ALLOW_GROUPS="wheel"
-        TIMELINE_CREATE="yes"
-        TIMELINE_CLEANUP="yes"
-        EMPTY_PRE_POST_CLEANUP="yes"
-      '';
-    in {
-      "home" = {
-        subvolume = "/home";
-        inherit extraConfig;
-      };
-      "Storage" = {
-        subvolume = "/Storage";
-        inherit extraConfig;
-      };
-      "DevelHub" = {
-        subvolume = "/Storage/DevelHub";
-        inherit extraConfig;
-      };
-    };
+    tlp.enable = true;
     upower.enable = true;
   };
 
@@ -200,76 +120,6 @@ in
   time.timeZone = "Europe/Zurich";
 
   users.mutableUsers = false;
-  users.extraUsers.roosemberth =
-  { uid = 1000;
-    description = "Roosemberth Palacios";
-    hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
-    isNormalUser = true;
-    extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
-    packages = (with pkgs; [ # Legacy
-      astyle baobab bc beets bind blender bluez coreutils cpufrequtils
-      darktable dfu-util dmidecode dnsutils docker dolphin doxygen dunst
-      enlightenment.terminology evtest exfat exif fbida fbterm feh ffmpeg file
-      firefox firejail fontforge geteltorito gftp ghostscript gimp
-      gitAndTools.git-annex gitAndTools.git-crypt glxinfo gnupg go-mtpfs
-      gparted graphviz gucharmap hack-font i7z imagemagick imv intel-gpu-tools
-      iw jq khal # libnfs
-      libnotify libreoffice libtool libvirt libxml2 lm_sensors lshw lxappearance
-      man-pages megatools minicom mkpasswd moreutils mosh mpc_cli mpd mr
-      mtpfs mypy ncftp ncmpc ncmpcpp neomutt neovim nethogs nfs-utils nitrogen
-      nmap nss numix-solarized-gtk-theme oathToolkit offlineimap openconnect
-      openjdk openssh openssl openvpn pamix pandoc pass patchelf pavucontrol
-      pbzip2 pciutils pdftk picocom pipenv postgresql powerline-fonts powertop
-      ppp pptp profont proxychains psmisc pv qutebrowser radare2 ranger
-      read-edid redshift remmina rfkill rtorrent rxvt_unicode-with-plugins s3cmd
-      sakura scrot shutter smartmontools
-      source-code-pro splint sshfs sshfs-fuse ssvnc stack stdman stress sway
-      swig sysstat tasknc taskwarrior terminus_font_ttf
-      texstudio timewarrior tlp tor transmission trayer tree unzip usbutils
-      valgrind vim_configurable virtmanager virtviewer vlock w3m weechat whois
-      wmname x11_ssh_askpass xlockmore xml2 xournal zathura zip zsh-completions
-    ] ++ (with pkgs.xorg;[ # xorg
-      libXpm xbacklight xcape xclip xdotool xev xf86videointel
-      xkbcomp xkill xprop xrestop xss-lock xtrlock-pam
-    ]) ++ (with pkgs.gnome3;[ # gnome
-      baobab california cheese eog evince evolution gedit gnome-contacts
-      gnome-control-center networkmanagerapplet
-      gnome-documents gnome-online-accounts gnome-maps gnome-settings-daemon
-      gnome-system-monitor gnome-tweak-tool nautilus
-    ]) ++ (with pkgs.aspellDicts;[ # dictionaries and language tools
-      dico
-      fr en-science en-computers es en de
-    ]) ++ [ # Nix
-      nix-bundle nix-index nix-prefetch-scripts nix-zsh-completions
-    ] ++ [ # Debian
-      aptly debian-devscripts debianutils debootstrap dpkg dtools
-    ] ++ (with python3Packages; [  # python
-      python3 ipython parse requests tox virtualenv
-    ]) ++ [ # Electronics & SDR
-      pulseview kicad
-      gnuradio-with-packages soapysdr-with-plugins
-    ] ++ [ # sysadmin
-      python3Packages.glances lsof screen socat stow tcpdump
-    ] ++ [ # drawing
-      inkscape krita
-    ] ++ [ # Triglav
-      arandr argyllcms adbfs-rootless enchant fortune msmtp mymopidy
-      screen-message tdesktop
-      rxvt_unicode-with-plugins taffybar upower vlc wordnet tigervnc
-    ] ++ [ # Dev
-      ag arduino binutils platformio
-      cmake ctags elfutils gcc gdb gnumake gpgme idris libgpgerror
-      lua luaPackages.luacheck
-      silver-searcher sbt scala shellcheck
-      tig
-    ]) ++ (with pkgs.haskellPackages; [
-      ghc cabal-install
-      xmobar # hsqml leksah
-    ]) ++ (with bleedingEdge; [
-      mpv youtube-dl
-    ]);
-    shell = pkgs.zsh;
-  };
 
   virtualisation = {
     libvirtd.enable = true;
