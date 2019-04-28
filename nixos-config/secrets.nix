@@ -11,7 +11,7 @@ let
   mkMachine = givenName:
     let hostname_l = strings.toLower givenName;
     in {
-      hostInitrdRSAKey = readSecretPath "machines/${hostname_l}/ssh-keys/initramfs";
+      hostInitrdRSAKey = ./secrets + "/machines/${hostname_l}/ssh-keys/initramfs";
       wireguardKeys = wireguardSecrets hostname_l;
     };
   wireguardSecrets = hostname_l:

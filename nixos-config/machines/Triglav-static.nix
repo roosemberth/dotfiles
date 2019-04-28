@@ -24,9 +24,14 @@ in
         enable = true;
         ssh.enable = true;
         ssh.authorizedKeys = secrets.adminPubKeys;
-        ssh.hostRSAKey = secrets.machines."${hostname}".hostInitrdRSAKey; 
+        ssh.hostRSAKey = secrets.machines."${hostname}".hostInitrdRSAKey;
+        postCommands = ''
+          ( ip addr add 169.254.13.13/24 dev eth0
+            ip link set eth0 up
+            ip addr
+          ) || true
+          '';
       };
-      preDeviceCommands = "ip a || true";
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
     loader = {
