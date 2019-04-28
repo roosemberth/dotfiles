@@ -14,12 +14,7 @@ in
   ];
 
   environment.systemPackages = (with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop linuxPackages.bbswitch
-    nfs-utils ethtool hdparm ntopng netdata
-    linuxPackages.tp_smapi
-    libevdev xorg.xf86inputevdev xclip xlibs.xmessage
-    firefox thunderbird rxvt_unicode-with-plugins
-    nox cacert
+    wget vim curl zsh git tmux htop atop iotop cacert
   ]);
 
   hardware = {
