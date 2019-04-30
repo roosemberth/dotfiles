@@ -72,6 +72,8 @@ Plug 'IN3D/vim-raml'
 Plug 'vim-scripts/deb.vim'
 Plug 'lervag/vimtex'
 
+Plug 'morhetz/gruvbox'
+
 call plug#end()
 
 " Use ag instead of ack if possible
@@ -231,13 +233,6 @@ au FileType gitcommit setl textwidth=86
 " ------------------------------------------------------------------------------
 " LOOK {{{
 
-" Colors, after syntax!, `syntax enable` doesn't seems to work...
-" FIXME: Copy it to nvim!
-source $XDG_CONFIG_HOME/vim/colors.vim
-
-" statusline!
-"source $XDG_CONFIG_HOME/vim/statusline.vim
-
 " Display and format line numbers:
 set number relativenumber numberwidth=5
 
@@ -260,6 +255,14 @@ set fillchars+="fold: "
 " Autofold (except in git commit message):
 set foldmethod=marker
 au FileType gitcommit setl foldmethod=manual
+
+" Uncomment when https://github.com/morhetz/gruvbox/issues/266 is resolved
+colorscheme gruvbox
+set background=dark
+ " fix gruvbox's highlight for Ale
+highlight ALEInfo ctermfg=109 cterm=italic
+highlight ALEWarning ctermfg=214 cterm=italic
+highlight ALEError ctermfg=167 cterm=italic
 
 " }}}
 " ------------------------------------------------------------------------------
