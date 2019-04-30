@@ -47,9 +47,6 @@ Plug 'brooth/far.vim'
 Plug 'vim-scripts/Mark'
 Plug 'junegunn/vim-easy-align'
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/denite.nvim'
-
 Plug 'Lokaltog/vim-easymotion'
 Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-fugitive'
@@ -73,6 +70,17 @@ Plug 'vim-scripts/deb.vim'
 Plug 'lervag/vimtex'
 
 Plug 'morhetz/gruvbox'
+
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1
+
+"Plug 'Shougo/denite.nvim'
 
 call plug#end()
 
