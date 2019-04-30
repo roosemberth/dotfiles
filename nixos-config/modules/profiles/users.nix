@@ -2,7 +2,38 @@
   options.roos.user-profiles.roosemberth.enable = mkEnableOption "Roos' user profile";
 
   config = mkIf config.roos.user-profiles.roosemberth.enable {
-    users.extraUsers.roosemberth = {
+    roos.mainUsers = [ "roosemberth" ];
+    roos.userConfig.home.packages = [ pkgs.gnome3.zenity ];
+    roos.xUserConfig = {
+      systemd.user.services.take-a-break = {
+        Unit = {
+          Description = "Friendly reminder to take a break";
+          After = [ "graphical-session-pre.target" ];
+          PartOf = [ "graphical-session.target" ];
+        };
+
+        Service = {
+          Type = "oneshot";
+          Environment = "GDK_SCALE=2";
+          ExecStart = "${pkgs.writeScriptBin "take-a-break" ''
+            #!${pkgs.stdenv.shell}
+
+            ${pkgs.coreutils}/bin/seq 1 100 | (while read l; do echo $l; sleep 0.1; done) | ${pkgs.gnome3.zenity}/bin/zenity --progress --title 'break' --text '10 second break!' --no-cancel --auto-close
+
+          ''}/bin/take-a-break";
+        };
+      };
+
+      systemd.user.timers.take-a-break = {
+        Unit.Description = "Reminder to take a break off the screen";
+        Timer.OnCalendar="*-*-* *:00,15,30,45:00";
+        Install.WantedBy = ["timers.target"];
+      };
+    };
+
+    services.dbus.packages = [ pkgs.gnome3.dconf ];
+
+    users.users.roosemberth = {
       uid = 1000;
       description = "Roosemberth Palacios";
       hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
