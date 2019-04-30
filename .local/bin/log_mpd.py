@@ -91,9 +91,13 @@ def main(*_, host: str, port: int):
     signal.signal(signal.SIGINT, lambda *_: appState.stop())
 
     def stop_tracking_and_maybe_report(status_obj, force_report = False):
+        # There may not be a current song anymore. => set elapsed = 0
+        current_playing_song_elapsed = float(getattr(status_obj, 'elapsed', 0))
+
         if force_report:
             trigger_report()
-        elif appState.curElapsed - float(status_obj.elapsed) > appState.curDuration/3:  # Don't log if didn't play at least a third of the song
+        # Don't log if didn't play at least a third of the song
+        elif appState.curElapsed - current_playing_song_elapsed > appState.curDuration/3:
             trigger_report()
         appState.tracking = False
 
@@ -103,6 +107,10 @@ def main(*_, host: str, port: int):
         appState.printStateLine()
 
     def tracking_loop(status_obj, current_song_obj):
+        if not hasattr(status_obj, 'elapsed'):  # Playback ended
+            stop_tracking_and_maybe_report(status_obj)
+            return
+
         status_elapsed_secs = float(status_obj.elapsed)
         if status_elapsed_secs > appState.curElapsed:  # Normal time advancement
             appState.curElapsed = float(status_obj.elapsed)
