@@ -316,7 +316,8 @@ nmap ga <Plug>(EasyAlign)
 " Fugitive
 nmap <leader>s :Gstatus<CR>
 nmap <leader>d :Gdiff<CR>
-nmap <leader>c :Gcommit -S -v -s 
+nmap <leader>w :Gwrite<CR>
+nmap <leader>c :Gcommit -S -v -s
 nmap <leader>T :vs term://%:h:r//tig<CR>i
 au FileType fugitive map <buffer> <leader>l :! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD<CR>
 
