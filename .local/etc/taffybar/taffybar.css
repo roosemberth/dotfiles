@@ -24,8 +24,8 @@
 }
 
 .taffy-box {
-	border-radius: 10px;
-	background-color: rgba(0.0, 0.0, 0.0, 0.3);
+	border-radius: 0px;
+	background-color: rgba(0.0, 0.0, 0.3, 0.8);
 }
 
 .inner-pad {

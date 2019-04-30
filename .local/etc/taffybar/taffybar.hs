@@ -63,15 +63,21 @@ main = do
         , widgetGap = 0
         , showWorkspaceFn = hideEmpty
         , urgentWorkspaceState = True
+        , getWindowIconPixbuf = scaledWindowIconPixbufGetter getWindowIconPixbufFromEWMH
         }
-      workspaces = workspacesNew myWorkspacesConfig
       layout = layoutNew $ LayoutConfig $ return . customLayoutTitle
+      task = commandRunnerNew 1 "sh" ["-c", "timew :yes get dom.active.{duration,tag.1,tag.2} 2>/dev/null || echo None"] ""
+      workspaces = workspacesNew myWorkspacesConfig
       windows = windowsNew defaultWindowsConfig
-          -- See https://github.com/taffybar/gtk-sni-tray#statusnotifierwatcher
-          -- for a better way to set up the sni tray
+      network = networkMonitorNew defaultNetFormat $ Just ["wlp2s0", "enp0s31f6"]
+      ping = commandRunnerNew 5 "sh" ["-c", "ping -c 1 orbstheorem.ch | grep -oP 'bytes from .* time=\\K.*'"] "✈"
+      route = commandRunnerNew 5 "sh" ["-c", "ip route | grep -oP 'default.*via \\K[^ ]+' | tr '\\n' '|'"] "no gw"
+      screenTimeout = commandRunnerNew 1 "sh" ["-c", "xset q | grep 'Screen Saver' -A 2 | grep -oP 'timeout: *\\K[^ ]+'"] ""
+      -- See https://github.com/taffybar/gtk-sni-tray#statusnotifierwatcher
+      -- for a better way to set up the sni tray
       tray = sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt
       myConfig = defaultSimpleTaffyConfig
-        { startWidgets = map (>>= buildContentsBox) [layout] ++ [workspaces]
+        { startWidgets = [task] ++ map (>>= buildContentsBox) [layout] ++ [workspaces]
         , centerWidgets = map (>>= buildContentsBox) [windows]
         , endWidgets = map (>>= buildContentsBox)
           [ textClockNew Nothing "%a %b %_d %H:%M:%S" 1
@@ -82,6 +88,10 @@ main = do
           , pollingLabelNew "Mem" 1 $ parseMeminfo >>= return . (formatMemoryUsageRatio . memoryUsedRatio)
           , pollingGraphNew cpuCfg 0.5 cpuCallback
           , fsMonitorNew 500 ["/"]
+          , screenTimeout
+          , ping
+          , route
+          , network
        -- , mpris2New
           ]
         , barPosition = Top
