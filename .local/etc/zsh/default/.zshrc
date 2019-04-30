@@ -285,7 +285,7 @@ precmd
 
 # }}}
 # ------------------------------------------------------------------------------
-# VIM {{{
+# Operations {{{
 
 # Use vim mode, but keep handy emacs keys in insert mode:
 bindkey -v
@@ -299,8 +299,19 @@ bindkey -M viins ''    down-line-or-history
 bindkey -M viins ''    backward-kill-line
 bindkey -M viins ''    backward-kill-word
 bindkey -M viins ''    vi-forward-word  # accept partial suggestions
-bindkey -M viins '[Z'    vi-forward-word  # accept partial suggestions
+bindkey -M viins '[Z'  vi-forward-word  # accept partial suggestions
 bindkey -M viins ''    push-input       # I forgot to type something before!
+
+function Warp-to-projects() {
+  cd /Storage/DevelHub/3-Orgs/
+  zle reset-prompt
+}
+
+zle -N Warp-to-projects
+
+if [ "$(hostname)" = "Triglav" ]; then
+  bindkey -M viins ''  Warp-to-projects
+fi
 
 bindkey -M viins ' '   end-of-line
 
