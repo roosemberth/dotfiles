@@ -125,7 +125,6 @@ LESS_TERMCAP_ue="$(printf "\033[0m")"
 LESS_TERMCAP_us="$(printf "\033[32m")"
 LESS_TERMCAP_mb="$(printf "\033[34m")"
 LESS_TERMCAP_md="$(printf "\033[31m")"
-LESS="-j.3"
 LESSHISTFILE="$XDG_DATA_HOME/lesshist"
 pihs
 )"
