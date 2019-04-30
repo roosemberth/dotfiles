@@ -19,13 +19,13 @@ with lib;
         export XDG_CURRENT_DESKTOP=GNOME
         ${pkgs.nitrogen}/bin/nitrogen --set-auto background-images/venice.png
         ${pkgs.xcape}/bin/xcape -e 'Shift_L=Escape'
-        ${pkgs.xorg.setxkbmap}/bin/setxkbmap us intl -option caps:escape -option shift:both_capslock
+        ${pkgs.xorg.setxkbmap}/bin/setxkbmap us intl -option caps:escape
         ${pkgs.xorg.xrdb}/bin/xrdb $XDG_CONFIG_HOME/X11/Xresources
         ${pkgs.xss-lock}/bin/xss-lock ${pkgs.xtrlock-pam}/bin/xtrlock-pam &!
       '';
 
-      displayManager.slim.enable = true;
-      displayManager.slim.defaultUser = "roosemberth";
+      displayManager.sddm.enable = true;
+      displayManager.sddm.enableHidpi = true;
       windowManager.xmonad.enable = true;
       windowManager.default = "xmonad";
       windowManager.xmonad.extraPackages =
