@@ -122,8 +122,8 @@ def main(*_, host: str, port: int):
             stop_tracking_and_maybe_report(status_obj)
             return
 
-        if status_obj.state != 'play':  # Playback stopped and tracking -> Stop tracking and force log
-            stop_tracking_and_maybe_report(status_obj, force_report = True)
+        if status_obj.state != 'play':  # Playback stopped and tracking -> Stop tracking
+            stop_tracking_and_maybe_report(status_obj)
             mpd_client.idle()
 
     def monitor_status_and_report():
