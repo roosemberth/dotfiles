@@ -114,7 +114,7 @@ font:
     #style: Italic
 
   # Point size
-  size: 8.0
+  size: 6.5
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -154,12 +154,12 @@ persistent_logging: false
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Tomorrow Night Bright)
+# Colors
 colors:
   # Default colors
   primary:
-    background: '0x000000'
-    foreground: '0xeaeaea'
+    background: '0x1d1f21'
+    foreground: '0xc5c8c6'
 
     # Bright and dim foreground colors
     #
@@ -179,24 +179,24 @@ colors:
 
   # Normal colors
   normal:
-    black:   '0x000000'
-    red:     '0xd54e53'
-    green:   '0xb9ca4a'
-    yellow:  '0xe6c547'
-    blue:    '0x7aa6da'
-    magenta: '0xc397d8'
-    cyan:    '0x70c0ba'
-    white:   '0xeaeaea'
+    black:   '0x1d1f21'
+    red:     '0xcc342b'
+    green:   '0x198844'
+    yellow:  '0xfba922'
+    blue:    '0x2254cc'
+    magenta: '0xa36ac7'
+    cyan:    '0x3971ed'
+    white:   '0xc5c8c6'
 
   # Bright colors
   bright:
-    black:   '0x666666'
-    red:     '0xff3334'
-    green:   '0x9ec400'
-    yellow:  '0xe7c547'
-    blue:    '0x7aa6da'
-    magenta: '0xb77ee0'
-    cyan:    '0x54ced6'
+    black:   '0x969896'
+    red:     '0xcc2016'
+    green:   '0x0b8734'
+    yellow:  '0xfacb23'
+    blue:    '0x0e4ecc'
+    magenta: '0x9f56c7'
+    cyan:    '0x094aed'
     white:   '0xffffff'
 
   # Dim colors
@@ -253,7 +253,7 @@ visual_bell:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 1.0
+background_opacity: 0.85
 
 # Mouse bindings
 #
@@ -283,7 +283,7 @@ mouse:
   triple_click: { threshold: 300 }
 
   # If this is `true`, the cursor is temporarily hidden when typing.
-  hide_when_typing: false
+  hide_when_typing: true
 
   url:
     # URL launcher
@@ -328,7 +328,7 @@ cursor:
   unfocused_hollow: true
 
 # Live config reload (changes require restart)
-live_config_reload: false
+live_config_reload: true
 
 # Shell
 #
