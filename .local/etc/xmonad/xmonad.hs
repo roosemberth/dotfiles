@@ -93,10 +93,10 @@ scratchpads = [
         (title =? "Scratchpad-flyway") floatingOverlay
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
-centerFloatByTitle = [ "launcher", "xmessage" ]
-centerFloatByClassNameLike =
-  [ "Gajim" , "Gnome-calendar", "Gvncviewer"
-  , "Pinentry", "Shutter", "Zenity"
+centerFloatByTitle             = [ "launcher", "xmessage" ]
+floatingOverlayByClassNameLike = [ "Gnome-calendar", "Gvncviewer" ]
+centerFloatByClassNameLike     =
+  [ "Gajim" , "Pinentry", "Zenity"
   , "eog", "feh", "mpv", "vlc"
   ]
 
@@ -142,9 +142,11 @@ myManageHook = composeAll $
       title ~~ flip elem centerFloatByTitle
     , className ~~ (flip any centerFloatByClassNameLike . isInfixOf)
     , className =? "Firefox" <&&> role ~~ (/= "browser")
-    ]) ++ [
-      title ~~ isInfixOf "overlay" --> floatingOverlay
-    , namedScratchpadManageHook scratchpads
+    ]) ++ (map (--> floatingOverlay) [
+      title ~~ isInfixOf "overlay"
+    , className ~~ (flip any floatingOverlayByClassNameLike . isInfixOf)
+    ])++ [
+      namedScratchpadManageHook scratchpads
     , isFullscreen --> doFullFloat
 --  , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
     , manageDocks
