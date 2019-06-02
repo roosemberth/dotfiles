@@ -126,10 +126,11 @@ workspaceFromTitleHint title wsNames = fst <$> (breakAtSublist "|::|" title) >>=
         subpathExists s = or $ map (isPrefixOf s) wsNames
         mkparentpaths = reverse . scanl1 combine . splitDirectories
 
+batchActions :: b -> a -> [b -> a -> a] -> a
+batchActions ws = foldl' (\z fn -> fn ws z)
+
 queryFromLookupInWindowSet :: (WindowSet -> Maybe b) -> [(b -> WindowSet -> WindowSet)] -> Query (Endo WindowSet)
 queryFromLookupInWindowSet lu actions = doF $ \ws -> case lu ws of { Nothing -> ws; Just b -> batchActions b ws actions }
-  where batchActions :: b -> a -> [b -> a -> a] -> a
-        batchActions ws = foldl' (\z fn -> fn ws z)
 
 qCurrentWinIsTiled :: Query Bool
 qCurrentWinIsTiled = liftX $ withWindowSet $ return . focusedWindowInWsIsTiled
@@ -149,6 +150,7 @@ myManageHook = composeAll $
       namedScratchpadManageHook scratchpads
     , isFullscreen --> doFullFloat
 --  , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
+    , title =? "test" --> doF (\w -> batchActions "temp" w [ mkws, W.shift, W.greedyView ])
     , manageDocks
     , qCurrentWinIsTiled --> insertPosition Below Newer
     ] where role = stringProperty "WM_WINDOW_ROLE"
