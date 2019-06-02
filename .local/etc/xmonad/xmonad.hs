@@ -23,7 +23,7 @@ import qualified XMonad.Actions.DynamicWorkspaces as DW
 import XMonad.Hooks.EwmhDesktops(ewmh, fullscreenEventHook)
 import XMonad.Hooks.InsertPosition(insertPosition, Position(..), Focus(..))
 import XMonad.Hooks.ManageDocks(docks, manageDocks, avoidStruts, ToggleStruts(..))
-import XMonad.Hooks.ManageHelpers(doCenterFloat, doFullFloat, isFullscreen)
+import XMonad.Hooks.ManageHelpers(doCenterFloat, doFullFloat, doRectFloat, isFullscreen)
 
 import XMonad.Layout.BoringWindows(boringWindows, focusUp, focusDown)
 import XMonad.Layout.Grid(Grid(..))
@@ -49,7 +49,6 @@ import qualified XMonad.StackSet as W
 
 import qualified XMonad.Util.NamedWindows as NW
 import XMonad.Util.EZConfig(mkKeymap)
-import XMonad.Util.NamedScratchpad(customFloating, namedScratchpadAction, namedScratchpadManageHook, NamedScratchpad(NS))
 import XMonad.Util.Run(safeSpawn)
 import XMonad.Util.Ungrab(unGrab)
 
@@ -85,13 +84,7 @@ actionsPrompt c = mkXPrompt (ActionRef "") c (mkComplFunFromList' keys) $ runAct
   where keys = M.keys actionsList
         runAction ref = actionsList M.! ref
 
-floatingOverlay = customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
-
-scratchpads = [
--- TODO: More scratchpads!: System status (spawn detached on boot?), soundctl, ???
-      NS "flyway"  ("alacritty -t Scratchpad-flyway -e tmux new -As flyway")
-        (title =? "Scratchpad-flyway") floatingOverlay
-    ] where role = stringProperty "WM_WINDOW_ROLE"
+floatingOverlay = doRectFloat $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
 
 centerFloatByTitle             = [ "launcher", "xmessage" ]
 floatingOverlayByClassNameLike = [ "Gnome-calendar", "Gvncviewer" ]
@@ -145,10 +138,10 @@ myManageHook = composeAll $
     , className =? "Firefox" <&&> role ~~ (/= "browser")
     ]) ++ (map (--> floatingOverlay) [
       title ~~ isInfixOf "overlay"
+    , title ~~ isInfixOf "Scratchpad-flyway"
     , className ~~ (flip any floatingOverlayByClassNameLike . isInfixOf)
     ])++ [
-      namedScratchpadManageHook scratchpads
-    , isFullscreen --> doFullFloat
+      isFullscreen --> doFullFloat
 --  , title >>= \t -> queryFromLookupInWindowSet (workspaceFromTitleHint t . getWorkspaces) [mkws, W.shift, W.greedyView]
     , title =? "test" --> doF (\w -> batchActions "temp" w [ mkws, W.shift, W.greedyView ])
     , manageDocks
@@ -300,8 +293,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-p"                       , passPrompt myXPconfig)
       , ("M-r"                       , actionsPrompt myXPconfig { PT.autoComplete = Just 1 })
 
-      -- Scratchpads!
-      , ("M-S-q"                     , namedScratchpadAction scratchpads "flyway")
+      , ("M-S-q"                     , spawn "alacritty -t Scratchpad-flyway -e tmux new -As flyway")
       , ("M-q"                       , spawn "tmux detach-client -s flyway") -- "hide" flyway
 
       , ("S-<XF86AudioRaiseVolume>"  , action "volumeUp")
