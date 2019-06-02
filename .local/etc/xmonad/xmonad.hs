@@ -60,16 +60,16 @@ actionsList = M.fromList
   , ("mpv"          , "mpv \"$(xclip -o -selection clipboard)\" --load-unsafe-playlists  '--ytdl-format=bestvideo[height<=?2160]+bestaudio/best' --force-seekable --cache=1048576 --cache-seek-min=1048576")
   , ("vlc"          , "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
   , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
-  , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid urxvt -e tmux attach -t $session &\n done")
-  , ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ urxvt -geometry 120x10 -title launcher -e zsh")
-  , ("break-tmux-pane", "urxvt -e tmux new 'tmux swapp; exit'")
+  , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid alacritty -e tmux attach -t $session &\n done")
+  , ("launcher"     , "OLD_ZDOTDIR=${ZDOTDIR} ZDOTDIR=${XDG_CONFIG_HOME}/zsh/launcher/ alacritty -d 120 10 -t launcher -e zsh")
+  , ("break-tmux-pane", "alacritty -e tmux new 'tmux swapp; exit'")
   , ("volumeDown"   , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') -5%")
   , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
   , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
   ]) ++ (map (mapResult cmdInTmpTmux) [
     ("dico"         , "dico  --database=gcide \"$(read -e)\"")
   , ("wn"           , "wn \"$(read -e)\" -over")
-  ])) where cmdInTmpTmux cmd = spawn $ "urxvt -title overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
+  ])) where cmdInTmpTmux cmd = spawn $ "alacritty -t overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
             mapResult fn (k, v) = (k, fn v)
 
 action :: String -> X ()
@@ -89,7 +89,7 @@ floatingOverlay = customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3)
 
 scratchpads = [
 -- TODO: More scratchpads!: System status (spawn detached on boot?), soundctl, ???
-      NS "flyway"  ("urxvt -title Scratchpad-flyway -e tmux new -As flyway")
+      NS "flyway"  ("alacritty -t Scratchpad-flyway -e tmux new -As flyway")
         (title =? "Scratchpad-flyway") floatingOverlay
     ] where role = stringProperty "WM_WINDOW_ROLE"
 
@@ -226,7 +226,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     ) ++ (
       [ ("M-C-<Return>"    , action "launcher")
       , ("M-C-S-<Return>"  , action "break-tmux-pane")
-      , ("M-<Return>"      , spawn "urxvt -e tmux")
+      , ("M-<Return>"      , spawn "alacritty -e tmux")
       , ("M-<F4>"          , kill)                                  -- %! Close the focused window
                                                                     -- %! Push window up to floating
       , ("M-f"             , withFocused $ windows . flip W.float (W.RationalRect (1/6) (1/6) (2/3) (2/3)))
@@ -395,7 +395,7 @@ myConfig = ewmh $ pagerHints $ defaultConfig
         , modMask            = mod4Mask
         , normalBorderColor  = "#1b1b2e"
         , startupHook        = gnomeRegister >> adjustEventInput
-        , terminal           = "urxvt -e tmux"
+        , terminal           = "alacritty -e tmux"
         , workspaces         = ["home", "mail"]
         }
 
