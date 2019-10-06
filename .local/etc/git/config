@@ -13,3 +13,8 @@
 	default = simple
 [merge]
 	tool = vimdiff
+[commit]
+	verbose = 1
+	gpgSign = 1
+[tag]
+	forceSignAnnotated = 1
