@@ -148,7 +148,7 @@ audio/x-xm=org.gnome.Totem.desktop
 [Added Associations]
 application/msword=writer.desktop;
 application/octet-stream=mpv.desktop;gvim.desktop;
-application/pdf=org.pwmt.zathura.desktop;evince.desktop;
+application/pdf=org.gnome.Evince.desktop;org.pwmt.zathura.desktop;evince.desktop;
 application/vnd.oasis.opendocument.text=writer.desktop;
 application/vnd.openxmlformats-officedocument.presentationml.presentation=impress.desktop;
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet=calc.desktop;
@@ -290,3 +290,4 @@ audio/x-xm=org.gnome.Totem.desktop;
 application/x-shockwave-flash=mpv.desktop;
 application/xml=gvim.desktop;
 text/markdown=nvim.desktop;
+application/x-xz-compressed-tar=org.gnome.FileRoller.desktop;
