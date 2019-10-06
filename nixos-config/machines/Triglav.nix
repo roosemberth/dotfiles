@@ -52,9 +52,9 @@ in
       allowUnfree = true;
       packageOverrides = pkgs: {
         all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
-        mymopidy = with bleedingEdge; buildEnv {
-          name = "mopidy-with-extensions";
-          paths = lib.closePropagation (with bleedingEdge; [mopidy-spotify mopidy-iris]);
+        mymopidy = with pkgs; buildEnv {
+          name = "mopidy-with-extensions-${mopidy.version}";
+          paths = lib.closePropagation (with pkgs; [mopidy-spotify mopidy-iris]);
           pathsToLink = [ "/${python.sitePackages}" ];
           buildInputs = [ makeWrapper ];
           postBuild = ''
