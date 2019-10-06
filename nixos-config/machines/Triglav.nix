@@ -36,6 +36,13 @@ in
   };
 
   nix = {
+    binaryCaches = [
+      "https://cache.nixos.org/"
+      "https://all-hies.cachix.org"
+    ];
+    binaryCachePublicKeys = [
+      "all-hies.cachix.org-1:JjrzAOEUsD9ZMt8fdFbzo3jNAyEWlPAwdVuHw4RD43k="
+    ];
     buildCores = 8;
     trustedUsers = [ "roosemberth" ];
   };
@@ -44,6 +51,7 @@ in
     config = {
       allowUnfree = true;
       packageOverrides = pkgs: {
+        all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
         mymopidy = with bleedingEdge; buildEnv {
           name = "mopidy-with-extensions";
           paths = lib.closePropagation (with bleedingEdge; [mopidy-spotify mopidy-iris]);
