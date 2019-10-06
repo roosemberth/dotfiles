@@ -56,7 +56,7 @@ actionsList :: M.Map String (X())
 actionsList = M.fromList
   ((map (mapResult spawn) [
     ("klayout"      , "feh /Storage/tmp/Ergodox-Base.png")
-  , ("mpv"          , "mpv \"$(xclip -o -selection clipboard)\" --load-unsafe-playlists  '--ytdl-format=bestvideo[height<=?2160]+bestaudio/best' --force-seekable --cache=1048576 --cache-seek-min=1048576")
+  , ("mpv"          , "mpv --quiet \"$(xclip -o -selection clipboard)\" --load-unsafe-playlists  '--ytdl-format=bestvideo[height<=?2160]+bestaudio/best' --force-seekable --cache=1048576")
   , ("vlc"          , "vlc \"$(xclip -o -selection clipboard)\" --qt-minimal-view")
   , ("reloadXMonad" , "if type xmonad; then xmonad --recompile && xmonad --restart && notify-send 'xmonad config reloaded'; else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
   , ("restoreTmux"  , "for session in $(tmux list-sessions | grep -oP '^[^:]+(?!.*attached)'); do setsid alacritty -e tmux attach -t $session &\n done")
