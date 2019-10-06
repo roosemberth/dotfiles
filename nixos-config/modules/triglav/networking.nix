@@ -1,4 +1,8 @@
-{ config, pkgs, lib, ... }: with lib; {
+{ config, pkgs, lib, mylib, ... }:
+let
+  secrets = import ../../secrets.nix { inherit lib; };
+in
+with lib; {
   options.roos.triglav.network.enable = mkEnableOption "Triglav-specific configuration";
 
   config = mkIf config.roos.triglav.network.enable {
@@ -25,6 +29,16 @@
       };
 
       networkmanager.enable = true;
+      wireguard.interfaces."Bifrost" = let
+        generatedConfig = mylib.wireguard.mkWireguardCfgForHost config.networking.hostName;
+      in generatedConfig // {
+        peers = [{
+          persistentKeepalive = 30;
+          endpoint = secrets.network.publicWireguardEndpoints.Hellendaal;
+          publicKey = secrets.machines.Hellendaal.wireguardKeys.public;
+          allowedIPs = [ "10.13.255.0/24" "fd00:726f:6f73:ff::/120" ];
+        }];
+      };
     };
   };
 }

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, mylib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   bleedingEdge =
@@ -30,10 +30,7 @@ in
 
   i18n.consoleFont = "sun12x22";
 
-  networking = rec {
-    hostName = "Triglav"; # Define your hostname.
-    wireguard.interfaces."Bifrost" = mylib.wireguard.mkWireguardCfgForHost hostName;
-  };
+  networking.hostName = "Triglav";
 
   nix = {
     binaryCaches = [
