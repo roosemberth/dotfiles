@@ -80,7 +80,7 @@ else
 endif
 let g:deoplete#enable_at_startup = 1
 
-"Plug 'Shougo/denite.nvim'
+Plug 'Shougo/denite.nvim'
 
 call plug#end()
 
@@ -89,6 +89,40 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 
+" }}}
+" ------------------------------------------------------------------------------
+" PLUGIN CONFIGURATION {{{
+
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
+let g:ale_haskell_hie_executable = 'hie-wrapper'
+
+" Denite {{{
+" Define mappings
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>      denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> s         denite#do_map('do_action', 'vsplit')
+  nnoremap <silent><buffer><expr> S         denite#do_map('do_action', 'split')
+  nnoremap <silent><buffer><expr> d         denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p         denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q         denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i         denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>   denite#do_map('toggle_select').'j'
+
+  call denite#custom#var('grep', 'command', ['ag'])
+  call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', [])
+  call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('grep', 'final_opts', [])
+endfunction
+
+autocmd FileType denite-filter call s:denite_filter_my_settings()
+function! s:denite_filter_my_settings() abort
+  imap <silent><buffer> <C-o>     <Plug>(denite_filter_quit)
+endfunction
+" }}}
+"
 " }}}
 " ------------------------------------------------------------------------------
 " SYNTAX {{{
@@ -314,10 +348,13 @@ vmap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 " NERDTree
 nmap <leader>o :NERDTreeToggle<CR>
 nmap <leader>t :Tagbar<CR>
+nmap <leader>F :Denite tag<CR>
 
 " Denite
-nmap <leader>f :DeniteProjectDir file_rec -auto-preview<CR>
-nmap <leader>b :DeniteBufferDir buffer -auto-preview<CR>
+nmap <leader>f :NERDTreeFind<CR>
+nmap <leader>F :Denite file/rec<CR>
+nmap <leader>b :Denite buffer<CR>
+nmap <leader>J :Denite jump<CR>
 
 " EasyAlign: start interactive in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
@@ -328,8 +365,8 @@ nmap ga <Plug>(EasyAlign)
 nmap <leader>s :Gstatus<CR>
 nmap <leader>d :Gdiff<CR>
 nmap <leader>w :Gwrite<CR>
-nmap <leader>c :Gcommit -S -v -s
-nmap <leader>T :vs term://%:h:r//tig<CR>i
+nmap <leader>c :Gcommit -S -v -s 
+nmap <leader> :vs term://%:h:r//tig<CR>i
 au FileType fugitive map <buffer> <leader>l :! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD<CR>
 
 " Quickfix
