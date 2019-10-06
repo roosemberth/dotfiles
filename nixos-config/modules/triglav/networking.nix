@@ -6,21 +6,24 @@
       firewall = {
         enable = true;
         checkReversePath = false; # libvirt...
-        allowPing = false;
-        allowedTCPPorts = [ 22 ];
+        allowPing = true;
+        allowedTCPPorts = [
+          22    # SSH
+          2270  # foo
+          5443  # bar
+        ];
         allowedUDPPorts = [ 61573 ];
-        trustedInterfaces = [ "Bifrost" "Feigenbaum" ];
+        trustedInterfaces = [ "Bifrost" "docker0" ];
         extraCommands = ''
           ip46tables -A nixos-fw -p gre -j nixos-fw-accept
         '';
       };
 
-      extraHosts = ''
-        127.0.0.1 Triglav triglav.roaming.orbstheorem.ch
-        5.2.74.181 Hellendaal hellendaal.orbstheorem.ch
-        46.101.112.218 Heisenberg heisenberg.orbstheorem.ch
-        95.183.51.23 Dellingr dellingr.orbstheorem.ch
-      '';
+      hosts = {
+        "127.0.0.1"       = ["Triglav" "triglav.roaming.orbstheorem.ch"];
+        "5.2.74.181"      = ["Hellendaal" "hellendaal.orbstheorem.ch"];
+      };
+
       networkmanager.enable = true;
     };
   };
