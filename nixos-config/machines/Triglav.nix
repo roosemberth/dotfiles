@@ -101,8 +101,6 @@ in
     redshift.longitude = "8.55";
     tlp.enable = true;
     upower.enable = true;
-    # xbacklight doesn't work with modesetting driver: https://gitlab.freedesktop.org/xorg/xserver/issues/47
-    xserver.videoDrivers = ["intel" "modesetting"];
   };
 
   system = {
