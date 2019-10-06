@@ -15,18 +15,17 @@ in
   ];
 
   environment.systemPackages = (with pkgs; [
-    wget vim curl zsh git tmux htop atop iotop cacert
+    vim curl zsh git tmux htop atop iotop cacert
   ]);
 
   hardware = {
     bluetooth.enable = true;
-    cpu.intel.updateMicrocode = true;
+    bluetooth.package = pkgs.bluezFull;
     pulseaudio.enable = true;
+    pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
     pulseaudio.package = pkgs.pulseaudioFull;
 
-    bumblebee.enable = true;
-    bumblebee.connectDisplay = true;
-    nvidia.modesetting.enable = true;
+    cpu.intel.updateMicrocode = true;
   };
 
   i18n.consoleFont = "sun12x22";
@@ -69,36 +68,69 @@ in
 
   security.sudo = {
     enable = true;
-    extraConfig = ''%wheel  ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild'';
+    extraConfig = ''
+      %wheel      ALL=(root) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild
+      %wheel      ALL=(root) NOPASSWD: /run/current-system/sw/bin/systemctl restart bumblebee
+      %wheel      ALL=(root) NOPASSWD: /run/current-system/sw/bin/lsof -nPi
+      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount -t proc none proc
+      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount /sys sys -o bind
+      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount /dev dev -o rbind
+      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount -t tmpfs none tmp
+    '';
   };
   security.pam.services.login.enableGnomeKeyring = true;
 
   roos = {
-    firewall.enable = true;
+    triglav.network.enable = true;
     udev.enable = true;
+    streaming.enable = true;
     user-profiles.roosemberth.enable = true;
     x11.enable = true;
   };
 
-  users.extraUsers.roosemberth.packages = ((with pkgs; [
-      kdeconnect mpv youtube-dl
+  environment.variables = {
+    XDG_CACHE_HOME="\${HOME}/.local/var/cache";
+    XDG_CONFIG_HOME="\${HOME}/.local/etc";
+    XDG_DATA_HOME="\${HOME}/.local/var/lib";
+    XDG_LIB_HOME="\${HOME}/.local/lib";
+    XDG_LOG_HOME="\${HOME}/.local/var/log";
+
+    GNUPGHOME="\${XDG_DATA_HOME}/gnupg/";
+    GTK2_RC_FILES="\${XDG_CONFIG_HOME}/gtk-2.0/gtkrc-2.0";
+    GTK_RC_FILES="\${XDG_CONFIG_HOME}/gtk-1.0/gtkrc";
+    PASSWORD_STORE_DIR="\${XDG_DATA_HOME}/pass";
+    SSH_AUTH_SOCK="\${XDG_RUNTIME_DIR}/ssh-agent-\${PAM_USER}-socket";
+    ZDOTDIR="\${XDG_CONFIG_HOME}/zsh/default";
+  };
+
+  users.extraUsers.roosemberth.packages =
+  let
+  in ((with pkgs; [
+      texlive.combined.scheme-full youtube-dl mpv mymopidy
     ]) ++ (with bleedingEdge; [
     ]) ++ (with sandbox; [
-      indicator-kdeconnect
+    ]) ++ ([
     ])
   );
 
   services = {
-    logind.extraConfig = ''
-      HandlePowerKey="ignore"
-    '';
+    logind.extraConfig = "HandlePowerKey=ignore";
     logind.lidSwitch = "ignore";
+    nginx.enable = true;
+    nginx.virtualHosts.localhost.default = true;
+    # Default redirect to HTTPs (e.g. socat rec.la testing).
+    nginx.virtualHosts.localhost.extraConfig = "return 301 https://$server_name$request_uri;";
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
-    postgresql.enable = true;
-    redshift.enable = true;
-    redshift.latitude = "47.36";
-    redshift.longitude = "8.55";
+    postgresql = {
+      enable = true;
+      enableTCPIP = true;
+      authentication = pkgs.lib.mkOverride 10 ''
+        local all all trust
+        host all all ::1/128 trust
+        host all all 172.17.0.1/24 trust
+      '';
+    };
     tlp.enable = true;
     upower.enable = true;
   };
