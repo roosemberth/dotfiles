@@ -18,7 +18,15 @@
           ExecStart = "${pkgs.writeScriptBin "take-a-break" ''
             #!${pkgs.stdenv.shell}
 
-            ${pkgs.coreutils}/bin/seq 1 100 | (while read l; do echo $l; sleep 0.1; done) | ${pkgs.gnome3.zenity}/bin/zenity --progress --title 'break' --text '10 second break!' --no-cancel --auto-close
+            (${pkgs.coreutils}/bin/seq 1 100 |
+              (while read l; do echo $l; sleep 0.1; done) |
+              ${pkgs.gnome3.zenity}/bin/zenity \
+                --progress \
+                --title 'break' \
+                --text '10 second break!' \
+                --no-cancel \
+                --auto-close
+            ) &> /dev/null
 
           ''}/bin/take-a-break";
         };
@@ -39,63 +47,55 @@
       hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
       isNormalUser = true;
       extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
-      packages = (with pkgs; [ # Legacy
-        astyle baobab bc beets bind blender bluez coreutils cpufrequtils
-        darktable dfu-util dmidecode dnsutils docker dolphin doxygen dunst
-        enlightenment.terminology evtest exfat exif fbida fbterm feh ffmpeg file
-        firefox firejail fontforge geteltorito gftp ghostscript gimp
-        gitAndTools.git-annex gitAndTools.git-crypt glxinfo gnupg go-mtpfs
-        gparted graphviz gucharmap hack-font i7z imagemagick imv intel-gpu-tools
-        iw jq khal # libnfs
-        libnotify libreoffice libtool libvirt libxml2 lm_sensors lshw lxappearance
-        man-pages megatools mkpasswd moreutils mosh mpc_cli mpd mr
-        mtpfs mypy ncftp ncmpc ncmpcpp neomutt neovim nethogs nfs-utils nitrogen
-        nmap nss numix-solarized-gtk-theme oathToolkit offlineimap openconnect
-        openjdk openssh openssl openvpn pamix pandoc pass pass-otp patchelf pavucontrol
-        pbzip2 pciutils pdftk picocom pipenv postgresql powerline-fonts powertop
-        ppp pptp profont proxychains psmisc pv qutebrowser radare2 ranger
-        read-edid redshift remmina rfkill rtorrent rxvt_unicode-with-plugins s3cmd
-        sakura scrot shutter smartmontools
-        source-code-pro splint sshfs sshfs-fuse ssvnc stack stdman stress sway
-        swig sysstat tasknc taskwarrior terminus_font_ttf
-        texstudio timewarrior tlp tor transmission trayer tree unzip usbutils
-        valgrind vim_configurable virtmanager virtviewer vlock w3m weechat whois
-        wmname x11_ssh_askpass xlockmore xml2 xournal zathura zip zsh-completions
+      packages = (with pkgs; [ # Web & comms
+        firefox mosh openssh qutebrowser rtorrent w3m weechat x11_ssh_askpass
+      ] ++ [ # Editors, documents, ...
+        zathura vim_configurable neovim libreoffice pandoc pdftk
+      ] ++ [ # Theme & fonts
+        numix-solarized-gtk-theme lxappearance
+        hack-font source-code-pro terminus_font_ttf powerline-fonts profont
       ] ++ (with pkgs.xorg;[ # xorg
-        libXpm xbacklight xcape xclip xdotool xev xf86videointel
-        xkbcomp xkill xprop xrestop xss-lock xtrlock-pam
-      ]) ++ (with pkgs.gnome3;[ # gnome
-        baobab cheese eog evince evolution gedit gnome-contacts
-        gnome-control-center networkmanagerapplet
-        gnome-documents gnome-online-accounts gnome-maps gnome-settings-daemon
-        gnome-system-monitor gnome-tweak-tool nautilus
-      ]) ++ (with pkgs.aspellDicts;[ # dictionaries and language tools
-        dico
-        fr en-science en-computers es en de
+        arandr argyllcms
+        libXpm xbacklight xcape xclip xdotool xev xf86videointel xkbcomp xkill
+        xprop xrestop xss-lock xtrlock-pam
+      ]) ++ (with pkgs.gnome3;(corePackages ++ optionalPackages ++ [ # gnome
+        cheese gnome-online-accounts gnome-tweak-tool networkmanagerapplet
+      ])) ++ (with pkgs.aspellDicts;[ # dictionaries and language tools
+        dico fr en-science en-computers es en de wordnet
       ]) ++ [ # Nix
         nix-bundle nix-index nix-prefetch-scripts nix-zsh-completions
+      ] ++ [ # Media
+        beets mpc_cli mpd ncmpcpp pamix pavucontrol
       ] ++ [ # Debian
         aptly debian-devscripts debianutils debootstrap dpkg dtools
-      ] ++ (with python3Packages; [  # python
-        python3 ipython parse requests tox virtualenv
+      ] ++ (with python3Packages;[ # python
+        python3 ipython parse requests tox virtualenv mypy swig
       ]) ++ [ # Electronics & SDR
-        pulseview kicad
+        kicad pulseview
         gnuradio-with-packages soapysdr-with-plugins
-      ] ++ [ # sysadmin
-        python3Packages.glances lsof screen socat stow tcpdump
-        libguestfs-with-appliance
-      ] ++ [ # drawing
-        inkscape krita
+      ] ++ [ # Drawing, photo, video editing & imaging
+        darktable inkscape krita scrot shutter xournal
+        imagemagick slop screenkey ffmpeg asciinema
+      ] ++ [ # Core & utils
+        nmap screen socat stow tcpdump openssl ranger
+        ppp pptp proxychains virtmanager virtviewer nethogs
+        cpufrequtils lsof pciutils python3Packages.glances usbutils
+        file docker coreutils moreutils tlp
       ] ++ [ # Triglav
-        arandr argyllcms adbfs-rootless enchant fortune msmtp mymopidy
-        screen-message tdesktop
-        rxvt_unicode-with-plugins taffybar upower vlc wordnet tigervnc
+        zip unzip jq khal tree pv fortune
+        bluez powertop vlock
+        taskwarrior timewarrior
+        taffybar dunst upower
+        alacritty rxvt_unicode-with-plugins
+        gnupg pass-otp
+        screen-message tdesktop vlc zsh-completions
       ] ++ [ # Dev
-        ag arduino binutils platformio
-        cmake ctags elfutils gcc gdb gnumake gpgme idris libgpgerror
-        lua luaPackages.luacheck
-        silver-searcher sbt scala shellcheck
-        tig
+        ag arduino astyle binutils platformio
+        dia ansible ansible-lint podman
+        cmake ctags elfutils gcc gdb gnumake gpgme libgpgerror radare2 valgrind
+        idris lua luaPackages.luacheck
+        silver-searcher sbt scala shellcheck openjdk
+        mr tig gitAndTools.git-annex gitAndTools.git-crypt sqlite-interactive
       ]) ++ (with pkgs.haskellPackages; [
         ghc cabal-install xmobar # hsqml leksah
       ]);
