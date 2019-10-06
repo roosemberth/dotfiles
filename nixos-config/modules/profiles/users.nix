@@ -34,12 +34,16 @@
 
       systemd.user.timers.take-a-break = {
         Unit.Description = "Reminder to take a break off the screen";
-        Timer.OnCalendar="*-*-* *:00,15,30,45:00";
+        Timer.OnCalendar="*-*-* *:00:00";
         Install.WantedBy = ["timers.target"];
       };
-    };
 
-    services.dbus.packages = [ pkgs.gnome3.dconf ];
+      services.random-background = {
+        enable = true;
+        imageDirectory = "%h/background-images";
+        interval = "15m";
+      };
+    };
 
     users.users.roosemberth = {
       uid = 1000;
