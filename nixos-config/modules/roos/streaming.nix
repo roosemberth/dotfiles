@@ -2,6 +2,13 @@
   options.roos.streaming.enable = lib.mkEnableOption "Streaming support";
 
   config = lib.mkIf config.roos.streaming.enable {
+    # Currently doesn't work, but hopefully one day...
+    # https://github.com/NixOS/nixpkgs/issues/70525
+    environment.systemPackages = with pkgs.gst_all_1; [
+      gstreamer.dev gst-plugins-base gst-plugins-good gst-plugins-bad gst-libav
+    ];
+    environment.pathsToLink = ["/lib"];
+
     services = {
       icecast = {
         enable = true;
