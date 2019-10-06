@@ -334,7 +334,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       , ("M-C-f"                     , spawn "firefox")
       , ("M-C-c"                     , spawn "gnome-calendar")
 
-      , ("M-<Print>"                 , unGrab >> (spawn $ "import png:-" |> xc_png))
+      , ("M-<Print>"                 , unGrab >> (spawn $ "import -window root -crop $(slop -f %g) -quality 30 png:-" |> xc_png))
       , ("M-C-<Print>"               , spawn $ "import -quality 30 -window root png:-" |> xc_png)
       ]
     )) where
