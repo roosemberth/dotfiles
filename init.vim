@@ -70,6 +70,7 @@ Plug 'vim-scripts/deb.vim'
 Plug 'lervag/vimtex'
 
 Plug 'morhetz/gruvbox'
+Plug 'mhinz/vim-startify'
 
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -95,6 +96,31 @@ endif
 
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
 let g:ale_haskell_hie_executable = 'hie-wrapper'
+
+" Startify {{{
+let g:startify_skiplist = [
+  \ 'COMMIT_EDITMSG',
+  \ '^/run/user/.*/tmp\.',
+  \ '^/mnt/',
+  \ '/share/nvim/.*/doc',
+  \ 'dotfiles/.local/',
+  \ ]
+
+let g:startify_bookmarks = [
+  \ { 'v': '~/.local/etc/nvim/init.vim' },
+  \ { 'x': '~/.local/etc/xmonad/xmonad.hs' },
+  \ { 'z': '~/.local/etc/zsh/default/.zshrc' },
+  \ { 'c': '~/dotfiles/nixos-config/machines/Triglav.nix' },
+  \ { 's': '~/dotfiles/nixos-config/pkgs/sandbox.nix' },
+  \ ]
+" }}}
+
+autocmd VimEnter *
+  \   if !argc()
+  \ |   Startify
+  \ |   wincmd w
+  \ | endif
+
 
 " Denite {{{
 " Define mappings
