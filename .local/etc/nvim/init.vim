@@ -72,28 +72,20 @@ Plug 'lervag/vimtex'
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
 
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1
-
 Plug 'Shougo/denite.nvim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 call plug#end()
-
-" Use ag instead of ack if possible
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
 
 " }}}
 " ------------------------------------------------------------------------------
 " PLUGIN CONFIGURATION {{{
 
+if executable('ag') " Use ag instead of ack if possible
+  let g:ackprg = 'ag --vimgrep'
+endif
+
+let g:deoplete#enable_at_startup = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
 let g:ale_haskell_hie_executable = 'hie-wrapper'
 
