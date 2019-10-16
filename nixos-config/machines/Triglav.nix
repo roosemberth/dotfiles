@@ -26,11 +26,20 @@ in
     pulseaudio.package = pkgs.pulseaudioFull;
 
     cpu.intel.updateMicrocode = true;
+
+    opengl.enable = true;
+    opengl.extraPackages = with pkgs; [ vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver ];
   };
+
+  # Enable YAMA restrictions
+  boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;
 
   i18n.consoleFont = "sun12x22";
 
   networking.hostName = "Triglav";
+
+  # May prevent evaluation, let's help NixOS by debugging it!
+  documentation.nixos.includeAllModules = true;
 
   nix = {
     binaryCaches = [
@@ -49,6 +58,7 @@ in
       allowUnfree = true;
       packageOverrides = pkgs: {
         all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+        vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
         mymopidy = with pkgs; buildEnv {
           name = "mopidy-with-extensions-${mopidy.version}";
           paths = lib.closePropagation (with pkgs; [mopidy-spotify mopidy-iris]);
@@ -124,7 +134,8 @@ in
     nginx.enable = true;
     nginx.virtualHosts.localhost.default = true;
     # Default redirect to HTTPs (e.g. socat rec.la testing).
-    nginx.virtualHosts.localhost.extraConfig = "return 301 https://$server_name$request_uri;";
+    nginx.virtualHosts.localhost.extraConfig =
+      "return 301 https://$host$request_uri;";
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     postgresql = {
@@ -141,9 +152,8 @@ in
   };
 
   system = {
-    stateVersion = "18.03";
+    stateVersion = "19.09";
     autoUpgrade.enable = true;
-    copySystemConfiguration = true;
   };
 
   time.timeZone = "Europe/Zurich";

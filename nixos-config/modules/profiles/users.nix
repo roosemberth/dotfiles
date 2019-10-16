@@ -3,7 +3,6 @@
 
   config = mkIf config.roos.user-profiles.roosemberth.enable {
     roos.mainUsers = [ "roosemberth" ];
-    roos.userConfig.home.packages = [ pkgs.gnome3.zenity ];
     roos.xUserConfig = {
       systemd.user.services.take-a-break = {
         Unit = {
@@ -62,9 +61,7 @@
         arandr argyllcms
         libXpm xbacklight xcape xclip xdotool xev xf86videointel xkbcomp xkill
         xprop xrestop xss-lock xtrlock-pam
-      ]) ++ (with pkgs.gnome3;(corePackages ++ optionalPackages ++ [ # gnome
-        cheese gnome-online-accounts gnome-tweak-tool networkmanagerapplet
-      ])) ++ (with pkgs.aspellDicts;[ # dictionaries and language tools
+      ]) ++ (with pkgs.aspellDicts;[ # dictionaries and language tools
         dico fr en-science en-computers es en de wordnet
       ]) ++ [ # Nix
         nix-bundle nix-index nix-prefetch-scripts nix-zsh-completions

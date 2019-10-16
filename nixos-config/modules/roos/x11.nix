@@ -16,9 +16,14 @@ with lib;
       opengl.driSupport32Bit = true;
     };
 
+    location.provider = "geoclue2";
+
     services = {
       redshift.enable = true;
-      redshift.provider = "geoclue2";
+
+      gnome3.core-os-services.enable = true;
+      gnome3.core-shell.enable = true;
+      gnome3.core-utilities.enable = mkDefault true;
 
       xserver = {
         enable = true;
@@ -47,7 +52,6 @@ with lib;
           haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras taffybar];
         desktopManager.default = "none";
         desktopManager.gnome3.enable = true;
-        desktopManager.gnome3.debug = true;
 
         videoDrivers = ["intel"];
       };
