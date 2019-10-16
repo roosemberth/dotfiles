@@ -105,6 +105,10 @@ let g:startify_bookmarks = [
   \ { 'c': '~/dotfiles/nixos-config/machines/Triglav.nix' },
   \ { 's': '~/dotfiles/nixos-config/pkgs/sandbox.nix' },
   \ ]
+
+let g:startify_commands = [
+  \ {'d': ['Open NERDTree', ':NERDTreeFocus']}
+  \ ]
 " }}}
 
 autocmd VimEnter *
