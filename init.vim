@@ -354,12 +354,6 @@ map j gj
 " Remove delay for leaving insert mode:
 set timeoutlen=1000 ttimeoutlen=0
 
-" Window manipulation: Resize window
-nnoremap <leader>K <C-W>+
-nnoremap <leader>J <C-W>-
-nnoremap <leader>L <C-W>>
-nnoremap <leader>H <C-W><
-
 " Manipulate windows: Move between windows
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
