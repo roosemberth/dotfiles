@@ -426,5 +426,15 @@ map! <M-f> <S-Right>
 " C-f only in insert mode, C-f in command mode triggers cedit
 imap <C-f> <Right>
 
+function! OnBufEnter()
+  if &buftype=="help"
+    nmap <buffer> q :q
+  endif
+endfunction
+
+au BufEnter * call OnBufEnter()
+
+au BufEnter fugitive://* nmap Q :q:q
+
 " }}}
 " ------------------------------------------------------------------------------
