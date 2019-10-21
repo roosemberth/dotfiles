@@ -49,6 +49,14 @@ zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' squeeze-slashes true
 zstyle :compinstall filename "${XDG_CONFIG_HOME}/zsh/.zshrc"
 
+if [ -d /run/current-system/sw/share/zsh/site-functions ]; then
+  fpath+=(/run/current-system/sw/share/zsh/site-functions)
+fi
+
+if [ -d ~/.nix-profile/share/zsh/site-functions ]; then
+  fpath+=(~/.nix-profile/share/zsh/site-functions)
+fi
+
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 
