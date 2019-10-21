@@ -37,9 +37,7 @@ fi
 # Make sure the zsh cache directory exists:
 test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
 
-# The following lines were added by compinstall
-
-#zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate _prefix
+zstyle ':completion:*' completer _complete _ignored _match _prefix
 #zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' format "[%{$fg_bold[default]%}%d%{$reset_color%}]"
 zstyle ':completion:*' group-name ''
