@@ -9,7 +9,7 @@ with lib; {
     networking = {
       firewall = {
         enable = true;
-        checkReversePath = false; # libvirt...
+        # checkReversePath = false; # libvirt...  # 191016: Probably not needed anymore
         allowPing = true;
         allowedTCPPorts = [
           22    # SSH
@@ -20,6 +20,7 @@ with lib; {
         trustedInterfaces = [ "Bifrost" "docker0" ];
         extraCommands = ''
           ip46tables -A nixos-fw -p gre -j nixos-fw-accept
+          ip46tables -I OUTPUT -d 172.217.168.0/24 -j DROP
         '';
       };
 
