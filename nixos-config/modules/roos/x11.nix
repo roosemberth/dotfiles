@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
-
+let
+  taffybar = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos {};
+in
 with lib;
 {
   options.roos.x11.enable = mkEnableOption "Roos' x11 config";
@@ -17,6 +19,25 @@ with lib;
     };
 
     location.provider = "geoclue2";
+
+    roos.xUserConfig.systemd.user.services =
+    let
+      xServices = {
+        taffybar = {
+          Unit.Description = "Taffybar";
+          Service.ExecStart = "${taffybar}/bin/taffybar";
+        };
+        screen-locker = {
+          Unit.Description = "Screen-locking daemon";
+          Service.ExecStart = "${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
+        };
+      };
+    in lib.mapAttrs
+      (name: srvDesc: lib.recursiveUpdate srvDesc
+       { Unit.After = [ "graphical-session-pre.target" ];
+         Unit.PartOf = [ "graphical-session.target" ];
+       }
+      ) xServices;
 
     services = {
       redshift.enable = true;
@@ -39,9 +60,7 @@ with lib;
           ${pkgs.xcape}/bin/xcape -e 'Shift_L=Escape'
           ${pkgs.xorg.setxkbmap}/bin/setxkbmap us intl -option caps:escape
           ${pkgs.xorg.xrdb}/bin/xrdb $XDG_CONFIG_HOME/X11/Xresources
-          ${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none &!
           ${pkgs.systemd}/bin/systemctl --user start random-background
-          ${pkgs.taffybar}/bin/taffybar &!
         '';
 
         displayManager.sddm.enable = true;
