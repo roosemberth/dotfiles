@@ -1,0 +1,35 @@
+From 8c6f0526ae45f5237f31ed25179b3129d7487f72 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosembert.palacios@epfl.ch>
+Date: Sat, 26 Oct 2019 12:58:14 +0200
+Subject: [PATCH 3/6] login.c: fix several `-Werror=format-truncation`
+
+Signed-off-by: Roosembert Palacios <roosembert.palacios@epfl.ch>
+---
+ src/login.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/login.c b/src/login.c
+index f4041ef..cc7c797 100644
+--- a/src/login.c
++++ b/src/login.c
+@@ -466,7 +466,7 @@ void auth(
+ 	struct pam_conv conv = {login_conv, creds};
+ 	struct pam_handle* handle;
+ 	char tty_id [3];
+-	snprintf(tty_id, 3, "%d", config.tty);
++	snprintf(tty_id, 3, "%d", (unsigned int)config.tty % 99);
+ 
+ 	ok = pam_start(config.service_name, NULL, &conv, &handle);
+ 
+@@ -578,7 +578,7 @@ void auth(
+ 		char vt[5];
+ 
+ 		snprintf(display_name, 3, ":%d", display_id);
+-		snprintf(vt, 5, "vt%d", config.tty);
++		snprintf(vt, 5, "vt%d", (unsigned int)config.tty % 99);
+ 
+ 		// set env
+ 		env_init(pwd, display_name);
+-- 
+2.23.1
+

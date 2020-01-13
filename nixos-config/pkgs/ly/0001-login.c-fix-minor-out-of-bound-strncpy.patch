@@ -1,0 +1,33 @@
+From 757ec5221717a337c439e0de94bcbf7c1923c890 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosembert.palacios@epfl.ch>
+Date: Sun, 22 Dec 2019 20:24:13 +0100
+Subject: [PATCH 1/6] login.c: fix minor out of bound strncpy
+
+Signed-off-by: Roosembert Palacios <roosembert.palacios@epfl.ch>
+---
+ src/login.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/login.c b/src/login.c
+index 11cd938..ee3b978 100644
+--- a/src/login.c
++++ b/src/login.c
+@@ -431,7 +431,7 @@ void shell(struct passwd* pwd)
+ 		pos = pwd->pw_shell;
+ 	}
+ 
+-	strncpy(args + 1, pos, 1024);
++	strncpy(args + 1, pos, 1023);
+ 	execl(pwd->pw_shell, args, NULL);
+ }
+ 
+@@ -671,4 +671,4 @@ void auth(
+ 	{
+ 		pam_diagnose(ok, buf);
+ 	}
+-}
+\ No newline at end of file
++}
+-- 
+2.23.1
+

@@ -1,0 +1,64 @@
+From 28b094febbce600cf70c3ce928754f217347d98c Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosembert.palacios@epfl.ch>
+Date: Sat, 26 Oct 2019 09:14:25 +0200
+Subject: [PATCH 2/6] login.c: Move XDG initialization before opening the pam
+ session
+
+As per https://www.freedesktop.org/wiki/Software/systemd/writing-display-managers/,
+in order for logind to register the display manager and session using pam_systemd
+(https://www.freedesktop.org/software/systemd/man/pam_systemd.html), the corresponding
+XDG variables must be set prior to opening the pam session.
+
+This change has no effect if the system is not configured to use pam_systemd.
+
+Signed-off-by: Roosembert Palacios <roosembert.palacios@epfl.ch>
+---
+ src/login.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/login.c b/src/login.c
+index ee3b978..f4041ef 100644
+--- a/src/login.c
++++ b/src/login.c
+@@ -465,6 +465,8 @@ void auth(
+ 	const char* creds[2] = {login->text, password->text};
+ 	struct pam_conv conv = {login_conv, creds};
+ 	struct pam_handle* handle;
++	char tty_id [3];
++	snprintf(tty_id, 3, "%d", config.tty);
+ 
+ 	ok = pam_start(config.service_name, NULL, &conv, &handle);
+ 
+@@ -496,6 +498,8 @@ void auth(
+ 		return;
+ 	}
+ 
++	// Set XDG variables to that pam_systemd can open the correct session type
++	env_xdg(tty_id, desktop->display_server[desktop->cur]);
+ 	ok = pam_do(pam_open_session, handle, 0, buf);
+ 
+ 	if (ok != PAM_SUCCESS)
+@@ -571,11 +575,9 @@ void auth(
+ 		// get a display
+ 		int display_id = get_free_display();
+ 		char display_name[3];
+-		char tty_id [3];
+ 		char vt[5];
+ 
+ 		snprintf(display_name, 3, ":%d", display_id);
+-		snprintf(tty_id, 3, "%d", config.tty);
+ 		snprintf(vt, 5, "vt%d", config.tty);
+ 
+ 		// set env
+@@ -594,8 +596,6 @@ void auth(
+ 			putenv(env[i]);
+ 		}
+ 
+-		// add xdg variables
+-		env_xdg(tty_id, desktop->display_server[desktop->cur]);
+ 
+ 		// execute
+ 		int ok = chdir(pwd->pw_dir);
+-- 
+2.23.1
+
