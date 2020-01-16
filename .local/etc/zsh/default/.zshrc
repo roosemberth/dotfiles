@@ -409,22 +409,25 @@ zshaddhistory() {
 # }}}
 # ------------------------------------------------------------------------------
 # MISC {{{
+
+# Gratitude journal (cf. https://www.youtube.com/watch?v=WPPPFqsECz0)
+local __gratitude_journal() {
+  CURFEW_TIME="5pm"
+  if [ $(date +%s) -le $(date +%s --date="$CURFEW_TIME") ]; then
+    # Too early
+    return
+  fi
+  if ! [ -f ~/head/grateful.md ]; then
+    echo "WARNING: Could not find gratitude journal file." >&2
+    return
+  fi
+  if [ $(stat ~/head/grateful.md  -c %Y) -le $(date +%s --date="$CURFEW_TIME") ]; then
+    echo "Hey! what are you grateful for today?" >&2
+  fi
+}
+
 if [ "$(hostname)" = "Triglav" ]; then
-  # Gratitude journal (cf. https://www.youtube.com/watch?v=WPPPFqsECz0)
-  {
-    CURFEW_TIME="5pm"
-    if [ $(date +%s) -le $(date +%s --date="$CURFEW_TIME") ]; then
-      # Too early
-      return
-    fi
-    if ! [ -f ~/head/grateful.md ]; then
-      echo "WARNING: Could not find gratitude journal file." >&2
-      return
-    fi
-    if [ $(stat ~/head/grateful.md  -c %Y) -le $(date +%s --date="$CURFEW_TIME") ]; then
-      echo "Hey! what are you grateful for today?" >&2
-    fi
-  }
+  __gratitude_journal
 fi
 # }}}
 # ------------------------------------------------------------------------------
