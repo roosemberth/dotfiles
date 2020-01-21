@@ -56,4 +56,5 @@ in with nixpkgs;
 
     PKG_CONFIG_LIBNAUTILUS_EXTENSION_EXTENSIONDIR = "${placeholder "out"}/lib/nautilus/extensions-3.0";
   };
+  snooze = callPackage ./snooze {};
 }
