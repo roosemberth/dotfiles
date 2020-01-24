@@ -25,3 +25,10 @@ SDA
             ;;
     esac
 }
+
+if zle -l | egrep '^fzf-history-widget' &> /dev/null; then
+  function zle-line-init {
+    zle fzf-history-widget
+  }
+  zle -N zle-line-init
+fi
