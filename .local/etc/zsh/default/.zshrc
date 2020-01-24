@@ -2,7 +2,7 @@
 # Zsh default configuration file
 #
 #     2013-2017 - «ayekat»
-# (C) 2016-2018 - Roosembert Palacios <roosembert.palacios@epfl.ch> 
+# (C) 2016-2020 - Roosembert Palacios <roosembert.palacios@epfl.ch>
 # Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
 # ------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ if [ ! -z "$ZSH_PROFILING" ]; then
 	# set the trace prompt to include seconds, nanoseconds, script name and line number
 	# This is GNU date syntax; by default Macs ship with the BSD date program, which isn't compatible
 	PS4='+$(date "+%s:%N") %N:%i> '
-	# save file stderr to file descriptor 3 and redirect stderr (including trace 
+	# save file stderr to file descriptor 3 and redirect stderr (including trace
 	# output) to a file with the script's PID as an extension
 	exec 3>&2 2>/tmp/startlog.$$
 	# set options to turn on tracing and expansion of commands contained in the prompt
@@ -115,7 +115,7 @@ fi
 setopt SH_WORD_SPLIT BEEP NOTIFY
 
 # FIXME: Use build_prompt()....
-# This "marks" the terminal by exporting an non empty variable 
+# This "marks" the terminal by exporting an non empty variable
 # so if we nest, we "mark" the nest. Skip alias aliases
 #\alias MARK="MARK="yes" "
 # Check if we're in a nested shell, and add to PS1
@@ -368,11 +368,11 @@ KEYTIMEOUT=1
 # ----------------------------- file: $XDG_CONFIG_HOME/zsh/functions/myFunGrp.fg
 #
 # This functions can be located in subdirectories aswell
-# but only the files ending with '.func' will be included. 
+# but only the files ending with '.func' will be included.
 
 if [ -d "$XDG_CONFIG_HOME/zsh/functions" ]; then
 	ADDITIONAL_FUNCTIONS=$(find -L $XDG_CONFIG_HOME/zsh/functions -type f -iname "*.fg")
-	
+
 	for newFunction in ${ADDITIONAL_FUNCTIONS}; do
 		source ${newFunction}
 		if [[ $? != 0 ]]; then
