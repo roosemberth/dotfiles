@@ -445,3 +445,8 @@ fi
 
 [ -f ~/.zshrc.local ] \
 	&& source ~/.zshrc.local
+
+if command -v fzf-share &> /dev/null; then
+  source "$(fzf-share)/completion.zsh"
+  source "$(fzf-share)/key-bindings.zsh"
+fi
