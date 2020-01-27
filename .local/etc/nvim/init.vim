@@ -68,6 +68,7 @@ Plug 'idris-hackers/idris-vim'
 Plug 'IN3D/vim-raml'
 Plug 'vim-scripts/deb.vim'
 Plug 'lervag/vimtex'
+Plug 'vim-scripts/Arduino-syntax-file'
 
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
