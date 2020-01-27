@@ -74,6 +74,7 @@ Plug 'mhinz/vim-startify'
 
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'tpope/vim-dispatch'
 
 call plug#end()
 
