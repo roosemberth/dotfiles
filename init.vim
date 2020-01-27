@@ -302,6 +302,8 @@ au FileType gitcommit setl textwidth=86
 " ------------------------------------------------------------------------------
 " LOOK {{{
 
+set title
+
 " Display and format line numbers:
 set number relativenumber numberwidth=5
 
