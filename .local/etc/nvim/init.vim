@@ -69,6 +69,7 @@ Plug 'IN3D/vim-raml'
 Plug 'vim-scripts/deb.vim'
 Plug 'lervag/vimtex'
 Plug 'vim-scripts/Arduino-syntax-file'
+Plug 'ferrine/md-img-paste.vim'
 
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
@@ -404,6 +405,9 @@ nnoremap <leader>w :Gwrite<CR>
 nnoremap <leader>c :Gcommit -S -v -s 
 nnoremap <leader><C-t> :vs term://%:h:r//tig<CR>i
 au FileType fugitive map <buffer> <leader>l :! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD<CR>
+
+" markdown img clipboard
+autocmd FileType markdown nnoremap <silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
 
 " Quickfix
 nnoremap <leader>L :cclose<CR>
