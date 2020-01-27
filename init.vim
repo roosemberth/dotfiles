@@ -294,7 +294,7 @@ au FileType c setl tabstop=4 shiftwidth=4
 
 " Visually wrap lines and break words:
 set wrap linebreak
-au FileType html,java,markdown,scala setl nowrap
+au FileType html,java,scala setl nowrap
 
 " Physically wrap lines:
 au FileType gitcommit setl textwidth=86
