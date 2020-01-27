@@ -443,7 +443,10 @@ imap <C-f> <Right>
 
 function! OnBufEnter()
   if &buftype=="help"
-    nmap <buffer> q :q
+    nmap <buffer> q :q<CR>
+  endif
+  if &previewwindow
+    nmap <buffer> q :q<CR>
   endif
 endfunction
 
