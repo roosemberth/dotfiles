@@ -170,10 +170,6 @@ let c_syntax_for_h=1   " Treat .h as C header files (instead of C++)
 " Shell:
 let g:is_posix=1       " /bin/sh is POSIX shell, not deprecated Bourne shell
 
-au FileType vhdl call FT_vhdl()
-au FileType c call FT_c()
-au FileType python call FT_python()
-
 " linting
 let g:ale_lint_on_insert_leave=1
 let g:ale_lint_on_text_changed="normal"
@@ -186,6 +182,40 @@ function! s:GenTags(sources)
   execute "set tags=" . temp_tags_file
   set notagrelative
 endfunction
+
+" -> C {{{
+function! FT_c()
+  function! s:SetSingletonMake()
+    let &l:makeprg='gcc ' . expand('%') .' -o ' . expand('%:r') . '
+          \ -W -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wconversion
+          \ -Wwrite-strings -Wfloat-equal -Wpointer-arith -Wformat=2 -Winit-self
+          \ -Wuninitialized -Wshadow -Wstrict-prototypes -Wmissing-declarations
+          \ -Wmissing-prototypes -Wno-unused-parameter -Wbad-function-cast
+          \ -Wunreachable-code -O0 -g && ' . expand("%:p:r")
+  endfunction
+  command! SetSingletonMake call s:SetSingletonMake()
+endfunction
+" }}} <- C
+
+" -> Haskell {{{
+function! FT_haskell()
+  " Use fast-tags to generate tags file
+  function! s:GenTags(sources)
+    let temp_tags_file=tempname()
+    execute "!fast-tags -o " . temp_tags_file . " -R " . a:sources
+    execute "set tags=" . temp_tags_file
+    set notagrelative
+  endfunction
+  setlocal keywordprg=hoogle\ -q\ --color\ --info
+endfunction
+" }}} <- Haskell
+
+" -> Python {{{
+function! FT_python()
+  " Disable missing import warnings on mypy
+  let b:ale_python_mypy_options="--ignore-missing-imports"
+endfunction
+" }}} <- Python
 
 " -> VHDL {{{
 function! FT_vhdl()
@@ -220,31 +250,6 @@ function! FT_vhdl()
 endfunction
 " }}} <- VHDL
 
-" -> C {{{
-function! FT_c()
-  function! s:SetSingletonMake()
-    let &l:makeprg='gcc ' . expand('%') .' -o ' . expand('%:r') . '
-          \ -W -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wconversion
-          \ -Wwrite-strings -Wfloat-equal -Wpointer-arith -Wformat=2 -Winit-self
-          \ -Wuninitialized -Wshadow -Wstrict-prototypes -Wmissing-declarations
-          \ -Wmissing-prototypes -Wno-unused-parameter -Wbad-function-cast
-          \ -Wunreachable-code -O0 -g && ' . expand("%:p:r")
-  endfunction
-  command! SetSingletonMake call s:SetSingletonMake()
-endfunction
-" }}} <- C
-
-" -> Python {{{
-function! FT_python()
-  function! s:GenTags(sources)
-    let temp_tags_file=tempname()
-    execute "!ctags -f " . temp_tags_file . " -R " . a:sources
-    execute "set tags=" . temp_tags_file
-    set notagrelative
-  endfunction
-endfunction
-" }}} <- Python
-
 function! s:_GenTags(...)
   if a:0 == 1
     call s:GenTags(a:1)
@@ -253,7 +258,12 @@ function! s:_GenTags(...)
   endif
 endfunction
 
-command! -nargs=? -complete=dir GenTags call s:_GenTags("<args>")
+command! -nargs=? -complete=dir GenTags call s:_GenTags(<f-args>)
+
+au FileType vhdl call FT_vhdl()
+au FileType c call FT_c()
+au FileType haskell call FT_haskell()
+au FileType python call FT_python()
 " }}}
 " ------------------------------------------------------------------------------
 " WHITESPACE {{{
