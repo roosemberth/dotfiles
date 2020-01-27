@@ -367,15 +367,16 @@ cmap w!! w !sudo tee % >/dev/null<CR>
 vmap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 
 " NERDTree
-nmap <leader>o :NERDTreeToggle<CR>
-nmap <leader>t :Tagbar<CR>
-nmap <leader>F :Denite tag<CR>
+nnoremap <leader>o :NERDTreeToggle<CR>
+nnoremap <leader>t :TagbarOpenAutoClose<CR>
+nnoremap <leader>T :Denite tag<CR>
 
 " Denite
-nmap <leader>f :NERDTreeFind<CR>
-nmap <leader>F :Denite file/rec<CR>
-nmap <leader>b :Denite buffer<CR>
-nmap <leader>J :Denite jump<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>F :Denite file/rec<CR>
+nnoremap <leader>B :Denite buffer<CR>
+nnoremap <leader>J :Denite jump<CR>
+nnoremap <leader><C-_> :Denite line<CR>
 
 " EasyAlign: start interactive in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
@@ -383,18 +384,18 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 " Fugitive
-nmap <leader>s :Gstatus<CR>
-nmap <leader>d :Gdiff<CR>
-nmap <leader>w :Gwrite<CR>
-nmap <leader>c :Gcommit -S -v -s 
-nmap <leader> :vs term://%:h:r//tig<CR>i
+nnoremap <leader>s :Gstatus<CR>
+nnoremap <leader>d :Gdiff<CR>
+nnoremap <leader>w :Gwrite<CR>
+nnoremap <leader>c :Gcommit -S -v -s 
+nnoremap <leader><C-t> :vs term://%:h:r//tig<CR>i
 au FileType fugitive map <buffer> <leader>l :! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD<CR>
 
 " Quickfix
-nmap <leader>L :cclose<CR>
-nmap <leader>l :copen<CR>
-nmap <leader>k :cprevious<CR>
-nmap <leader>j :cnext<CR>
+nnoremap <leader>L :cclose<CR>
+nnoremap <leader>l :copen<CR>
+nnoremap <leader>k :cprevious<CR>
+nnoremap <leader>j :cnext<CR>
 
 " Incsearch
 map /  <Plug>(incsearch-forward)
