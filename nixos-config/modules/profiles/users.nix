@@ -17,8 +17,9 @@
           ExecStart = "${pkgs.writeScriptBin "take-a-break" ''
             #!${pkgs.stdenv.shell}
 
+            ${pkgs.xlibs.xset}/bin/xset s activate
             (${pkgs.coreutils}/bin/seq 1 100 |
-              (while read l; do echo $l; sleep 0.1; done) |
+              (while read l; do echo $l; ${pkgs.coreutils}/bin/sleep 0.1; done) |
               ${pkgs.gnome3.zenity}/bin/zenity \
                 --progress \
                 --title 'break' \
