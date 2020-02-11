@@ -78,10 +78,10 @@
         darktable inkscape krita scrot shutter xournal
         imagemagick slop screenkey ffmpeg asciinema
       ] ++ [ # Core & utils
-        nmap screen socat stow tcpdump openssl ranger
+        entr nmap screen socat stow tcpdump openssl ranger firejail
         ppp pptp proxychains virtmanager virtviewer nethogs
         cpufrequtils lsof pciutils python3Packages.glances usbutils
-        file docker coreutils moreutils tlp
+        file docker moreutils tlp
       ] ++ [ # Triglav
         zip unzip jq khal tree pv fortune
         bluez powertop vlock
@@ -93,12 +93,13 @@
       ] ++ [ # Dev
         ag arduino astyle binutils platformio
         dia ansible ansible-lint podman
+        manpages
         cmake ctags elfutils gcc gdb gnumake gpgme libgpgerror radare2 valgrind
         idris lua luaPackages.luacheck
         silver-searcher sbt scala shellcheck openjdk
         mr tig gitAndTools.git-annex gitAndTools.git-crypt sqlite-interactive
-      ]) ++ (with pkgs.haskellPackages; [
-        ghc cabal-install xmobar # hsqml leksah
+      ] ++ [ # Haskell
+        haskellPackages.fast-tags
       ]);
       shell = pkgs.zsh;
     };
