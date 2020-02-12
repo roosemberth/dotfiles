@@ -65,6 +65,12 @@ in
       device = "/dev/mapper/" + hostname;
       options = ["subvol=/subvolumes/.__active__/var" "compress=zlib" "user_subvol_rm_allowed"];
     };
+    "/nix" = {
+      fsType = "btrfs";
+      mountPoint = "/nix";
+      device = "/dev/mapper/" + hostname;
+      options = ["subvol=/subvolumes/.__active__/nix" "compress=zlib" "defaults" "noatime" "autodefrag" "nodatacow"];
+    };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
