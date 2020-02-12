@@ -6,8 +6,6 @@ let
   secrets = import ../secrets.nix { inherit lib; };
 in
 {
-  imports = [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix> ];
-
   boot = {
     cleanTmpDir = true;
     initrd = {
@@ -44,6 +42,8 @@ in
       };
     };
   };
+
+  hardware.enableRedistributableFirmware = true;
 
   swapDevices = [ ];
 
