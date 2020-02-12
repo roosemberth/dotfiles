@@ -52,13 +52,7 @@ in
       fsType = "btrfs";
       mountPoint = "/";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/rootfs" "compress=zlib"];
-    };
-    "/.snapshots" = {
-      fsType = "btrfs";
-      mountPoint = "/.snapshots";
-      device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults"];
+      options = ["subvol=/subvolumes/.__active__/rootfs" "compress=zlib" "user_subvol_rm_allowed"];
     };
     "/boot" = {
       fsType = "vfat";
@@ -69,55 +63,61 @@ in
       fsType = "btrfs";
       mountPoint = "/var";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/var" "compress=zlib"];
+      options = ["subvol=/subvolumes/.__active__/var" "compress=zlib" "user_subvol_rm_allowed"];
     };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/homes" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/homes" "compress=zlib" "autodefrag" "user_subvol_rm_allowed"];
     };
     "/Storage" = {
       fsType = "btrfs";
       mountPoint = "/Storage";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/Storage" "compress=zlib" "autodefrag"];
+      options = ["subvol=/subvolumes/.__active__/Storage" "compress=zlib" "autodefrag" "user_subvol_rm_allowed"];
     };
     "/Storage/DevelHub" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/DevelHub" "compress=zlib"];
+      options = ["subvol=/subvolumes/.__active__/DevelHub" "compress=zlib" "user_subvol_rm_allowed"];
     };
     "/Storage/DevelHub/5-VMs" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub/5-VMs";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/.__active__/VMs" "nodatacow"];
+      options = ["subvol=/subvolumes/.__active__/VMs" "nodatacow" "user_subvol_rm_allowed"];
+    };
+    "/.snapshots" = {
+      fsType = "btrfs";
+      mountPoint = "/.snapshots";
+      device = "/dev/mapper/" + hostname;
+      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults" "user_subvol_rm_allowed"];
     };
     "/home/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/home/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/homes" "defaults"];
+      options = ["subvol=/subvolumes/snapshots/homes" "defaults" "user_subvol_rm_allowed"];
     };
     "/Storage/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/Storage/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/Storage" "defaults"];
+      options = ["subvol=/subvolumes/snapshots/Storage" "defaults" "user_subvol_rm_allowed"];
     };
     "/Storage/DevelHub/.snapshots" = {
       fsType = "btrfs";
       mountPoint = "/Storage/DevelHub/.snapshots";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/DevelHub" "defaults"];
+      options = ["subvol=/subvolumes/snapshots/DevelHub" "defaults" "user_subvol_rm_allowed"];
     };
     "/mnt/root-btrfs" = {
       fsType = "btrfs";
       mountPoint = "/mnt/root-btrfs";
       device = "/dev/mapper/" + hostname;
-      options = ["nodatacow" "noatime" "noexec"];
+      options = ["nodatacow" "noatime" "noexec" "user_subvol_rm_allowed"];
     };
   };
 
