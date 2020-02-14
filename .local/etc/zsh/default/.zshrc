@@ -311,6 +311,7 @@ bindkey -M viins ''    push-input       # I forgot to type something before!
 
 function Warp-to-projects() {
   cd /Storage/DevelHub/3-Orgs/
+  build_prompt mode
   zle reset-prompt
 }
 
@@ -345,7 +346,7 @@ zle -N zle-line-finish
 # ^C puts us back in insert mode; repropagate to not interfere with dependants:
 TRAPINT() {
 	vim_mode=$vim_mode_insert
-	build_prompt
+	build_prompt mode
 	return $((128 + $1))
 }
 
