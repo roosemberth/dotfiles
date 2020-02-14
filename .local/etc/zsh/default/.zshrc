@@ -227,7 +227,39 @@ build_prompt() #{{{
 	[ -n "$(ip netns identify 2>/dev/null)" ] && PROMPT+="%{$fg[white]%}%{$bg[blue]%}$(build_netns_prompt)%{$reset_color %}"
 
 	# PWD:
-	PROMPT+="%{$pc_pwd%}%~%{$reset_color%} "
+	wd="$(pwd)"
+	case "$wd" in
+		/Storage/DevelHub/3-Orgs/*)
+			topic="${wd#/Storage/DevelHub/3-Orgs/}"
+			topic="${topic%%/*}"
+			subpath="${wd#/Storage/DevelHub/3-Orgs/$topic}"
+			PROMPT+="%{$fg[magenta]%}$topic%{$reset_color%}%{$pc_pwd%}$subpath%{$reset_color%}"
+			;;
+		/Storage/DevelHub/2-Platforms/*)
+			topic="${wd#/Storage/DevelHub/2-Platforms/}"
+			topic="${topic%%/*}"
+			subpath="${wd#/Storage/DevelHub/2-Platforms/$topic}"
+			PROMPT+="%{$fg[magenta]%}$topic%{$reset_color%}%{$pc_pwd%}$subpath%{$reset_color%}"
+			;;
+		/Storage/Media/*)
+			topic="${wd#/Storage/Media/}"
+			topic="${topic%%/*}"
+			subpath="${wd#/Storage/Media/$topic}"
+			PROMPT+="%{$fg[yellow]%}$topic%{$reset_color%}%{$pc_pwd%}$subpath%{$reset_color%}"
+			;;
+		/Storage/*/*)
+			PROMPT+="%{$pc_pwd%}%~%{$reset_color%}"
+			;;
+		/Storage/*)
+			topic="${wd#/Storage/}"
+			topic="${topic%%/*}"
+			PROMPT+="%{$fg[cyan]%}$topic%{$reset_color%}"
+			;;
+		*)
+			PROMPT+="%{$pc_pwd%}%~%{$reset_color%}"
+			;;
+	esac
+	PROMPT+=" "
 
 	# Python virtualenv
 	[ -n "${VIRTUAL_ENV}" ] && PROMPT+="%{$fg[green]%}÷(${VIRTUAL_ENV##*/})%{$reset_color%} "
