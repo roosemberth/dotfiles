@@ -53,6 +53,7 @@
       extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
       packages = (with pkgs; [ # Web & comms
         firefox mosh openssh qutebrowser rtorrent w3m weechat x11_ssh_askpass
+        gnome3.evolution
       ] ++ [ # Editors, documents, ...
         zathura vim_configurable neovim libreoffice pandoc pdftk
       ] ++ [ # Theme & fonts
@@ -66,12 +67,13 @@
         dico fr en-science en-computers es en de wordnet
       ]) ++ [ # Nix
         nix-bundle nix-index nix-prefetch-scripts nix-zsh-completions
+        nix-diff
       ] ++ [ # Media
         beets mpc_cli mpd ncmpcpp pamix pavucontrol
       ] ++ [ # Debian
         aptly debian-devscripts debianutils debootstrap dpkg dtools
       ] ++ (with python3Packages;[ # python
-        python3 ipython parse requests tox virtualenv mypy swig
+        python3 ipython parse requests tox virtualenv mypy swig pylint flake8
       ]) ++ [ # Electronics & SDR
         kicad pulseview
         gnuradio-with-packages soapysdr-with-plugins
@@ -80,7 +82,7 @@
         imagemagick slop screenkey ffmpeg asciinema
       ] ++ [ # Core & utils
         entr nmap screen socat stow tcpdump openssl ranger firejail
-        ppp pptp proxychains virtmanager virtviewer nethogs
+        ppp pptp proxychains virtmanager virtviewer nethogs cpulimit
         cpufrequtils lsof pciutils python3Packages.glances usbutils
         file docker moreutils tlp
       ] ++ [ # Triglav
