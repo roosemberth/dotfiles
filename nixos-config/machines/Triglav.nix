@@ -61,7 +61,9 @@ in
         vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
         mymopidy = with pkgs; buildEnv {
           name = "mopidy-with-extensions-${mopidy.version}";
-          paths = lib.closePropagation (with pkgs; [mopidy-spotify mopidy-iris]);
+          paths = lib.closePropagation (with pkgs; [
+            mopidy-spotify mopidy-iris sandbox.mopidy-mpris
+          ]);
           pathsToLink = [ "/${python.sitePackages}" ];
           buildInputs = [ makeWrapper ];
           postBuild = ''
