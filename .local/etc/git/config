@@ -18,3 +18,5 @@
 	gpgSign = 1
 [tag]
 	forceSignAnnotated = 1
+[alias]
+	newmr = push -o merge_request.create -o merge_request.remove_source_branch
