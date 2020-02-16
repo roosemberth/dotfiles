@@ -3,7 +3,9 @@
 let
   bleedingEdge =
     let try = builtins.tryEval <nixos-unstable>;
-    in if try.success then (import try.value { config = { allowUnfree = true; }; })
+    in if try.success
+       then builtins.trace "Impure build: Using bleedingEdge"
+            (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
   sandbox = pkgs.callPackage ../pkgs/sandbox.nix {};
   all-hies =
@@ -26,7 +28,8 @@ in
   ];
 
   environment.systemPackages = (with pkgs; [
-    vim curl zsh git tmux htop atop iotop cacert
+    cacert curl git hdparm htop iotop tmux vim wget exfat
+    python37Packages.glances
   ]);
 
   hardware = {
