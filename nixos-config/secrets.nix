@@ -18,6 +18,7 @@ let
     { private = readSecretPath "machines/${hostname_l}/wireguard-keys/private";
       public = readSecretPath "machines/${hostname_l}/wireguard-keys/public";
     };
+  roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
 in {
   secretsAvailable = true;
   machines = recursiveUpdate
@@ -25,11 +26,9 @@ in {
         ["Azulejo" "Dellingr" "Heimdaalr" "Heisenberg" "Hellendaal" "Lappie" "Triglav"]))
       { # Azulejo.sdasd.dd = 5;  # This will add attr `sdasd.dd` to `Azulejo`
       };
-  adminPubKeys = [ (readFile secrets/admins/ssh-keys/roosemberth.pub) ];
+  adminPubKeys = [ roosemberth.sshPubKey ];
   users = {
-    roosemberth = {
-      sshPubKey = [ (readFile secrets/admins/ssh-keys/roosemberth.pub) ];
-    };
+    inherit roosemberth;
   };
   network = import ./secrets/network.nix;
 }

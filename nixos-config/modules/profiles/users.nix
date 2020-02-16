@@ -1,4 +1,8 @@
-{ config, pkgs, lib, ... }: with lib; {
+{ config, pkgs, lib, ... }: 
+with lib;
+let
+  secrets = import ../../secrets.nix { inherit lib; };
+in {
   options.roos.user-profiles.roosemberth.enable = mkEnableOption "Roos' user profile";
 
   config = mkIf config.roos.user-profiles.roosemberth.enable {
@@ -48,7 +52,7 @@
     users.users.roosemberth = {
       uid = 1000;
       description = "Roosemberth Palacios";
-      hashedPassword = "$6$QNnrghLeuED/C85S$vplnQU.q3cZmdso/FDfpwKVxmixhvPP9ots.2R6JfeVKQ2/FPPjHrdwddkuxvQfc8fKvl58JQPpjGd.LIzlmA0";
+      hashedPassword = secrets.users.roosemberth.hashedPassword;
       isNormalUser = true;
       extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "wireshark"];
       packages = (with pkgs; [ # Web & comms
