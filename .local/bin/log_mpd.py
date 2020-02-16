@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -p "(callPackage /home/roosemberth/dotfiles/nixos-config/pkgs/sandbox.nix {}).python-mpd2" -i python
+#! nix-shell -p "(callPackage /home/roosemberth/dotfiles/nixos-config/pkgs/sandbox.nix {}).python-mpd2" -i python3
 """
 (C) Roosembert Palacios, 2019
 
@@ -24,11 +24,15 @@ See the cli_parser description for an overview of this program.
 from datetime import datetime
 import argparse
 import csv
+import logging
 import threading
+import time
 import signal
 import sys
 
-from mpd import MPDClient
+from mpd import ConnectionError, MPDClient
+
+logger = logging.getLogger(__name__)
 
 cli_parser = argparse.ArgumentParser(description='''
     This program connects to an mpd server and monitors playback history.
@@ -45,104 +49,124 @@ def mk_client(host: str, port: int) -> MPDClient:
     client.connect(host, port)
     return client
 
-def main(*_, host: str, port: int):
-    mpd_client = mk_client(host, port)
+class MpdLoggerState:
+    def __init__(self):
+        self.run = True
+        self.curElapsed = 0    # Elapsed time in the current song
+        self.tracking = False  # Whether we're currently tracking a song
 
-    class ApplicationState:
-        def __init__(self):
-            self.run = True
-            self.curElapsed = 0    # Elapsed time in the current song
-            self.tracking = False  # Whether we're currently tracking a song
+        self.curDate = None    # Isoformat date at start of playback
+        self.curStart = 0      # Elapsed at start of playback (i.e. seek then play)
+        self.curDuration = 0   # Duration of current song
+        self.curFile = None    # File resource of current song
+        self.curTitle = None
+        self.curArtist = None
 
-            self.curDate = None    # Isoformat date at start of playback
-            self.curStart = 0      # Elapsed at start of playback (i.e. seek then play)
-            self.curDuration = 0   # Duration of current song
-            self.curFile = None    # File resource of current song
-            self.curTitle = None
-            self.curArtist = None
+        # FIXME: Move the out of the state class...
+        self.writer = csv.writer(sys.stdout)
 
-            self.writer = csv.writer(sys.stdout)
+    def stop(self):
+        self.run = False
 
-        def stop(self):
-            self.run = False
+    def printStateLine(self):
+        playback_start_date = self.curDate
+        playback_duration = self.curElapsed - self.curStart
+        song_duration = self.curDuration
+        file_str = self.curFile
+        title = self.curTitle
+        artist = self.curArtist
 
-        def printStateLine(self):
-            playback_start_date = self.curDate
-            playback_duration = self.curElapsed - self.curStart
-            song_duration = self.curDuration
-            file_str = self.curFile
-            title = self.curTitle
-            artist = self.curArtist
+        self.writer.writerow([playback_start_date, playback_duration, song_duration, file_str, title, artist])
+        sys.stdout.flush()
 
-            self.writer.writerow([playback_start_date, playback_duration, song_duration, file_str, title, artist])
-            sys.stdout.flush()
+    def refreshFromMpdState(self, status_obj, current_song_obj):
+        self.curElapsed = float(status_obj.elapsed)
+        self.curDate = datetime.now().isoformat()
+        self.curStart = float(status_obj.elapsed)
+        self.curDuration = float(current_song_obj.time)
+        self.curFile = current_song_obj.file
+        self.curTitle = current_song_obj.title
+        self.curArtist = current_song_obj.artist
 
-        def refreshFromMpdState(self, status_obj, current_song_obj):
-            self.curElapsed = float(status_obj.elapsed)
-            self.curDate = datetime.now().isoformat()
-            self.curStart = float(status_obj.elapsed)
-            self.curDuration = float(current_song_obj.time)
-            self.curFile = current_song_obj.file
-            self.curTitle = current_song_obj.title
-            self.curArtist = current_song_obj.artist
+class MpdLogger(MpdLoggerState):
+    def __init__(self, mpd_client: MPDClient):
+        super(MpdLogger, self).__init__()
+        self.mpd_client = mpd_client
 
-    appState = ApplicationState()
-
-    signal.signal(signal.SIGINT, lambda *_: appState.stop())
-
-    def stop_tracking_and_maybe_report(status_obj, force_report = False):
+    def stop_tracking_and_report(self, status_obj, force_report = False):
         # There may not be a current song anymore. => set elapsed = 0
         current_playing_song_elapsed = float(getattr(status_obj, 'elapsed', 0))
 
         if force_report:
-            trigger_report()
+            self.trigger_report()
         # Don't log if didn't play at least a third of the song
-        elif appState.curElapsed - current_playing_song_elapsed > appState.curDuration/3:
-            trigger_report()
-        appState.tracking = False
+        elif self.curElapsed - current_playing_song_elapsed > self.curDuration/3:
+            self.trigger_report()
+        self.tracking = False
 
-    def trigger_report():
-        if not appState.tracking:
-            raise ValueError('Invoked tracking stop when not tracking !: {}'.format(appState.__dict__))
-        appState.printStateLine()
+    def trigger_report(self):
+        if not self.tracking:
+            raise RuntimeError('Invoked tracking stop when not tracking !: {}'.format(self.__dict__))
+        self.printStateLine()
 
-    def tracking_loop(status_obj, current_song_obj):
+    def tracking_loop(self, status_obj, current_song_obj) -> None:
         if not hasattr(status_obj, 'elapsed'):  # Playback ended
-            stop_tracking_and_maybe_report(status_obj)
+            self.stop_tracking_and_report(status_obj)
             return
 
         status_elapsed_secs = float(status_obj.elapsed)
-        if status_elapsed_secs > appState.curElapsed:  # Normal time advancement
-            appState.curElapsed = float(status_obj.elapsed)
-        elif status_elapsed_secs < appState.curElapsed:  # Detect repeat
-            stop_tracking_and_maybe_report(status_obj)
+        if status_elapsed_secs > self.curElapsed:  # Normal time advancement
+            self.curElapsed = float(status_obj.elapsed)
+        elif status_elapsed_secs < self.curElapsed:  # Detect repeat
+            self.stop_tracking_and_report(status_obj)
             return
 
-        if appState.curFile and appState.curFile != current_song_obj.file:
-            stop_tracking_and_maybe_report(status_obj)
+        if self.curFile and self.curFile != current_song_obj.file:
+            self.stop_tracking_and_report(status_obj)
             return
 
         if status_obj.state != 'play':  # Playback stopped and tracking -> Stop tracking
-            stop_tracking_and_maybe_report(status_obj)
-            mpd_client.idle()
+            self.stop_tracking_and_report(status_obj)
+            self.mpd_client.idle()
 
-    def monitor_status_and_report():
-        status = type('MPD_Status', (object,), mpd_client.status())  # type: ignore
-        song = type('MPD_CurrentSong', (object,), mpd_client.currentsong())  # type: ignore
+    def monitor_status_and_report(self):
+        mpd_status = type('MPD_Status', (object,), self.mpd_client.status())  # type: ignore
+        song = type('MPD_CurrentSong', (object,), self.mpd_client.currentsong())  # type: ignore
 
-        if appState.tracking:
-            tracking_loop(status, song)
+        if self.tracking:
+            self.tracking_loop(mpd_status, song)
 
-        if status.state == 'play' and not appState.tracking:  # Playing and not tracking -> Track
-            appState.refreshFromMpdState(status, song)
-            appState.tracking = True
+        if mpd_status.state == 'play' and not self.tracking:  # Playing and not tracking -> Track
+            self.refreshFromMpdState(mpd_status, song)
+            self.tracking = True
 
-        if appState.run:
-            threading.Timer(0.1, monitor_status_and_report).start()
-        else:  # Maybe log on termination
-            stop_tracking_and_maybe_report(status)
+    def start(self):
+        try:
+            while self.run:
+                self.monitor_status_and_report()
+        except ConnectionResetError:
+            logger.info('Disconnected.')
 
-    monitor_status_and_report()
+def main(*_, host: str, port: int):
+    run = True
+    while run:
+        try:
+            mpd_client = mk_client(host, port)
+            logger.info('Connected to %s:%d', host, port)
+            mpd_logger = MpdLogger(mpd_client)
+
+            def sigint_handler(*_):
+                logger.debug('Caught sigint')
+                mpd_logger.stop()
+                sys.exit(0)
+                run = False
+
+            signal.signal(signal.SIGINT, sigint_handler)
+            thread = threading.Thread(target=mpd_logger.start)
+            thread.start()
+            thread.join()
+        except ConnectionRefusedError:
+            time.sleep(1)
 
 if __name__ == '__main__':
     main(**vars(cli_parser.parse_args()))
