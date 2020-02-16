@@ -37,3 +37,7 @@ function ctmp(){
 	ln -sf "$DIR" "${DIR%/*}/latest-ctmp"
     cd "$DIR"
 }
+
+function cltmp(){
+  cd "/run/user/$(id -u)/latest-ctmp/"
+}
