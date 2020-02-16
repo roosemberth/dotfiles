@@ -66,7 +66,9 @@ in
       keep-derivations = true
     '';
     trustedUsers = [ "roosemberth" ];
+    gc.automatic = true;
   };
+  systemd.services.nix-gc.unitConfig.ConditionACPower = true;
 
   nixpkgs = {
     config = {
