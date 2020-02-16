@@ -6,6 +6,17 @@ let
     in if try.success then (import try.value { config = { allowUnfree = true; }; })
        else builtins.trace "Using pkgs for bleeding edge" pkgs;
   sandbox = pkgs.callPackage ../pkgs/sandbox.nix {};
+  all-hies =
+    let try = builtins.tryEval <all-hies>;
+    in if try.success
+       then import try.value {}
+       else builtins.trace "Could not find hie channel, using pinned version."
+            (import (pkgs.fetchFromGitHub {
+              owner = "Infinisil";
+              repo = "all-hies";
+              rev = "85fd0be92443ca60bb649f8e7748f785fe870b7a";
+              sha256 = "0af5grq9szpyyh61zg83dx8ki1i2zqschvs91b1apww414nirlwp";
+            }) {});
 in
 {
   imports = [
@@ -57,7 +68,7 @@ in
     config = {
       allowUnfree = true;
       packageOverrides = pkgs: {
-        all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+        inherit all-hies;
         vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
         mymopidy = with pkgs; buildEnv {
           name = "mopidy-with-extensions-${mopidy.version}";
