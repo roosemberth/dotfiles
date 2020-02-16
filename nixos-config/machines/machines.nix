@@ -1,8 +1,8 @@
 {}:
 {
   Triglav = {
-    bootPartUuid = "6283960e-0d80-4455-a72a-3318c34cd1fb";
-    rootDeviceUuid = "cd56ef5b-74bd-426e-96de-c1ccd2b0de72";
+    bootPartUuid = "5d3ba400-a82a-6045-92be-23d12cfa9790";
+    rootDeviceUuid = "a7f508da-7f10-4972-b1c0-b22ba4ede8f2";
   };
   Triglav-ccc = {
     bootPartUuid = "c8b1bb13-bece-4653-a96e-c89cae66805c";
