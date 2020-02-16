@@ -151,10 +151,18 @@ in
     logind.extraConfig = "HandlePowerKey=ignore";
     logind.lidSwitch = "ignore";
     nginx.enable = true;
-    nginx.virtualHosts.localhost.default = true;
-    # Default redirect to HTTPs (e.g. socat rec.la testing).
-    nginx.virtualHosts.localhost.extraConfig =
-      "return 301 https://$host$request_uri;";
+    nginx.virtualHosts = {
+      localhost.default = true;
+      # Default redirect to HTTPs (e.g. socat rec.la testing).
+      localhost.extraConfig = "return 301 https://$host$request_uri;";
+
+      "triglav.r.orbstheorem.ch" = {
+        root = "/Storage/tmp/shared/";
+        locations."/".extraConfig =
+          "return 307 /public-web/;";
+        locations."/public-web".extraConfig = "autoindex on;";
+      };
+    };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     postgresql = {
