@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  taffybar = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos {};
+  taffy = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos/live {};
 in
 with lib;
 {
@@ -23,9 +23,9 @@ with lib;
     roos.xUserConfig.systemd.user.services =
     let
       xServices = {
-        taffybar = {
+        taffy = {
           Unit.Description = "Taffybar";
-          Service.ExecStart = "${taffybar}/bin/taffybar";
+          Service.ExecStart = "${taffy}/bin/taffybar";
         };
         screen-locker = {
           Unit.Description = "Screen-locking daemon";
@@ -68,7 +68,7 @@ with lib;
         windowManager.xmonad.enable = true;
         windowManager.default = "xmonad";
         windowManager.xmonad.extraPackages =
-          haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras taffybar];
+          haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras taffy];
         desktopManager.default = "none";
         desktopManager.gnome3.enable = true;
 
