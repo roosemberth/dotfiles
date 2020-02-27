@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 let
   taffy = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos/live {};
+  bumblebee = pkgs.bumblebee.override {
+    useNvidia = false;
+    useDisplayDevice = true;
+  };
+  primus = pkgs.primus.override { useNvidia = false; };
 in
 with lib;
 {
@@ -8,15 +13,28 @@ with lib;
 
   config = mkIf config.roos.x11.enable {
     hardware = {
-      bumblebee.enable = true;
-      bumblebee.connectDisplay = true;
-      bumblebee.driver = "nvidia";
-      bumblebee.pmMethod = "bbswitch";
+      # The config bellow blacklists nouveau driver on start, which is undesirable
+      #bumblebee.enable = true;
+      #bumblebee.connectDisplay = true;
+      #bumblebee.driver = "nouveau";
+      # This configuration has been reimplemented bellow
 
       opengl.enable = true;
       opengl.driSupport = true;
       opengl.driSupport32Bit = true;
     };
+
+    # <bumblebee>
+    environment.systemPackages = [ bumblebee primus ];
+    systemd.services.bumblebeed = {
+      description = "Bumblebee Hybrid Graphics Switcher";
+      wantedBy = [ "multi-user.target" ];
+      before = [ "display-manager.service" ];
+      serviceConfig = {
+        ExecStart = "${bumblebee}/bin/bumblebeed --use-syslog -g wheel --driver nouveau";
+      };
+    };
+    # </bumblebee>
 
     location.provider = "geoclue2";
 
