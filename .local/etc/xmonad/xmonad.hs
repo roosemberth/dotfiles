@@ -248,9 +248,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       -- v These will skip hidden windows
       , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
       , ("M-j"             , focusDown)                             -- %! Move focus to the next window
-      -- v FIXME: These shortcuts should only wotk inside the sublayout.
-      , ("M-C-k"           , windows W.focusUp)                     -- %! Move focus to the previous window
-      , ("M-C-j"           , windows W.focusDown)                   -- %! Move focus to the next window
+      , ("M-C-k"           , prevScreen)                            -- %! Move focus to the previous screen
+      , ("M-C-j"           , nextScreen)                            -- %! Move focus to the next screen
 
       -- Sublayout grouping
       , ("M-M1-h"          , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup
