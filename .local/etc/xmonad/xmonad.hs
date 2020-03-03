@@ -66,7 +66,7 @@ actionsList = M.fromList
   , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
   , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
   ]) ++ (map (mapResult cmdInTmpTmux) [
-    ("dico"         , "dico  --database=gcide \"$(read -e)\"")
+    ("dico"         , "dico  --database=gcide")
   , ("wn"           , "wn \"$(read -e)\" -over")
   ])) where cmdInTmpTmux cmd = spawn $ "alacritty -t overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
             mapResult fn (k, v) = (k, fn v)
