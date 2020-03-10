@@ -1,0 +1,85 @@
+From: =?utf-8?q?Rapha=C3=ABl_Hertzog?= <hertzog@debian.org>
+Date: Sun, 16 Aug 2015 17:53:37 +0200
+Subject: GCC5 fixes on regexes
+
+Applied-Upstream: 1.9.11
+Origin: upstream
+Bug: https://github.com/codelibre-net/schroot/pull/4
+---
+ cmake/regex-checks.cmake | 10 ++++++++++
+ test/sbuild-keyfile.cc   |  2 +-
+ test/sbuild-regex.cc     | 20 ++++++++++++++++++++
+ 3 files changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/regex-checks.cmake b/cmake/regex-checks.cmake
+index d0bb211..60507ec 100644
+--- a/cmake/regex-checks.cmake
++++ b/cmake/regex-checks.cmake
+@@ -30,6 +30,16 @@ int main() {
+   if (${namespace}_match(fail, bar)) return 11;
+   if (${namespace}_match(fail, chk)) return 12;
+ 
++  // Checks for broken support in GCC 4.9 and 5.1
++  ${namespace} range1(\"^[a-z0-9][a-z0-9-]*\$\", ${namespace}::extended);
++  ${namespace} range2(\"^[a-z0-9][-a-z0-9]*\$\", ${namespace}::extended);
++  if (!${namespace}_match(test, range1)) return 13;
++  if (!${namespace}_match(test, range2)) return 14;
++  if (!${namespace}_match(\"a-\", range1)) return 15;
++  if (!${namespace}_match(\"a-\", range2)) return 16;
++  if (${namespace}_match(\"-a\", range1)) return 17;
++  if (${namespace}_match(\"-a\", range2)) return 18;
++
+   return 0;
+ }"
+ ${outvar})
+diff --git a/test/sbuild-keyfile.cc b/test/sbuild-keyfile.cc
+index cf4b2f8..7a14f84 100644
+--- a/test/sbuild-keyfile.cc
++++ b/test/sbuild-keyfile.cc
+@@ -93,7 +93,7 @@ public:
+   test_construction_stream()
+   {
+     std::ifstream strm(TESTDATADIR "/keyfile.ex1");
+-    CPPUNIT_ASSERT(strm);
++    CPPUNIT_ASSERT(!!strm);
+     sbuild::keyfile k(strm);
+   }
+ 
+diff --git a/test/sbuild-regex.cc b/test/sbuild-regex.cc
+index 915e915..a8520c5 100644
+--- a/test/sbuild-regex.cc
++++ b/test/sbuild-regex.cc
+@@ -33,6 +33,8 @@ class test_regex : public TestCase
+   CPPUNIT_TEST(test_output);
+   CPPUNIT_TEST(test_input);
+   CPPUNIT_TEST(test_match);
++  CPPUNIT_TEST(test_match_bracket1);
++  CPPUNIT_TEST(test_match_bracket2);
+   CPPUNIT_TEST_EXCEPTION(test_input_fail, std::regex_error);
+   CPPUNIT_TEST_SUITE_END();
+ 
+@@ -88,6 +90,24 @@ public:
+   }
+ 
+   void
++  test_match_bracket1()
++  {
++    sbuild::regex r("^[a-z0-9][a-z0-9-]*$");
++    CPPUNIT_ASSERT(sbuild::regex_search("foobar", r));
++    CPPUNIT_ASSERT(sbuild::regex_search("a-", r));
++    CPPUNIT_ASSERT(!sbuild::regex_search("-a", r));
++  }
++
++  void
++  test_match_bracket2()
++  {
++    sbuild::regex r("^[a-z0-9][-a-z0-9]*$");
++    CPPUNIT_ASSERT(sbuild::regex_search("foobar", r));
++    CPPUNIT_ASSERT(sbuild::regex_search("a-", r));
++    CPPUNIT_ASSERT(!sbuild::regex_search("-a", r));
++  }
++
++  void
+   test_input_fail()
+   {
+     sbuild::regex r;

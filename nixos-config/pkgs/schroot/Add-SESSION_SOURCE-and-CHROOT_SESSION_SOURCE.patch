@@ -1,0 +1,578 @@
+From: =?utf-8?q?Rapha=C3=ABl_Hertzog?= <hertzog@debian.org>
+Date: Sun, 16 Aug 2015 15:40:43 +0200
+Subject: Add SESSION_SOURCE and CHROOT_SESSION_SOURCE
+
+Origin: upstream
+Applied-Upstream: 1.6.11
+Bug-Debian: http://bugs.debian.org/718127
+---
+ man/schroot-setup.5.man                        |  4 ++++
+ sbuild/sbuild-chroot-facet-session-clonable.cc |  2 +-
+ sbuild/sbuild-chroot-facet-session.cc          | 28 ++++++++++++++++++++-----
+ sbuild/sbuild-chroot-facet-session.h           | 29 ++++++++++++++++++++++++--
+ sbuild/sbuild-chroot.cc                        |  4 ++++
+ sbuild/sbuild-chroot.h                         |  5 +++--
+ sbuild/sbuild-tr1types.h                       |  2 ++
+ test/sbuild-chroot-block-device.cc             | 24 +++++++++++++++++++++
+ test/sbuild-chroot-btrfs-snapshot.cc           | 12 ++++++++---
+ test/sbuild-chroot-custom.cc                   |  1 +
+ test/sbuild-chroot-directory.cc                |  6 ++++++
+ test/sbuild-chroot-file.cc                     |  5 +++++
+ test/sbuild-chroot-loopback.cc                 |  6 ++++++
+ test/sbuild-chroot-lvm-snapshot.cc             |  4 ++++
+ test/sbuild-chroot-plain.cc                    |  1 +
+ 15 files changed, 120 insertions(+), 13 deletions(-)
+
+diff --git a/man/schroot-setup.5.man b/man/schroot-setup.5.man
+index 836634e..49ad3b0 100644
+--- a/man/schroot-setup.5.man
++++ b/man/schroot-setup.5.man
+@@ -93,6 +93,10 @@ Set to \[oq]true\[cq] if a session will be cloned, otherwise \[oq]false\[cq].
+ CHROOT_SESSION_PURGE
+ Set to \[oq]true\[cq] if a session will be purged, otherwise \[oq]false\[cq].
+ .TP
++CHROOT_SESSION_SOURCE
++Set to \[oq]true\[cq] if a session will be created from a source chroot,
++otherwise \[oq]false\[cq].
++.TP
+ CHROOT_TYPE
+ The type of the chroot.  This is useful for restricting a setup task to
+ particular types of chroot (e.g. only block devices or LVM snapshots).
+diff --git a/sbuild/sbuild-chroot-facet-session-clonable.cc b/sbuild/sbuild-chroot-facet-session-clonable.cc
+index b74f14b..ca208b4 100644
+--- a/sbuild/sbuild-chroot-facet-session-clonable.cc
++++ b/sbuild/sbuild-chroot-facet-session-clonable.cc
+@@ -90,7 +90,7 @@ chroot_facet_session_clonable::clone_session_setup (chroot const&      parent,
+   clone->remove_facet<chroot_facet_session_clonable>();
+   // Disable source cloning.
+   clone->remove_facet<chroot_facet_source_clonable>();
+-  clone->add_facet(chroot_facet_session::create());
++  clone->add_facet(chroot_facet_session::create(owner->shared_from_this()));
+ 
+   // Disable session, delete aliases.
+   chroot_facet_session::ptr psess(clone->get_facet<chroot_facet_session>());
+diff --git a/sbuild/sbuild-chroot-facet-session.cc b/sbuild/sbuild-chroot-facet-session.cc
+index a3114bc..477f4bd 100644
+--- a/sbuild/sbuild-chroot-facet-session.cc
++++ b/sbuild/sbuild-chroot-facet-session.cc
+@@ -21,7 +21,7 @@
+ #include "sbuild-chroot.h"
+ #include "sbuild-chroot-config.h"
+ #include "sbuild-chroot-facet-session.h"
+-#include "sbuild-chroot-facet-source-clonable.h"
++#include "sbuild-chroot-facet-source.h"
+ #include "sbuild-chroot-plain.h"
+ #ifdef SBUILD_FEATURE_LVMSNAP
+ #include "sbuild-chroot-lvm-snapshot.h"
+@@ -39,10 +39,11 @@ using boost::format;
+ using std::endl;
+ using namespace sbuild;
+ 
+-chroot_facet_session::chroot_facet_session ():
++chroot_facet_session::chroot_facet_session (const chroot::ptr& parent_chroot):
+   chroot_facet(),
+   original_chroot_name(),
+-  selected_chroot_name()
++  selected_chroot_name(),
++  parent_chroot(parent_chroot)
+ {
+ }
+ 
+@@ -53,7 +54,13 @@ chroot_facet_session::~chroot_facet_session ()
+ chroot_facet_session::ptr
+ chroot_facet_session::create ()
+ {
+-  return ptr(new chroot_facet_session());
++  return ptr(new chroot_facet_session(chroot::ptr()));
++}
++
++chroot_facet_session::ptr
++chroot_facet_session::create (const chroot::ptr& parent_chroot)
++{
++  return ptr(new chroot_facet_session(parent_chroot));
+ }
+ 
+ chroot_facet::ptr
+@@ -97,6 +104,12 @@ chroot_facet_session::set_selected_name (std::string const& name)
+   this->selected_chroot_name = shortname;
+ }
+ 
++const chroot::ptr&
++chroot_facet_session::get_parent_chroot() const
++{
++  return parent_chroot;
++}
++
+ void
+ chroot_facet_session::setup_env (chroot const& chroot,
+                                  environment&  env) const
+@@ -113,7 +126,12 @@ chroot_facet_session::setup_env (chroot const& chroot,
+ sbuild::chroot::session_flags
+ chroot_facet_session::get_session_flags (chroot const& chroot) const
+ {
+-  return chroot::SESSION_NOFLAGS;
++  sbuild::chroot::session_flags flags = sbuild::chroot::SESSION_NOFLAGS;
++
++  if (parent_chroot && parent_chroot->get_facet<chroot_facet_source>())
++    flags = flags | sbuild::chroot::SESSION_SOURCE;
++
++  return flags;
+ }
+ 
+ void
+diff --git a/sbuild/sbuild-chroot-facet-session.h b/sbuild/sbuild-chroot-facet-session.h
+index bc90738..49d8f34 100644
+--- a/sbuild/sbuild-chroot-facet-session.h
++++ b/sbuild/sbuild-chroot-facet-session.h
+@@ -42,8 +42,12 @@ namespace sbuild
+     typedef std::shared_ptr<const chroot_facet_session> const_ptr;
+ 
+   private:
+-    /// The constructor.
+-    chroot_facet_session ();
++    /** The constructor.
++     *
++     * @param parent_chroot the chroot from which this session was
++     * cloned.
++     */
++    chroot_facet_session (const chroot::ptr& parent_chroot);
+ 
+   public:
+     /// The destructor.
+@@ -57,6 +61,16 @@ namespace sbuild
+     static ptr
+     create ();
+ 
++    /**
++     * Create a chroot facet.
++     *
++     * @param parent_chroot the chroot from which this session was
++     * cloned.
++     * @returns a shared_ptr to the new chroot facet.
++     */
++    static ptr
++    create (const chroot::ptr& parent_chroot);
++
+     virtual chroot_facet::ptr
+     clone () const;
+ 
+@@ -96,6 +110,15 @@ namespace sbuild
+     void
+     set_selected_name (std::string const& name);
+ 
++    /**
++     * Get parent chroot.
++     *
++     * @returns a pointer to the chroot; may be null if no parent
++     * exists.
++     */
++    const chroot::ptr&
++    get_parent_chroot() const;
++
+     virtual void
+     setup_env (chroot const& chroot,
+                environment&  env) const;
+@@ -121,6 +144,8 @@ namespace sbuild
+     std::string  original_chroot_name;
+     /// Selected chroot name.
+     std::string  selected_chroot_name;
++    /// Parent chroot.
++    const chroot::ptr parent_chroot;
+   };
+ 
+ }
+diff --git a/sbuild/sbuild-chroot.cc b/sbuild/sbuild-chroot.cc
+index 6ec7088..8f31e9f 100644
+--- a/sbuild/sbuild-chroot.cc
++++ b/sbuild/sbuild-chroot.cc
+@@ -105,6 +105,7 @@ error<sbuild::chroot::error_code>::error_strings
+  init_errors + (sizeof(init_errors) / sizeof(init_errors[0])));
+ 
+ sbuild::chroot::chroot ():
++  std::enable_shared_from_this<chroot>(),
+   name(),
+   description(),
+   users(),
+@@ -132,6 +133,7 @@ sbuild::chroot::chroot ():
+ }
+ 
+ sbuild::chroot::chroot (const chroot& rhs):
++  std::enable_shared_from_this<chroot>(),
+   name(rhs.name),
+   description(rhs.description),
+   users(rhs.users),
+@@ -564,6 +566,8 @@ sbuild::chroot::setup_env (chroot const& chroot,
+           static_cast<bool>(chroot.get_session_flags() & SESSION_CLONE));
+   env.add("CHROOT_SESSION_PURGE",
+           static_cast<bool>(chroot.get_session_flags() & SESSION_PURGE));
++  env.add("CHROOT_SESSION_SOURCE",
++          static_cast<bool>(chroot.get_session_flags() & SESSION_SOURCE));
+ }
+ 
+ void
+diff --git a/sbuild/sbuild-chroot.h b/sbuild/sbuild-chroot.h
+index e3f1cf7..ba7271c 100644
+--- a/sbuild/sbuild-chroot.h
++++ b/sbuild/sbuild-chroot.h
+@@ -42,7 +42,7 @@ namespace sbuild
+    * configuration file, and may be initialised directly from an open
+    * keyfile.
+    */
+-  class chroot
++  class chroot : public std::enable_shared_from_this<chroot>
+   {
+   public:
+     /// Type of setup to perform.
+@@ -59,7 +59,8 @@ namespace sbuild
+         SESSION_NOFLAGS = 0,      ///< No flags are set.
+         SESSION_CREATE  = 1 << 0, ///< The chroot supports session creation.
+         SESSION_CLONE   = 1 << 1, ///< The chroot supports cloning.
+-        SESSION_PURGE   = 1 << 2  ///< The chroot should be purged.
++        SESSION_PURGE   = 1 << 2, ///< The chroot should be purged.
++        SESSION_SOURCE  = 1 << 3  ///< The chroot is a source chroot.
+       };
+ 
+     /// Message verbosity.
+diff --git a/sbuild/sbuild-tr1types.h b/sbuild/sbuild-tr1types.h
+index 2739a50..a3b3191 100644
+--- a/sbuild/sbuild-tr1types.h
++++ b/sbuild/sbuild-tr1types.h
+@@ -39,6 +39,7 @@ namespace std {
+     using std::tr1::static_pointer_cast;
+     using std::tr1::const_pointer_cast;
+     using std::tr1::dynamic_pointer_cast;
++    using std::tr1::enable_shared_from_this;
+ }
+ # elif HAVE_BOOST_SHARED_PTR_HPP
+ #  include <boost/shared_ptr.hpp>
+@@ -48,6 +49,7 @@ namespace std {
+     using boost::static_pointer_cast;
+     using boost::const_pointer_cast;
+     using boost::dynamic_pointer_cast;
++    using boost::enable_shared_from_this;
+ }
+ # else
+ #  error A shared_ptr implementation is not available
+diff --git a/test/sbuild-chroot-block-device.cc b/test/sbuild-chroot-block-device.cc
+index addcf97..ce16f37 100644
+--- a/test/sbuild-chroot-block-device.cc
++++ b/test/sbuild-chroot-block-device.cc
+@@ -152,6 +152,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ #ifdef SBUILD_FEATURE_UNION
+     expected.add("CHROOT_UNION_TYPE",     "none");
+ #endif // SBUILD_FEATURE_UNION
+@@ -169,6 +170,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_MOUNT_DEVICE",   "/dev/testdev");
+ #ifdef SBUILD_FEATURE_UNION
+     expected.add("CHROOT_UNION_TYPE",     "none");
+@@ -184,6 +186,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+     expected.add("CHROOT_UNION_OVERLAY_DIRECTORY",  "/overlay");
+@@ -202,6 +205,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_MOUNT_DEVICE",   "/dev/testdev");
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+@@ -220,9 +224,29 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_block_device>::test_setup_env(source_union, expected);
+   }
++
++  void test_setup_env_session_source_union()
++  {
++    sbuild::environment expected;
++    setup_env_gen(expected);
++    expected.add("SESSION_ID",            "test-union-session-name");
++    expected.add("CHROOT_ALIAS",          "test-union-session-name");
++    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(source chroot)") + ' ' + _("(session chroot)"));
++    expected.add("CHROOT_SESSION_CLONE",  "false");
++    expected.add("CHROOT_SESSION_CREATE", "false");
++    expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
++    expected.add("CHROOT_MOUNT_DEVICE",   "/dev/testdev");
++    expected.add("CHROOT_UNION_TYPE",     "aufs");
++    expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
++    expected.add("CHROOT_UNION_OVERLAY_DIRECTORY",  "/overlay/test-union-session-name");
++    expected.add("CHROOT_UNION_UNDERLAY_DIRECTORY", "/underlay/test-union-session-name");
++    test_chroot_base<chroot_block_device>::test_setup_env(source_union, expected);
++  }
+ #endif // SBUILD_FEATURE_UNION
+ 
+   void setup_keyfile_block(sbuild::keyfile &expected, std::string group)
+diff --git a/test/sbuild-chroot-btrfs-snapshot.cc b/test/sbuild-chroot-btrfs-snapshot.cc
+index dc29525..195ccb5 100644
+--- a/test/sbuild-chroot-btrfs-snapshot.cc
++++ b/test/sbuild-chroot-btrfs-snapshot.cc
+@@ -166,6 +166,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_btrfs_snapshot>::test_setup_env(chroot, expected);
+   }
+@@ -186,6 +187,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_btrfs_snapshot>::test_setup_env(session, expected);
+   }
+@@ -201,6 +203,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_btrfs_snapshot>::test_setup_env(source, expected);
+   }
+@@ -210,14 +213,17 @@ public:
+     sbuild::environment expected;
+     setup_env_gen(expected);
+     expected.add("CHROOT_TYPE",           "directory");
++    expected.add("SESSION_ID",            "test-session-name");
+     expected.add("CHROOT_NAME",           "test-name");
+-    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(source chroot)"));
++    expected.add("CHROOT_ALIAS",          "test-session-name");
++    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(source chroot)") + ' ' + _("(session chroot)"));
+     expected.add("CHROOT_DIRECTORY",       "/srv/chroot/sid");
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+-    expected.add("CHROOT_SESSION_CREATE", "true");
++    expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
+ 
+-    test_chroot_base<chroot_btrfs_snapshot>::test_setup_env(source, expected);
++    test_chroot_base<chroot_btrfs_snapshot>::test_setup_env(session_source, expected);
+   }
+ 
+   void setup_keyfile_btrfs(sbuild::keyfile &expected, std::string group)
+diff --git a/test/sbuild-chroot-custom.cc b/test/sbuild-chroot-custom.cc
+index 971f1ef..7b56bda 100644
+--- a/test/sbuild-chroot-custom.cc
++++ b/test/sbuild-chroot-custom.cc
+@@ -111,6 +111,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CUSTOM_DIRECTORY",      "/srv/chroots/sid");
+     expected.add("CUSTOM_OPTIONS",        "foobar");
+   }
+diff --git a/test/sbuild-chroot-directory.cc b/test/sbuild-chroot-directory.cc
+index 346fd96..470a082 100644
+--- a/test/sbuild-chroot-directory.cc
++++ b/test/sbuild-chroot-directory.cc
+@@ -135,6 +135,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ #ifdef SBUILD_FEATURE_UNION
+     expected.add("CHROOT_UNION_TYPE",     "none");
+ #endif // SBUILD_FEATURE_UNION
+@@ -153,6 +154,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ #ifdef SBUILD_FEATURE_UNION
+     expected.add("CHROOT_UNION_TYPE",     "none");
+ #endif // SBUILD_FEATURE_UNION
+@@ -169,6 +171,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+     expected.add("CHROOT_UNION_OVERLAY_DIRECTORY",  "/overlay");
+@@ -188,6 +191,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+     expected.add("CHROOT_UNION_OVERLAY_DIRECTORY",  "/overlay/test-union-session-name");
+@@ -205,6 +209,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_directory>::test_setup_env(source_union, expected);
+   }
+@@ -220,6 +225,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
+ 
+     test_chroot_base<chroot_directory>::test_setup_env(session_source_union, expected);
+   }
+diff --git a/test/sbuild-chroot-file.cc b/test/sbuild-chroot-file.cc
+index 5949920..1f834b9 100644
+--- a/test/sbuild-chroot-file.cc
++++ b/test/sbuild-chroot-file.cc
+@@ -155,6 +155,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",   "true");
+     expected.add("CHROOT_SESSION_CREATE",  "true");
+     expected.add("CHROOT_SESSION_PURGE",   "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_file>::test_setup_env(chroot, expected);
+   }
+@@ -167,6 +168,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_file>::test_setup_env(chroot, expected);
+   }
+@@ -182,6 +184,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_file>::test_setup_env(session, expected);
+   }
+@@ -195,6 +198,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_file>::test_setup_env(source, expected);
+   }
+@@ -210,6 +214,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
+ 
+     test_chroot_base<chroot_file>::test_setup_env(session_source, expected);
+   }
+diff --git a/test/sbuild-chroot-loopback.cc b/test/sbuild-chroot-loopback.cc
+index 8517dfc..5f04dff 100644
+--- a/test/sbuild-chroot-loopback.cc
++++ b/test/sbuild-chroot-loopback.cc
+@@ -151,6 +151,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ #ifdef SBUILD_FEATURE_UNION
+     expected.add("CHROOT_UNION_TYPE",     "none");
+ #endif // SBUILD_FEATURE_UNION
+@@ -169,6 +170,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_MOUNT_DEVICE",   loopback_file);
+ 
+ #ifdef SBUILD_FEATURE_UNION
+@@ -187,6 +189,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+     expected.add("CHROOT_UNION_OVERLAY_DIRECTORY",  "/overlay");
+@@ -206,6 +209,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+     expected.add("CHROOT_MOUNT_DEVICE",   loopback_file);
+     expected.add("CHROOT_UNION_TYPE",     "aufs");
+     expected.add("CHROOT_UNION_MOUNT_OPTIONS",      "union-mount-options");
+@@ -224,6 +228,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_loopback>::test_setup_env(source_union, expected);
+   }
+@@ -241,6 +246,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
+ 
+     test_chroot_base<chroot_loopback>::test_setup_env(session_source_union, expected);
+   }
+diff --git a/test/sbuild-chroot-lvm-snapshot.cc b/test/sbuild-chroot-lvm-snapshot.cc
+index 632fa86..878478a 100644
+--- a/test/sbuild-chroot-lvm-snapshot.cc
++++ b/test/sbuild-chroot-lvm-snapshot.cc
+@@ -139,6 +139,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "true");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_lvm_snapshot>::test_setup_env(chroot, expected);
+   }
+@@ -160,6 +161,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_lvm_snapshot>::test_setup_env(session, expected);
+   }
+@@ -174,6 +176,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "true");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_lvm_snapshot>::test_setup_env(source, expected);
+   }
+@@ -191,6 +194,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
+ 
+     test_chroot_base<chroot_lvm_snapshot>::test_setup_env(session_source, expected);
+   }
+diff --git a/test/sbuild-chroot-plain.cc b/test/sbuild-chroot-plain.cc
+index 8f0d249..4de2c00 100644
+--- a/test/sbuild-chroot-plain.cc
++++ b/test/sbuild-chroot-plain.cc
+@@ -104,6 +104,7 @@ public:
+     expected.add("CHROOT_SESSION_CLONE",  "false");
+     expected.add("CHROOT_SESSION_CREATE", "false");
+     expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
+ 
+     test_chroot_base<chroot_plain>::test_setup_env(chroot, expected);
+   }

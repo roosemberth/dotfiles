@@ -14,5 +14,6 @@ in with nixpkgs;
 
     doCheck = false;
   };
+  schroot = callPackage ./schroot {};
   snooze = callPackage ./snooze {};
 }

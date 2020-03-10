@@ -1,0 +1,33 @@
+From 7c852fb377b9341a26fba0da11a7b740439c8696 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Mon, 9 Mar 2020 21:37:58 +0100
+Subject: [PATCH 6/9] Don't execute scripts wrapped using nixpkgs' wrapProgram
+ in setup.d
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ sbuild/sbuild-util.cc | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/sbuild/sbuild-util.cc b/sbuild/sbuild-util.cc
+index 11bfa388..ee291fb1 100644
+--- a/sbuild/sbuild-util.cc
++++ b/sbuild/sbuild-util.cc
+@@ -199,11 +199,13 @@ sbuild::is_valid_filename (std::string const& name,
+       static regex lsb_namespace("^_?([a-z0-9_.]+-)+[a-z0-9]+$");
+       static regex debian_cron_namespace("^[a-z0-9][a-z0-9-]*$");
+       static regex debian_dpkg_conffile_cruft("dpkg-(old|dist|new|tmp)$");
++      static regex nixpkgs_wrapped_pkg("^\..*-wrapped$");
+ 
+       if ((regex_search(name, lanana_namespace) ||
+            regex_search(name, lsb_namespace) ||
+            regex_search(name, debian_cron_namespace)) &&
+-          !regex_search(name, debian_dpkg_conffile_cruft))
++          !regex_search(name, debian_dpkg_conffile_cruft) &&
++          !regex_search(name, nixpkgs_wrapped_pkg))
+         match = true;
+     }
+   else
+-- 
+2.23.1
+

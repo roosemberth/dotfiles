@@ -1,0 +1,78 @@
+From: Aurelien Jarno <aurelien@aurel32.net>
+Date: Thu, 13 Nov 2014 11:19:19 +0100
+Subject: Add support for more compression formats
+
+Origin: upstream, https://github.com/codelibre-net/schroot/commit/22e04451800756b59f6e47b092ed952bc0dc995f
+Applied-Upstream: 1.6.11
+---
+ etc/setup.d/05file     | 18 ++++++++++++++++++
+ man/schroot.conf.5.man | 13 +++++++------
+ 2 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/etc/setup.d/05file b/etc/setup.d/05file
+index 87ab4c9..921a7e2 100755
+--- a/etc/setup.d/05file
++++ b/etc/setup.d/05file
+@@ -32,6 +32,12 @@ check_filetype()
+         filetype="tgz"
+     elif echo "$CHROOT_FILE" | egrep -q '(\.tar\.bz2|\.tbz)$'; then
+         filetype="tbz"
++    elif echo "$CHROOT_FILE" | egrep -q '(\.tar\.xz|\.txz)$'; then
++        filetype="txz"
++    elif echo "$CHROOT_FILE" | egrep -q '(\.tar\.lzo|\.tzo)$'; then
++        filetype="tzo"
++    elif echo "$CHROOT_FILE" | egrep -q '(\.tar\.lz4|\.tlz4)$'; then
++        filetype="tlz4"
+     else
+         fatal "Unsupported filetype for $CHROOT_FILE"
+     fi
+@@ -50,6 +56,12 @@ unpack_file()
+         tar $TAR_VERBOSE -xzf "$CHROOT_FILE"
+     elif [ "$filetype" = "tbz" ]; then
+         tar $TAR_VERBOSE -xjf "$CHROOT_FILE"
++    elif [ "$filetype" = "txz" ]; then
++        tar $TAR_VERBOSE -xJf "$CHROOT_FILE"
++    elif [ "$filetype" = "tzo" ]; then
++        tar $TAR_VERBOSE --lzop -xf "$CHROOT_FILE"
++    elif [ "$filetype" = "tlz4" ]; then
++        lz4 -cd "$CHROOT_FILE" | tar $TAR_VERBOSE -x
+     else
+         fatal "Unsupported filetype for $CHROOT_FILE"
+     fi
+@@ -68,6 +80,12 @@ repack_file()
+         tar $TAR_VERBOSE -czf "$NEWFILE" .
+     elif [ "$filetype" = "tbz" ]; then
+         tar $TAR_VERBOSE -cjf "$NEWFILE" .
++    elif [ "$filetype" = "txz" ]; then
++        tar $TAR_VERBOSE -cJf "$NEWFILE" .
++    elif [ "$filetype" = "tzo" ]; then
++        tar $TAR_VERBOSE --lzop -cf "$NEWFILE" .
++    elif [ "$filetype" = "tlz4" ]; then
++        tar $TAR_VERBOSE -c . | lz4 > "$NEWFILE"
+     else
+         fatal "Unsupported filetype for $CHROOT_FILE"
+     fi
+diff --git a/man/schroot.conf.5.man b/man/schroot.conf.5.man
+index 7b5d23d..dc2dc5f 100644
+--- a/man/schroot.conf.5.man
++++ b/man/schroot.conf.5.man
+@@ -271,12 +271,13 @@ of updating. These additional options are also implemented:
+ .TP
+ \f[CBI]file=\fP\f[CI]filename\fP
+ The file containing the archived chroot environment (mandatory).  This must be
+-a tar (tape archive), optionally compressed with gzip or bzip2.  The file
+-extensions used to determine the type are are \fI.tar\fP, \fI.tar.gz\fP,
+-\fI.tar.bz2\fP, \fI.tgz\fP, and \fI.tbz\fP.  This file must be owned by the
+-root user, and not be writable by other.  Note that zip archives are no longer
+-supported; zip was not able to archive named pipes and device nodes, so was not
+-suitable for archiving chroots.
++a tar (tape archive), optionally compressed with gzip, bzip2, xz, lzop or lz4.
++The file extensions used to determine the type are are \fI.tar\fP,
++\fI.tar.gz\fP, \fI.tar.bz2\fP, \fI.tar.xz\fP, \fI.tar.lzop\fP, \fI.tar.lz4\fP,
++\fI.tgz\fP, \fI.tbz\fP, \fI.txz\fP, \fI.tzo\fP and \fI.tlz4\fP.  This file must
++be owned by the root user, and not be writable by other.  Note that zip
++archives are no longer supported; zip was not able to archive named pipes and
++device nodes, so was not suitable for archiving chroots.
+ .TP
+ \f[CBI]location=\fP\f[CI]path\fP
+ This is the path to the chroot \fIinside\fP the archive.  For example, if the

@@ -1,0 +1,274 @@
+From c051ee6ef19d0592baac099c19dc485b42bd1771 Mon Sep 17 00:00:00 2001
+From: Tyler Hicks <tyhicks@canonical.com>
+Date: Tue, 28 Jul 2015 01:01:12 -0500
+Subject: [PATCH] schroot-mount: Resolve mount destinations while chrooted
+
+The schroot-mount binary was attempting to use realpath(3) from outside
+of the chroot to resolve mount destination paths inside of the chroot.
+It would then take the resolved path and prepend it with the path to the
+chroot in an attempt to enforce that symlink resolution will always end
+up inside of the chroot.
+
+One example of why this approach isn't sufficient is that when
+/<chroot>/dev/shm/ is the mount destination but it is a symlink to
+/run/shm and the host's /run/shm is a symlink to /dev/shm. The resolved
+path will end up being /<chroot>/dev/shm/ and, due to mount following
+symlinks, the host's /dev/shm will be mounted over.
+
+To fix the path resolution issue, this patch first resolves the path to
+the chroot base path, then forks and calls chroot(2) on that path, then
+resolves the path to the mount destination inside the chroot. Finally,
+the resolved chroot base path and the resolved mount destination path
+are combined to create the fully resolved path used for mounting.
+
+Bug-Debian: https://bugs.debian.org/728096
+Bug-Ubuntu: https://launchpad.net/bugs/1438942
+
+Signed-off-by: Tyler Hicks <tyhicks@canonical.com>
+---
+ bin/schroot-mount/schroot-mount-main.cc | 141 ++++++++++++++++++++++++++------
+ bin/schroot-mount/schroot-mount-main.h  |  29 +++++--
+ 2 files changed, 142 insertions(+), 28 deletions(-)
+
+--- a/bin/schroot-mount/schroot-mount-main.cc
++++ b/bin/schroot-mount/schroot-mount-main.cc
+@@ -34,6 +34,7 @@
+ #include <ctime>
+ #include <iostream>
+ #include <locale>
++#include <poll.h>
+ 
+ #include <sys/types.h>
+ #include <sys/stat.h>
+@@ -63,8 +64,14 @@ namespace
+     {
+       emap(main::CHILD_FORK, N_("Failed to fork child")),
+       emap(main::CHILD_WAIT, N_("Wait for child failed")),
++      // TRANSLATORS: %1% = directory
++      emap(main::CHROOT,     N_("Failed to change root to directory ‘%1%’")),
++      emap(main::DUP,        N_("Failed to duplicate file descriptor")),
+       // TRANSLATORS: %1% = command name
+       emap(main::EXEC,       N_("Failed to execute “%1%”")),
++      emap(main::PIPE,       N_("Failed to create pipe")),
++      emap(main::POLL,       N_("Failed to poll file descriptor")),
++      emap(main::READ,       N_("Failed to read file descriptor")),
+       emap(main::REALPATH,   N_("Failed to resolve path “%1%”"))
+     };
+ 
+@@ -92,23 +99,14 @@ main::~main ()
+ }
+ 
+ std::string
+-main::resolve_path (std::string const& mountpoint)
++main::resolve_path_chrooted (std::string const& mountpoint)
+ {
+-  // Ensure entry has a leading / to prevent security hole where
+-  // mountpoint might be outside the chroot.
+-  std::string absmountpoint(mountpoint);
+-  if (absmountpoint.empty() || absmountpoint[0] != '/')
+-    absmountpoint = std::string("/") + absmountpoint;
+-
+-  char *resolved_path = realpath(opts->mountpoint.c_str(), 0);
+-  if (!resolved_path)
+-    throw error(opts->mountpoint, REALPATH, strerror(errno));
+-  std::string basepath(resolved_path);
+-  std::free(resolved_path);
++  std::string directory(mountpoint);
++  if (directory.empty() || directory[0] != '/')
++    directory = std::string("/") + directory;
+ 
+-  std::string directory(opts->mountpoint + absmountpoint);
+   // Canonicalise path to remove any symlinks.
+-  resolved_path = realpath(directory.c_str(), 0);
++  char *resolved_path = realpath(directory.c_str(), 0);
+   if (resolved_path == 0)
+     {
+       // The path is either not present or is an invalid link.  If
+@@ -128,13 +126,13 @@ main::resolve_path (std::string const& m
+       else
+         {
+           // Try validating the parent directory.
+-          sbuild::string_list dirs = sbuild::split_string(mountpoint, "/");
++          sbuild::string_list dirs = sbuild::split_string(directory, "/");
+           if (dirs.size() > 1) // Recurse if possible, otherwise continue
+             {
+               std::string saveddir = *dirs.rbegin();
+               dirs.pop_back();
+ 
+-              std::string newpath(resolve_path(sbuild::string_list_to_string(dirs, "/")));
++              std::string newpath(resolve_path_chrooted(sbuild::string_list_to_string(dirs, "/")));
+               directory = newpath + "/" + saveddir;
+             }
+         }
+@@ -144,16 +142,113 @@ main::resolve_path (std::string const& m
+       directory = resolved_path;
+       std::free(resolved_path);
+     }
+-  // If the link was absolute (i.e. points somewhere on the host,
+-  // outside the chroot, make sure that this is modified to be
+-  // inside.
+-  if (directory.size() < basepath.size() ||
+-      directory.substr(0,basepath.size()) != basepath)
+-    directory = basepath + directory;
+ 
+   return directory;
+ }
+ 
++std::string
++main::resolve_path (std::string const& mountpoint)
++{
++  std::string stdout_buf;
++  int stdout_pipe[2];
++  int exit_status = 0;
++  pid_t pid;
++
++  try
++    {
++      if (pipe(stdout_pipe) < 0)
++        throw error(PIPE, strerror(errno));
++
++      if ((pid = fork()) == -1)
++        {
++          throw error(CHILD_FORK, strerror(errno));
++        }
++      else if (pid == 0)
++        {
++          try
++            {
++              // Set up pipes for stdout
++              if (dup2(stdout_pipe[1], STDOUT_FILENO) < 0)
++                throw error(DUP, strerror(errno));
++
++              close(stdout_pipe[0]);
++              close(stdout_pipe[1]);
++
++              char *resolved_path = realpath(opts->mountpoint.c_str(), 0);
++              if (!resolved_path)
++                throw error(opts->mountpoint, REALPATH, strerror(errno));
++
++              std::string basepath(resolved_path);
++              std::free(resolved_path);
++
++              if (chroot(basepath.c_str()) < 0)
++                throw error(basepath, CHROOT, strerror(errno));
++
++              std::cout << basepath + resolve_path_chrooted(mountpoint);
++              std::cout.flush();
++              _exit(EXIT_SUCCESS);
++            }
++          catch (std::exception const& e)
++            {
++              sbuild::log_exception_error(e);
++            }
++          catch (...)
++            {
++              sbuild::log_error()
++                << _("An unknown exception occurred") << std::endl;
++            }
++          _exit(EXIT_FAILURE);
++        }
++
++      // Log stdout
++      close(stdout_pipe[1]);
++
++      struct pollfd pollfd;
++      pollfd.fd = stdout_pipe[0];
++      pollfd.events = POLLIN;
++      pollfd.revents = 0;
++
++      char buffer[BUFSIZ];
++
++      while (1)
++        {
++          int status;
++
++          if ((status = poll(&pollfd, 1, -1)) < 0)
++            throw error(POLL, strerror(errno));
++
++          int outdata = 0;
++
++          if (pollfd.revents & POLLIN)
++            {
++              if ((outdata = read(pollfd.fd, buffer, BUFSIZ)) < 0
++                  && errno != EINTR)
++                throw error(READ, strerror(errno));
++
++              if (outdata)
++                stdout_buf += std::string(&buffer[0], outdata);
++            }
++
++          if (outdata == 0) // pipe closed
++            break;
++        }
++
++      close(stdout_pipe[0]);
++      wait_for_child(pid, exit_status);
++    }
++  catch (error const& e)
++    {
++      close(stdout_pipe[0]);
++      close(stdout_pipe[1]);
++      throw;
++    }
++
++  if (exit_status)
++    exit(exit_status);
++
++  return stdout_buf;
++}
++
+ void
+ main::action_mount ()
+ {
+--- a/bin/schroot-mount/schroot-mount-main.h
++++ b/bin/schroot-mount/schroot-mount-main.h
+@@ -42,7 +42,12 @@ namespace schroot_mount
+       {
+         CHILD_FORK, ///< Failed to fork child.
+         CHILD_WAIT, ///< Wait for child failed.
++        CHROOT,     ///< Failed to change root.
++        DUP,        ///< Failed to duplicate file descriptor.
+         EXEC,       ///< Failed to execute.
++        PIPE,       ///< Failed to create pipe.
++        POLL,       ///< Failed to poll file descriptor.
++        READ,       ///< Failed to read file descriptor.
+         REALPATH    ///< Failed to resolve path.
+       };
+ 
+@@ -91,17 +96,31 @@ namespace schroot_mount
+               sbuild::environment const& env);
+ 
+     /**
+-     * Ensure that the mountpoint is a valid absolute path inside the
+-     * chroot.  This is to avoid absolute or relative symlinks
+-     * pointing outside the chroot causing filesystems to be mounted
+-     * on the host.  An exception will be thrown if it is not possible
+-     * to resolve the path.
++     * Ensure that the mountpoint is a valid absolute path. The calling process
++     * must be chrooted before calling this function to avoid resolving
++     * absolute or relative symlinks pointing outside the chroot.  An exception
++     * will be thrown if it is not possible to resolve the path.
+      *
+      * @param mountpoint the mountpoint to check,
+      * @returns the validated path.
+      */
+ 
+     std::string
++    resolve_path_chrooted (std::string const& mountpoint);
++
++    /**
++     * Ensure that the chroot base path and the mountpoint is a valid absolute
++     * path inside the chroot.  This function calls chroot on the resolved
++     * chroot base path before attempting to resolve the mountpoint path inside
++     * of the chroot to avoid absolute or relative symlinks pointing outside
++     * the chroot causing filesystems to be mounted on the host.  An exception
++     * will be thrown if it is not possible to resolve the chroot base path or
++     * the mountpoint path.
++     *
++     * @param mountpoint the mountpoint to check,
++     * @returns the validated path.
++     */
++    std::string
+     resolve_path (std::string const& mountpoint);
+ 
+     /**

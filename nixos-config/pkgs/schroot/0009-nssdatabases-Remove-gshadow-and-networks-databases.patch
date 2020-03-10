@@ -1,0 +1,32 @@
+From bdfd3d270dda555785805ffabf39dca56ca0beef Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Tue, 10 Mar 2020 00:44:29 +0100
+Subject: [PATCH 9/9] nssdatabases: Remove gshadow and networks databases
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ etc/profile-templates/all/all/nssdatabases     | 1 -
+ etc/profile-templates/default/all/nssdatabases | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/etc/profile-templates/all/all/nssdatabases b/etc/profile-templates/all/all/nssdatabases
+index 42fa3106..815ddce3 100644
+--- a/etc/profile-templates/all/all/nssdatabases
++++ b/etc/profile-templates/all/all/nssdatabases
+@@ -4,4 +4,3 @@
+ passwd
+ shadow
+ group
+-gshadow
+diff --git a/etc/profile-templates/default/all/nssdatabases b/etc/profile-templates/default/all/nssdatabases
+index a9f13197..22efe1b5 100644
+--- a/etc/profile-templates/default/all/nssdatabases
++++ b/etc/profile-templates/default/all/nssdatabases
+@@ -1,4 +1,3 @@
+ services
+ protocols
+-networks
+ hosts
+-- 
+2.23.1
+

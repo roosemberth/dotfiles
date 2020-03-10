@@ -1,0 +1,64 @@
+From ad619201cdc663cca408e5de9c520377d44dec3c Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Mon, 9 Mar 2020 21:52:28 +0100
+Subject: [PATCH 7/9] Add MOUNT_EXECUTABLE macro to CMakeLists
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ CMakeLists.txt                          | 2 ++
+ bin/schroot-mount/schroot-mount-main.cc | 4 ++--
+ sbuild/sbuild-config.h.cmake            | 3 +++
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2968d2cc..39a41ebd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -236,6 +236,8 @@ if (zfs-snapshot)
+   set(BLOCKDEV_DEFAULT ON)
+ endif(zfs-snapshot)
+ 
++find_program(MOUNT_EXECUTABLE mount PATHS /sbin /usr/sbin /usr/local/sbin)
++
+ # Btrfs snapshot mount feature
+ find_program(BTRFS_EXECUTABLE btrfs PATHS /sbin /usr/sbin /usr/local/sbin)
+ set(BTRFSSNAP_DEFAULT OFF)
+diff --git a/bin/schroot-mount/schroot-mount-main.cc b/bin/schroot-mount/schroot-mount-main.cc
+index c5be396a..616250f3 100644
+--- a/bin/schroot-mount/schroot-mount-main.cc
++++ b/bin/schroot-mount/schroot-mount-main.cc
+@@ -298,7 +298,7 @@ main::action_mount ()
+       if (!opts->dry_run)
+         {
+           sbuild::string_list command;
+-          command.push_back("/bin/mount");
++          command.push_back(MOUNT_EXECUTABLE);
+           if (opts->verbose)
+             command.push_back("-v");
+           command.push_back("-t");
+@@ -340,7 +340,7 @@ main::make_mount_private (const std::string& options,
+       if (!opts->dry_run)
+         {
+           sbuild::string_list command;
+-          command.push_back("/bin/mount");
++          command.push_back(MOUNT_EXECUTABLE);
+           if (opts->verbose)
+             command.push_back("-v");
+           command.push_back(recursive ? "--make-rprivate" : "--make-private");
+diff --git a/sbuild/sbuild-config.h.cmake b/sbuild/sbuild-config.h.cmake
+index 3f8f113b..a6e36f46 100644
+--- a/sbuild/sbuild-config.h.cmake
++++ b/sbuild/sbuild-config.h.cmake
+@@ -96,6 +96,9 @@
+ #cmakedefine SCHROOT_DATA_DIR "${SCHROOT_DATA_DIR}"
+ #cmakedefine SCHROOT_MODULE_DIR "${SCHROOT_MODULE_DIR}"
+ 
++// Binaries
++#cmakedefine MOUNT_EXECUTABLE "${MOUNT_EXECUTABLE}"
++
+ /* Translation catalogue name */
+ #define SBUILD_MESSAGE_CATALOGUE "schroot"
+ 
+-- 
+2.23.1
+

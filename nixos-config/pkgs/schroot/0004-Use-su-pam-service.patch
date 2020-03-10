@@ -1,0 +1,54 @@
+From 288373741788253462e6c81aff7879567fbd3322 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Sun, 8 Mar 2020 01:12:35 +0100
+Subject: [PATCH 4/9] Use "su" pam service
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ bin/schroot/schroot-main-base.cc | 12 +++++++++++-
+ man/schroot.1.man                |  6 ++++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/bin/schroot/schroot-main-base.cc b/bin/schroot/schroot-main-base.cc
+index 5441ade7..1e1698f9 100644
+--- a/bin/schroot/schroot-main-base.cc
++++ b/bin/schroot/schroot-main-base.cc
+@@ -424,7 +424,17 @@ main_base::add_session_auth ()
+   // continue to use the default handler
+ 
+ #ifdef SBUILD_FEATURE_PAM
+-  sbuild::auth::ptr auth = sbuild::auth_pam::create("schroot");
++  // When installing using Nix, the schroot pam service will not be available
++  // unless linked from a NixOS system closure. To allow the schroot binary to
++  // be used without a full-system installation, piggy-back on the PAM "su"
++  // service.
++  char *pam_use_schroot_service_env = std::getenv("USE_SCHROOT_PAM_SERVICE");
++  sbuild::auth::ptr auth;
++  if (pam_use_schroot_service_env &&
++      std::string("1") == std::string(pam_use_schroot_service_env))
++    auth = sbuild::auth_pam::create("schroot");
++  else
++    auth = sbuild::auth_pam::create("su");
+ 
+   sbuild::auth_pam_conv::auth_ptr pam_auth =
+     std::dynamic_pointer_cast<sbuild::auth_pam>(auth);
+diff --git a/man/schroot.1.man b/man/schroot.1.man
+index 7d65b95b..27514853 100644
+--- a/man/schroot.1.man
++++ b/man/schroot.1.man
+@@ -278,6 +278,12 @@ schroot will prompt for a password.  If PAM is not available, all
+ authentication will automatically fail (user switching is \fInot\fP supported
+ without PAM).
+ .PP
++Note to Nix users: When installing using Nix, the schroot pam service will not
++be available unless linked from a NixOS system closure. To allow the schroot
++binary to be used without a full-system installation, schroot will use the "su"
++PAM service by default. If you want schroot to use the "schroot" PAM service,
++set the USE_SCHROOT_PAM_SERVICE variable to 1.
++.PP
+ Note that when PAM is in use, the root user is not granted any special
+ privileges by default in the program.  However, the default PAM configuration
+ permits root to log in without a password (\fIpam_rootok.so\fP), but this may
+-- 
+2.23.1
+

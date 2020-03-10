@@ -1,0 +1,1194 @@
+Description: add support for a zfs-snapshot backend.
+Author: Steve Langasek <vorlon@debian.org>
+Last-Update: 2020-01-04
+Bug-Debian: https://bugs.debian.org/947919
+
+Index: schroot/sbuild/sbuild-chroot-zfs-snapshot.cc
+===================================================================
+--- /dev/null
++++ schroot/sbuild/sbuild-chroot-zfs-snapshot.cc
+@@ -0,0 +1,304 @@
++/* Copyright © 2005-2009  Roger Leigh <rleigh@debian.org>
++ * Copyright © 2019       Steve Langasek <vorlon@debian.org>
++ *
++ * schroot is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * schroot is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see
++ * <http://www.gnu.org/licenses/>.
++ *
++ *********************************************************************/
++
++#include <config.h>
++
++#include "sbuild-chroot-zfs-snapshot.h"
++#include "sbuild-chroot-facet-session.h"
++#include "sbuild-chroot-facet-session-clonable.h"
++#include "sbuild-chroot-facet-source-clonable.h"
++#include "sbuild-chroot-facet-source.h"
++#include "sbuild-chroot-facet-mountable.h"
++#include "sbuild-format-detail.h"
++
++#include <cassert>
++#include <cerrno>
++
++#include <boost/format.hpp>
++
++using std::endl;
++using boost::format;
++using namespace sbuild;
++
++chroot_zfs_snapshot::chroot_zfs_snapshot ():
++  chroot(),
++  dataset(),
++  clone_name(),
++  snapshot_name(),
++  snapshot_options()
++{
++  add_facet(chroot_facet_source_clonable::create());
++  add_facet(chroot_facet_mountable::create());
++}
++
++chroot_zfs_snapshot::chroot_zfs_snapshot (const chroot_zfs_snapshot& rhs):
++  chroot(rhs),
++  dataset(rhs.dataset),
++  clone_name(rhs.clone_name),
++  snapshot_name(rhs.snapshot_name),
++  snapshot_options(rhs.snapshot_options)
++{
++}
++
++chroot_zfs_snapshot::~chroot_zfs_snapshot ()
++{
++}
++
++sbuild::chroot::ptr
++chroot_zfs_snapshot::clone () const
++{
++  return ptr(new chroot_zfs_snapshot(*this));
++}
++
++sbuild::chroot::ptr
++chroot_zfs_snapshot::clone_session (std::string const& session_id,
++                                    std::string const& alias,
++                                    std::string const& user,
++                                    bool               root) const
++{
++  chroot_facet_session_clonable::const_ptr psess
++    (get_facet<chroot_facet_session_clonable>());
++  assert(psess);
++
++  ptr session(new chroot_zfs_snapshot(*this));
++  psess->clone_session_setup(*this, session, session_id, alias, user, root);
++
++  return session;
++}
++
++sbuild::chroot::ptr
++chroot_zfs_snapshot::clone_source () const
++{
++  ptr clone(new chroot_zfs_snapshot(*this));
++
++  chroot_facet_source_clonable::const_ptr psrc
++    (get_facet<chroot_facet_source_clonable>());
++  assert(psrc);
++
++  psrc->clone_source_setup(*this, clone);
++
++  return clone;
++}
++
++std::string const&
++chroot_zfs_snapshot::get_dataset () const
++{
++  return this->dataset;
++}
++
++void
++chroot_zfs_snapshot::set_dataset (std::string const& dataset)
++{
++  this->dataset = dataset;
++}
++
++std::string const&
++chroot_zfs_snapshot::get_clone_name () const
++{
++  return this->clone_name;
++}
++
++void
++chroot_zfs_snapshot::set_clone_name (std::string const& clone_name)
++{
++  this->clone_name = clone_name;
++
++  chroot_facet_mountable::ptr pmnt
++    (get_facet<chroot_facet_mountable>());
++  if (pmnt)
++    if (! get_facet<chroot_facet_source>())
++      pmnt->set_mount_device(this->clone_name);
++    else
++      pmnt->set_mount_device(get_dataset());
++}
++
++std::string const&
++chroot_zfs_snapshot::get_snapshot_name () const
++{
++  return this->snapshot_name;
++}
++
++void
++chroot_zfs_snapshot::set_snapshot_name (std::string const& snapshot_name)
++{
++  this->snapshot_name = snapshot_name;
++}
++
++std::string const&
++chroot_zfs_snapshot::get_snapshot_options () const
++{
++  return this->snapshot_options;
++}
++
++void
++chroot_zfs_snapshot::set_snapshot_options (std::string const& snapshot_options)
++{
++  this->snapshot_options = snapshot_options;
++}
++
++std::string const&
++chroot_zfs_snapshot::get_chroot_type () const
++{
++  static const std::string type("zfs-snapshot");
++
++  return type;
++}
++
++std::string
++chroot_zfs_snapshot::get_path () const
++{
++  chroot_facet_mountable::const_ptr pmnt
++    (get_facet<chroot_facet_mountable>());
++
++  std::string path(get_mount_location());
++
++  if (pmnt)
++    path += pmnt->get_location();
++
++  return path;
++}
++
++void
++chroot_zfs_snapshot::setup_env (chroot const& chroot,
++                                environment&  env) const
++{
++  chroot::setup_env(chroot, env);
++
++  env.add("CHROOT_ZFS_DATASET", get_dataset());
++
++  // if this is a source chroot, avoid configuring snapshotting.
++  if (chroot.get_facet<chroot_facet_source>())
++    return;
++
++  env.add("CHROOT_ZFS_SNAPSHOT_NAME", get_snapshot_name());
++  env.add("CHROOT_ZFS_CLONE_NAME", get_clone_name());
++  env.add("CHROOT_ZFS_SNAPSHOT_OPTIONS", get_snapshot_options());
++}
++
++void
++chroot_zfs_snapshot::setup_lock (chroot::setup_type type,
++                                 bool               lock,
++                                 int                status)
++{
++  /* Create or unlink session information. */
++  if ((type == SETUP_START && lock == true) ||
++      (type == SETUP_STOP && lock == false && status == 0))
++    {
++      bool start = (type == SETUP_START);
++      setup_session_info(start);
++    }
++}
++
++sbuild::chroot::session_flags
++chroot_zfs_snapshot::get_session_flags (chroot const& chroot) const
++{
++  session_flags flags = SESSION_NOFLAGS;
++
++  if (get_facet<chroot_facet_session>())
++    flags = flags | SESSION_PURGE;
++
++  return flags;
++}
++
++void
++chroot_zfs_snapshot::get_details (chroot const& chroot,
++                                  format_detail& detail) const
++{
++  chroot::get_details(chroot, detail);
++
++  if (!this->dataset.empty())
++    detail.add(_("ZFS Source Dataset"), get_dataset());
++  if (!this->snapshot_name.empty())
++    detail.add(_("ZFS Snapshot Name"), get_snapshot_name());
++  if (!this->clone_name.empty())
++    detail.add(_("ZFS Clone Dataset"), get_clone_name());
++  if (!this->snapshot_options.empty())
++    detail.add(_("ZFS Snapshot Options"), get_snapshot_options());
++}
++
++void
++chroot_zfs_snapshot::get_keyfile (chroot const& chroot,
++                                  keyfile& keyfile) const
++{
++  chroot::get_keyfile(chroot, keyfile);
++
++  bool session = static_cast<bool>(get_facet<chroot_facet_session>());
++
++  if (session)
++  {
++    keyfile::set_object_value(*this,
++                              &chroot_zfs_snapshot::get_snapshot_name,
++                              keyfile, get_name(),
++                              "zfs-snapshot-name");
++    keyfile::set_object_value(*this,
++                              &chroot_zfs_snapshot::get_clone_name,
++                              keyfile, get_name(),
++                              "zfs-clone-name");
++  }
++
++  if (!session)
++  {
++    keyfile::set_object_value(*this,
++                              &chroot_zfs_snapshot::get_dataset,
++                              keyfile, get_name(),
++                              "zfs-dataset-name");
++    keyfile::set_object_value(*this,
++                              &chroot_zfs_snapshot::get_snapshot_options,
++                              keyfile, get_name(),
++                              "zfs-snapshot-options");
++  }
++}
++
++void
++chroot_zfs_snapshot::set_keyfile (chroot&        chroot,
++                                  keyfile const& keyfile,
++                                  string_list&   used_keys)
++{
++  chroot::set_keyfile(chroot, keyfile, used_keys);
++
++  bool session = static_cast<bool>(get_facet<chroot_facet_session>());
++
++  keyfile::get_object_value(*this, &chroot_zfs_snapshot::set_dataset,
++                            keyfile, get_name(), "zfs-dataset",
++                            session ?
++                            keyfile::PRIORITY_DISALLOWED :
++                            keyfile::PRIORITY_REQUIRED);
++  used_keys.push_back("zfs-dataset");
++
++  keyfile::get_object_value(*this, &chroot_zfs_snapshot::set_snapshot_name,
++                            keyfile, get_name(), "zfs-snapshot-name",
++                            session ?
++                            keyfile::PRIORITY_REQUIRED :
++                            keyfile::PRIORITY_DISALLOWED);
++  used_keys.push_back("zfs-snapshot-name");
++
++  keyfile::get_object_value(*this, &chroot_zfs_snapshot::set_clone_name,
++                            keyfile, get_name(), "zfs-clone-name",
++                            session ?
++                            keyfile::PRIORITY_REQUIRED :
++                            keyfile::PRIORITY_DISALLOWED);
++  used_keys.push_back("zfs-clone-name");
++
++  keyfile::get_object_value(*this, &chroot_zfs_snapshot::set_snapshot_options,
++                            keyfile, get_name(), "zfs-snapshot-options",
++                            session ?
++                            keyfile::PRIORITY_DISALLOWED :
++                            keyfile::PRIORITY_OPTIONAL); // Only needed for creating snapshot, not using snapshot
++  used_keys.push_back("zfs-snapshot-options");
++}
+Index: schroot/test/sbuild-chroot-zfs-snapshot.cc
+===================================================================
+--- /dev/null
++++ schroot/test/sbuild-chroot-zfs-snapshot.cc
+@@ -0,0 +1,318 @@
++/* Copyright © 2006-2008  Roger Leigh <rleigh@debian.org>
++ * Copyright © 2019       Steve Langasek <vorlon@debian.org>
++ *
++ * schroot is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * schroot is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see
++ * <http://www.gnu.org/licenses/>.
++ *
++ *********************************************************************/
++
++#include <config.h>
++
++#include <sbuild/sbuild-chroot-zfs-snapshot.h>
++#include <sbuild/sbuild-chroot-facet-mountable.h>
++#include <sbuild/sbuild-i18n.h>
++#include <sbuild/sbuild-util.h>
++
++#include "test-helpers.h"
++#include "test-sbuild-chroot.h"
++
++#include <algorithm>
++#include <set>
++
++#include <cppunit/extensions/HelperMacros.h>
++
++using namespace CppUnit;
++
++using sbuild::_;
++
++class chroot_zfs_snapshot : public sbuild::chroot_zfs_snapshot
++{
++public:
++  chroot_zfs_snapshot():
++    sbuild::chroot_zfs_snapshot()
++  {}
++
++  virtual ~chroot_zfs_snapshot()
++  {}
++};
++
++class test_chroot_zfs_snapshot : public test_chroot_base<chroot_zfs_snapshot>
++{
++  CPPUNIT_TEST_SUITE(test_chroot_zfs_snapshot);
++  CPPUNIT_TEST(test_snapshot_name);
++  CPPUNIT_TEST(test_snapshot_options);
++  CPPUNIT_TEST(test_chroot_type);
++  CPPUNIT_TEST(test_setup_env);
++  CPPUNIT_TEST(test_setup_env_session);
++  CPPUNIT_TEST(test_setup_env_source);
++  CPPUNIT_TEST(test_setup_env_session_source);
++  CPPUNIT_TEST(test_setup_keyfile);
++  CPPUNIT_TEST(test_setup_keyfile_session);
++  CPPUNIT_TEST(test_setup_keyfile_source);
++  CPPUNIT_TEST(test_setup_keyfile_session_source);
++  CPPUNIT_TEST(test_session_flags);
++  CPPUNIT_TEST(test_print_details);
++  CPPUNIT_TEST(test_print_config);
++  CPPUNIT_TEST(test_run_setup_scripts);
++  CPPUNIT_TEST_SUITE_END();
++
++public:
++  test_chroot_zfs_snapshot():
++    test_chroot_base<chroot_zfs_snapshot>()
++  {}
++
++  void setUp()
++  {
++    test_chroot_base<chroot_zfs_snapshot>::setUp();
++    CPPUNIT_ASSERT(chroot);
++    CPPUNIT_ASSERT(session);
++    CPPUNIT_ASSERT(source);
++    CPPUNIT_ASSERT(session_source);
++  }
++
++  virtual void setup_chroot_props (sbuild::chroot::ptr& chroot)
++  {
++    test_chroot_base<chroot_zfs_snapshot>::setup_chroot_props(chroot);
++
++    std::shared_ptr<sbuild::chroot_zfs_snapshot> c = std::dynamic_pointer_cast<sbuild::chroot_zfs_snapshot>(chroot);
++
++    c->set_dataset("schroot-pool/testdev");
++    c->set_snapshot_options("-o checksum=off");
++
++    sbuild::chroot_facet_mountable::ptr pmnt(chroot->get_facet<sbuild::chroot_facet_mountable>());
++    CPPUNIT_ASSERT(pmnt);
++
++    pmnt->set_mount_options("-t jfs -o quota,rw");
++    pmnt->set_location("/squeeze");
++  }
++
++  void
++  test_snapshot_name()
++  {
++    std::shared_ptr<sbuild::chroot_zfs_snapshot> c = std::dynamic_pointer_cast<sbuild::chroot_zfs_snapshot>(chroot);
++    CPPUNIT_ASSERT(c);
++    c->set_snapshot_name("some-snapshot-name");
++    CPPUNIT_ASSERT(c->get_snapshot_name() == "some-snapshot-name");
++  }
++
++  void
++  test_snapshot_options()
++  {
++    std::shared_ptr<sbuild::chroot_zfs_snapshot> c = std::dynamic_pointer_cast<sbuild::chroot_zfs_snapshot>(chroot);
++    CPPUNIT_ASSERT(c);
++    c->set_snapshot_options("-o opt1,opt2");
++    CPPUNIT_ASSERT(c->get_snapshot_options() == "-o opt1,opt2");
++  }
++
++  void test_chroot_type()
++  {
++    CPPUNIT_ASSERT(chroot->get_chroot_type() == "zfs-snapshot");
++  }
++
++  void setup_env_gen(sbuild::environment &expected)
++  {
++    setup_env_chroot(expected);
++    expected.add("CHROOT_LOCATION",       "/squeeze");
++    expected.add("CHROOT_MOUNT_LOCATION", "/mnt/mount-location");
++    expected.add("CHROOT_PATH",           "/mnt/mount-location/squeeze");
++    expected.add("CHROOT_ZFS_DATASET",         "schroot-pool/testdev");
++    expected.add("CHROOT_MOUNT_OPTIONS",  "-t jfs -o quota,rw");
++  }
++
++  void test_setup_env()
++  {
++    sbuild::environment expected;
++    setup_env_gen(expected);
++    expected.add("CHROOT_TYPE",           "zfs-snapshot");
++    expected.add("CHROOT_ZFS_SNAPSHOT_OPTIONS", "-o checksum=off");
++    expected.add("CHROOT_SESSION_CLONE",  "true");
++    expected.add("CHROOT_SESSION_CREATE", "true");
++    expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_env(chroot, expected);
++  }
++
++  void test_setup_env_session()
++  {
++    std::shared_ptr<sbuild::chroot_zfs_snapshot> c = std::dynamic_pointer_cast<sbuild::chroot_zfs_snapshot>(chroot);
++
++    sbuild::environment expected;
++    setup_env_gen(expected);
++    expected.add("CHROOT_TYPE",           "zfs-snapshot");
++    expected.add("SESSION_ID",            "test-session-name");
++    expected.add("CHROOT_ALIAS",          "test-session-name");
++    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(session chroot)"));
++    expected.add("CHROOT_MOUNT_DEVICE",   "schroot-pool/testdev/schroot-test-session-name");
++    expected.add("CHROOT_ZFS_SNAPSHOT_NAME",    "schroot-pool/testdev@test-session-name");
++    expected.add("CHROOT_ZFS_CLONE_NAME",   "schroot-pool/testdev/schroot-test-session-name");
++    expected.add("CHROOT_ZFS_SNAPSHOT_OPTIONS", "-o checksum=off");
++    expected.add("CHROOT_SESSION_CLONE",  "false");
++    expected.add("CHROOT_SESSION_CREATE", "false");
++    expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_env(session, expected);
++  }
++
++  void test_setup_env_source()
++  {
++    sbuild::environment expected;
++    setup_env_gen(expected);
++    expected.add("CHROOT_TYPE",           "zfs-snapshot");
++    expected.add("CHROOT_NAME",           "test-name");
++    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(source chroot)"));
++    expected.add("CHROOT_SESSION_CLONE",  "false");
++    expected.add("CHROOT_SESSION_CREATE", "true");
++    expected.add("CHROOT_SESSION_PURGE",  "false");
++    expected.add("CHROOT_SESSION_SOURCE", "false");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_env(source, expected);
++  }
++
++  void test_setup_env_session_source()
++  {
++    sbuild::environment expected;
++    setup_env_gen(expected);
++    expected.add("CHROOT_TYPE",           "zfs-snapshot");
++    expected.add("CHROOT_NAME",           "test-name");
++    expected.add("SESSION_ID",            "test-session-name");
++    expected.add("CHROOT_DESCRIPTION",     chroot->get_description() + ' ' + _("(source chroot) (session chroot)"));
++    expected.add("CHROOT_ALIAS",          "test-session-name");
++    expected.add("CHROOT_MOUNT_DEVICE",   "schroot-pool/testdev");
++    expected.add("CHROOT_SESSION_CLONE",  "false");
++    expected.add("CHROOT_SESSION_CREATE", "false");
++    expected.add("CHROOT_SESSION_PURGE",  "true");
++    expected.add("CHROOT_SESSION_SOURCE", "true");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_env(session_source, expected);
++  }
++
++  void setup_keyfile_zfs(sbuild::keyfile &expected, std::string group)
++  {
++    expected.set_value(group, "location", "/squeeze");
++    expected.set_value(group, "mount-options", "-t jfs -o quota,rw");
++  }
++
++  void test_setup_keyfile()
++  {
++    sbuild::keyfile expected;
++    std::string group = chroot->get_name();
++    setup_keyfile_chroot(expected, group);
++    setup_keyfile_source(expected, group);
++    setup_keyfile_zfs(expected, group);
++    expected.set_value(group, "type", "zfs-snapshot");
++    expected.set_value(group, "zfs-snapshot-options", "-o checksum=off");
++    expected.set_value(group, "zfs-dataset-name", "schroot-pool/testdev");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_keyfile
++      (chroot,expected, chroot->get_name());
++  }
++
++  void test_setup_keyfile_session()
++  {
++    sbuild::keyfile expected;
++    const std::string group(session->get_name());
++    setup_keyfile_session(expected, group);
++    setup_keyfile_zfs(expected, group);
++    expected.set_value(group, "type", "zfs-snapshot");
++    expected.set_value(group, "name", "test-session-name");
++    expected.set_value(group, "selected-name", "test-session-name");
++    expected.set_value(group, "description", chroot->get_description() + ' ' + _("(session chroot)"));
++    expected.set_value(group, "aliases", "");
++    expected.set_value(group, "zfs-snapshot-name", "schroot-pool/testdev@test-session-name");
++    expected.set_value(group, "zfs-clone-name", "schroot-pool/testdev/schroot-test-session-name");
++    expected.set_value(group, "mount-device", "schroot-pool/testdev/schroot-test-session-name");
++    expected.set_value(group, "mount-location", "/mnt/mount-location");
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_keyfile
++      (session, expected, group);
++  }
++
++  void test_setup_keyfile_source()
++  {
++    sbuild::keyfile expected;
++    const std::string group(source->get_name());
++    setup_keyfile_chroot(expected, group);
++    setup_keyfile_zfs(expected, group);
++    expected.set_value(group, "type", "zfs-snapshot");
++    expected.set_value(group, "description", chroot->get_description() + ' ' + _("(source chroot)"));
++    expected.set_value(group, "aliases", "test-name-source,test-alias-1-source,test-alias-2-source");
++    expected.set_value(group, "zfs-snapshot-options", "-o checksum=off");
++    expected.set_value(group, "zfs-dataset-name", "schroot-pool/testdev");
++    setup_keyfile_source_clone(expected, group);
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_keyfile
++      (source, expected, group);
++  }
++
++  void test_setup_keyfile_session_source()
++  {
++    sbuild::keyfile expected;
++    const std::string group(source->get_name());
++    setup_keyfile_chroot(expected, group);
++    setup_keyfile_zfs(expected, group);
++    expected.set_value(group, "type", "zfs-snapshot");
++    expected.set_value(group, "mount-device", "schroot-pool/testdev");
++    expected.set_value(group, "mount-location", "/mnt/mount-location");
++    expected.set_value(group, "zfs-clone-name", "schroot-pool/testdev/schroot-test-session-name");
++    expected.set_value(group, "zfs-snapshot-name", "schroot-pool/testdev@test-session-name");
++    setup_keyfile_session_source_clone(expected, group);
++
++    test_chroot_base<chroot_zfs_snapshot>::test_setup_keyfile
++      (session_source, expected, group);
++  }
++
++  void test_session_flags()
++  {
++    CPPUNIT_ASSERT(chroot->get_session_flags() ==
++                   (sbuild::chroot::SESSION_CREATE |
++                    sbuild::chroot::SESSION_CLONE));
++
++    CPPUNIT_ASSERT(session->get_session_flags() ==
++                   (sbuild::chroot::SESSION_PURGE));
++
++    /// @todo: Should return NOFLAGS?  This depends upon if source
++    /// chroots need transforming into sessions as well (which should
++    /// probably happen and be tested for independently).
++    CPPUNIT_ASSERT(source->get_session_flags() ==
++                   (sbuild::chroot::SESSION_CREATE));
++  }
++
++  void test_print_details()
++  {
++    std::ostringstream os;
++    os << chroot;
++    // TODO: Compare output.
++    CPPUNIT_ASSERT(!os.str().empty());
++  }
++
++  void test_print_config()
++  {
++    std::ostringstream os;
++    sbuild::keyfile config;
++    config << chroot;
++    os << config;
++    // TODO: Compare output.
++    CPPUNIT_ASSERT(!os.str().empty());
++  }
++
++  void test_run_setup_scripts()
++  {
++    CPPUNIT_ASSERT(chroot->get_run_setup_scripts());
++  }
++
++};
++
++CPPUNIT_TEST_SUITE_REGISTRATION(test_chroot_zfs_snapshot);
+Index: schroot/etc/setup.d/05zfs
+===================================================================
+--- /dev/null
++++ schroot/etc/setup.d/05zfs
+@@ -0,0 +1,67 @@
++#!/bin/sh
++# Copyright © 2005-2007  Roger Leigh <rleigh@debian.org>
++# Copyright © 2019       Steve Langasek <vorlon@debian.org>
++#
++# schroot is free software: you can redistribute it and/or modify it
++# under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++#
++# schroot is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program.  If not, see
++# <http://www.gnu.org/licenses/>.
++#
++#####################################################################
++
++set -e
++
++. "$SETUP_DATA_DIR/common-data"
++. "$SETUP_DATA_DIR/common-functions"
++. "$SETUP_DATA_DIR/common-config"
++
++if [ "$CHROOT_TYPE" = "zfs-snapshot" ] && [ -n "$CHROOT_ZFS_CLONE_NAME" ]; then
++
++    if [ $STAGE = "setup-start" ]; then
++
++        if ! zfs list "$CHROOT_ZFS_DATASET" >/dev/null 2>&1; then
++            fatal "Dataset '$CHROOT_ZFS_DATASET' does not exist"
++        fi
++
++        if [ "$VERBOSE" = "verbose" ]; then
++            zfs snapshot "$CHROOT_ZFS_SNAPSHOT_NAME" \
++                $CHROOT_ZFS_SNAPSHOT_OPTIONS
++            zfs clone "$CHROOT_ZFS_SNAPSHOT_NAME" \
++                "$CHROOT_ZFS_CLONE_NAME" -o mountpoint=legacy
++        else
++            zfs snapshot "$CHROOT_ZFS_SNAPSHOT_NAME" \
++                $CHROOT_ZFS_SNAPSHOT_OPTIONS > /dev/null
++            zfs clone "$CHROOT_ZFS_SNAPSHOT_NAME" \
++                "$CHROOT_ZFS_CLONE_NAME" -o mountpoint=legacy > /dev/null
++        fi
++
++    elif [ $STAGE = "setup-stop" ]; then
++
++        if zfs list "$CHROOT_ZFS_CLONE_NAME" >/dev/null 2>&1
++        then
++            if [ "$VERBOSE" = "verbose" ]; then
++                zfs destroy "$CHROOT_ZFS_CLONE_NAME"
++                zfs destroy "$CHROOT_ZFS_SNAPSHOT_NAME"
++            else
++                zfs destroy "$CHROOT_ZFS_CLONE_NAME" > /dev/null
++                zfs destroy "$CHROOT_ZFS_SNAPSHOT_NAME" > /dev/null
++            fi
++        else
++            # The dataset no longer exists, or was never created,
++            # for example on zfs clone failure.
++            warn "$CHROOT_ZFS_SNAPSHOT_NAME does not exist (it may have been removed previously)"
++        fi
++
++    fi
++
++fi
++
+Index: schroot/sbuild/sbuild-chroot-zfs-snapshot.h
+===================================================================
+--- /dev/null
++++ schroot/sbuild/sbuild-chroot-zfs-snapshot.h
+@@ -0,0 +1,175 @@
++/* Copyright © 2005-2008  Roger Leigh <rleigh@debian.org>
++ * Copyright © 2019       Steve Langasek <vorlon@debian.org>
++ *
++ * schroot is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * schroot is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see
++ * <http://www.gnu.org/licenses/>.
++ *
++ *********************************************************************/
++
++#ifndef SBUILD_CHROOT_ZFS_SNAPSHOT_H
++#define SBUILD_CHROOT_ZFS_SNAPSHOT_H
++
++#include <sbuild/sbuild-chroot.h>
++
++namespace sbuild
++{
++
++  /**
++   * A chroot stored on a ZFS dataset.
++   *
++   * A clone dataset will be created and mounted on demand.
++   */
++  class chroot_zfs_snapshot : public chroot
++  {
++  protected:
++    /// The constructor.
++    chroot_zfs_snapshot ();
++
++    /// The copy constructor.
++    chroot_zfs_snapshot (const chroot_zfs_snapshot& rhs);
++
++    friend class chroot;
++
++  public:
++    /// The destructor.
++    virtual ~chroot_zfs_snapshot ();
++
++    virtual chroot::ptr
++    clone () const;
++
++    virtual chroot::ptr
++    clone_session (std::string const& session_id,
++                   std::string const& alias,
++                   std::string const& user,
++                   bool               root) const;
++
++    virtual chroot::ptr
++    clone_source () const;
++
++    /**
++     * Get the ZFS source dataset name.  This is used by "zfs clone".
++     *
++     * @returns the dataset name.
++     */
++    std::string const&
++    get_dataset () const;
++
++    /**
++     * Set the ZFS source dataset name.  This is used by "zfs clone".
++     *
++     * @param dataset the source dataset name.
++     */
++    void
++    set_dataset (std::string const& dataset);
++
++    /**
++     * Get the ZFS clone name.  This is used by "zfs clone".
++     *
++     * @returns the clone name.
++     */
++    std::string const&
++    get_clone_name () const;
++
++    /**
++     * Set the clone name.  This is used by "zfs clone".
++     *
++     * @param clone_name the clone name.
++     */
++    void
++    set_clone_name (std::string const& clone_name);
++
++    /**
++     * Get the ZFS snapshot name.  This is used by "zfs snapshot".
++     *
++     * @returns the snapshot name.
++     */
++    std::string const&
++    get_snapshot_name () const;
++
++    /**
++     * Set the snapshot name.  This is used by "zfs snapshot".
++     *
++     * @param snapshot_name the snapshot name.
++     */
++    void
++    set_snapshot_name (std::string const& snapshot_name);
++
++    /**
++     * Get the ZFS snapshot options.  These are used by "zfs snapshot".
++     *
++     * @returns the options.
++     */
++    std::string const&
++    get_snapshot_options () const;
++
++    /**
++     * Set the ZFS snapshot options.  These are used by "zfs snapshot".
++     *
++     * @param snapshot_options the options.
++     */
++    void
++    set_snapshot_options (std::string const& snapshot_options);
++
++    virtual std::string const&
++    get_chroot_type () const;
++
++    virtual std::string
++    get_path () const;
++
++    virtual void
++    setup_env (chroot const& chroot,
++               environment&  env) const;
++
++    virtual session_flags
++    get_session_flags (chroot const& chroot) const;
++
++  protected:
++    virtual void
++    setup_lock (chroot::setup_type type,
++                bool               lock,
++                int                status);
++
++    virtual void
++    get_details (chroot const& chroot,
++                 format_detail& detail) const;
++
++    virtual void
++    get_keyfile (chroot const& chroot,
++                 keyfile& keyfile) const;
++
++    virtual void
++    set_keyfile (chroot&        chroot,
++                 keyfile const& keyfile,
++                 string_list&   used_keys);
++
++  private:
++    /// ZFS source dataset
++    std::string dataset;
++    /// ZFS clone name for "zfs clone"
++    std::string clone_name;
++    /// ZFS snapshot name for "zfs snapshot"
++    std::string snapshot_name;
++    /// ZFS snapshot options for "zfs snapshot"
++    std::string snapshot_options;
++  };
++
++}
++
++#endif /* SBUILD_CHROOT_ZFS_SNAPSHOT_H */
++
++/*
++ * Local Variables:
++ * mode:C++
++ * End:
++ */
+Index: schroot/CMakeLists.txt
+===================================================================
+--- schroot.orig/CMakeLists.txt
++++ schroot/CMakeLists.txt
+@@ -223,6 +223,19 @@
+   set(BLOCKDEV_DEFAULT ON)
+ endif(lvm-snapshot)
+ 
++# ZFS snapshot mount feature
++find_program(ZFS_EXECUTABLE zfs PATHS /sbin /usr/sbin /usr/local/sbin)
++set(ZFSSNAP_DEFAULT OFF)
++if (ZFS_EXECUTABLE)
++  set (ZFSSNAP_DEFAULT ON)
++endif (ZFS_EXECUTABLE)
++option(zfs-snapshot "Enable support for ZFS snapshots (requires ZFS)" ${ZFSSNAP_DEFAULT})
++set(BUILD_ZFSSNAP ${zfs-snapshot})
++set(SBUILD_FEATURE_ZFSSNAP ${zfs-snapshot})
++if (zfs-snapshot)
++  set(BLOCKDEV_DEFAULT ON)
++endif(zfs-snapshot)
++
+ # Btrfs snapshot mount feature
+ find_program(BTRFS_EXECUTABLE btrfs PATHS /sbin /usr/sbin /usr/local/sbin)
+ set(BTRFSSNAP_DEFAULT OFF)
+@@ -244,6 +257,9 @@
+ if(lvm-snapshot AND NOT block-device)
+   message(FATAL_ERROR "block-device must be enabled when lvm-snapshot is enabled")
+ endif(lvm-snapshot AND NOT block-device)
++if(zfs-snapshot AND NOT block-device)
++  message(FATAL_ERROR "block-device must be enabled when zfs-snapshot is enabled")
++endif(zfs-snapshot AND NOT block-device)
+ if(btrfs-snapshot AND NOT block-device)
+   message(FATAL_ERROR "block-device must be enabled when btrfs-snapshot is enabled")
+ endif(btrfs-snapshot AND NOT block-device)
+Index: schroot/test/CMakeLists.txt
+===================================================================
+--- schroot.orig/test/CMakeLists.txt
++++ schroot/test/CMakeLists.txt
+@@ -46,6 +46,11 @@
+       sbuild-chroot-lvm-snapshot.cc)
+ endif(BUILD_LVMSNAP)
+ 
++if(BUILD_ZFSSNAP)
++  set(sbuild_chroot_zfssnap_sources
++      sbuild-chroot-zfs-snapshot.cc)
++endif(BUILD_ZFSSNAP)
++
+ if(BUILD_BTRFSSNAP)
+   set(sbuild_chroot_btrfssnap_sources
+       sbuild-chroot-btrfs-snapshot.cc)
+@@ -64,6 +69,7 @@
+     sbuild-chroot-directory.cc
+     ${sbuild_chroot_blockdev_sources}
+     ${sbuild_chroot_lvmsnap_sources}
++    ${sbuild_chroot_zfssnap_sources}
+     ${sbuild_chroot_btrfssnap_sources}
+     ${sbuild_chroot_loopback_sources}
+     sbuild-chroot-facet-userdata.cc)
+Index: schroot/test/Makefile.am
+===================================================================
+--- schroot.orig/test/Makefile.am
++++ schroot/test/Makefile.am
+@@ -36,6 +36,7 @@
+ 	sbuild-chroot-loopback		\
+ 	sbuild-chroot-lvm-snapshot	\
+ 	sbuild-chroot-btrfs-snapshot	\
++	sbuild-chroot-zfs-snapshot	\
+ 	sbuild-chroot-config		\
+ 	sbuild-chroot-facet-userdata	\
+ 	sbuild-environment		\
+@@ -62,6 +63,7 @@
+ 	sbuild-chroot-loopback		\
+ 	sbuild-chroot-lvm-snapshot	\
+ 	sbuild-chroot-btrfs-snapshot	\
++	sbuild-chroot-zfs-snapshot	\
+ 	sbuild-chroot-config		\
+ 	sbuild-chroot-facet-userdata	\
+ 	sbuild-environment		\
+@@ -102,6 +104,11 @@
+ 	sbuild-chroot-btrfs-snapshot.cc
+ endif
+ 
++if BUILD_ZFSSNAP
++sbuild_chroot_zfssnap_sources =	\
++	sbuild-chroot-zfs-snapshot.cc
++endif
++
+ sbuild_chroot_SOURCES =		\
+ 	sbuild-chroot.cc	\
+ 	test-sbuild-chroot.h
+@@ -142,6 +149,11 @@
+ 	test-sbuild-chroot.h
+ sbuild_chroot_btrfs_snapshot_LDADD =  libtest.la
+ 
++sbuild_chroot_zfs_snapshot_SOURCES =		\
++	$(sbuild_chroot_zfssnap_sources)	\
++	test-sbuild-chroot.h
++sbuild_chroot_zfs_snapshot_LDADD =  libtest.la
++
+ sbuild_chroot_loopback_SOURCES =		\
+ 	$(sbuild_chroot_loopback_sources)	\
+ 	test-sbuild-chroot.h
+Index: schroot/sbuild/CMakeLists.txt
+===================================================================
+--- schroot.orig/sbuild/CMakeLists.txt
++++ schroot/sbuild/CMakeLists.txt
+@@ -59,6 +59,13 @@
+       sbuild-chroot-lvm-snapshot.cc)
+ endif(BUILD_LVMSNAP)
+ 
++if(BUILD_ZFSSNAP)
++  set(public_zfssnap_h_sources
++      sbuild-chroot-zfs-snapshot.h)
++  set(public_zfssnap_cc_sources
++      sbuild-chroot-zfs-snapshot.cc)
++endif(BUILD_ZFSSNAP)
++
+ if(BUILD_BTRFSSNAP)
+   set(public_btrfssnap_h_sources
+       sbuild-chroot-btrfs-snapshot.h)
+@@ -148,6 +155,7 @@
+     ${public_blockdev_base_h_sources}
+     ${public_blockdev_h_sources}
+     ${public_lvmsnap_h_sources}
++    ${public_zfssnap_h_sources}
+     ${public_btrfssnap_h_sources}
+     ${public_loopback_h_sources})
+ 
+@@ -162,6 +170,7 @@
+     ${public_blockdev_base_cc_sources}
+     ${public_blockdev_cc_sources}
+     ${public_lvmsnap_cc_sources}
++    ${public_zfssnap_cc_sources}
+     ${public_btrfssnap_cc_sources}
+     ${public_loopback_cc_sources})
+ 
+Index: schroot/config.h.cmake
+===================================================================
+--- schroot.orig/config.h.cmake
++++ schroot/config.h.cmake
+@@ -140,6 +140,9 @@
+ /* Set if the lvm-snapshot chroot type is present */
+ #cmakedefine SBUILD_FEATURE_LVMSNAP 1
+ 
++/* Set if the zfs-snapshot chroot type is present */
++#cmakedefine SBUILD_FEATURE_ZFSSNAP 1
++
+ /* Set if PAM support is available */
+ #cmakedefine SBUILD_FEATURE_PAM 1
+ 
+Index: schroot/sbuild/sbuild-chroot-facet-session-clonable.cc
+===================================================================
+--- schroot.orig/sbuild/sbuild-chroot-facet-session-clonable.cc
++++ schroot/sbuild/sbuild-chroot-facet-session-clonable.cc
+@@ -36,6 +36,9 @@
+ #ifdef SBUILD_FEATURE_BTRFSSNAP
+ #include "sbuild-chroot-btrfs-snapshot.h"
+ #endif // SBUILD_FEATURE_BTRFSSNAP
++#ifdef SBUILD_FEATURE_ZFSSNAP
++#include "sbuild-chroot-zfs-snapshot.h"
++#endif // SBUILD_FEATURE_ZFSSNAP
+ #ifdef SBUILD_FEATURE_UNION
+ #include "sbuild-chroot-facet-union.h"
+ #endif // SBUILD_FEATURE_UNION
+@@ -194,6 +197,20 @@
+     }
+ #endif // SBUILD_FEATURE_BTRFSSNAP
+ 
++#ifdef SBUILD_FEATURE_ZFSSNAP
++  /* ZFS devices need the snapshot device name specifying. */
++  std::shared_ptr<chroot_zfs_snapshot> zfs_snapshot(std::dynamic_pointer_cast<chroot_zfs_snapshot>(clone));
++  if (zfs_snapshot && !zfs_snapshot->get_dataset().empty())
++    {
++      std::string snapname(zfs_snapshot->get_dataset());
++      snapname += "@" + clone->get_name();
++      zfs_snapshot->set_snapshot_name(snapname);
++
++      std::string clonename(zfs_snapshot->get_dataset());
++      clonename += "/schroot-" + clone->get_name();
++      zfs_snapshot->set_clone_name(clonename);
++    }
++#endif // SBUILD_FEATURE_LVMSNAP
+ #ifdef SBUILD_FEATURE_UNION
+   // If the parent did not have a union facet, then neither should we.
+   chroot_facet_union::const_ptr pparentuni(parent.get_facet<chroot_facet_union>());
+Index: schroot/etc/schroot.conf
+===================================================================
+--- schroot.orig/etc/schroot.conf
++++ schroot/etc/schroot.conf
+@@ -37,6 +37,17 @@
+ #groups=root,sbuild
+ #root-groups=root,sbuild
+ #
++#[sid-znap]
++#type=zfs-snapshot
++#description=Debian sid ZFS snapshot
++#groups=sbuild,root
++#root-users=rleigh
++#root-groups=root,sbuild
++#source-root-users=rleigh
++#zfs-dataset=rpool/CHROOT/sid
++#mount-options=-o atime,sync,user_xattr
++#zfs-snapshot-options=-o checksum=off
++#
+ #[squeeze]
+ #description=Debian squeeze (stable) 32-bit
+ #directory=/srv/chroot/squeeze
+Index: schroot/man/schroot.conf.5.man
+===================================================================
+--- schroot.orig/man/schroot.conf.5.man
++++ schroot/man/schroot.conf.5.man
+@@ -46,7 +46,7 @@
+ \f[CBI]type=\fP\f[CI]type\fP
+ The type of the chroot.  Valid types are \[oq]plain\[cq], \[oq]directory\[cq],
+ \[oq]file\[cq], \[oq]loopback\[cq], \[oq]block\-device\[cq],
+-\[oq]btrfs\-snapshot\[cq] and \[oq]lvm\-snapshot\[cq].  If empty or omitted,
++\[oq]btrfs\-snapshot\[cq], \[oq]zfs\-snapshot\[cq] and \[oq]lvm\-snapshot\[cq].  If empty or omitted,
+ the default type is \[oq]plain\[cq].  Note that \[oq]plain\[cq] chroots do not
+ run setup scripts and mount filesystems; \[oq]directory\[cq] is recommended for
+ normal use (see \[lq]\fIPlain and directory chroots\fP\[rq], below).
+@@ -323,6 +323,23 @@
+ .TP
+ \f[CBI]btrfs\-snapshot\-directory=\fP\f[CI]directory\fP
+ The directory in which to store the snapshots of the above source subvolume.
++.SS ZFS snapshot chroots
++Chroots of type \[oq]zfs\-snapshot\[cq] are a ZFS clone created from an
++existing ZFS dataset.  A snapshot and clone will be created from this source
++subvolume on demand at the start of a session, and then the clone will be
++mounted.  At the end of the session, the clone will be unmounted and the
++clone and snapshot will be deleted.  This chroot type implements the
++\fBsource chroot\fP options (see \[lq]\fISource chroot options\fP\[rq],
++below).  Note that a corresponding source chroot (of type
++\[oq]directory\[cq]) will be created for each chroot of this type; this is
++for convenient access to the source volume. These additional options are
++also implemented:
++.TP
++\f[CBI]zfs\-dataset=\fP\f[CI]dataset_name\fP
++Name of the ZFS source dataset to use.
++.TP
++\f[CBI]zfs\-snapshot\-options=\fP\f[CI]snapshot_options\fP
++Snapshot options.  These are additional options to pass to zfs snapshot.
+ .SS LVM snapshot chroots
+ Chroots of type \[oq]lvm\-snapshot\[cq] are a filesystem available on an LVM
+ logical volume (LV).  A snapshot LV will be created from this LV on demand, and
+Index: schroot/sbuild/sbuild-chroot.cc
+===================================================================
+--- schroot.orig/sbuild/sbuild-chroot.cc
++++ schroot/sbuild/sbuild-chroot.cc
+@@ -33,6 +33,9 @@
+ #ifdef SBUILD_FEATURE_LVMSNAP
+ #include "sbuild-chroot-lvm-snapshot.h"
+ #endif // SBUILD_FEATURE_LVMSNAP
++#ifdef SBUILD_FEATURE_ZFSSNAP
++#include "sbuild-chroot-zfs-snapshot.h"
++#endif // SBUILD_FEATURE_LVMSNAP
+ #ifdef SBUILD_FEATURE_BTRFSSNAP
+ #include "sbuild-chroot-btrfs-snapshot.h"
+ #endif // SBUILD_FEATURE_BTRFSSNAP
+@@ -193,6 +196,10 @@
+   else if (type == "lvm-snapshot")
+     new_chroot = new chroot_lvm_snapshot();
+ #endif // SBUILD_FEATURE_LVMSNAP
++#ifdef SBUILD_FEATURE_ZFSSNAP
++  else if (type == "zfs-snapshot")
++    new_chroot = new chroot_zfs_snapshot();
++#endif // SBUILD_FEATURE_LVMSNAP
+ #ifdef SBUILD_FEATURE_BTRFSSNAP
+   else if (type == "btrfs-snapshot")
+     new_chroot = new chroot_btrfs_snapshot();
+Index: schroot/etc/setup.d/CMakeLists.txt
+===================================================================
+--- schroot.orig/etc/setup.d/CMakeLists.txt
++++ schroot/etc/setup.d/CMakeLists.txt
+@@ -27,6 +27,7 @@
+     05btrfs
+     05lvm
+     05union
++    05zfs
+     10mount
+     15binfmt
+     15killprocs
+Index: schroot/etc/setup.d/10mount
+===================================================================
+--- schroot.orig/etc/setup.d/10mount
++++ schroot/etc/setup.d/10mount
+@@ -156,6 +156,7 @@
+     || [ "$CHROOT_TYPE" = "loopback" ] \
+     || [ "$CHROOT_TYPE" = "block-device" ] \
+     || [ "$CHROOT_TYPE" = "lvm-snapshot" ] \
++    || [ "$CHROOT_TYPE" = "zfs-snapshot" ] \
+     || [ "$CHROOT_TYPE" = "btrfs-snapshot" ]; then
+ 
+     if [ "${CHROOT_UNION_TYPE:-none}" != "none" ]; then
+@@ -211,6 +212,11 @@
+                     fi
+                     ;;
+             esac
++        elif [ "$CHROOT_TYPE" = "zfs-snapshot" ]; then
++            CHROOT_MOUNT_OPTIONS="-t zfs $CHROOT_MOUNT_OPTIONS"
++            if [ -n "$CHROOT_ZFS_CLONE_NAME" ]; then
++                CHROOT_MOUNT_DEVICE="$CHROOT_ZFS_CLONE_NAME"
++            fi
+         fi
+ 
+         if [ ! -d "$CHROOT_MOUNT_LOCATION" ]; then

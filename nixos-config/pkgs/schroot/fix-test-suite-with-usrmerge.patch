@@ -1,0 +1,16 @@
+Description: Fix test suite when /bin is a symlink to /usr/bin
+Author: Raphaël Hertzog <hertzog@debian.org>
+Last-Update: 2017-01-09
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/test/sbuild-util.cc
++++ b/test/sbuild-util.cc
+@@ -84,7 +84,7 @@ public:
+ 
+   void test_find_program_in_path()
+   {
+-    std::string path("/usr/local/bin:/usr/bin:/bin");
++    std::string path("/bin:/usr/bin:/usr/local/bin");
+     CPPUNIT_ASSERT(sbuild::find_program_in_path("sh", path, "") == "/bin/sh");
+     CPPUNIT_ASSERT(sbuild::find_program_in_path("sed", path, "") == "/bin/sed");
+   }
