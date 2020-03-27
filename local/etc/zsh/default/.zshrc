@@ -157,6 +157,28 @@ zshaddhistory() {  # Filter commands going to the history
 # }}}
 
 # -----------------------------------------------------------------------------
+# Prompt behaviour {{{
+bindkey -v  # Use vim mode
+bindkey -M viins ''    backward-delete-char # <Backspace>
+bindkey -M viins '[3~' delete-char      # <Delete>
+bindkey -M viins ''    beginning-of-line
+bindkey -M viins ''    end-of-line
+bindkey -M viins ''    kill-line
+bindkey -M viins ''    up-line-or-history
+bindkey -M viins ''    down-line-or-history
+bindkey -M viins ''    backward-kill-line
+bindkey -M viins ''    backward-kill-word
+bindkey -M viins '^@'    vi-forward-word  # C-<Space>
+bindkey -M viins ''    push-input       # Save current line for later
+
+# Use vim to edit command lines:
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
+# }}}
+
+# -----------------------------------------------------------------------------
 # Profiling closure. See profiling section at the beginning of this file {{{
 if [ ! -z "$ZSH_PROFILING" ]; then
     # turn off tracing
