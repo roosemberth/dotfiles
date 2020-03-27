@@ -46,8 +46,9 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
 fi
 # }}}
 
-# Make sure the zsh cache directory exists:
+# Make sure required zsh directories exists:
 test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
+test -d "$XDG_LOG_HOME/zsh" || mkdir -p "$XDG_LOG_HOME/zsh"
 
 # Nix and NixOS-specific configuration {{{
 if [ -d /run/current-system/sw/share/zsh/site-functions ]; then
@@ -87,6 +88,39 @@ zstyle ':completion:*:*:kubectl:*' call-command true
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 # }}}
+
+# -----------------------------------------------------------------------------
+# Antigen {{{
+# Do not run any antigen integrations if we are root.
+if [ $(id -u) != 0 ]; then
+    # install if not installed
+    if [ ! -f $XDG_CACHE_HOME/zsh/antigen/antigen.zsh ]; then
+        if [ ! -d "$XDG_CACHE_HOME/zsh/antigen" ]; then
+           mkdir -p "$XDG_CACHE_HOME/zsh/antigen"
+        fi
+        timeout 10 curl -L "https://git.io/antigen" \
+                        -o "$XDG_CACHE_HOME/zsh/antigen/antigen.zsh" \
+        || echo "Problem obtaining antigen script."
+    fi
+
+    # antigen.zsh will automatically download any required bundles.
+    if [ -f "$XDG_CACHE_HOME/zsh/antigen/antigen.zsh" ] \
+            && command -v git >/dev/null 2>&1; then
+        export ADOTDIR="$XDG_CACHE_HOME/zsh/antigen"
+        export ANTIGEN_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump"
+        export ANTIGEN_CACHE="$XDG_CACHE_HOME/zsh/antigen/cache"
+        export ANTIGEN_LOG="$XDG_LOG_HOME/zsh/antigen"
+
+        source "$XDG_CACHE_HOME/zsh/antigen/antigen.zsh"
+
+        antigen bundle zsh-users/zsh-completions src
+        antigen bundle zsh-users/zsh-autosuggestions
+        antigen bundle zsh-users/zsh-syntax-highlighting
+        antigen bundle ninrod/pass-zsh-completion
+
+        antigen apply
+    fi
+fi
 
 # -----------------------------------------------------------------------------
 # Profiling closure. See profiling section at the beginning of this file {{{
