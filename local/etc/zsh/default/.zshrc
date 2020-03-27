@@ -62,17 +62,31 @@ if command -v fzf-share &> /dev/null; then
 fi
 # }}}
 
+# -----------------------------------------------------------------------------
+# Completion configuration {{{
+zstyle ':completion:*' add-space file
+zstyle ':completion:*' ambiguous true
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+zstyle ':completion:*' completer _complete _correct _extensions _ignored \
+                                 _match _prefix
+zstyle ':completion:*' format "[%{$fg_bold[default]%}%d%{$reset_color%}]"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' ignore-parents parent pwd
+zstyle ':completion:*' gain-privileges true
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' list-suffixes true
+zstyle ':completion:*' separate-sections true
+zstyle ':completion:*' show-ambiguity true
+zstyle ':completion:*' show-completer true
+zstyle ':completion:*' single-ignored true
+zstyle ':completion:*' use-ips true
+zstyle ':completion:*' verbose true
+
+zstyle ':completion:*:*:kubectl:*' call-command true
+
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
-
-# Print 'completing ...' when completing:
-expand-or-complete-with-dots () {
-    printf "$fg[blue] completing ...$reset_color\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
-    zle expand-or-complete
-    zle redisplay
-}
-zle -N expand-or-complete-with-dots
-bindkey "^I" expand-or-complete-with-dots
+# }}}
 
 # -----------------------------------------------------------------------------
 # Profiling closure. See profiling section at the beginning of this file {{{
