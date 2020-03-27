@@ -48,6 +48,7 @@ fi
 
 # Make sure required zsh directories exists:
 test -d "$XDG_CACHE_HOME/zsh" || mkdir -p "$XDG_CACHE_HOME/zsh"
+test -d "$XDG_DATA_HOME/zsh" || mkdir -p "$XDG_DATA_HOME/zsh"
 test -d "$XDG_LOG_HOME/zsh" || mkdir -p "$XDG_LOG_HOME/zsh"
 
 # Nix and NixOS-specific configuration {{{
@@ -121,6 +122,39 @@ if [ $(id -u) != 0 ]; then
         antigen apply
     fi
 fi
+
+# -----------------------------------------------------------------------------
+# Options {{{
+setopt beep
+setopt extended_history
+setopt hist_ignore_all_dups
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_lex_words
+setopt inc_append_history
+setopt magic_equal_subst
+setopt notify
+setopt prompt_subst  # Allow substitutions as part of prompt format string
+setopt pushd_silent
+setopt pushd_to_home
+setopt sh_word_split  # Handle IFS as SH
+
+unsetopt bang_hist  # Don't expand history elements with '!' character
+# }}}
+
+# -----------------------------------------------------------------------------
+# Misc {{{
+export HISTFILE="$XDG_DATA_HOME/zsh/history"
+export HISTSIZE=100000          # maximum history size in terminal's memory
+export SAVEHIST=100000000       # maximum size of history file
+
+zshaddhistory() {  # Filter commands going to the history
+    line=${1%%$'\n'}
+    case "$line" in
+        fg|bg) return 1 ;;
+    esac
+}
+# }}}
 
 # -----------------------------------------------------------------------------
 # Profiling closure. See profiling section at the beginning of this file {{{
