@@ -176,6 +176,83 @@ autoload -U edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
 
+autoload -Uz vcs_info
+
+zstyle ':vcs_info:*' enable git cvs svn
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' use-prompt-escapes true
+
+zstyle ':vcs_info:git*' stagedstr '%F{yellow}'
+zstyle ':vcs_info:git*' unstagedstr '%F{red}'
+zstyle ':vcs_info:git*' formats '%F{green}%c%u[%b]%f'
+zstyle ':vcs_info:git*' actionformats '%F{green}%c%u[%b%F{cyan}|%a%c%u]%f'
+zstyle ':vcs_info:git*+set-message:*' hooks git-colors
+
++vi-git-colors() {
+    [[ $(git rev-parse --is-inside-work-tree 2>&1) == 'true' ]] || return
+
+    if git status --porcelain | grep -q '??'; then
+        hook_com[unstaged]='%F{red}'
+    elif git status | awk '/^$/{exit} {print $0}' | grep -qi 'ahead'; then
+        hook_com[unstaged]='%F{cyan}'
+    elif git status | awk '/^$/{exit} {print $0}' | grep -qi 'behind'; then
+        hook_com[unstaged]='%F{blue}'
+    elif git status | awk '/^$/{exit} {print $0}' | grep -qi 'diverged'; then
+        hook_com[unstaged]='%F{magenta}'
+    fi
+}
+
+build_prompt() {
+    PROMPT=''
+    PROMPT+="%(1j.%F{black}%K{white} %j %k%f.)"  # Background jobs
+
+    vcs_info && PROMPT+="${vcs_info_msg_0_} "
+
+    [ -n "$SSH_CONNECTION" ] && PROMPT+="%F{magenta}%M:%f"
+    [ -n "$(ip netns identify 2>/dev/null)" ] && \
+        PROMPT+="%F{white}%K{blue}$(ip netns identify 2>/dev/null)%k%f"
+
+    PROMPT+='%F{blue}%~%f '
+
+    [ -n "$VIRTUAL_ENV" ] && PROMPT+="%F{green}÷(${VIRTUAL_ENV##*/})%f "
+    [ -n "$IN_NIX_SHELL" ] && PROMPT+="%F{cyan}÷${${IN_NIX_SHELL:#1}:-nix}»%f "
+}
+
+build_rprompt() {
+    RPROMPT=''
+    RPROMPT+="%(?..%F{red}[%?]%f)"  # Last command's return value
+
+    if [ -n "$timer" ]; then  # Last command's duration:
+        timer_total=$((SECONDS - timer))
+        timer_sec=$((timer_total % 60))
+        timer_min=$((timer_total / 60 % 60))
+        timer_hrs=$((timer_total / 3600 % 24))
+        timer_day=$((timer_total / 86400))
+        if [ $timer_total -gt 1 ]; then
+            tp=''
+            [ -z "$tp" ] && [ $timer_day -eq 0 ] || tp+="${timer_day}d "
+            [ -z "$tp" ] && [ $timer_hrs -eq 0 ] || tp+="${timer_hrs}h "
+            [ -z "$tp" ] && [ $timer_min -eq 0 ] || tp+="${timer_min}m "
+            [ -z "$tp" ] && [ $timer_sec -eq 0 ] || tp+="${timer_sec}s"
+            RPROMPT+=" %F{green}$tp%f"
+            unset tp
+        fi
+        unset timer_total timer_sec timer_min timer_hrs timer_day timer
+    fi
+}
+
+preexec() {
+    timer=${timer:-$SECONDS}
+    unset PROMPT
+    unset RPROMPT
+}
+
+precmd() {
+    build_prompt
+    build_rprompt
+}
+
+precmd
 # }}}
 
 # -----------------------------------------------------------------------------
