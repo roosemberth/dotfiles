@@ -256,6 +256,48 @@ precmd
 # }}}
 
 # -----------------------------------------------------------------------------
+# functions and aliases {{{
+function aps(){
+    ps aux | grep -v grep | grep -i "$1"
+}
+
+function ctmp(){
+    DIR="$(mktemp -dp ${XDG_RUNTIME_DIR:-/run/user/$(id -u)/})"
+    command -v lsof &>/dev/null && (
+        while [ -d "$DIR" ]; do
+            sleep 5
+            if [ -z "\$(lsof +d '$DIR' 2>/dev/null)" ] \
+                && [ -z "\$(lsof +D '$DIR' 2>/dev/null)" ]; then
+                rm -fr "$DIR"
+            fi
+        done
+    )&!
+    [ -d "${DIR%/*}/latest-ctmp" ] && rm "${DIR%/*}/latest-ctmp"
+    ln -sf "$DIR" "${DIR%/*}/latest-ctmp"
+    pushd "$DIR"
+}
+
+function cltmp(){
+  pushd "/run/user/$(id -u)/latest-ctmp/"
+}
+
+alias .....="cd ../../../.."
+alias ....="cd ../../.."
+alias ...="cd ../.."
+alias ..="cd .."
+alias cp='cp -i'
+alias df='df -h'
+alias l='ls -vCF'
+alias ll='ls -valFh'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias rlf='readlink -f'
+alias rm='rm --one-file-system'
+alias view="${EDITOR:=vim} -R"
+alias wtf='dmesg | tail -n 20'
+# }}}
+
+# -----------------------------------------------------------------------------
 # Profiling closure. See profiling section at the beginning of this file {{{
 if [ ! -z "$ZSH_PROFILING" ]; then
     # turn off tracing
