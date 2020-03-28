@@ -285,6 +285,7 @@ alias .....="cd ../../../.."
 alias ....="cd ../../.."
 alias ...="cd ../.."
 alias ..="cd .."
+alias cdg='cd "$(git rev-parse --show-toplevel)"'
 alias cp='cp -i'
 alias df='df -h'
 alias l='ls -vCF'
