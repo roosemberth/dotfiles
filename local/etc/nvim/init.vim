@@ -264,6 +264,7 @@ nnoremap <C-l> <C-w>l
 
 " Exploring files
 nnoremap <leader>g :e %:h:r<CR>
+au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
 nnoremap <leader>T :Denite tag<CR>
 nnoremap <leader>F :Denite file/rec file/old<CR>
 nnoremap <leader>B :Denite buffer<CR>
