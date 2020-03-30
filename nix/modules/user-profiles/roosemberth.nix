@@ -4,6 +4,12 @@ let
 in
 {
   config = mkIf (any (p: elem "roosemberth" p) usersWithProfiles) {
+    # Workaround for <https://github.com/rycee/home-manager/issues/1119>.
+    boot.postBootCommands = ''
+      mkdir -p /nix/var/nix/{profiles,gcroots}/per-user/roosemberth
+      chown 1000 /nix/var/nix/{profiles,gcroots}/per-user/roosemberth
+    '';
+
     users.users.roosemberth = {
       uid = 1000;
       description = "Roosemberth Palacios";
