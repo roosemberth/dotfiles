@@ -69,6 +69,7 @@ set mouse=nvi  " enable mouse in all modes but command
 set scrolloff=3  " Keep 3 lines 'padding' above/below the cursor
 set showmatch  " Highlight matching open parentheses when closing
 set title
+set wildignore+=result " Ignore nix-build result link
 
 set ignorecase smartcase  " Ignore case, except when query contains Uppercase
 set list listchars=tab:→\ ,eol:\ ,trail:·
@@ -145,8 +146,12 @@ autocmd FileType denite-filter call s:denite_filter_my_settings()
 function! s:denite_filter_my_settings() abort
   imap <silent><buffer> <C-o>     <Plug>(denite_filter_quit)
 endfunction
-" }}}
 
+" Have denite use scantree.py since it respects wildignore
+call denite#custom#var('file/rec', 'command',
+                       \ ['scantree.py', '--path', ':directory'])
+
+" }}}
 " }}}
 
 " Syntax {{{
