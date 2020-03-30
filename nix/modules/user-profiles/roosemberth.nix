@@ -15,7 +15,9 @@ in
 
     roos.rConfig = {
       home.packages = (with pkgs; [
+        git
         gnupg
+        moreutils
         nix-zsh-completions
         openssh
         openssl
@@ -26,15 +28,28 @@ in
     roos.sConfig = {
       home.packages = (with pkgs; [
         bluezFull
+        git-crypt
+        nix-index
         nmap
+        ranger
+        silver-searcher
+        tig
+        weechat
+        wireguard
+        xxd
       ]);
     };
 
     roos.gConfig = {
       home.packages = (with pkgs; [
-        pinentry-gtk2
-        x11_ssh_askpass
+        brightnessctl
+        firefox
+        epiphany
         gnome3.gucharmap
+        gtk3  # gtk-launch
+        pinentry-gtk2
+        tdesktop
+        x11_ssh_askpass
       ]) ++ (with pkgs.bleeding-edge; [
         wdisplays wtype wlr-randr wl-clipboard # waybar
       ]);
