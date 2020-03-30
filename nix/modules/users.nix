@@ -86,6 +86,15 @@ in {
     # home-manager.useUserPackages = true;
     home-manager.verbose = true;
 
+    # Source home-manager environment
+    environment.extraInit = concatMapStringsSep "\n" (user: let
+      homedir = config.users.users.${user}.home;
+    in ''
+      if [ "$(id -un)" = "${user}" ]; then
+        . "${homedir}/.nix-profile/etc/profile.d/hm-session-vars.sh"
+      fi
+    '') (flatten (attrValues config.roos.user-profiles));
+
     assertions = map (user: {
       assertion = builtins.hasAttr user config.users.users;
       message = "The main user ${user} has to exist";
