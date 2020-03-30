@@ -69,7 +69,7 @@ set mouse=nvi  " enable mouse in all modes but command
 set scrolloff=3  " Keep 3 lines 'padding' above/below the cursor
 set showmatch  " Highlight matching open parentheses when closing
 set title
-set wildignore+=result " Ignore nix-build result link
+set wildignore+=result,.* " Ignore nix-build result link and hidden files
 
 set ignorecase smartcase  " Ignore case, except when query contains Uppercase
 set list listchars=tab:→\ ,eol:\ ,trail:·
