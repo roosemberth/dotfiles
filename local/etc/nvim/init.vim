@@ -267,6 +267,14 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" Escape terminal buffers:
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-w>h <Cmd> wincmd h<CR>
+tnoremap <C-w>j <Cmd> wincmd j<CR>
+tnoremap <C-w>k <Cmd> wincmd k<CR>
+tnoremap <C-w>l <Cmd> wincmd l<CR>
+au BufEnter term://* startinsert
+
 " Exploring files
 nnoremap <leader>g :e %:h:r<CR>
 au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
@@ -309,6 +317,7 @@ nnoremap & :let @/=expand("<cword>")<CR>
 nnoremap <leader>* :AckFromSearch<CR>
 
 " Everything else...
+nnoremap <C-w>t :split +terminal<CR>:startinsert<CR>
 cnoremap w!! w !sudo tee % >/dev/null<CR>
 vnoremap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 nnoremap <leader>t :TagbarOpenAutoClose<CR>
