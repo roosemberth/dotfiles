@@ -267,8 +267,9 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
-" Escape terminal buffers:
+" terminal buffers:
 tnoremap <Esc> <C-\><C-n>
+tnoremap <A-[> <Esc>
 tnoremap <C-w>h <Cmd> wincmd h<CR>
 tnoremap <C-w>j <Cmd> wincmd j<CR>
 tnoremap <C-w>k <Cmd> wincmd k<CR>
