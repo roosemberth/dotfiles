@@ -285,6 +285,7 @@ nnoremap <leader>J :Denite jump<CR>
 nnoremap <leader><C-_> :Denite line<CR>
 nnoremap <C-w>w :rightbelow wincmd f<CR>
 nnoremap <C-w>e :rightbelow vertical wincmd f<CR>
+nnoremap <C-w>f :split +Ranger<CR>
 
 " EasyAlign
 vnoremap ga <Plug>(EasyAlign)
