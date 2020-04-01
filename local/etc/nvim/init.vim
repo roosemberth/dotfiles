@@ -312,9 +312,11 @@ noremap! <M-b> <S-Left>
 noremap! <M-f> <S-Right>
 
 " Search
-nnoremap <leader><C-n> :set hlsearch!<CR>
 nnoremap & :let @/=expand("<cword>")<CR>
 nnoremap <leader>* :AckFromSearch<CR>
+nnoremap <silent> <Return> :set nohlsearch<CR><CR>
+nnoremap <silent> N :set hlsearch<CR>N
+nnoremap <silent> n :set hlsearch<CR>n
 
 " Everything else...
 nnoremap <C-w>t :split +terminal<CR>:startinsert<CR>
