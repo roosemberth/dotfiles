@@ -274,6 +274,7 @@ tnoremap <C-w>h <Cmd> wincmd h<CR>
 tnoremap <C-w>j <Cmd> wincmd j<CR>
 tnoremap <C-w>k <Cmd> wincmd k<CR>
 tnoremap <C-w>l <Cmd> wincmd l<CR>
+nnoremap <C-w>t :new \| call termopen([$SHELL], {'cwd': expand('#:p:h')}) \| startinsert<CR>
 au BufEnter term://* startinsert
 
 " Exploring files
@@ -321,7 +322,6 @@ nnoremap <silent> N :set hlsearch<CR>N
 nnoremap <silent> n :set hlsearch<CR>n
 
 " Everything else...
-nnoremap <C-w>t :split +terminal<CR>:startinsert<CR>
 cnoremap w!! w !sudo tee % >/dev/null<CR>
 vnoremap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 nnoremap <leader>t :TagbarOpenAutoClose<CR>
