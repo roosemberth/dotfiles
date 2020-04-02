@@ -36,6 +36,7 @@ Plug 'chrisbra/vim-diff-enhanced'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
+Plug 'vim-scripts/Mark'
 Plug 'vim-scripts/LargeFile'
 
 " Filetypes
