@@ -48,12 +48,35 @@ in {
       '';
     };
 
+    rConfigFn = mkOption {
+      #type = options.home-manager.users.type.functor.wrapped;
+      default = _: {};
+      description = ''
+        Function returning a Home-manager configuration to be used in
+        user-profiles with reduced configuration enabled.
+        The function will be called with the user configuration as
+        argument (i.e. `config.home-manager.users.$${user}`).
+      '';
+    };
+
     sConfig = mkOption {
       type = options.home-manager.users.type.functor.wrapped;
       default = {};
       description = ''
         Home-manager configuration to be used in user-profiles with simple
         configuration enabled; in particular without a graphical session.
+      '';
+    };
+
+    sConfigFn = mkOption {
+      #type = options.home-manager.users.type.functor.wrapped;
+      default = _: {};
+      description = ''
+        Function returning a Home-manager configuration to be used in
+        user-profiles with simple configuration enabled; in particular
+        without a graphical session.
+        The function will be called with the user configuration as
+        argument (i.e. `config.home-manager.users.$${user}`).
       '';
     };
 
@@ -65,6 +88,18 @@ in {
         configuration enabled. This will in all cases exclude the root user.
       '';
     };
+
+    gConfigFn = mkOption {
+      #type = options.home-manager.users.type.functor.wrapped;
+      default = _: {};
+      description = ''
+        Function returning a Home-manager configuration to be used in
+        user-profiles with graphical configuration enabled.
+        This will in all cases exclude the root user.
+        The function will be called with the user configuration as
+        argument (i.e. `config.home-manager.users.$${user}`).
+      '';
+    };
   };
 
   config = let
@@ -73,15 +108,32 @@ in {
     in mkMerge (flip crossLists [users cfgs] (user: cfg: {
       ${user} = mkAliasDefinitions cfg;
     }));
+    callUserCfgFns = users: cfgFilter: let
+      cfgFns = cfgFilter config.roos;
+    in mkMerge (flip crossLists [users cfgFns] (user: cfgFn: {
+      # Note: We can get away with directly merging the submodule because
+      # options with default values have already been rendered by home-manager
+      # (see mkAliasDefinitions use above).
+      ${user} = (cfgFn config.home-manager.users.${user});
+    }));
     userCfgs = with config.roos.user-profiles; {
-      reduced   = mkUserCfgs reduced (c: with c; [rConfig]);
-      simple    = mkUserCfgs simple  (c: with c; [rConfig sConfig]);
-      graphical = let
+      usersWithReducedConfigurations = mkMerge [
+        (mkUserCfgs reduced (c: with c; [rConfig]))
+        (callUserCfgFns reduced (c: with c; [rConfigFn]))
+      ];
+      usersWithSimpleConfigurations = mkMerge [
+        (mkUserCfgs simple  (c: with c; [rConfig sConfig]))
+        (callUserCfgFns simple  (c: with c; [rConfigFn sConfigFn]))
+      ];
+      usersWithGraphicalConfigurations = let
         users = (filter (u: u != "root") graphical);
-      in mkUserCfgs users (c: with c; [rConfig sConfig gConfig]);
+      in mkMerge [
+        (mkUserCfgs users (c: with c; [rConfig sConfig gConfig]))
+        (callUserCfgFns users (c: with c; [rConfigFn sConfigFn gConfigFn]))
+      ];
     };
   in {
-    home-manager.users = mkMerge (with userCfgs; [reduced simple graphical]);
+    home-manager.users = mkMerge (attrValues userCfgs);
     # See <https://github.com/rycee/home-manager/issues/1120>.
     # home-manager.useUserPackages = true;
     home-manager.verbose = true;
