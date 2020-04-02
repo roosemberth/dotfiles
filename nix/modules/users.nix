@@ -33,6 +33,26 @@ in {
   imports = [ (home-manager + "/nixos") ];
 
   options.roos = {
+    dotfilesPath = mkOption {
+      type = with types; nullOr path;
+      default = null;
+      description = ''
+        Path to external dotfiles repository. If defined, applications and
+        services requiring files from such repository will be enabled.
+      '';
+    };
+
+    impureDotfiles = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        If enabled, derivations requiring files in the dotfiles repository
+        will use a symlink in the nix store to the dotfiles repository.
+        This is intended for debugging and should generally be set to false.
+        When false, paths from the dotfiles will be copied into the nix store.
+      '';
+    };
+
     user-profiles = mkOption {
       type = userProfileType;
       default = { reduced = []; simple = []; graphical = []; };

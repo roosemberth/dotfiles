@@ -15,10 +15,12 @@ let
   # Filters out paths that:
   # - Don't end with .nix
   # - Are this file
+  # - Are util.nix (bottom)
   # This also makes the strings absolute.
   validFiles = dir: map (file: ./. + "/${file}")
     (filter (file: hasSuffix ".nix" file
-                && file != "default.nix")
+                && file != "default.nix"
+                && file != "util.nix")
     (files dir));
 
 in
