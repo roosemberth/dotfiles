@@ -1,15 +1,14 @@
 # Inspired from Infinisil's configuration repository @df9232c4
 { config, pkgs, lib, options, ... }: with lib;
 let
-  home-manager-19_03 = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    rev = "0d1ca254d0f213a118459c5be8ae465018132f74";
-    ref = "release-19.09";
-  };
   home-manager =
     let try = builtins.tryEval <home-manager>;
     in if try.success then try.value
-       else builtins.trace "Using pinned version for home manager" home-manager-19_03;
+    else builtins.trace "Using pinned version for home manager" (
+      builtins.fetchGit {
+        url = "https://github.com/rycee/home-manager.git";
+        rev = "dd93c300bbd951776e546fdc251274cc8a184844";
+      });
   userProfileType = with types; submodule {
     options = let
       optionType = mkOption {
