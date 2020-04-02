@@ -15,7 +15,11 @@ in recursiveUpdate ({
 
   machine = recursiveUpdate ({
     keys = {
-      sshInitramfsHost = ./secrets + "/machines/${hostname}/ssh-keys/initramfs";
+      initramfsSshKeys = let
+        path = ./secrets + "/machines/${hostname}/ssh-keys/initramfs/";
+        isPrivateKey = name: type: type == "regular" && ! strings.hasSuffix ".pub" name;
+        keys = attrNames (filterAttrs isPrivateKey (builtins.readDir path));
+      in map (key: "${path}/${key}") keys;
       wireguard = wireguardSecrets hostname;
     };
   }) (maybeAttrset hostname {} {
