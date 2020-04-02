@@ -10,7 +10,8 @@ in
   options.roos.steam.enable = mkEnableOption "Enable steam support";
 
   config = mkIf config.roos.steam.enable {
-    nixpkgs.config.allowUnfreePredicate = pkg: getName pkg == "steam-original";
+    # FIXME: See media.nix
+    # nixpkgs.config.allowUnfreePredicate = pkg: getName pkg == "steam-original";
 
     roos.gConfig.home.packages = [steam' steam'.run];
 
