@@ -63,6 +63,18 @@ in
         GNUPGHOME = "${XDG_LIB_HOME}/gnupg";
         SSH_AUTH_SOCK = "${XDF_RUNTIME_DIR}/ssh-agent-$(id -un)-socket";
       };
+
+      accounts.email = let
+        username = userCfg.home.username;
+        emailAccounts = secrets.users.${username}.emailAccounts;
+      in mkIf (hasAttrByPath [username "emailAccounts"] secrets.users) {
+        accounts = flip mapAttrs emailAccounts (_: secretCfg: let
+          accountCfg = filterAttrs (n: _: n != "passwordPath") secretCfg;
+        in accountCfg // {
+          passwordCommand = "${pkgs.pass}/bin/pass show ${secretCfg.passwordPath}";
+        });
+        maildirBasePath = ".local/var/mail";
+      };
     };
 
     roos.sConfig = {
