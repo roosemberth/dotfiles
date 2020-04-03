@@ -4,7 +4,7 @@ let
   mopidy' = with pkgs; buildEnv {
     name = "mopidy-with-extensions-${mopidy.version}";
     paths = lib.closePropagation (with pkgs; [
-      mopidy-spotify mopidy-iris
+      mopidy-spotify mopidy-iris mopidy-mpd
     ]);
     pathsToLink = [ "/${python3.sitePackages}" ];
     buildInputs = [ makeWrapper ];
