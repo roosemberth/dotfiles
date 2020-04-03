@@ -22,25 +22,54 @@ input * xkb_options "caps:escape"
 # Key bindings
 ## Session
 bindsym $mod+F4 kill
-bindsym $mod+Shift+c reload
-bindsym $mod+mod1+Control+Shift+F4 exec swaymsg exit
+bindsym $mod+c+Shift reload
+bindsym $mod+mod1+Control+F4+Shift exec swaymsg exit
 
 ## Apps
-bindsym $mod+Return exec alacritty -e tmux
-bindsym $mod+Shift+Return exec alacritty
-bindsym $mod+Control+Return exec dmenu_path | dmenu | xargs swaymsg exec --
+bindsym $mod+f+Control  exec firefox
+bindsym $mod+m          exec makoctl dismiss
+bindsym $mod+p          exec passmenu
+bindsym $mod+v          exec mpv "$(wl-paste)" --load-unsafe-playlists \
+  --script-opts=try_ytdl_first=yes \
+  --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
+
+bindsym $mod+Return         exec alacritty -e tmux
+bindsym $mod+Return+Control exec dmenu_path | dmenu | xargs swaymsg exec --
+bindsym $mod+Return+Shift   exec alacritty
+
+## Services
+bindsym --locked $mod+Delete                 exec mpc toggle
+bindsym --locked $mod+End                    exec mpc prev
+bindsym --locked $mod+Insert                 exec mpc next
+bindsym --locked XF86Display                 exec sm -i
+bindsym --locked XF86Display+Shift           exec sm
+bindsym --locked XF86Favorites               exec $lockcmd
+bindsym --locked XF86MonBrightnessDown       exec brightnessctl s 5%-
+bindsym --locked XF86MonBrightnessDown+Shift exec brightnessctl s 1
+bindsym --locked XF86MonBrightnessUp         exec brightnessctl s 5%+
+bindsym --locked XF86MonBrightnessUp+Shift   exec brightnessctl s 100%
+bindsym --locked XF86AudioMute               exec pactl set-sink-mute \
+  "$(pactl list sinks | grep -B 1 RUNNING \
+    | sed '1q;d' | sed 's/[^0-9]\\+//g')" toggle
+bindsym --locked XF86AudioLowerVolume        exec pactl set-sink-volume \
+  "$(pactl list sinks | grep -B 1 RUNNING \
+    | sed '1q;d' | sed 's/[^0-9]\\+//g')" -5%
+bindsym --locked XF86AudioRaiseVolume        exec pactl set-sink-volume \
+  "$(pactl list sinks | grep -B 1 RUNNING \
+    | sed '1q;d' | sed 's/[^0-9]\\+//g')" +5%
 
 # Layout management
-bindsym $mod+Shift+a focus parent
+bindsym $mod+a+Shift focus parent
 bindsym $mod+w splitv  # "Vertically"
 bindsym $mod+e splith
 
 bindsym $mod+a layout stacking
 bindsym $mod+s layout tabbed
 bindsym $mod+d layout toggle split
-bindsym $mod+f fullscreen
+bindsym $mod+f fullscreen toggle
 
-bindsym $mod+Shift+g floating toggle
+bindsym $mod+f+Shift floating enable, mark --add center-float
+bindsym $mod+g+Shift floating disable
 floating_modifier $mod normal
 bindsym $mod+space focus mode_toggle  ## Switch between stack and floating
 
@@ -51,18 +80,21 @@ bindsym $mod+$up focus up
 bindsym $mod+$right focus right
 
 ## Move focused
-bindsym $mod+Shift+$left move left
-bindsym $mod+Shift+$down move down
-bindsym $mod+Shift+$up move up
-bindsym $mod+Shift+$right move right
+bindsym $mod+$left+Shift move left
+bindsym $mod+$down+Shift move down
+bindsym $mod+$up+Shift move up
+bindsym $mod+$right+Shift move right
 
 ### Workspaces
 bindsym $mod+Escape exec swaymsg -t get_workspaces |\
-  jq 'map(.num)|.[]' | dmenu | \
-  xargs swaymsg exec workspace --
-bindsym $mod+Shift+Escape exec swaymsg -t get_workspaces |\
-  jq 'map(.num)|.[]' | dmenu | \
-  xargs swaymsg exec move container to workspace --
+  jq 'map(.num)|.[]' | dmenu |\
+  xargs swaymsg workspace
+bindsym $mod+Escape+Shift exec swaymsg -t get_workspaces |\
+  jq 'map(.num)|.[]' | dmenu |\
+  xargs swaymsg move container to workspace
+bindsym $mod+F2 exec swaymsg -t get_workspaces |\
+  jq 'map(.num)|.[]' | dmenu |\
+  xargs swaymsg rename workspace to
 
 # Switch to workspace
 bindsym $mod+1 workspace 1
@@ -70,19 +102,20 @@ bindsym $mod+2 workspace 2
 bindsym $mod+3 workspace 3
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
+bindsym $mod+Tab workspace back_and_forth
 
 # Move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 1
-bindsym $mod+Shift+2 move container to workspace 2
-bindsym $mod+Shift+3 move container to workspace 3
-bindsym $mod+Shift+8 move container to workspace 8
-bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+1+Shift move container to workspace 1
+bindsym $mod+2+Shift move container to workspace 2
+bindsym $mod+3+Shift move container to workspace 3
+bindsym $mod+8+Shift move container to workspace 8
+bindsym $mod+9+Shift move container to workspace 9
 
 # Scratchpad
 bindsym $mod+minus scratchpad show
-bindsym $mod+Shift+minus move scratchpad  # I don't think I'll ever use this...
-bindsym $mod+Shift+q exec alacritty -t Scratchpad-flyway -e tmux new -As flyway
+bindsym $mod+minus+Shift move scratchpad  # I don't think I'll ever use this...
 bindsym $mod+q exec tmux detach-client -s flyway
+bindsym $mod+q+Shift exec alacritty --class Scratchpad-flyway -e tmux new -As flyway
 
 # Containers
 mode "resize" {
@@ -98,7 +131,7 @@ bindsym $mod+r mode "resize"
 
 # No loghook :(
 
-# Bar
+# Misc
 bar {
     position top
     status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
@@ -108,3 +141,22 @@ bar {
         inactive_workspace #32323200 #32323200 #5c5c5c80
     }
 }
+
+workspace_auto_back_and_forth yes
+
+# Policies
+for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
+
+# Layouts
+### Note: sway does surface-local rescaling. The surface DPI is empirically
+### the smallest and will cause huge windows in higher DPIs.
+### There's no way to specify size in display-local units. This is sad.
+### Working around it would imply calculating an inverse DPI transform...
+for_window [con_mark=center-float floating] exec swaymsg -t get_tree | \
+  jq '.nodes|map(select(..|.focused?==true))\
+      |first|.current_mode\
+      |(([2*.width/3, 1080]|min|tostring) + " " + \
+        ([2*.height/3, 720]|min|tostring))' | \
+  xargs swaymsg resize set
+
+for_window [con_mark=center-float] mark --toggle center-float
