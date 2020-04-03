@@ -53,15 +53,14 @@ in
       home.sessionVariables = rec {
         XDG_LIB_HOME = "$HOME/.local/lib";
         XDG_LOG_HOME = "$HOME/.local/var/log";
-        XDF_RUNTIME_DIR = "\${XDG_RUNTIME_DIR:-/run/user/$(id -u)}";
 
         ZDOTDIR = "${homedir}/ws/1-Repositories/dotfiles/local/etc/zsh/default";
         GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
         GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
 
-        PASSWORD_STORE_DIR = "${XDG_LIB_HOME}/pass";
-        GNUPGHOME = "${XDG_LIB_HOME}/gnupg";
-        SSH_AUTH_SOCK = "${XDF_RUNTIME_DIR}/ssh-agent-$(id -un)-socket";
+        PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
+        GNUPGHOME = "${userCfg.xdg.dataHome}/gnupg";
+        SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent-$(id -un)-socket";
       };
 
       accounts.email = let
