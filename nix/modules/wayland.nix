@@ -10,8 +10,9 @@ in {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
       };
-      home.packages = with pkgs; [ mako ];
-      xdg.configFile."".source = util.fetchDotfile "local/etc/mako/config";
+      home.packages = with pkgs; [ sway mako ];
+      xdg.configFile."mako/config".source = util.fetchDotfile "local/etc/mako/config";
+      xdg.configFile."sway/config".source = util.fetchDotfile "local/etc/sway/config";
     };
   };
 }
