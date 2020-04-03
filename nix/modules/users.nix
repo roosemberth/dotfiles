@@ -166,7 +166,16 @@ in {
       fi
     '') (flatten (attrValues config.roos.user-profiles));
 
-    assertions = map (user: {
+    assertions = [
+      {
+        assertion = let
+          dotfiles = config.roos.dotfilesPath;
+          try = builtins.tryEval (builtins.readDir (builtins.toPath dotfiles));
+        in (dotfiles == null) || try.success;
+        message = "The specified dotfilesPath is not a directory\
+                   or is otherwise unaccesible";
+      }
+    ] ++ map (user: {
       assertion = builtins.hasAttr user config.users.users;
       message = "The main user ${user} has to exist";
     }) (flatten (attrValues config.roos.user-profiles));
