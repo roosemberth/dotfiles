@@ -27,6 +27,7 @@ in
       home.packages = with pkgs; [mpv youtube-dl mopidy'];
       xdg.configFile."mopidy/mopidy.conf".source =
         util.fetchDotfile "local/etc/mopidy/mopidy.conf";
+      xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
     };
   };
 }
