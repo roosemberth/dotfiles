@@ -1,0 +1,10 @@
+layer=overlay
+
+[!grouped]
+format=%a: <b>%s</b>\n%b
+
+[grouped]
+format=(%g) %a: <b>%s</b>\n%b
+
+[actionable]
+background-color=#CCFFEB99
