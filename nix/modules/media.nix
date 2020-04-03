@@ -23,9 +23,9 @@ in
         "steam-original" # FIXME: See steam.nix
         ];
 
-    roos.gConfig.home = {
-      packages = with pkgs; [mpv youtube-dl mopidy'];
-      file.".local/etc/mopidy/mopidy.conf".source =
+    roos.gConfig = {
+      home.packages = with pkgs; [mpv youtube-dl mopidy'];
+      xdg.configFile."mopidy/mopidy.conf".source =
         util.fetchDotfile "local/etc/mopidy/mopidy.conf";
     };
   };
