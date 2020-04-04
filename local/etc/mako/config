@@ -1,4 +1,5 @@
 layer=overlay
+background-color=#28557799
 
 [!grouped]
 format=%a: <b>%s</b>\n%b
@@ -7,4 +8,5 @@ format=%a: <b>%s</b>\n%b
 format=(%g) %a: <b>%s</b>\n%b
 
 [actionable]
-background-color=#CCFFEB99
+border-color=#CCFFEB99
+border-size=5
