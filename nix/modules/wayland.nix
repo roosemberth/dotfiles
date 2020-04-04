@@ -9,6 +9,7 @@ in {
       home.sessionVariables = {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
+        SSH_ASKPASS="${pkgs.x11_ssh_askpass}/libexec/ssh-askpass";
       };
       home.packages = with pkgs; [ sway mako ];
       xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
