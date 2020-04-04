@@ -11,8 +11,8 @@ in {
         QT_QPA_PLATFORM = "wayland-egl";
       };
       home.packages = with pkgs; [ sway mako ];
-      xdg.configFile."mako/config".source = util.fetchDotfile "local/etc/mako/config";
-      xdg.configFile."sway/config".source = util.fetchDotfile "local/etc/sway/config";
+      xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
+      xdg.configFile."sway/config".source = util.fetchDotfile "etc/sway/config";
     };
   };
 }

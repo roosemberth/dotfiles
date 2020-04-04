@@ -54,7 +54,7 @@ in
         XDG_LIB_HOME = "$HOME/.local/lib";
         XDG_LOG_HOME = "$HOME/.local/var/log";
 
-        ZDOTDIR = "${homedir}/ws/1-Repositories/dotfiles/local/etc/zsh/default";
+        ZDOTDIR = "${homedir}/ws/1-Repositories/dotfiles/etc/zsh/default";
         GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
         GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
 
