@@ -14,6 +14,10 @@ exec swayidle -w idlehint 300 \
   lock          "$lockcmd"
   # No unlock until I can get a pidlock...
 
+exec systemctl --user set-environment DISPLAY="$DISPLAY" WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
+exec systemctl --user start graphical-session-pre.target
+exec systemctl --user start graphical-session.target
+
 input * tap enabled
 input * xkb_layout "us"
 input * xkb_variant "intl"
