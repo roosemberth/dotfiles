@@ -26,7 +26,7 @@ in recursiveUpdate ({
     # Azulejo.foo.bar = 5;  # This will add `foo.bar` for Azulejo
   });
 
-  network = import ./secrets/network.nix { inherit lib; };
+  network = import ./secrets/network.nix {};
 
   users = {
     roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
