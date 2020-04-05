@@ -23,6 +23,11 @@ input * xkb_layout "us"
 input * xkb_variant "intl"
 input * xkb_options "caps:escape"
 
+# Appearance
+default_border pixel 1
+default_floating_border pixel 1
+hide_edge_borders --i3 smart
+
 # Key bindings
 ## Session
 bindsym $mod+F4 kill
@@ -165,6 +170,8 @@ for_window [con_mark=center-float floating] exec swaymsg -t get_tree | \
 for_window [con_mark=center-float] mark --toggle center-float
 
 # Policies
+
+for_window [class=Pinentry-gtk-2] border normal
 
 ## Floaring windows
 for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
