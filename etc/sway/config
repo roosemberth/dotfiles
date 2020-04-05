@@ -147,9 +147,6 @@ bar {
 
 workspace_auto_back_and_forth yes
 
-# Policies
-for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
-
 # Layouts
 ### Note: sway does surface-local rescaling. The surface DPI is empirically
 ### the smallest and will cause huge windows in higher DPIs.
@@ -163,3 +160,14 @@ for_window [con_mark=center-float floating] exec swaymsg -t get_tree | \
   xargs swaymsg resize set
 
 for_window [con_mark=center-float] mark --toggle center-float
+
+# Policies
+
+## Floaring windows
+for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
+for_window [title="^Complete Installation$"] floating enable
+for_window [title="^Steam - News (.* of .*)$"] floating enable
+for_window [app_id="^nm-connection-editor$"] floating enable
+for_window [title="^About Mozilla Firefox$"] floating enable
+for_window [title="^Steam - Self Updater$"] floating enable
+for_window [title="^Steam Guard - Computer Authorization Required$"] floating enable
