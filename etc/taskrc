@@ -1,0 +1,13 @@
+default.command=list
+dateformat=Y-M-DTH:N
+
+# List format:
+report.list.columns = id,project,tags,priority,start.active,description,due,due.remaining
+report.list.labels = ID,Proj,Tags,Pri,A,Description,Due,
+
+context.gnu=project:gnugen
+context.agepoly=project:agepoly
+context.bity=project:bity
+context.epfl=project:epfl
+
+color.tag.nohl=blue

@@ -91,6 +91,7 @@ in
     wireshark.package = pkgs.wireshark;
   };
 
+  roos.agenda.enable = true;
   roos.dotfilesPath = ../..;
   roos.media.enable = true;
   roos.steam.enable = true;
