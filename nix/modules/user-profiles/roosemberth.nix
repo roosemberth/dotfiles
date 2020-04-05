@@ -1,6 +1,7 @@
 { config, pkgs, lib, secrets, ... }: with lib;
 let
   usersWithProfiles = attrValues config.roos.user-profiles;
+  util = import ../util.nix { inherit config pkgs lib; };
 in
 {
   config = mkIf (any (p: elem "roosemberth" p) usersWithProfiles) {
@@ -54,7 +55,8 @@ in
         XDG_LIB_HOME = "$HOME/.local/lib";
         XDG_LOG_HOME = "$HOME/.local/var/log";
 
-        ZDOTDIR = "${homedir}/ws/1-Repositories/dotfiles/etc/zsh/default";
+        ZDOTDIR = util.fetchDotfile "etc/zsh/default";
+        ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
         GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
         GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
 
