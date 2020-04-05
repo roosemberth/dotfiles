@@ -45,7 +45,9 @@ bindsym $mod+v          exec mpv "$(wl-paste)" --load-unsafe-playlists \
   --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
 
 bindsym $mod+Return         exec alacritty -e tmux
-bindsym $mod+Return+Control exec dmenu_path | dmenu | xargs swaymsg exec --
+bindsym $mod+Return+Control exec\
+  OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER\
+  alacritty -d 120 10 --class launcher -e zsh
 bindsym $mod+Return+Shift   exec alacritty
 
 ## Services
@@ -126,7 +128,8 @@ bindsym $mod+9+Shift move container to workspace 9
 bindsym $mod+minus scratchpad show
 bindsym $mod+minus+Shift move scratchpad  # I don't think I'll ever use this...
 bindsym $mod+q exec tmux detach-client -s flyway
-bindsym $mod+q+Shift exec alacritty --class Scratchpad-flyway -e tmux new -As flyway
+bindsym $mod+q+Shift exec\
+  alacritty --class Scratchpad-flyway -e tmux new -As flyway
 
 # Containers
 mode "resize" {
@@ -174,6 +177,7 @@ for_window [con_mark=center-float] mark --toggle center-float
 for_window [class=Pinentry-gtk-2] border normal
 
 ## Floaring windows
+for_window [app_id=launcher] floating enable
 for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
 for_window [title="^Complete Installation$"] floating enable
 for_window [title="^Steam - News (.* of .*)$"] floating enable
