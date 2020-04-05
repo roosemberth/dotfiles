@@ -1,4 +1,4 @@
-{ lib, hostname, _called_by_injector ? false }:
+{ lib, _called_by_injector ? false }:
 with lib; assert (assertMsg _called_by_injector
                   "The secrets module should not be called directly.");
 let
@@ -9,11 +9,10 @@ let
     };
   admins = import ./secrets/users/admins.nix { inherit lib; };
   opaque = import ./secrets/opaque.nix { inherit lib; };
-  maybeAttrset = key: def: set: if hasAttr key set then getAttr key set else def;
 in recursiveUpdate ({
   adminPubKeys = admins.authorizedPublicKeys;
 
-  machine = recursiveUpdate ({
+  forHost = hostname: recursiveUpdate ({
     keys = {
       initramfsSshKeys = let
         path = ./secrets + "/machines/${hostname}/ssh-keys/initramfs/";
@@ -22,15 +21,11 @@ in recursiveUpdate ({
       in map (key: "${path}/${key}") keys;
       wireguard = wireguardSecrets hostname;
     };
-  }) (maybeAttrset hostname {} {
+  }) (attrByPath [hostname] {} {
     # Azulejo.foo.bar = 5;  # This will add `foo.bar` for Azulejo
   });
 
   network = import ./secrets/network.nix {};
-
-  users = {
-    roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
-  };
-
+  users.roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
   secretsAvailable = true;
-}) (maybeAttrset hostname {} opaque.secrets)
+}) opaque.secrets

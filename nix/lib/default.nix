@@ -6,7 +6,6 @@
       let
         secrets = import ../secrets.nix {
           inherit lib;
-          hostname = config.networking.hostName;
           _called_by_injector = true;
         };
       in
