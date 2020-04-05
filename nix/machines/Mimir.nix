@@ -96,6 +96,8 @@ in
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
   roos.wayland.enable = true;
+  roos.wireguard.enable = true;
+  roos.wireguard.gwServer = "Hellendaal";
 
   services = {
     logind.extraConfig = "HandlePowerKey=ignore";
