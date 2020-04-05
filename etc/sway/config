@@ -32,7 +32,6 @@ bindsym $mod+mod1+Control+F4+Shift exec swaymsg exit
 ## Apps
 bindsym $mod+f+Control  exec firefox
 bindsym $mod+m          exec makoctl dismiss
-bindsym $mod+p          exec passmenu
 bindsym $mod+v          exec mpv "$(wl-paste)" --load-unsafe-playlists \
   --script-opts=try_ytdl_first=yes \
   --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
