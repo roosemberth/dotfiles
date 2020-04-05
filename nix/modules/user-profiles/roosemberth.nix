@@ -1,7 +1,6 @@
 { config, pkgs, lib, secrets, ... }: with lib;
 let
   usersWithProfiles = attrValues config.roos.user-profiles;
-  util = import ../util.nix { inherit config pkgs lib; };
 in
 {
   config = mkIf (any (p: elem "roosemberth" p) usersWithProfiles) {
@@ -20,6 +19,8 @@ in
       shell = pkgs.zsh;
     };
 
+    roos.baseConfig.enable = true;
+
     roos.rConfig = {
       home.packages = (with pkgs; [
         git
@@ -32,55 +33,6 @@ in
       ]);
     };
 
-    roos.rConfigFn = userCfg: let
-      homedir = userCfg.home.homeDirectory;
-    in {
-      xdg = {
-        enable = true;
-        cacheHome = "${homedir}/.local/var/cache";
-        configHome = "${homedir}/.local/etc";
-        dataHome = "${homedir}/.local/var/lib";
-        userDirs = {
-          enable = true;
-          download = "/tmp";
-          music = "$HOME/Media/Music";
-          pictures = "$HOME/Media/Pictures";
-          # Not backported yet
-          # publicShare = "$HOME/Public";
-          videos = "$HOME/Media/Videos";
-        };
-      };
-
-      home.sessionVariables = rec {
-        XDG_LIB_HOME = "$HOME/.local/lib";
-        XDG_LOG_HOME = "$HOME/.local/var/log";
-
-        ZDOTDIR = util.fetchDotfile "etc/zsh/default";
-        ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
-        GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
-        GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
-
-        PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
-        GNUPGHOME = "${userCfg.xdg.dataHome}/gnupg";
-        SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent-$(id -un)-socket";
-      };
-
-      systemd.user.startServices = true;
-
-      xdg.configFile = mapAttrs (_: f: { source=util.fetchDotfile f.source; }) {
-        "nvim/init.vim".source = "etc/nvim/init.vim";
-      };
-
-      home.file = {
-        ".zshenv".text = "";  # empty file to silence zsh-newuser-install.
-        # Systemd does not honot $XDG_CONFIG_HOME
-        ".config/systemd".source =
-          (pkgs.runCommandNoCCLocal "systemd-user-config-link" {} ''
-            ln -s "${builtins.toString userCfg.xdg.configHome}/systemd" "$out"
-          '');
-      };
-    };
-
     roos.sConfig = {
       home.packages = (with pkgs; [
         bluezFull
@@ -91,7 +43,6 @@ in
         silver-searcher
         tig
         weechat
-        wireguard
         xxd
       ]);
     };

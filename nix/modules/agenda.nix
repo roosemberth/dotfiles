@@ -17,7 +17,11 @@ in {
         });
         maildirBasePath = ".local/var/mail";
       };
-      home.packages = with pkgs; [ gnupg mailcap taskwarrior timewarrior ];
+      home.packages = with pkgs; [ gnupg mailcap pass-otp taskwarrior timewarrior ];
+      home.sessionVariables = rec {
+        PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
+        GNUPGHOME = "${userCfg.xdg.dataHome}/gnupg";
+      };
 
       programs.afew.enable = true;
       programs.alot.enable = true;
