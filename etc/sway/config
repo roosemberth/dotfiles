@@ -26,8 +26,11 @@ input * xkb_options "caps:escape"
 # Key bindings
 ## Session
 bindsym $mod+F4 kill
-bindsym $mod+c+Shift reload
+bindsym $mod+c+Control reload
 bindsym $mod+mod1+Control+F4+Shift exec swaymsg exit
+bindsym $mod+t+Control exec\
+  tmux list-sessions | grep -v flyway | grep -oP '^[^:]+(?!.*attached)'\
+  | xargs -n1 setsid alacritty -e tmux attach -t
 
 ## Apps
 bindsym $mod+f+Control  exec firefox
