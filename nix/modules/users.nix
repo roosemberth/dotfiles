@@ -68,7 +68,6 @@ in {
     };
 
     rConfigFn = mkOption {
-      #type = options.home-manager.users.type.functor.wrapped;
       default = _: {};
       description = ''
         Function returning a Home-manager configuration to be used in
@@ -88,7 +87,6 @@ in {
     };
 
     sConfigFn = mkOption {
-      #type = options.home-manager.users.type.functor.wrapped;
       default = _: {};
       description = ''
         Function returning a Home-manager configuration to be used in
@@ -109,7 +107,6 @@ in {
     };
 
     gConfigFn = mkOption {
-      #type = options.home-manager.users.type.functor.wrapped;
       default = _: {};
       description = ''
         Function returning a Home-manager configuration to be used in
@@ -127,13 +124,12 @@ in {
     in mkMerge (flip crossLists [users cfgs] (user: cfg: {
       ${user} = mkAliasDefinitions cfg;
     }));
+    mergeFunctorWithUser = user: x:  # x is a merge of functions to user configs
+      mkMerge (map (f: f config.home-manager.users.${user}) x.contents);
     callUserCfgFns = users: cfgFilter: let
-      cfgFns = cfgFilter config.roos;
+      cfgFns = cfgFilter options.roos;
     in mkMerge (flip crossLists [users cfgFns] (user: cfgFn: {
-      # Note: We can get away with directly merging the submodule because
-      # options with default values have already been rendered by home-manager
-      # (see mkAliasDefinitions use above).
-      ${user} = (cfgFn config.home-manager.users.${user});
+      ${user} = mkAliasAndWrapDefinitions (mergeFunctorWithUser user) cfgFn;
     }));
     userCfgs = with config.roos.user-profiles; {
       usersWithReducedConfigurations = mkMerge [
