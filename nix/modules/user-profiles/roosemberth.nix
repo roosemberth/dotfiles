@@ -83,6 +83,14 @@ in
         "nvim/init.vim".source = "etc/nvim/init.vim";
       };
 
+      home.file = {
+        ".zshenv".text = "";  # empty file to silence zsh-newuser-install.
+        # Systemd does not honot $XDG_CONFIG_HOME
+        ".config/systemd".source =
+          (pkgs.runCommandNoCCLocal "systemd-user-config-link" {} ''
+            ln -s "${builtins.toString userCfg.xdg.configHome}/systemd" "$out"
+          '');
+      };
     };
 
     roos.sConfig = {
