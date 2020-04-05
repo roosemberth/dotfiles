@@ -76,6 +76,13 @@ in
         });
         maildirBasePath = ".local/var/mail";
       };
+
+      systemd.user.startServices = true;
+
+      xdg.configFile = mapAttrs (_: f: { source=util.fetchDotfile f.source; }) {
+        "nvim/init.vim".source = "etc/nvim/init.vim";
+      };
+
     };
 
     roos.sConfig = {
@@ -97,7 +104,10 @@ in
       home.packages = (with pkgs; [
         brightnessctl
         firefox
-        epiphany
+        (epiphany.override {webkitgtk = pkgs.webkitgtk.overrideAttrs (old: {
+          cmakeFlags = assert lib.strings.versionOlder old.version "2.28.1";
+            old.cmakeFlags ++ ["-DENABLE_BUBBLEWRAP_SANDBOX=OFF"];
+        });})
         gnome3.gucharmap
         gtk3  # gtk-launch
         pinentry-gtk2
