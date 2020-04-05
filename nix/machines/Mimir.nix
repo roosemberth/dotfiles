@@ -72,6 +72,21 @@ in
     ];
   };
 
+  boot.kernelPackages = let
+    linux_sgx_pkg = { fetchurl, buildLinux, ... } @ args:
+    buildLinux (args // rec {
+      version = "5.6.0-next-20200402";
+      modDirVersion = version;
+      src = builtins.fetchGit {
+        url = "git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git";
+        rev = "17f166b56b2583b97f0f6612cfbbb7f99e6889bb";
+      };
+      kernelPatches = [];
+      extraMeta.branch = "5.4";
+    } // (args.argsOverride or {}));
+    linux_sgx = pkgs.callPackage linux_sgx_pkg{};
+  in pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor linux_sgx);
+
   nixpkgs = {
     config = {
       packageOverrides = pkgs: {
