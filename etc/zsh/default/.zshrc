@@ -44,6 +44,8 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
         fi
     fi
 fi
+## Not part of the FHS standard, but usefull nonetheless
+export XDG_LOG_HOME="${XDG_LOG_HOME:-$HOME/.loca/var/log}"
 # }}}
 
 # Make sure required zsh directories exists:
