@@ -34,6 +34,7 @@ Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " FIXME: broken post-install?
 Plug 'chrisbra/vim-diff-enhanced'
 Plug 'junegunn/vim-easy-align'
+Plug 'kmnk/denite-dirmark', { 'do': ':UpdateRemotePlugins' }
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-surround'
 Plug 'vim-scripts/Mark'
@@ -122,6 +123,7 @@ highlight ALEError ctermfg=167 cterm=italic
 
 " Behaviour plugins
 call deoplete#enable()
+call dirmark#set_cache_directory_path(stdpath('data').'/dirmark') " “cache”...
 
 " Denite {{{
 autocmd FileType denite call s:denite_my_settings()
@@ -141,6 +143,15 @@ function! s:denite_my_settings() abort
   call denite#custom#var('grep', 'pattern_opt', [])
   call denite#custom#var('grep', 'separator', ['--'])
   call denite#custom#var('grep', 'final_opts', [])
+
+  " From the denite docs:
+  " Q: I want to define source depend key mappings.
+  " A: It is not supported.
+  " So, let's piggy-back the statusbar API!
+  nnoremap <silent><buffer> + :
+    \if denite#get_status("sources") =~ "dirmark*" \|
+      \:Denite dirmark/add \|
+    \endif<CR>
 endfunction
 
 autocmd FileType denite-filter call s:denite_filter_my_settings()
@@ -283,6 +294,7 @@ nnoremap <leader>g :e %:h:r<CR>
 au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
 nnoremap <leader>T :Denite tag<CR>
 nnoremap <leader>F :Denite file/rec file/old<CR>
+nnoremap <leader><C-f> :Denite dirmark<CR>
 nnoremap <leader>B :Denite buffer<CR>
 nnoremap <leader>J :Denite jump<CR>
 nnoremap <leader><C-_> :Denite line<CR>
