@@ -5,6 +5,10 @@ in {
   options.roos.wayland.enable = mkEnableOption "Enable wayland support.";
 
   config = mkIf config.roos.wayland.enable {
+    nixpkgs.config.packageOverrides = pkgs: {
+      pass = pkgs.pass.override { waylandSupport = true; };
+    };
+
     roos.gConfig = {
       home.sessionVariables = {
         MOZ_ENABLE_WAYLAND = 1;
