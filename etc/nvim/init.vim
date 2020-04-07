@@ -20,6 +20,7 @@ Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 
 " Integrations
+Plug 'airblade/vim-gitgutter'
 Plug 'francoiscabrol/ranger.vim'
 Plug 'mileszs/ack.vim'
 Plug 'tpope/vim-dispatch'
