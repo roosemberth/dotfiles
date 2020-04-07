@@ -1,6 +1,14 @@
 { config, pkgs, lib, secrets, ... }: with lib;
 let
   usersWithProfiles = attrValues config.roos.user-profiles;
+  pinentry' = pkgs.writeShellScriptBin "pinentry" ''
+    if [[ "$XDG_SESSION_TYPE" == "wayland" || "$XDG_SESSION_TYPE" = "x11" ]]; then
+      exec ${pkgs.pinentry-gtk2}/bin/pinentry-gtk-2 "$@"
+    else
+      ${pkgs.ncurses}/bin/reset
+      exec ${pkgs.pinentry-curses}/bin/pinentry-curses "$@"
+    fi
+  '';
 in
 {
   config = mkIf (any (p: elem "roosemberth" p) usersWithProfiles) {
@@ -57,7 +65,7 @@ in
         });})
         gnome3.gucharmap
         gtk3  # gtk-launch
-        pinentry-gtk2
+        pinentry'
         tdesktop
         x11_ssh_askpass
       ]) ++ (with pkgs.bleeding-edge; [
