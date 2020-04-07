@@ -122,6 +122,8 @@ highlight ALEInfo ctermfg=109 cterm=italic
 highlight ALEWarning ctermfg=214 cterm=italic
 highlight ALEError ctermfg=167 cterm=italic
 
+let g:airline#extensions#tabline#enabled = 1
+
 " Behaviour plugins
 call deoplete#enable()
 call dirmark#set_cache_directory_path(stdpath('data').'/dirmark') " “cache”...
