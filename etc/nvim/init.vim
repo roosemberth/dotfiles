@@ -343,6 +343,10 @@ vnoremap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 nnoremap <leader>t :TagbarOpenAutoClose<CR>
 nnoremap <leader>D :diffthis<CR>
 vnoremap ! :!sh<CR>
+nnoremap <C-w><C-w> :split<CR>
+nnoremap <C-w><C-e> :vsplit<CR>
+nnoremap <C-w>w :execute 'split'.expand('<cfile>')<CR>
+nnoremap <C-w>e :execute 'vsplit'.expand('<cfile>')<CR>
 
 function! OnBufEnter()
   if &buftype=="help"
