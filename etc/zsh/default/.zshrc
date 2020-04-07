@@ -25,6 +25,12 @@ export EDITOR="$(command -v vim)"
 export VISUAL="$(command -v vim) -O"
 export PAGER="$(command -v less) -j.3"
 
+if [ "$XDG_SESSION_TYPE" = "tty" ]; then
+    export GPG_TTY="$(tty)"
+else
+    unset GPG_TTY
+fi
+
 # Honor the XDG directory specification as best as possible. {{{
 # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
