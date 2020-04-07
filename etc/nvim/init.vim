@@ -361,4 +361,4 @@ au BufEnter * call OnBufEnter()
 au BufEnter fugitive://* nmap Q :q:q
 " }}}
 
-" vim:expandtab:shiftwidth=2:tabstop=2:colorcolumn=80
+" vim:expandtab:shiftwidth=2:tabstop=2:colorcolumn=80:bufhidden=delete
