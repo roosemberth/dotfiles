@@ -33,6 +33,7 @@ Plug 'JarrodCTaylor/vim-reflection'
 Plug 'Lokaltog/vim-easymotion'
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } " FIXME: broken post-install?
+Plug 'blankname/denite_fzf_matcher', { 'do': ':UpdateRemotePlugins' }
 Plug 'chrisbra/vim-diff-enhanced'
 Plug 'junegunn/vim-easy-align'
 Plug 'kmnk/denite-dirmark', { 'do': ':UpdateRemotePlugins' }
@@ -138,14 +139,8 @@ function! s:denite_my_settings() abort
   nnoremap <silent><buffer><expr> p       denite#do_map('do_action', 'preview')
   nnoremap <silent><buffer><expr> q       denite#do_map('quit')
   nnoremap <silent><buffer><expr> i       denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
-
-  call denite#custom#var('grep', 'command', ['ag'])
-  call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep'])
-  call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'pattern_opt', [])
-  call denite#custom#var('grep', 'separator', ['--'])
-  call denite#custom#var('grep', 'final_opts', [])
+  nnoremap <silent><buffer><expr> w       denite#do_map('choose_action')
+  nnoremap <silent><buffer><expr> <C-o>   denite#do_map('do_action', 'wide')
 
   " From the denite docs:
   " Q: I want to define source depend key mappings.
@@ -157,15 +152,39 @@ function! s:denite_my_settings() abort
     \endif<CR>
 endfunction
 
+" Override default narrow action on dirmark to use file/rec
+function! s:dirmark_show_rec(context)
+  let path = a:context['targets'][0]['action__path']
+  return {'sources_queue': [[ {'name': 'file/rec', 'args': [path]} ]]}
+endfunction
+call denite#custom#action('dirmark', 'rec', function('s:dirmark_show_rec'))
+call denite#custom#kind('dirmark', 'default_action', 'rec')
+call denite#custom#option('_', 'max_dynamic_update_candidates', 100000)
+
 autocmd FileType denite-filter call s:denite_filter_my_settings()
 function! s:denite_filter_my_settings() abort
-  imap <silent><buffer> <C-o>     <Plug>(denite_filter_quit)
+  imap <silent><buffer> <Esc> <Plug>(denite_filter_quit)
+  inoremap <silent><buffer><expr> <C-]> denite#do_map('do_action')
+  imap <silent><buffer> <Del> <Right><BS>
+  imap <silent><buffer> <C-k> <C-e><C-u>
 endfunction
 
-" Have denite use scantree.py since it respects wildignore
+" Modified from denite/source/file/rec.py to stay in one filesystem
 call denite#custom#var('file/rec', 'command',
-                       \ ['scantree.py', '--path', ':directory'])
+  \ ['find', '-L', ':directory', '-path', '*/.git/*', '-prune', '-mount'
+  \ , '-o', '-type', 'l', '-print', '-o', '-type', 'f', '-print'])
 
+if executable('ag')
+  call denite#custom#var('grep', { 'command': ['ag'],
+    \ 'default_opts': ['-i', '--vimgrep'], 'recursive_opts': [],
+    \ 'pattern_opt': [], 'separator': ['--'], 'final_opts': [] })
+  call denite#custom#var('file/rec', 'command',
+    \ ['ag', '--follow', '--nocolor', '--nogroup', '--one-device', '-g', ''])
+endif
+" Fuzzy-match files using fzf
+if executable('fzf')
+  call denite#custom#source('file/rec', 'matchers', ['matcher_fzf'])
+endif
 " }}}
 " }}}
 
