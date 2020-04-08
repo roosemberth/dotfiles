@@ -104,6 +104,8 @@ in {
       programs.notmuch.hooks.preNew = "mbsync --all";
       programs.notmuch.new.tags = [ "new" ];
 
+      home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
+
       xdg.configFile."task/taskrc".source = util.fetchDotfile "etc/taskrc";
     };
   };
