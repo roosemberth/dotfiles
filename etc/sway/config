@@ -39,6 +39,7 @@ bindsym $mod+t+Control exec\
 
 ## Apps
 bindsym $mod+f+Control  exec firefox
+bindsym $mod+p          exec passmenu
 bindsym $mod+m          exec makoctl dismiss
 bindsym $mod+v          exec mpv "$(wl-paste)" --load-unsafe-playlists \
   --script-opts=try_ytdl_first=yes \
