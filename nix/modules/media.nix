@@ -24,7 +24,9 @@ in
         ];
 
     roos.gConfig = {
-      home.packages = with pkgs; [mpv youtube-dl mopidy'];
+      home.packages = with pkgs; [
+        mpv youtube-dl mopidy' ffmpeg-full
+      ];
       xdg.configFile."mopidy/mopidy.conf".source =
         util.fetchDotfile "etc/mopidy/mopidy.conf";
       xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
