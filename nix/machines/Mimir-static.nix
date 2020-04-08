@@ -90,22 +90,22 @@ in
       EMPTY_PRE_POST_CLEANUP="yes"
       SYNC_ACL="yes"
     '';
-  in {
-    "home" = {
-      subvolume = "/home";
+
+    mkCfg = path: {
+      subvolume = path;
       inherit extraConfig;
     };
-    "roos-var" = {
-      subvolume = "/home/roosemberth/.local/var";
+
+    userCfg = user: path: {
+      subvolume = path;
       extraConfig = extraConfig + ''
-        ALLOW_USERS="roosemberth"
+        ALLOW_USERS="${user}"
       '';
     };
-    "roos-ws-platforms" = {
-      subvolume = "/home/roosemberth/ws/2-Platforms";
-      extraConfig = extraConfig + ''
-        ALLOW_USERS="roosemberth"
-      '';
-    };
+  in {
+    "home" = mkCfg "/home";
+    "roos-var" = userCfg "roosemberth" "/home/roosemberth/.local/var";
+    "roos-ws" = userCfg "roosemberth" "/home/roosemberth/ws";
+    "roos-ws-platforms" = userCfg "roosemberth" "/home/roosemberth/ws/2-Platforms";
   };
 }
