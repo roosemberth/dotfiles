@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
+  vim' = pkgs.writeShellScriptBin "vim" ''exec ${pkgs.neovim}/bin/nvim "$@"'';
 in
 {
   options.roos.baseConfig.enable = mkEnableOption "Arbitrary base configuration.";
@@ -24,6 +25,7 @@ in
         nix-zsh-completions
         openssh
         openssl
+        tmux
         zsh-completions
       ]);
 
@@ -55,5 +57,18 @@ in
 
       xdg.configFile."nvim/init.vim".source = util.fetchDotfile "etc/nvim/init.vim";
     };
+
+    roos.sConfig = {
+      home.packages = with pkgs; [
+        posix_man_pages man-pages glances
+      ];
+    };
+
+    environment.systemPackages = with pkgs; [
+      cacert curl hdparm htop iotop neovim vim' wget exfat nfsUtils
+    ];
+
+    programs.bash.enableCompletion = true;
+    programs.mtr.enable = true;
   };
 }

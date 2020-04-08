@@ -17,7 +17,6 @@ let
           rev = "3b676534975874a41ba689fd20f623550fb59b32";
       });
   bleeding-edge = nixpkgs-master { overlays = [ nixpkgs-wayland ]; };
-  vim' = pkgs.writeShellScriptBin "vim" ''exec ${pkgs.neovim}/bin/nvim "$@"'';
 in
 {
   imports = [
@@ -28,11 +27,6 @@ in
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernelModules = [ "kvm-intel" ];
-
-  environment.systemPackages = (with pkgs; [
-    cacert curl git hdparm htop iotop tmux neovim vim' wget exfat
-    glances posix_man_pages nfsUtils
-  ]);
 
   fonts.fonts = with pkgs; [
     hack-font
@@ -83,9 +77,7 @@ in
   };
 
   programs = {
-    bash.enableCompletion = true;
     dconf.enable = true;
-    mtr.enable = true;
     sway.enable = true;
     wireshark.enable = true;
     wireshark.package = pkgs.wireshark;
