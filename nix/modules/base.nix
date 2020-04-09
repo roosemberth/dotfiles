@@ -45,6 +45,8 @@ in
         cacheHome = "${homedir}/.local/var/cache";
         configHome = "${homedir}/.local/etc";
         dataHome = "${homedir}/.local/var/lib";
+        mime.enable = true;
+        mimeApps.enable = true;
         userDirs = {
           enable = true;
           download = "/tmp";
