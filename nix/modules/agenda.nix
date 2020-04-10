@@ -10,9 +10,10 @@ in {
         username = userCfg.home.username;
         emailAccounts = secrets.users.${username}.emailAccounts;
       in mkIf (hasAttrByPath [username "emailAccounts"] secrets.users) {
-        accounts = flip mapAttrs emailAccounts (_: secretCfg: let
+        accounts = flip mapAttrs emailAccounts (accName: secretCfg: let
           accountCfg = filterAttrs (n: _: n != "passwordPath") secretCfg;
         in accountCfg // {
+          alot.sendMailCommand = "msmtp --account=${accName} -t";
           passwordCommand =
             "${pkgs.pass}/bin/pass show ${secretCfg.passwordPath}";
         });
@@ -99,6 +100,7 @@ in {
       };
 
       programs.mbsync.enable = true;
+      programs.msmtp.enable = true;
       programs.notmuch.enable = true;
       programs.notmuch.hooks.postNew = "afew --tag --new";
       programs.notmuch.hooks.preNew = "mbsync --all";
