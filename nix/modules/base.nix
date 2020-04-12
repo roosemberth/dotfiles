@@ -11,6 +11,8 @@ in
       homedir = userCfg.home.homeDirectory;
     in {
       home.file = {
+        ".tmux.conf".source =
+          "${util.renderDotfile "etc/tmux" {}}/main.tmux.conf";
         ".zshenv".text = "";  # empty file to silence zsh-newuser-install.
         # Systemd does not honot $XDG_CONFIG_HOME
         ".config/systemd".source =
@@ -57,7 +59,8 @@ in
         };
       };
 
-      xdg.configFile."nvim/init.vim".source = util.fetchDotfile "etc/nvim/init.vim";
+      xdg.configFile."nvim/init.vim".source =
+        util.fetchDotfile "etc/nvim/init.vim";
     };
 
     roos.sConfig = {
