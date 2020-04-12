@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }: with lib;
+{ config, pkgs, lib, secrets, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
   mopidy' = with pkgs; buildEnv {
@@ -23,13 +23,28 @@ in
         "steam-original" # FIXME: See steam.nix
         ];
 
-    roos.gConfig = {
-      home.packages = with pkgs; [
-        mpv youtube-dl mopidy' ffmpeg-full
-      ];
+    roos.sConfigFn = userCfg: {
+      home.packages = [ mopidy' ];
       xdg.configFile."mopidy/mopidy.conf".source =
-        util.fetchDotfile "etc/mopidy/mopidy.conf";
+        let
+          spotifySecret =
+            name: secrets.users.roosemberth.volatile."spotify/${name}";
+        in util.renderDotfile "etc/mopidy/mopidy.conf" {
+          cacheHome = userCfg.xdg.cacheHome;
+          configHome = userCfg.xdg.configHome;
+          dataHome = userCfg.xdg.dataHome;
+          musicDirectory = "${userCfg.home.homeDirectory}/Media/Music";
+          mopidyClientId = spotifySecret "mopidy-spotify/client_id";
+          mopidyClientSecret = spotifySecret "mopidy-spotify/client_secret";
+          spotifyUserName = spotifySecret "username";
+          spotifyPassword = spotifySecret "password";
+        };
       xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
+      home.file."Media/Music/.keep".text = ""; # Placeholder
+    };
+
+    roos.gConfig = {
+      home.packages = with pkgs; [ mpv youtube-dl ffmpeg-full ];
     };
   };
 }
