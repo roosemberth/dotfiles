@@ -14,7 +14,7 @@ in {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
       };
-      home.packages = with pkgs; [ sway mako ];
+      home.packages = with pkgs; [ sway mako slurp grim ];
       xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
       xdg.configFile."sway/config".source = util.fetchDotfile "etc/sway/config";
 

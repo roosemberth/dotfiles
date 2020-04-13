@@ -36,6 +36,10 @@ bindsym $mod+mod1+Control+F4+Shift exec swaymsg exit
 bindsym $mod+t+Control exec\
   tmux list-sessions | grep -v flyway | grep -oP '^[^:]+(?!.*attached)'\
   | xargs -n1 setsid alacritty -e tmux attach -t
+bindsym $mod+Print exec swaymsg -t get_tree | \
+  jq -r '.. | select(.pid? and .visible?)| .rect \
+         | "\(.x),\(.y) \(.width)x\(.height)"'\
+  | slurp | grim -g - - | wl-copy
 
 ## Apps
 bindsym $mod+f+Control  exec firefox
