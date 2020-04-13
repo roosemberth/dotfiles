@@ -60,9 +60,11 @@ in
     binaryCaches = [
       "https://cache.nixos.org"
       "https://nixpkgs-wayland.cachix.org"
+      "https://nixcache.reflex-frp.org"
     ];
     binaryCachePublicKeys = [
       "nixpkgs-wayland.cachix.org-1:3lwxalLxMRkVhehr5StQprHdEo4lrE8sRho9R9HOLYA="
+      "ryantrinkle.com-1:JJiAKaRv9mWgpVAz8dwewnZe0AzzEAzPkagE9SP5NWI="
     ];
   };
 
