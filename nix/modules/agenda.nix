@@ -24,6 +24,9 @@ in {
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
         GNUPGHOME = "${userCfg.xdg.dataHome}/gnupg";
+        TASKRC = "${userCfg.xdg.configHome}/task/taskrc";
+        TASKDATA = "${userCfg.xdg.dataHome}/task";
+        TIMEWARRIORDB = "${userCfg.xdg.dataHome}/timewarrior";
       };
 
       programs.afew.enable = true;
