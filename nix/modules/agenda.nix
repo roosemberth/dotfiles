@@ -111,7 +111,9 @@ in {
 
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
-      xdg.configFile."task/taskrc".source = util.fetchDotfile "etc/taskrc";
+      xdg.configFile."task/taskrc".source = util.fetchDotfile "etc/task/taskrc";
+      xdg.dataFile."task/hooks/on-modify.timewarrior".source =
+        util.fetchDotfile "etc/task/on-modify.timewarrior";
     };
 
     roos.gConfig = {
