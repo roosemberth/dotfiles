@@ -24,7 +24,7 @@ in
         ];
 
     roos.sConfigFn = userCfg: {
-      home.packages = [ mopidy' ];
+      home.packages = with pkgs; [ mopidy' beets ];
       xdg.configFile."mopidy/mopidy.conf".source =
         let
           spotifySecret =
@@ -39,7 +39,14 @@ in
           spotifyUserName = spotifySecret "username";
           spotifyPassword = spotifySecret "password";
         };
+      xdg.configFile."beets/config.yaml".source =
+        util.renderDotfile "etc/beets/config.yaml" {
+          configHome = userCfg.xdg.configHome;
+          dataHome = userCfg.xdg.dataHome;
+          musicDirectory = "${userCfg.home.homeDirectory}/Media/Music";
+        };
       xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
+      xdg.dataFile."beets/.keep".text = "";  # Placeholder
       home.file."Media/Music/.keep".text = ""; # Placeholder
     };
 
