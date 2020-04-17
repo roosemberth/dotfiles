@@ -43,7 +43,7 @@ in {
       '';
 
       programs.alot = let
-        defaultQuery = "search not (tag:killed or tag:deleted) and tag:inbox";
+        defaultQuery = "search tag:force_show or (not (tag:killed or tag:deleted) and tag:inbox)";
         moveNextIncl = query: "move next ${query}; move previous ${query}";
       in {
         enable = true;
@@ -65,11 +65,11 @@ in {
             "e" = ''select; ${moveNextIncl "tag:unread"}'';
             "enter" = ''select; ${moveNextIncl "tag:unread"}'';
             "!" = "untag unread; tag flagged; fold; move down";
-            "A" = "untag unread; toggletags inbox";
+            "A" = "tag force_show; untag unread, inbox, force_show";
             "a" = "";
             "s" = "";
             "&" = "";
-            "D" = "toggletags deleted; untag unread; untag inbox";
+            "D" = "tag force_show; tag deleted; untag unread, inbox, force_show";
           };
           thread = {
             "Control r" = "reply --all";
