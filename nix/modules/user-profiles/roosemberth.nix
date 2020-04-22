@@ -1,6 +1,7 @@
 { config, pkgs, lib, secrets, ... }: with lib;
 let
-  usersWithProfiles = attrValues config.roos.user-profiles;
+  usersWithProfiles =
+    flatten (with config.roos.user-profiles; [ graphical reduced simple ]);
   pinentry' = pkgs.writeShellScriptBin "pinentry" ''
     if [[ "$XDG_SESSION_TYPE" == "wayland" || "$XDG_SESSION_TYPE" = "x11" ]]; then
       exec ${pkgs.pinentry-gtk2}/bin/pinentry-gtk-2 "$@"
@@ -11,7 +12,7 @@ let
   '';
 in
 {
-  config = mkIf (any (p: elem "roosemberth" p) usersWithProfiles) {
+  config = mkIf (elem "roosemberth" usersWithProfiles) {
     # Workaround for <https://github.com/rycee/home-manager/issues/1119>.
     boot.postBootCommands = ''
       mkdir -p /nix/var/nix/{profiles,gcroots}/per-user/roosemberth

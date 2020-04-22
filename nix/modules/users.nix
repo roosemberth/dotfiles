@@ -147,6 +147,8 @@ in {
         (callUserCfgFns users (c: with c; [rConfigFn sConfigFn gConfigFn]))
       ];
     };
+    usersWithProfiles =
+      flatten (with config.roos.user-profiles; [ graphical reduced simple ]);
   in {
     home-manager.users = mkMerge (attrValues userCfgs);
     # See <https://github.com/rycee/home-manager/issues/1120>.
@@ -160,7 +162,7 @@ in {
       if [ "$(id -un)" = "${user}" ]; then
         . "${homedir}/.nix-profile/etc/profile.d/hm-session-vars.sh"
       fi
-    '') (flatten (attrValues config.roos.user-profiles));
+    '') usersWithProfiles;
 
     assertions = [
       {
@@ -174,6 +176,6 @@ in {
     ] ++ map (user: {
       assertion = builtins.hasAttr user config.users.users;
       message = "The main user ${user} has to exist";
-    }) (flatten (attrValues config.roos.user-profiles));
+    }) usersWithProfiles;
   };
 }
