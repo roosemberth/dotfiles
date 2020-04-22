@@ -24,7 +24,7 @@ in
         ];
 
     roos.sConfigFn = userCfg: {
-      home.packages = with pkgs; [ mopidy' beets ];
+      home.packages = with pkgs; [ mopidy' ]; # beets ];
       xdg.configFile."mopidy/mopidy.conf".source =
         let
           spotifySecret =
