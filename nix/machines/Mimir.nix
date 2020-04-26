@@ -61,10 +61,12 @@ in
       "https://cache.nixos.org"
       "https://nixpkgs-wayland.cachix.org"
       "https://nixcache.reflex-frp.org"
+      "https://all-hies.cachix.org"
     ];
     binaryCachePublicKeys = [
       "nixpkgs-wayland.cachix.org-1:3lwxalLxMRkVhehr5StQprHdEo4lrE8sRho9R9HOLYA="
       "ryantrinkle.com-1:JJiAKaRv9mWgpVAz8dwewnZe0AzzEAzPkagE9SP5NWI="
+      "all-hies.cachix.org-1:JjrzAOEUsD9ZMt8fdFbzo3jNAyEWlPAwdVuHw4RD43k="
     ];
   };
 
