@@ -199,7 +199,7 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-colors
 +vi-git-colors() {
     [[ $(git rev-parse --is-inside-work-tree 2>&1) == 'true' ]] || return
 
-    if git status --porcelain | grep -q '??'; then
+    if git status --porcelain | grep -qE '^ M'; then
         hook_com[unstaged]='%F{red}'
     elif git status | awk '/^$/{exit} {print $0}' | grep -qi 'ahead'; then
         hook_com[unstaged]='%F{cyan}'
