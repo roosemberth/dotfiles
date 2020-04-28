@@ -1,23 +1,4 @@
 { config, pkgs, lib, ... }:
-let
-  nixpkgs-master =
-    let try = builtins.tryEval <nixpkgs-git>;
-    in if try.success then import try.value
-    else builtins.trace "Using pkgs for nixpkgs-master" import (
-      builtins.fetchGit {
-          url = "https://github.com/nixos/nixpkgs.git";
-          rev = "700ce1fd8128c08c1b2b1d66a6c5b38e75042a13";
-      });
-  nixpkgs-wayland =
-    let try = builtins.tryEval <nixpkgs-wayland>;
-    in if try.success then import try.value
-    else builtins.trace "Using pinned version of nixpkgs-wayland" import (
-      builtins.fetchGit {
-          url = "https://github.com/colemickens/nixpkgs-wayland.git";
-          rev = "3b676534975874a41ba689fd20f623550fb59b32";
-      });
-  bleeding-edge = nixpkgs-master { overlays = [ nixpkgs-wayland ]; };
-in
 {
   imports = [
     ../modules
@@ -73,9 +54,7 @@ in
   nixpkgs = {
     config = {
       packageOverrides = pkgs: {
-        inherit bleeding-edge;
         vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
-        sway = bleeding-edge.sway;
       };
     };
   };

@@ -69,8 +69,6 @@ in
         pinentry'
         tdesktop
         x11_ssh_askpass
-      ]) ++ (with pkgs.bleeding-edge; [
-        wdisplays wtype wlr-randr wl-clipboard # waybar
       ]);
     };
 
