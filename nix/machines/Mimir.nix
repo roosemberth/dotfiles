@@ -75,6 +75,10 @@
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";
 
+  security.sudo.extraConfig = ''
+    roosemberth ALL=(postgres) NOPASSWD: /run/current-system/sw/bin/psql
+  '';
+
   services = {
     logind.extraConfig = "HandlePowerKey=ignore";
     openssh.enable = true;
