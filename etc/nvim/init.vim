@@ -356,16 +356,20 @@ nnoremap <silent> <Return> :set nohlsearch<CR><CR>
 nnoremap <silent> N :set hlsearch<CR>N
 nnoremap <silent> n :set hlsearch<CR>n
 
+" Splits and forking
+nnoremap <C-w><C-w> :split<CR>
+nnoremap <C-w><C-e> :vsplit<CR>
+nnoremap <C-w><C-t> :execute 'tabnew '.expand('%')<CR>
+nnoremap <C-w>w :execute 'split '.expand('<cfile>')<CR>
+nnoremap <C-w>e :execute 'vsplit '.expand('<cfile>')<CR>
+nnoremap <C-w>t :execute 'tabnew '.expand('<cfile>')<CR>
+
 " Everything else...
 cnoremap w!! w !sudo tee % >/dev/null<CR>
 vnoremap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 nnoremap <leader>t :TagbarOpenAutoClose<CR>
 nnoremap <leader>D :diffthis<CR>
 vnoremap ! :!sh<CR>
-nnoremap <C-w><C-w> :split<CR>
-nnoremap <C-w><C-e> :vsplit<CR>
-nnoremap <C-w>w :execute 'split'.expand('<cfile>')<CR>
-nnoremap <C-w>e :execute 'vsplit'.expand('<cfile>')<CR>
 
 function! OnBufEnter()
   if &buftype=="help"
