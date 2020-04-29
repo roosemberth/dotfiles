@@ -23,6 +23,8 @@ input * xkb_layout "us"
 input * xkb_variant "intl"
 input * xkb_options "caps:escape"
 
+output eDP-1 scale 1
+
 # Appearance
 default_border pixel 1
 default_floating_border pixel 1
