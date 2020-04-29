@@ -19,8 +19,10 @@ in {
         });
         maildirBasePath = ".local/var/mail";
       };
-      home.packages = with pkgs;
-        [ gnupg mailcap pass-otp taskwarrior timewarrior ];
+      home.packages = with pkgs; [
+        gnupg mailcap pass-otp
+        taskwarrior timewarrior python3Packages.bugwarrior
+      ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
         GNUPGHOME = "${userCfg.xdg.dataHome}/gnupg";
@@ -112,6 +114,9 @@ in {
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
       xdg.configFile."task/taskrc".source = util.fetchDotfile "etc/task/taskrc";
+      # Should make a module someday...
+      xdg.configFile."bugwarrior/bugwarriorrc".text =
+        secrets.users.roosemberth.bugwarriorrc;
       xdg.dataFile."task/hooks/on-modify.timewarrior".source =
         util.fetchDotfile "etc/task/on-modify.timewarrior";
     };
