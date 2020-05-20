@@ -107,13 +107,13 @@ bindsym $mod+$right+Shift move right
 
 ### Workspaces
 bindsym $mod+Escape exec swaymsg -t get_workspaces |\
-  jq 'map(.num)|.[]' | dmenu |\
+  jq 'map(.name)|.[]' | dmenu |\
   xargs swaymsg workspace
 bindsym $mod+Escape+Shift exec swaymsg -t get_workspaces |\
-  jq 'map(.num)|.[]' | dmenu |\
+  jq 'map(.name)|.[]' | dmenu |\
   xargs swaymsg move container to workspace
 bindsym $mod+F2 exec swaymsg -t get_workspaces |\
-  jq 'map(.num)|.[]' | dmenu |\
+  jq 'map(.name)|.[]' | dmenu |\
   xargs swaymsg rename workspace to
 
 # Switch to workspace
