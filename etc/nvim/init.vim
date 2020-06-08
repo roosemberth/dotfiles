@@ -325,8 +325,8 @@ nnoremap <C-w>e :rightbelow vertical wincmd f<CR>
 nnoremap <C-w>f :split +Ranger<CR>
 
 " EasyAlign
-vnoremap ga <Plug>(EasyAlign)
-nnoremap ga <Plug>(EasyAlign)
+vmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
 
 " Fugitive
 nnoremap <leader>s :Gstatus<CR>
