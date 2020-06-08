@@ -20,7 +20,7 @@ in {
         maildirBasePath = ".local/var/mail";
       };
       home.packages = with pkgs; [
-        gnupg mailcap pass-otp
+        gnupg mailcap pass-otp gnome3.libsecret
         taskwarrior timewarrior python3Packages.bugwarrior
       ];
       home.sessionVariables = rec {
@@ -105,6 +105,9 @@ in {
       programs.notmuch.hooks.postNew = "afew --tag --new";
       programs.notmuch.hooks.preNew = "mbsync --all";
       programs.notmuch.new.tags = [ "new" ];
+
+      services.gnome-keyring.enable = true;
+      services.gnome-keyring.components = ["pkcs11" "secrets"];
 
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
