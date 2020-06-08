@@ -1,0 +1,46 @@
+--- schroot-1.6.10.orig/CMakeLists.txt
++++ schroot-1.6.10/CMakeLists.txt
+@@ -96,7 +96,7 @@
+ # Configure testing
+ SET(CMAKE_REQUIRED_LIBRARIES_SAVE ${CMAKE_REQUIRED_LIBRARIES})
+ SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} cppunit)
+-check_cxx_source_runs(
++check_cxx_source_compiles(
+ "#include <cppunit/ui/text/TestRunner.h>
+ 
+ int main() {
+--- schroot-1.6.10.orig/cmake/regex-checks.cmake
++++ schroot-1.6.10/cmake/regex-checks.cmake
+@@ -3,7 +3,23 @@
+ function(regex_test namespace header library outvar outlib)
+   set(CMAKE_REQUIRED_LIBRARIES_SAVE ${CMAKE_REQUIRED_LIBRARIES})
+   set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${library})
+-  check_cxx_source_runs(
++
++  if (CMAKE_CROSSCOMPILING)
++    message(WARNING "Using simplified regex check for cross compilation. Assuming that regex implementations work correctly.")
++    check_cxx_source_compiles(
++"#include <${header}>
++
++int main() {
++  ${namespace} foo(\"x\");
++  ${namespace} bar(\"x\", ${namespace}::extended);
++  std::string test(\"x\");
++  ${namespace}_search(test, foo);
++  ${namespace}_match(test, foo);
++  return 0;
++}"
++${outvar})
++  else(CMAKE_CROSSCOMPILING)
++    check_cxx_source_runs(
+ "#include <${header}>
+ #include <iostream>
+ 
+@@ -43,6 +59,7 @@
+   return 0;
+ }"
+ ${outvar})
++  endif(CMAKE_CROSSCOMPILING)
+ 
+   set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES_SAVE})
+ 

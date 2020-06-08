@@ -1,0 +1,26 @@
+From 7a82be1e24b9c7be942b4c354bdb91d766469142 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Thu, 5 Mar 2020 01:57:48 +0100
+Subject: [PATCH 2/9] pam: Use sysconfdir instead of hardcoded path
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ etc/pam/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/etc/pam/CMakeLists.txt b/etc/pam/CMakeLists.txt
+index 43a26c7e..88ab5291 100644
+--- a/etc/pam/CMakeLists.txt
++++ b/etc/pam/CMakeLists.txt
+@@ -17,7 +17,7 @@
+ #####################################################################
+ 
+ set(pam_data schroot)
+-set(pam_dir "/etc/pam.d")
++set(pam_dir "${CMAKE_INSTALL_FULL_SYSCONFDIR}/pam.d")
+ 
+ install(FILES ${pam_data}
+         DESTINATION ${pam_dir})
+-- 
+2.23.1
+

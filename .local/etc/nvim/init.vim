@@ -46,6 +46,7 @@ Plug 'majutsushi/tagbar'
 Plug 'brooth/far.vim'
 Plug 'vim-scripts/Mark'
 Plug 'junegunn/vim-easy-align'
+Plug 'JarrodCTaylor/vim-reflection'
 
 Plug 'Lokaltog/vim-easymotion'
 Plug 'mileszs/ack.vim'
@@ -54,6 +55,8 @@ Plug 'tpope/vim-tbone'
 Plug 'tpope/vim-surround'
 Plug 'yuratomo/w3m.vim'
 Plug 'w0rp/ale'
+Plug 'vim-scripts/LargeFile'
+Plug 'vim-scripts/AnsiEsc.vim'
 
 Plug 'Shougo/vinarise.vim'        " Hex editor
 Plug 'ap/vim-css-color'
@@ -74,9 +77,12 @@ Plug 'ferrine/md-img-paste.vim'
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
 
+Plug 'junegunn/fzf', { 'dir': $XDG_DATA_HOME.'/fzf', 'do': './install --all' }
+
 Plug 'Shougo/denite.nvim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'tpope/vim-dispatch'
+Plug 'francoiscabrol/ranger.vim'
 
 call plug#end()
 
@@ -90,7 +96,7 @@ endif
 
 let g:deoplete#enable_at_startup = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
-let g:ale_haskell_hie_executable = 'hie-wrapper'
+"let g:ale_disable_lsp = 1
 
 " Startify {{{
 let g:startify_skiplist = [
@@ -107,6 +113,7 @@ let g:startify_bookmarks = [
   \ { 'z': '~/.local/etc/zsh/default/.zshrc' },
   \ { 'c': '~/dotfiles/nixos-config/machines/Triglav.nix' },
   \ { 's': '~/dotfiles/nixos-config/pkgs/sandbox.nix' },
+  \ { 'n': '~/nixos-dev/nixpkgs-unstable/pkgs/top-level/all-packages.nix' },
   \ ]
 
 let g:startify_commands = [
@@ -120,6 +127,23 @@ autocmd VimEnter *
   \ |   wincmd w
   \ | endif
 
+" fzf use floating
+if has('nvim')
+  let $FZF_DEFAULT_OPTS .= ' --border --margin=0,2'
+  function! FloatingFZF()
+    let width = float2nr(&columns * 0.9)
+    let height = float2nr(&lines * 0.6)
+    let opts = { 'relative': 'editor',
+               \ 'row': (&lines - height) / 2,
+               \ 'col': (&columns - width) / 2,
+               \ 'width': width,
+               \ 'height': height }
+
+    let win = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    call setwinvar(win, '&winhighlight', 'NormalFloat:Normal')
+  endfunction
+  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+endif
 
 " Denite {{{
 " Define mappings
@@ -217,6 +241,7 @@ endfunction
 function! FT_python()
   " Disable missing import warnings on mypy
   let b:ale_python_mypy_options="--ignore-missing-imports"
+  let b:ale_python_pylint_options="--disable=import-error"
 endfunction
 " }}} <- Python
 
@@ -383,20 +408,26 @@ vmap <C-F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 
 " NERDTree
 nnoremap <leader>o :NERDTreeToggle<CR>
+nnoremap <leader><C-f> :NERDTreeFind<CR>
 nnoremap <leader>t :TagbarOpenAutoClose<CR>
-nnoremap <leader>T :Denite tag<CR>
+
+nnoremap <leader>g :e %:h:r<CR>
+nnoremap <leader>G :rightbelow vnew +Startify<CR>
+nnoremap <leader><C-n> :set hlsearch!<CR>
+nnoremap <leader>* :AckFromSearch<CR>
 
 " Denite
-nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>T :Denite tag<CR>
 nnoremap <leader>F :Denite file/rec<CR>
 nnoremap <leader>B :Denite buffer<CR>
 nnoremap <leader>J :Denite jump<CR>
 nnoremap <leader><C-_> :Denite line<CR>
+nnoremap <leader>D :diffthis<CR>
 
 " EasyAlign: start interactive in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
+vnoremap ga <Plug>(EasyAlign)
 " EasyAlign: start interactive for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+nnoremap ga <Plug>(EasyAlign)
 
 " Fugitive
 nnoremap <leader>s :Gstatus<CR>
@@ -419,6 +450,7 @@ nnoremap <leader>j :cnext<CR>
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
+map & :let @/=expand("<cword>")<CR>
 
 " Execure the line under the cursor
 vmap ! :!sh<CR>

@@ -1,0 +1,30 @@
+From b85966683ae3b216333b2691fbd2ab84ab4e3ad4 Mon Sep 17 00:00:00 2001
+From: Dima Kogan <dima@secretsauce.net>
+Date: Sat, 2 Jul 2016 14:56:15 -0700
+Subject: [PATCH] Unmount everything that we can, instead of giving up at the
+ first failure
+
+---
+ etc/setup.d/10mount | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/etc/setup.d/10mount
++++ b/etc/setup.d/10mount
+@@ -93,12 +93,15 @@ do_umount_all()
+ 
+         ( flock 9
+             mounts="$("$LIBEXEC_DIR/schroot-listmounts" -m "$1")"
++            anyfailed=""
+             if [ "x$mounts" != 'x' ]; then
+                 echo "$mounts" |
+                 while read mountloc; do
+                     info "Unmounting $mountloc"
+-                    umount "$mountloc" || exit 1
+-                done || exit 1
++                    umount "$mountloc" || anyfailed="yes"
++                done
++
++                [ -z "$anyfailed" ] || exit 1
+             fi
+         ) 9>"/var/lock/schroot/umount"
+     else

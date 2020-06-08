@@ -1,0 +1,119 @@
+From: Chris Leick <c.leick@vollbio.de>
+Date: Tue, 25 Nov 2014 21:34:20 +0100
+Subject: schroot: [INTL:de] Updated German PO translation
+
+There's a typo (marked with »FIXME« in the po file).
+
+ Date: Wed, 26 Nov 2014 15:26:13 +0000
+ From: Roger Leigh <rleigh@codelibre.net>
+
+ Many thanks, much appreciated!
+
+ I've committed this including the typo fix--thanks for pointing it out.
+
+Bug-Debian: http://bugs.debian.org/771001
+Origin: upstream
+Index: schroot-1.6.10/man/dchroot.1.man
+===================================================================
+--- schroot-1.6.10.orig/man/dchroot.1.man
++++ schroot-1.6.10/man/dchroot.1.man
+@@ -277,11 +277,11 @@ original \fBdchroot\fP by David Kimdon \
+ independent implementation.
+ .so copyright.man
+ .SH SEE ALSO
+-.BR schroot (1),
+ .BR sbuild (1),
++.BR schroot (1),
+ .BR chroot (2),
+-.BR schroot-setup (5),
+ .BR schroot.conf (5).
++.BR schroot-setup (5),
+ .\"#
+ .\"# The following sets edit modes for GNU EMACS
+ .\"# Local Variables:
+Index: schroot-1.6.10/man/schroot.1.man
+===================================================================
+--- schroot-1.6.10.orig/man/schroot.1.man
++++ schroot-1.6.10/man/schroot.1.man
+@@ -695,10 +695,10 @@ Directory used for unpacking file chroot
+ .BR dchroot (1),
+ .BR sbuild (1),
+ .BR chroot (2),
+-.BR run\-parts (8),
++.BR schroot.conf (5).
+ .BR schroot\-setup (5),
+ .BR schroot\-faq (7),
+-.BR schroot.conf (5).
++.BR run\-parts (8),
+ .\"#
+ .\"# The following sets edit modes for GNU EMACS
+ .\"# Local Variables:
+Index: schroot-1.6.10/man/schroot.conf.5.man
+===================================================================
+--- schroot-1.6.10.orig/man/schroot.conf.5.man
++++ schroot-1.6.10/man/schroot.conf.5.man
+@@ -154,7 +154,7 @@ Note that the script will be sourced onc
+ and must be idempotent.
+ .IP
+ All the default settings in this file are now settable using configuration keys
+-in \fIschroot.conf\fP, as detailed below.  Existing configuration should be
++in \fIschroot.conf\fP, as detailed below.  Existing configurations should be
+ modified to use these keys in place of this file.  See
+ .BR schroot-script-config (5)
+ for further details.  This type of setup script configuration file is no longer
+@@ -272,7 +272,7 @@ of updating. These additional options ar
+ \f[CBI]file=\fP\f[CI]filename\fP
+ The file containing the archived chroot environment (mandatory).  This must be
+ a tar (tape archive), optionally compressed with gzip, bzip2, xz, lzop or lz4.
+-The file extensions used to determine the type are are \fI.tar\fP,
++The file extensions used to determine the type are \fI.tar\fP,
+ \fI.tar.gz\fP, \fI.tar.bz2\fP, \fI.tar.xz\fP, \fI.tar.lzop\fP, \fI.tar.lz4\fP,
+ \fI.tgz\fP, \fI.tbz\fP, \fI.txz\fP, \fI.tzo\fP and \fI.tlz4\fP.  This file must
+ be owned by the root user, and not be writable by other.  Note that zip
+Index: schroot-1.6.10/man/schroot-faq.7.man
+===================================================================
+--- schroot-1.6.10.orig/man/schroot-faq.7.man
++++ schroot-1.6.10/man/schroot-faq.7.man
+@@ -104,7 +104,7 @@ In consequence, it's not possible to run
+ schroot.  You can however do it if you create a session with
+ \fI\-\-begin\-session\fP and then run the d\[ae]mon with
+ \fI\-\-run\-session\fP.  It's your responsibility to end the session with
+-\fI\-\-end\-session\fP when the daemon has terminated or you no longer need it.
++\fI\-\-end\-session\fP when the d\[ae]mon has terminated or you no longer need it.
+ .SS How do I manually cleaning up a broken session?
+ Occasionally, it may be necessary to manually clean up sessions.  If something
+ changes on your system which causes the setup scripts to fail when ending a
+@@ -255,10 +255,10 @@ the schroot-1.4 branch.
+ .so copyright.man
+ .SH SEE ALSO
+ .BR dchroot (1),
+-.BR schroot (1),
+ .BR sbuild (1),
+-.BR schroot\-setup (5),
++.BR schroot (1),
+ .BR schroot.conf (5).
++.BR schroot\-setup (5),
+ .\"#
+ .\"# The following sets edit modes for GNU EMACS
+ .\"# Local Variables:
+Index: schroot-1.6.10/man/schroot-setup.5.man
+===================================================================
+--- schroot-1.6.10.orig/man/schroot-setup.5.man
++++ schroot-1.6.10/man/schroot-setup.5.man
+@@ -143,7 +143,6 @@ These variables are only set for directl
+ .TP
+ CHROOT_MOUNT_DEVICE
+ The device to mount containing the chroot.
+-mounting.
+ .TP
+ CHROOT_MOUNT_OPTIONS
+ Options to pass to
+@@ -169,7 +168,7 @@ Union filesystem underlay directory (rea
+ .TP
+ CHROOT_DEVICE
+ The device containing the chroot root filesystem.  This is usually, but not
+-necessarily, the device which will be mounted.  For example, an LVM snapshot
++necessarily, the device which will be mounted.  For example, for a LVM snapshot
+ this will be the original logical volume.
+ .SS LVM snapshot variables
+ .TP

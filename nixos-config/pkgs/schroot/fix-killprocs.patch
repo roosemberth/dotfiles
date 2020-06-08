@@ -1,0 +1,39 @@
+Description: Fix logic in 15killprocs
+ The code that tried to identify processes running in a chroot
+ was failing when the chroot path contained a symlink (/var/run)
+ since the kernel reports a canonicalized name.
+ .
+ Thanks to Christoph Biedl <debian.axhn@manchmal.in-ulm.de> for the
+ analysis.
+Author: Raphaël Hertzog <hertzog@debian.org>
+Bug-Debian: http://bugs.debian.org/841699
+Last-Update: 2017-01-09
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+diff --git a/etc/setup.d/15killprocs b/etc/setup.d/15killprocs
+index 8630e89a..a37c4555 100755
+--- a/etc/setup.d/15killprocs
++++ b/etc/setup.d/15killprocs
+@@ -39,6 +39,7 @@ kill_proc()
+ # $1: mount base location
+ do_kill_all()
+ {
++    chroot_path=$(realpath "$1")
+     if [ -z "$1" ]; then
+         fatal "No path for finding stray processes: not reaping processes in chroot"
+     fi
+@@ -48,11 +49,11 @@ do_kill_all()
+     while read pid; do
+         # Check if process root are the same device/inode as chroot
+         # root (for efficiency)
+-        if [ /proc/"$pid"/root -ef "$1" ]; then
++        if [ /proc/"$pid"/root -ef "$chroot_path" ]; then
+             # Check if process and chroot root are the same (may be
+             # different even if device/inode match).
+-            root=$(readlink /proc/"$pid"/root || true)
+-            if [ "$root" = "$1" ]; then
++            root=$(readlink --canonicalize /proc/"$pid"/root || true)
++            if [ "$root" = "$chroot_path" ]; then
+                 exe=$(readlink /proc/"$pid"/exe || true)
+                 info "Killing left-over pid $pid (${exe##$1})"
+                 info "  Sending SIGTERM to pid $pid"

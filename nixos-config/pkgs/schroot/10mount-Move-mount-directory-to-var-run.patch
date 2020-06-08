@@ -1,0 +1,87 @@
+From: =?utf-8?q?Rapha=C3=ABl_Hertzog?= <hertzog@debian.org>
+Date: Sun, 16 Aug 2015 16:02:25 +0200
+Subject: 10mount: Move mount directory to /var/run
+
+Note that this patch merges multiple upstream commits.
+
+Bug-Debian: http://bugs.debian.org/762597
+Origin: upstream
+Applied-Upstream: 1.6.11
+---
+ CMakeLists.txt             | 2 +-
+ bin/schroot/CMakeLists.txt | 1 -
+ bin/schroot/Makefile.am    | 1 -
+ etc/setup.d/10mount        | 9 +++++++++
+ scripts/global.mk          | 2 +-
+ 5 files changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8374937..2e18153 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -127,7 +127,7 @@ set(bash_completion_dir "${CMAKE_INSTALL_SYSCONFDIR}/bash_completion.d"
+ # schroot directories
+ set(SCHROOT_LOCALE_DIR "${CMAKE_INSTALL_FULL_LOCALEDIR}"
+     CACHE PATH "Locale directory")
+-set(SCHROOT_MOUNT_DIR "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/lib/${CMAKE_PROJECT_NAME}/mount"
++set(SCHROOT_MOUNT_DIR "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/run/${CMAKE_PROJECT_NAME}/mount"
+     CACHE PATH "Directory under which mount chroots")
+ set(SCHROOT_SESSION_DIR "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/lib/${CMAKE_PROJECT_NAME}/session"
+     CACHE PATH "Directory for storing session metadata")
+diff --git a/bin/schroot/CMakeLists.txt b/bin/schroot/CMakeLists.txt
+index 0d5f1b9..b306b58 100644
+--- a/bin/schroot/CMakeLists.txt
++++ b/bin/schroot/CMakeLists.txt
+@@ -45,7 +45,6 @@ install(TARGETS schroot RUNTIME
+ 
+ set(installdirs
+     ${SCHROOT_CONF_CHROOT_D}
+-    ${SCHROOT_MOUNT_DIR}
+     ${SCHROOT_SESSION_DIR}
+     ${SCHROOT_FILE_UNPACK_DIR}
+     ${SCHROOT_OVERLAY_DIR}
+diff --git a/bin/schroot/Makefile.am b/bin/schroot/Makefile.am
+index 18b8ec4..d1d510e 100644
+--- a/bin/schroot/Makefile.am
++++ b/bin/schroot/Makefile.am
+@@ -55,7 +55,6 @@ install-exec-hook:
+ 
+ install-data-hook:
+ 	$(MKDIR_P) $(DESTDIR)$(schroot_sysconf_chrootdir)
+-	$(MKDIR_P) $(DESTDIR)$(schroot_mountdir)
+ 	$(MKDIR_P) $(DESTDIR)$(schroot_sessiondir)
+ 	$(MKDIR_P) $(DESTDIR)$(schroot_file_unpackdir)
+ 	$(MKDIR_P) $(DESTDIR)$(schroot_overlaydir)
+diff --git a/etc/setup.d/10mount b/etc/setup.d/10mount
+index 27c18d0..bbfe118 100755
+--- a/etc/setup.d/10mount
++++ b/etc/setup.d/10mount
+@@ -136,6 +136,15 @@ if [ "$VERBOSE" = "verbose" ]; then
+ #  FSCK_VERBOSE="-V"
+ fi
+ 
++if [ -e "$MOUNT_DIR" ]; then
++    if [ ! -d "$MOUNT_DIR" ]; then
++        error "$MOUNT_DIR is not a directory"
++        exit 1
++    fi
++else
++    mkdir -m 0755 -p "$MOUNT_DIR"
++fi
++
+ if [ "$CHROOT_TYPE" = "directory" ] \
+     || [ "$CHROOT_TYPE" = "file" ] \
+     || [ "$CHROOT_TYPE" = "loopback" ] \
+diff --git a/scripts/global.mk b/scripts/global.mk
+index f473a6b..928f7ad 100644
+--- a/scripts/global.mk
++++ b/scripts/global.mk
+@@ -19,7 +19,7 @@
+ #
+ #####################################################################
+ 
+-schroot_mountdir=$(localstatedir)/lib/$(PACKAGE)/mount
++schroot_mountdir=$(localstatedir)/run/$(PACKAGE)/mount
+ schroot_sessiondir=$(localstatedir)/lib/$(PACKAGE)/session
+ schroot_file_unpackdir=$(localstatedir)/lib/$(PACKAGE)/unpack
+ schroot_overlaydir=$(localstatedir)/lib/$(PACKAGE)/union/overlay

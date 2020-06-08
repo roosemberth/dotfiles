@@ -1,0 +1,112 @@
+From 624f0adfe60ea8299589f0474bc77bba4bcebd81 Mon Sep 17 00:00:00 2001
+From: Tyler Hicks <tyhicks@canonical.com>
+Date: Tue, 27 Oct 2015 10:52:59 -0500
+Subject: [PATCH] schroot-mount: Make bind mounts use private mount propagation
+
+When creating a bind mount, on a Linux system, mark the target as
+private. When creating a recursive bind mount, on a Linux system, mark
+the target as recursively private.
+
+This change fixes issues around shared mount points being bind mounted
+into a schroot and then when the schroot session is tore down, the mount
+point being unmounted in both the schroot and in the host environment.
+
+For example, if the schroot fstab file contains the following line:
+
+  /home           /home           none    rw,rbind        0       0
+
+A user's home directory mounted at /home/$USER is unmounted in both the
+schroot and host when the schroot sessions is ended without this change.
+
+Signed-off-by: Tyler Hicks <tyhicks@canonical.com>
+---
+ bin/schroot-mount/schroot-mount-main.cc | 43 +++++++++++++++++++++++++++++++++
+ bin/schroot-mount/schroot-mount-main.h  | 10 ++++++++
+ 2 files changed, 53 insertions(+)
+
+diff --git a/bin/schroot-mount/schroot-mount-main.cc b/bin/schroot-mount/schroot-mount-main.cc
+index 327f5ed..918d246 100644
+--- a/bin/schroot-mount/schroot-mount-main.cc
++++ b/bin/schroot-mount/schroot-mount-main.cc
+@@ -21,6 +21,10 @@
+ #include <sbuild/sbuild-mntstream.h>
+ #include <sbuild/sbuild-util.h>
+ 
++#if defined (__linux__)
++#include <sbuild/sbuild-regex.h>
++#endif
++
+ #include "schroot-mount-main.h"
+ 
+ #include <cerrno>
+@@ -214,7 +218,46 @@ main::action_mount ()
+           if (status)
+             exit(status);
+         }
++
++        make_mount_private(entry.options, directory);
++    }
++}
++
++void
++main::make_mount_private (const std::string& options,
++                          const std::string& mountpoint)
++{
++#if defined (__linux__)
++  static sbuild::regex bind("(^|,)(|r)bind(,|$)");
++  static sbuild::regex propagation("(^|,)(|r)(shared|slave|private|unbindable)(,|$)");
++
++  if (regex_search(options, bind) && !regex_search(options, propagation))
++    {
++      static sbuild::regex rbind("(^|,)rbind(,|$)");
++      bool recursive = regex_search(options, rbind);
++
++      sbuild::log_debug(sbuild::DEBUG_INFO)
++      << boost::format("Making ‘%1%’ mount point %2%private")
++      % mountpoint
++      % (recursive ? "recursively " : "")
++      << std::endl;
++
++      if (!opts->dry_run)
++        {
++          sbuild::string_list command;
++          command.push_back("/bin/mount");
++          if (opts->verbose)
++            command.push_back("-v");
++          command.push_back(recursive ? "--make-rprivate" : "--make-private");
++          command.push_back(mountpoint);
++
++          int status = run_child(command[0], command, sbuild::environment());
++
++          if (status)
++            exit(status);
++        }
+     }
++#endif
+ }
+ 
+ int
+diff --git a/bin/schroot-mount/schroot-mount-main.h b/bin/schroot-mount/schroot-mount-main.h
+index 06c0333..371b713 100644
+--- a/bin/schroot-mount/schroot-mount-main.h
++++ b/bin/schroot-mount/schroot-mount-main.h
+@@ -67,6 +67,16 @@ namespace schroot_mount
+     action_mount ();
+ 
+     /**
++     * Make a bind mount use private mount propagation (Linux-specific).
++     *
++     * @param options the mount options
++     * @param mountpoint the mountpiont to make private
++     */
++    void
++    make_mount_private (const std::string& options,
++                        const std::string& mountpoint);
++
++    /**
+      * Run the command specified by file (an absolute pathname), using
+      * command and env as the argv and environment, respectively.
+      *
+-- 
+2.5.0
+

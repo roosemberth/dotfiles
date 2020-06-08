@@ -1,0 +1,1019 @@
+From: Miroslav Kure <kurem@upcase.inf.upol.cz>
+Date: Sat, 29 Nov 2014 12:21:02 UTC
+Subject: [l10n] Updated Czech translation of schroot
+
+in attachment there is updated Czech (cs.po) translation of schroot.
+
+Bug-Debian: http://bugs.debian.org/771421
+Origin: upstream
+Index: schroot-1.6.10/po/cs.po
+===================================================================
+--- schroot-1.6.10.orig/po/cs.po
++++ schroot-1.6.10/po/cs.po
+@@ -1,14 +1,14 @@
+ # Czech translation of schroot.
+ # Copyright © 2006-2007 Roger Leigh <rleigh@debian.org>
+ # This file is distributed under the same license as the schroot package.
+-# Miroslav Kure <kurem@debian.cz>, 2006-2010.
++# Miroslav Kure <kurem@debian.cz>, 2006-2014.
+ #
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: schroot\n"
+ "Report-Msgid-Bugs-To: Roger Leigh <rleigh@debian.org>\n"
+-"POT-Creation-Date: 2013-12-15 20:59+0000\n"
+-"PO-Revision-Date: 2010-07-11 18:39+0200\n"
++"POT-Creation-Date: 2013-09-29 23:13+0100\n"
++"PO-Revision-Date: 2014-11-29 13:11+0100\n"
+ "Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
+ "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
+ "Language: cs\n"
+@@ -17,69 +17,69 @@ msgstr ""
+ "Content-Transfer-Encoding: 8bit\n"
+ 
+ #. TRANSLATORS: %1% = file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Can't open file ‘%1%’"
+ msgstr "Nelze otevřít soubor „%1%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Deprecated key ‘%4%’ used"
+ msgstr "řádek %1%: Použit zastaralý klíč „%4%“"
+ 
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Deprecated key ‘%4%’ used"
+ msgstr "Použit zastaralý klíč „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Disallowed key ‘%4%’ used"
+ msgstr "řádek %1%: Použit nedovolený klíč „%4%“"
+ 
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Disallowed key ‘%4%’ used"
+ msgstr "Použit nedovolený klíč „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Duplicate key ‘%4%’"
+ msgstr "řádek %1%: Duplicitní klíč „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = line contents as read from the configuration file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Invalid line: “%4%”"
+ msgstr "řádek %1%: Neplatný řádek: „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Required key ‘%4%’ is missing"
+ msgstr "řádek %1%: Chybí vyžadovaný klíč „%4%“"
+ 
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Required key ‘%4%’ is missing"
+ msgstr "Chybí vyžadovaný klíč „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = line contents as read from the configuration file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: No key specified: “%4%”"
+ msgstr "řádek %1%: Nebyl zadán žádný klíč: „%4%“"
+ 
+ #. TRANSLATORS: %1% = line number in configuration file
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Obsolete key ‘%4%’ used"
+ msgstr "řádek %1%: Použit zastaralý klíč „%4%“"
+ 
+ #. TRANSLATORS: %4% = key name ("keyname=value" in configuration file)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Obsolete key ‘%4%’ used"
+ msgstr "Použit zastaralý klíč „%4%“"
+ 
+@@ -118,9 +118,8 @@ msgstr "Nepodařilo se zjistit stav zař
+ 
+ #. TRANSLATORS: '...' is an ellipsis e.g. U+2026,
+ #. and '-' is an em-dash.
+-#, fuzzy
+ msgid "[OPTION…] — build Debian packages from source"
+-msgstr "[VOLBA…] - ze zdrojů sestaví debianí balík(y)"
++msgstr "[VOLBA…] — ze zdrojů sestaví debianí balík(y)"
+ 
+ msgid "Build options"
+ msgstr "Volby pro sestavení"
+@@ -174,10 +173,10 @@ msgid "Force building of a source packag
+ msgstr "Vynutí sestavení zdrojového balíku bez ohledu na debianí verzi"
+ 
+ msgid "Make a binary non-maintainer upload (changelog entry)"
+-msgstr ""
++msgstr "Vytvoří binární NMU (non-maintainer upload) - záznam v changelogu"
+ 
+ msgid "Make a binary non-maintainer upload (binNMU number)"
+-msgstr ""
++msgstr "Vytvoří binární NMU (non-maintainer upload) - číslo binNMU"
+ 
+ msgid "Append version suffix"
+ msgstr "Přidá k verzi příponu"
+@@ -210,7 +209,7 @@ msgid "Add a build dependency"
+ msgstr "Přidá závislost pro sestavení"
+ 
+ msgid "Add a build conflict"
+-msgstr "Přidá konflikt sestavení"
++msgstr "Přidá konflikt pro sestavení"
+ 
+ msgid "Add an architecture-independent build dependency"
+ msgstr "Přidá architekturně nezávislou závislost pro sestavení"
+@@ -235,7 +234,6 @@ msgstr "chybí --binNMU"
+ 
+ #. TRANSLATORS: '...' is an ellipsis e.g. U+2026, and '-'
+ #. is an em-dash.
+-#, fuzzy
+ msgid "[OPTION…] chroot [COMMAND] — run command or shell in a chroot"
+ msgstr "[VOLBA…] chroot [PŘÍKAZ] - spustí shell nebo příkaz v chrootu"
+ 
+@@ -259,15 +257,14 @@ msgstr "Nebyl zadán žádný chroot"
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %2% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] Running command: “%2%”"
+ msgstr "[chroot %1%] Spouštím příkaz: „%2%“"
+ 
+ #. TRANSLATORS: '...' is an ellipsis e.g. U+2026, and '-'
+ #. is an em-dash.
+-#, fuzzy
+ msgid "[OPTION…] [COMMAND] — run command or shell in a chroot"
+-msgstr "[VOLBA…] [PŘÍKAZ] - spustí shell nebo příkaz v chrootu"
++msgstr "[VOLBA…] [PŘÍKAZ] — spustí shell nebo příkaz v chrootu"
+ 
+ msgid "Print path to selected chroot"
+ msgstr "Vytiskne cestu k vybranému chrootu"
+@@ -279,13 +276,13 @@ msgid "--quiet and --verbose may not be
+ msgstr "--quiet a --verbose nemohou být použity současně"
+ 
+ msgid "Using verbose output"
+-msgstr "Používám upovídaný výstup"
++msgstr "Používá se upovídaný výstup"
+ 
+ msgid "--chroot and --all may not be used at the same time"
+ msgstr "--chroot a --all nemohou být použity současně"
+ 
+ msgid "Using --chroots only"
+-msgstr "Používám pouze --chroots"
++msgstr "Používá se pouze --chroots"
+ 
+ msgid "dchroot session restriction"
+ msgstr "omezení dchroot sezení"
+@@ -293,15 +290,15 @@ msgstr "omezení dchroot sezení"
+ #. TRANSLATORS: %1% = program name
+ #. TRANSLATORS: %2% = program version
+ #. TRANSLATORS: %3% = release date
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "%1% (Debian sbuild) %2% (%3%)"
+-msgstr "%1% (Debian sbuild) %2% (%3%)\n"
++msgstr "%1% (Debian sbuild) %2% (%3%)"
+ 
+ #. TRANSLATORS: %1% = copyright year (start)
+ #. TRANSLATORS: %2% = copyright year (end)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Copyright © %1%–%2% Roger Leigh"
+-msgstr "Copyright © 2004–2011 Roger Leigh"
++msgstr "Copyright © %1%–%2% Roger Leigh"
+ 
+ msgid "Written by Roger Leigh"
+ msgstr "Vytvořil Roger Leigh"
+@@ -320,7 +317,7 @@ msgid "Usage:"
+ msgstr "Použití:"
+ 
+ #. TRANSLATORS: %1% = program name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Run “%1% --help” to list usage example and all available options"
+ msgstr "Pro zobrazení příkladu a všech dostupných voleb spusťte „%1% --help“"
+ 
+@@ -359,15 +356,14 @@ msgid "Invalid debug level"
+ msgstr "Neplatná úroveň ladění"
+ 
+ #. TRANSLATORS: %1% = file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to find ‘%1%’"
+ msgstr "Nepodařilo se najít „%1%“"
+ 
+ #. TRANSLATORS: '...' is an ellipsis e.g. U+2026,
+ #. and '-' is an em-dash.
+-#, fuzzy
+ msgid "[OPTION…] — list mount points"
+-msgstr "[VOLBA…] - zobrazí přípojné body"
++msgstr "[VOLBA…] — zobrazí přípojné body"
+ 
+ msgid "Mount"
+ msgstr "Připojení"
+@@ -386,19 +382,18 @@ msgstr "Čekání na potomka selhalo"
+ 
+ #. TRANSLATORS: %1% = command name
+ #. TRANSLATORS: %1% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to execute “%1%”"
+ msgstr "Nepodařilo se spustit „%1%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to resolve path “%1%”"
+-msgstr "Nepodařilo se spustit „%1%“"
++msgstr "Nepodařilo se najít cestu „%1%“"
+ 
+ #. TRANSLATORS: '...' is an ellipsis e.g. U+2026,
+ #. and '-' is an em-dash.
+-#, fuzzy
+ msgid "[OPTION…] — mount filesystems"
+-msgstr "[VOLBA…] - připojí souborové systémy"
++msgstr "[VOLBA…] — připojí souborové systémy"
+ 
+ msgid "An unknown exception occurred"
+ msgstr "Vyskytla se neznámá výjimka"
+@@ -409,19 +404,39 @@ msgstr "Simuluje akce, které se mají p
+ msgid "fstab file to read (full path)"
+ msgstr "Soubor fstab, který se má načíst (celá cesta)"
+ 
++#. TRANSLATORS: '...' is an ellipsis e.g. U+2026,
++#. and '-' is an em-dash.
++msgid "[OPTION…] — release a device lock"
++msgstr "[VOLBA…] — uvolní zámek zařízení"
++
++msgid "No PID specified; forcing release of lock"
++msgstr "Nebylo zadáno žádné PID; vynucuji uvolnění zámku"
++
++msgid "Lock"
++msgstr "Zámek"
++
++msgid "Device to unlock (full path)"
++msgstr "Zařízení pro odemčení (celá cesta)"
++
++msgid "Process ID owning the lock"
++msgstr "ID procesu vlastnícího zámek"
++
++msgid "No device specified"
++msgstr "Nebylo zadáno žádné zařízení"
++
+ #. TRANSLATORS: %4% = file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "No chroots are defined in ‘%4%’"
+ msgstr "V „%4%“ nejsou definována žádná chroot prostředí"
+ 
+ #. TRANSLATORS: %4% = file
+ #. TRANSLATORS: %5% = file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "No chroots are defined in ‘%4%’ or ‘%5%’"
+ msgstr "V „%4%“ ani „%5%“ nejsou definována žádná chroot prostředí"
+ 
+ #. TRANSLATORS: %1% = file
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "The specified chroots are not defined in ‘%1%’"
+ msgstr "Zadaná chroot prostředí nejsou v „%1%“ definována"
+ 
+@@ -432,35 +447,27 @@ msgstr "%1%: Neplatný název sezení"
+ msgid "Available chroot types:"
+ msgstr "Dostupné typy chroot prostředí:"
+ 
+-#, fuzzy
+ msgid "Support for ‘block-device’ chroots"
+ msgstr "Podpora pro chroot na blokovém zařízení"
+ 
+-#, fuzzy
+ msgid "Support for ‘btrfs-snapshot’ chroots"
+ msgstr "Podpora pro chroot na btrfs snímku"
+ 
+-#, fuzzy
+ msgid "Support for ‘custom’ chroots"
+-msgstr "Podpora pro chroot v adresáři"
++msgstr "Podpora pro vlastní chroot"
+ 
+-#, fuzzy
+ msgid "Support for ‘directory’ chroots"
+ msgstr "Podpora pro chroot v adresáři"
+ 
+-#, fuzzy
+ msgid "Support for ‘file’ chroots"
+-msgstr "Podpora pro běžný chroot"
++msgstr "Podpora pro chroot v souboru"
+ 
+-#, fuzzy
+ msgid "Support for ‘loopback’ chroots"
+ msgstr "Podpora pro chroot na loopbacku"
+ 
+-#, fuzzy
+ msgid "Support for ‘lvm-snapshot’ chroots"
+ msgstr "Podpora pro chroot na LVM snímku"
+ 
+-#, fuzzy
+ msgid "Support for ‘plain’ chroots"
+ msgstr "Podpora pro běžný chroot"
+ 
+@@ -510,14 +517,11 @@ msgstr ""
+ msgid "Unknown action specified"
+ msgstr "Zadána neznámá akce"
+ 
+-#, fuzzy
+ msgid "--session-name is not permitted for the specified action"
+-msgstr ""
+-"--session-name není pro danou akci povoleno; chtěli jste použít --chroot?"
++msgstr "--session-name není pro danou akci povoleno"
+ 
+-#, fuzzy
+ msgid "Invalid session name"
+-msgstr "%1%: Neplatný název sezení"
++msgstr "Neplatný název sezení"
+ 
+ msgid "Print location of selected chroots"
+ msgstr "Vytiskne umístění vybraných chroot prostředí"
+@@ -528,22 +532,20 @@ msgstr "Vybere všechna chroot prostřed
+ msgid "Select all active sessions"
+ msgstr "Vybere všechna aktivní sezení"
+ 
+-#, fuzzy
+ msgid "Select all source chroots"
+ msgstr "Vybere všechna chroot prostředí"
+ 
+ msgid "Do not include aliases"
+-msgstr ""
++msgstr "Nezahrne aliasy"
+ 
+ msgid "Shell to use as login shell"
+-msgstr ""
++msgstr "Shell, který se má použít jako přihlašovací"
+ 
+ msgid "Username (default current user)"
+ msgstr "Uživatelské jméno (implicitně aktuální uživatel)"
+ 
+-#, fuzzy
+ msgid "Set option"
+-msgstr "Uživatelské volby"
++msgstr "Nastaví volbu"
+ 
+ msgid "Begin, run and end a session automatically (default)"
+ msgstr "Automaticky zahájí, spustí a ukončí sezení (výchozí)"
+@@ -570,13 +572,13 @@ msgid "Failed to get hostname"
+ msgstr "Nepodařilo se získat jméno počítače"
+ 
+ #. TRANSLATORS: %1% = user name or user ID
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "User ‘%1%’ not found"
+ msgstr "Uživatel „%1%“ nebyl nalezen"
+ 
+ #. TRANSLATORS: %1% = group name or group ID
+ #. TRANSLATORS: %1% = group name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Group ‘%1%’ not found"
+ msgstr "Skupina „%1%“ nebyla nalezena"
+ 
+@@ -635,15 +637,14 @@ msgid "Timed out"
+ msgstr "Čas vypršel"
+ 
+ #. TRANSLATORS: Please use an ellipsis e.g. U+2026
+-#, fuzzy
+ msgid "Time is running out…"
+-msgstr "Čas vyprší…"
++msgstr "Čas běží…"
+ 
+ msgid "Failed to get terminal settings"
+ msgstr "Nepodařilo se získat nastavení terminálu"
+ 
+ #. TRANSLATORS: %1% = integer
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Unsupported conversation type ‘%1%’"
+ msgstr "Nepodporovaný typ konverzace „%1%“"
+ 
+@@ -659,14 +660,13 @@ msgid "Device"
+ msgstr "Zařízení"
+ 
+ msgid "Btrfs Source Subvolume"
+-msgstr ""
++msgstr "Zdrojový btrfs podsvazek"
+ 
+-#, fuzzy
+ msgid "Btrfs Snapshot Directory"
+-msgstr "Zařízení pro snímky LVM"
++msgstr "Adresář pro btrfs snímky"
+ 
+ msgid "Btrfs Snapshot Name"
+-msgstr ""
++msgstr "Jméno btrfs snímku"
+ 
+ msgid "Chroot creation failed"
+ msgstr "Vytváření chrootu selhalo"
+@@ -675,7 +675,7 @@ msgid "Device name not set"
+ msgstr "Jméno zařízení není nastaveno"
+ 
+ #. TRANSLATORS: %1% = chroot type name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Unknown chroot type ‘%1%’"
+ msgstr "Neznámý typ chrootu „%1%“"
+ 
+@@ -692,10 +692,10 @@ msgid "Directory must have an absolute p
+ msgstr "Adresář musí být zadán absolutní cestou"
+ 
+ msgid "Attempt to add object which is not a facet"
+-msgstr ""
++msgstr "Pokusí se přidat objekt, jenž není fasetou"
+ 
+ msgid "Attempt to add facet which is already in use"
+-msgstr ""
++msgstr "Pokusí se přidat fasetu, která se již používá"
+ 
+ msgid "File must have an absolute path"
+ msgstr "Soubor musí být zadán absolutně"
+@@ -718,13 +718,12 @@ msgstr "Nepodařilo se zrušit zámek so
+ msgid "Location must have an absolute path"
+ msgstr "Umístění musí být zadáno absolutně"
+ 
+-#, fuzzy
+ msgid "Invalid name"
+-msgstr "%1%: Neplatný název sezení"
++msgstr "Neplatná jméno"
+ 
+ #, boost-format
+ msgid "Could not set profile name from script configuration path ‘%1%’"
+-msgstr ""
++msgstr "Z konfigurační cesty „%1%“ se nepodařilo nastavit název profilu"
+ 
+ #. TRANSLATORS: unlink refers to the C function which removes a file
+ msgid "Failed to unlink session file"
+@@ -738,14 +737,14 @@ msgstr "Neplatná hodnota upovídanosti
+ 
+ #, boost-format
+ msgid "Namespace separator ‘%1%’ may not be used in a chroot name"
+-msgstr ""
++msgstr "Oddělovač jmenného prostoru „%1%“ nelze použít v názvu chrootu"
+ 
+ msgid "Naming restrictions are documented in schroot.conf(5)"
+-msgstr ""
++msgstr "Omezení na pojmenování jsou popsány v schroot.conf(5)"
+ 
+ #, boost-format
+ msgid "Namespace separator ‘%1%’ may not be used in an alias name"
+-msgstr ""
++msgstr "Oddělovač jmenného prostoru „%1%“ nelze použít v aliasu"
+ 
+ msgid "Name"
+ msgstr "Jméno"
+@@ -778,7 +777,7 @@ msgid "Preserve Environment"
+ msgstr "Zachovat prostředí"
+ 
+ msgid "Default Shell"
+-msgstr ""
++msgstr "Výchozí shell"
+ 
+ msgid "Environment Filter"
+ msgstr "Filtr prostředí"
+@@ -786,9 +785,8 @@ msgstr "Filtr prostředí"
+ msgid "Run Setup Scripts"
+ msgstr "Spustit nastavovací skripty"
+ 
+-#, fuzzy
+ msgid "Configuration Profile"
+-msgstr "Nastavení skriptů"
++msgstr "Konfigurační profil"
+ 
+ msgid "Script Configuration"
+ msgstr "Nastavení skriptů"
+@@ -817,16 +815,15 @@ msgstr "Chroot"
+ msgid "Session"
+ msgstr "Sezení"
+ 
+-#, fuzzy
+ msgid "Source"
+-msgstr "Zdrojoví uživatelé"
++msgstr "Zdroj"
+ 
+ msgid "This option is not valid for this chroot type"
+-msgstr ""
++msgstr "Tato volba není pro tento typ chrootu platná"
+ 
+ #. TRANSLATORS: %1% = chroot alias name
+ #. TRANSLATORS: %4% = chroot name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Alias ‘%1%’ already associated with ‘%4%’ chroot"
+ msgstr "Alias „%1%“ je již asociován s chrootem „%4%“"
+ 
+@@ -841,7 +838,7 @@ msgid "%1%: Chroots not found"
+ msgstr "Chroot prostředí nenalezeny: %1%"
+ 
+ #. TRANSLATORS: %1% = chroot name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "A chroot or alias ‘%1%’ already exists with this name"
+ msgstr "Chroot nebo alias se jménem „%1%“ již existuje"
+ 
+@@ -849,7 +846,7 @@ msgid "Failed to open file"
+ msgstr "Nepodařilo se otevřít soubor"
+ 
+ msgid "No such namespace"
+-msgstr ""
++msgstr "Takový jmenný prostor neexistuje"
+ 
+ msgid "Duplicate names are not allowed"
+ msgstr "Duplicitní jména nejsou povolena"
+@@ -875,18 +872,16 @@ msgid "Personality"
+ msgstr "Personalita"
+ 
+ msgid "Original Chroot Name"
+-msgstr ""
++msgstr "Původní název chrootu"
+ 
+-#, fuzzy
+ msgid "Selected Chroot Name"
+-msgstr "Vybere všechna chroot prostředí"
++msgstr "Vybraný název chrootu"
+ 
+ msgid "Session ID"
+ msgstr "ID sezení"
+ 
+-#, fuzzy
+ msgid "(session chroot)"
+-msgstr "(zdrojový chroot)"
++msgstr "(chroot sezení)"
+ 
+ msgid "(source chroot)"
+ msgstr "(zdrojový chroot)"
+@@ -904,17 +899,15 @@ msgid "Source Root Groups"
+ msgstr "Zdrojové skupiny root"
+ 
+ #. TRANSLATORS: %1% = chroot fs type
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Unknown filesystem union type ‘%1%’"
+ msgstr "Neznámý typ sjednocení souborových systémů „%1%“"
+ 
+-#, fuzzy
+ msgid "Union overlay must have an absolute path"
+-msgstr "Soubor musí být zadán absolutně"
++msgstr "Sjednocovací overlay musí být zadán absolutní cestou"
+ 
+-#, fuzzy
+ msgid "Union underlay must have an absolute path"
+-msgstr "Soubor musí být zadán absolutně"
++msgstr "Sjednocený underlay musí být zadán absolutní cestou"
+ 
+ msgid "Support for filesystem unioning"
+ msgstr "Podpora pro sjednocování souborových systémů"
+@@ -922,59 +915,58 @@ msgstr "Podpora pro sjednocování soubo
+ msgid "Filesystem Union Type"
+ msgstr "Typ sjednocení souborových systémů"
+ 
+-#, fuzzy
+ msgid "Filesystem Union Mount Options"
+-msgstr "Volby pro "
++msgstr "Volby pro připojení sjednocovacího souborového systému"
+ 
+-#, fuzzy
+ msgid "Filesystem Union Overlay Directory"
+-msgstr "Adresář pro překrytí souborového systému"
++msgstr "Adresář pro sjednocení souborového systému (overlay)"
+ 
+-#, fuzzy
+ msgid "Filesystem Union Underlay Directory"
+-msgstr "Nepodařilo se otevřít adresář"
++msgstr "Adresář pro sjednocení souborového systému (underlay)"
+ 
+ #, boost-format
+ msgid "Environment variable ‘%1%’ is ambiguous"
+-msgstr ""
++msgstr "Proměnná prostředí „%1%“ není jednoznačná"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Configuration key ‘%1%’ is ambiguous"
+-msgstr "Chybí vyžadovaný klíč „%4%“"
++msgstr "Konfigurační klíč „%1%“ není jednoznačný"
+ 
+ #, boost-format
+ msgid "Configuration key ‘%1%’ is not permitted to be modified."
+-msgstr ""
++msgstr "Konfigurační klíč „%1%“ není dovoleno měnit."
+ 
+ #, boost-format
+ msgid "Configuration key name ‘%1%’ is not a permitted name."
+-msgstr ""
++msgstr "Název konfiguračního klíče „%1%“ není povolený."
+ 
+ #, boost-format
+ msgid ""
+ "Configuration keys additional to ‘%1%’ would set this setup script "
+ "environment variable"
+ msgstr ""
++"Dodatečné konfigurační klíče k „%1%“ by nastavily tuto proměnnou prostředí"
+ 
+ msgid "User Modifiable Keys"
+-msgstr ""
++msgstr "Klíče měnitelné uživatelem"
+ 
+ msgid "Root Modifiable Keys"
+-msgstr ""
++msgstr "Klíče měnitelné rootem"
+ 
+ msgid "User Data"
+-msgstr ""
++msgstr "Uživatelská data"
+ 
+ #, boost-format
+ msgid ""
+ "More than one configuration key would set the ‘%1%’ environment variable"
+ msgstr ""
++"Víc než jeden konfigurační klíč by nastavil proměnnou prostředí „%1%“"
+ 
+ msgid "The key is not present in user-modifiable-keys or root-modifiable-keys"
+-msgstr ""
++msgstr "Klíč není uveden v user-modifiable-keys ani v root-modifiable-keys"
+ 
+ msgid "The key is not present in user-modifiable-keys"
+-msgstr ""
++msgstr "Klíč není uveden v user-modifiable-keys"
+ 
+ msgid "File"
+ msgstr "Soubor"
+@@ -1004,57 +996,57 @@ msgstr "nepravda"
+ #. TRANSLATORS: Please format the --- as a continuous line, e.g. U+2500
+ #, boost-format
+ msgid "─── %1% ───"
+-msgstr ""
++msgstr "─── %1% ───"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Deprecated key ‘%4%’ used"
+ msgstr "řádek %1% [%2%]: Použit zastaralý klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1%]: Deprecated key ‘%4%’ used"
+ msgstr "[%1%]: Použit zastaralý klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Disallowed key ‘%4%’ used"
+ msgstr "řádek %1% [%2%]: Použit nedovolený klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1%]: Disallowed key ‘%4%’ used"
+ msgstr "[%1%]: Použit nedovolený klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Duplicate group ‘%4%’"
+ msgstr "řádek %1%: Duplicitní skupina „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Duplicate key ‘%4%’"
+ msgstr "řádek %1% [%2%]: Duplicitní klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: Invalid group: “%4%”"
+ msgstr "řádek %1%: Neplatná skupina: „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Invalid key ‘%4%’ used"
+ msgstr "řádek %1% [%2%]: Použit nedovolený klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Required key ‘%4%’ is missing"
+ msgstr "řádek %1% [%2%]: Chybí vyžadovaný klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1%]: Required key ‘%4%’ is missing"
+ msgstr "[%1%]: Chybí vyžadovaný klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1%: No group specified: “%4%”"
+ msgstr "řádek %1%: Nebyla zadána žádná skupina: „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Obsolete key ‘%4%’ used"
+ msgstr "řádek %1% [%2%]: Použit zastaralý klíč „%4%“"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1%]: Obsolete key ‘%4%’ used"
+ msgstr "[%1%]: Použit zastaralý klíč „%4%“"
+ 
+@@ -1074,7 +1066,7 @@ msgstr "řádek %1% [%2%]: %4%"
+ msgid "line %1% [%2%] %3%: %4%"
+ msgstr "řádek %1% [%2%] %3%: %4%"
+ 
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "line %1% [%2%]: Unknown key ‘%4%’ used"
+ msgstr "řádek %1% [%2%]: Použit neznámý klíč „%4%“"
+ 
+@@ -1122,6 +1114,9 @@ msgid ""
+ msgstr ""
+ "Odemčení zařízení selhalo (čas vypršel po %4% sekundách; zámek drží PID %5%)"
+ 
++msgid "Device locking"
++msgstr "Zamykání zařízení"
++
+ #. TRANSLATORS: "I" is an abbreviation of "Information"
+ msgid "I: "
+ msgstr "I: "
+@@ -1141,12 +1136,12 @@ msgid "D(%1%): "
+ msgstr "D(%1%): "
+ 
+ #. TRANSLATORS: %1% = mount file name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to open mount file ‘%1%’"
+ msgstr "Nepodařilo se otevřít přípojný soubor „%1%“"
+ 
+ #. TRANSLATORS: %1% = mount file name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to read mount file ‘%1%’"
+ msgstr "Čtení přípojného souboru „%1%“ selhalo"
+ 
+@@ -1154,17 +1149,17 @@ msgid "unknown"
+ msgstr "neznámé"
+ 
+ #. TRANSLATORS: %1% = value (arbitrary text)
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Could not parse value ‘%1%’"
+ msgstr "Nelze syntakticky zpracovat hodnotu „%1%“"
+ 
+ #. TRANSLATORS: %1% = integer personality ID
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Personality ‘%1%’ is unknown"
+ msgstr "Neznámá personalita „%1%“"
+ 
+ #. TRANSLATORS: %1% = personality name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to set personality ‘%1%’"
+ msgstr "Nastavení personality „%1%“ selhalo"
+ 
+@@ -1189,17 +1184,17 @@ msgid "Failed to read file descriptor"
+ msgstr "Nepodařilo se přečíst popisovač souboru"
+ 
+ #. TRANSLATORS: %1% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Executing ‘%1%’"
+ msgstr "Spouštím „%1%“"
+ 
+ #. TRANSLATORS: %1% = directory
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to change to directory ‘%1%’"
+ msgstr "Nepodařilo se přejít do adresáře „%1%“"
+ 
+ #. TRANSLATORS: %4% = directory
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Falling back to directory ‘%4%’"
+ msgstr "Uchyluji se k adresáři „%4%“"
+ 
+@@ -1210,17 +1205,17 @@ msgid "Child exited abnormally (reason u
+ msgstr "Potomek skončil nepřirozeně (neznámý důvod; ani signál ani coredump)"
+ 
+ #. TRANSLATORS: %4% = signal name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Child terminated by signal ‘%4%’"
+ msgstr "Potomek byl ukončen signálem „%4%“"
+ 
+ #. TRANSLATORS: %1% = directory
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to change root to directory ‘%1%’"
+ msgstr "Změna kořene na adresář „%1%“ selhala"
+ 
+ #. TRANSLATORS: %1% = chroot name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "No chroot found matching name or alias ‘%1%’"
+ msgstr "Žádný chroot neodpovídá jménu nebo aliasu „%1%“"
+ 
+@@ -1235,7 +1230,7 @@ msgid "Failed to unlock chroot"
+ msgstr "Nepodařilo se odemknout chroot"
+ 
+ #. TRANSLATORS: %1% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Command “%1%” must have an absolute path"
+ msgstr "Příkaz „%1%“ musí být zadán absolutně"
+ 
+@@ -1252,7 +1247,7 @@ msgid "Failed to get supplementary group
+ msgstr "Nepodařilo se získat počet dodatečných skupin"
+ 
+ #. TRANSLATORS: %1% = integer group ID
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to set group ‘%1%’"
+ msgstr "Nepodařilo se nastavit skupinu „%1%“"
+ 
+@@ -1264,43 +1259,43 @@ msgstr "Nepodařilo se odhodit rootovsk�
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %4% = session identifier
+-#, fuzzy, boost-format
++#, boost-format
+ msgid ""
+ "%1%: Chroot does not support setting a session ID; ignoring session ID ‘%4%’"
+ msgstr ""
+ "%1%: Chroot nepodporuje nastavení ID sezení; ignoruje se ID sezení „%4%“"
+ 
+ #. TRANSLATORS: %1% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Shell ‘%1%’ not available"
+ msgstr "Shell „%1%“ není dostupný"
+ 
+ #. TRANSLATORS: %4% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Falling back to shell ‘%4%’"
+ msgstr "Uchyluji se k shellu „%4%“"
+ 
+ #. TRANSLATORS: %4% = signal name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Caught signal ‘%4%’"
+ msgstr "Zachycen signál „%4%“"
+ 
+ #. TRANSLATORS: %4% = signal name
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to set signal handler ‘%4%’"
+ msgstr "Selhalo nastavení obsluhy signálu „%4%“"
+ 
+ #. TRANSLATORS: %1% = integer user ID
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "Failed to set user ‘%1%’"
+ msgstr "Selhalo nastavení uživatele „%1%“"
+ 
+ #. TRANSLATORS: %1% = user name
+ #. TRANSLATORS: %2% = user name
+ #. TRANSLATORS: Please translate "->" as a right arrow, e.g. U+2192
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "(%1%→%2%): User switching is not permitted"
+-msgstr "(%1%->%2%): Přepínání uživatelů není dovoleno"
++msgstr "(%1%→%2%): Přepínání uživatelů není dovoleno"
+ 
+ msgid "Error saving terminal settings"
+ msgstr "Chyba při ukládání nastavení terminálu"
+@@ -1310,13 +1305,13 @@ msgstr "Chyba při obnovování nastaven
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %4% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] Running login shell: ‘%4%’"
+ msgstr "[chroot %1%] Spouštím přihlašovací shell: „%4%“"
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %4% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] Running shell: ‘%4%’"
+ msgstr "[chroot %1%] Spouštím shell: „%4%“"
+ 
+@@ -1325,22 +1320,22 @@ msgstr "[chroot %1%] Spouštím shell: �
+ #. TRANSLATORS: %3% = user name
+ #. TRANSLATORS: %4% = command
+ #. TRANSLATORS: Please translate "->" as a right arrow, e.g. U+2192
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] (%2%→%3%) Running login shell: ‘%4%’"
+-msgstr "[chroot %1%] (%2%->%3%) Spouštím přihlašovací shell: „%4%“"
++msgstr "[chroot %1%] (%2%→%3%) Spouštím přihlašovací shell: „%4%“"
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %2% = user name
+ #. TRANSLATORS: %3% = user name
+ #. TRANSLATORS: %4% = command
+ #. TRANSLATORS: Please translate "->" as a right arrow, e.g. U+2192
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] (%2%→%3%) Running shell: ‘%4%’"
+-msgstr "[chroot %1%] (%2%->%3%) Spouštím shell: „%4%“"
++msgstr "[chroot %1%] (%2%→%3%) Spouštím shell: „%4%“"
+ 
+ #. TRANSLATORS: %1% = chroot name
+ #. TRANSLATORS: %4% = command
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] Running command: “%4%”"
+ msgstr "[chroot %1%] Spouštím příkaz: „%4%“"
+ 
+@@ -1349,9 +1344,9 @@ msgstr "[chroot %1%] Spouštím příkaz
+ #. TRANSLATORS: %3% = user name
+ #. TRANSLATORS: %4% = command
+ #. TRANSLATORS: Please translate "->" as a right arrow, e.g. U+2192
+-#, fuzzy, boost-format
++#, boost-format
+ msgid "[%1% chroot] (%2%→%3%) Running command: “%4%”"
+-msgstr "[chroot %1%] (%2%->%3%) Spouštím příkaz: „%4%“"
++msgstr "[chroot %1%] (%2%→%3%) Spouštím příkaz: „%4%“"
+ 
+ #, boost-format
+ msgid "stage=%1%"
+@@ -1361,6 +1356,8 @@ msgid ""
+ "The directory does not exist inside the chroot.  Use the --directory option "
+ "to run the command in a different directory."
+ msgstr ""
++"Adresář uvnitř chrootu neexistuje. Pro spuštění příkazu v jiném adresáři "
++"použijte volbu --directory."
+ 
+ msgid "terminating immediately"
+ msgstr "okamžitě končím"
+@@ -1382,45 +1379,19 @@ msgstr "Nepodařilo se zjistit stav soub
+ msgid "Failed to stat file descriptor"
+ msgstr "Nepodařilo se zjistit stav popisovače souboru"
+ 
+-#, fuzzy
+-#~ msgid "[OPTION…] — release a device lock"
+-#~ msgstr "[VOLBA…] - uvolní zámek zařízení"
+-
+-#~ msgid "No PID specified; forcing release of lock"
+-#~ msgstr "Nebylo zadáno žádné PID; vynucuji uvolnění zámku"
+-
+-#~ msgid "Lock"
+-#~ msgstr "Zámek"
+-
+-#~ msgid "Device to unlock (full path)"
+-#~ msgstr "Zařízení pro odemčení (celá cesta)"
+-
+-#~ msgid "Process ID owning the lock"
+-#~ msgstr "ID procesu vlastnícího zámek"
+-
+-#~ msgid "No device specified"
+-#~ msgstr "Nebylo zadáno žádné zařízení"
+-
+-#~ msgid "Device locking"
+-#~ msgstr "Zamykání zařízení"
+-
+ #~ msgid "No such chroot"
+ #~ msgstr "Takový chroot neexistuje"
+ 
+-#, fuzzy
+ #~ msgid ""
+ #~ "Exactly one chroot must be specified when creating or removing a session"
+-#~ msgstr "Při zahájení sezení musí být zadán alespoň jeden chroot"
++#~ msgstr "Při vytváření nebo rušení sezení musí být zadán právě jeden chroot"
+ 
+-#, fuzzy
+ #~ msgid "Create a chroot"
+-#~ msgstr "Vybere všechna chroot prostředí"
++#~ msgstr "Vytvořit chroot"
+ 
+-#, fuzzy
+ #~ msgid "Remove a chroot"
+-#~ msgstr "Vybere všechna chroot prostředí"
++#~ msgstr "Odstranit chroot"
+ 
+-#, fuzzy
+ #~ msgid "Failed to execute ‘%1%’"
+ #~ msgstr "Nepodařilo se spustit „%1%“"
+ 

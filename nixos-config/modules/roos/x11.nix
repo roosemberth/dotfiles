@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 let
-  taffybar = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos {};
+  taffy = pkgs.callPackage /Storage/DevelHub/8-Repositories/taffy-roos/live {};
+  bumblebee = pkgs.bumblebee.override {
+    useNvidia = false;
+    useDisplayDevice = true;
+  };
+  primus = pkgs.primus.override { useNvidia = false; };
 in
 with lib;
 {
@@ -8,24 +13,37 @@ with lib;
 
   config = mkIf config.roos.x11.enable {
     hardware = {
-      bumblebee.enable = true;
-      bumblebee.connectDisplay = true;
-      bumblebee.driver = "nvidia";
-      bumblebee.pmMethod = "bbswitch";
+      # The config bellow blacklists nouveau driver on start, which is undesirable
+      #bumblebee.enable = true;
+      #bumblebee.connectDisplay = true;
+      #bumblebee.driver = "nouveau";
+      # This configuration has been reimplemented bellow
 
       opengl.enable = true;
       opengl.driSupport = true;
       opengl.driSupport32Bit = true;
     };
 
+    # <bumblebee>
+    environment.systemPackages = [ bumblebee primus ];
+    systemd.services.bumblebeed = {
+      description = "Bumblebee Hybrid Graphics Switcher";
+      wantedBy = [ "multi-user.target" ];
+      before = [ "display-manager.service" ];
+      serviceConfig = {
+        ExecStart = "${bumblebee}/bin/bumblebeed --use-syslog -g wheel --driver nouveau";
+      };
+    };
+    # </bumblebee>
+
     location.provider = "geoclue2";
 
     roos.xUserConfig.systemd.user.services =
     let
       xServices = {
-        taffybar = {
+        taffy = {
           Unit.Description = "Taffybar";
-          Service.ExecStart = "${taffybar}/bin/taffybar";
+          Service.ExecStart = "${taffy}/bin/taffybar";
         };
         screen-locker = {
           Unit.Description = "Screen-locking daemon";
@@ -68,7 +86,7 @@ with lib;
         windowManager.xmonad.enable = true;
         windowManager.default = "xmonad";
         windowManager.xmonad.extraPackages =
-          haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras taffybar];
+          haskellPackages: with haskellPackages; [xmonad-contrib xmonad-extras taffy];
         desktopManager.default = "none";
         desktopManager.gnome3.enable = true;
 

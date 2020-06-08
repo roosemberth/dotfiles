@@ -66,7 +66,7 @@ actionsList = M.fromList
   , ("volumeToggle" , "pactl set-sink-mute   $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') toggle")
   , ("volumeUp"     , "pactl set-sink-volume $(pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g') +5%")
   ]) ++ (map (mapResult cmdInTmpTmux) [
-    ("dico"         , "dico  --database=gcide \"$(read -e)\"")
+    ("dico"         , "dico  --database=gcide")
   , ("wn"           , "wn \"$(read -e)\" -over")
   ])) where cmdInTmpTmux cmd = spawn $ "alacritty -t overlay -e tmux new '" ++ cmd ++ "; echo Press any key to exit && read'"
             mapResult fn (k, v) = (k, fn v)
@@ -248,9 +248,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       -- v These will skip hidden windows
       , ("M-k"             , focusUp)                               -- %! Move focus to the previous window
       , ("M-j"             , focusDown)                             -- %! Move focus to the next window
-      -- v FIXME: These shortcuts should only wotk inside the sublayout.
-      , ("M-C-k"           , windows W.focusUp)                     -- %! Move focus to the previous window
-      , ("M-C-j"           , windows W.focusDown)                   -- %! Move focus to the next window
+      , ("M-C-k"           , prevScreen)                            -- %! Move focus to the previous screen
+      , ("M-C-j"           , nextScreen)                            -- %! Move focus to the next screen
 
       -- Sublayout grouping
       , ("M-M1-h"          , sendMessage $ pullGroup L)             -- %! Move window to the left subgroup

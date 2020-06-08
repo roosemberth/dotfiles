@@ -1,0 +1,33 @@
+From ef8c7208e56b44ee601c34aaa9bce217f844c8c9 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Sun, 8 Mar 2020 01:48:58 +0100
+Subject: [PATCH 5/9] Create session directory if it doesn't exist
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ sbuild/sbuild-chroot.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sbuild/sbuild-chroot.cc b/sbuild/sbuild-chroot.cc
+index 3d84021d..28c7a990 100644
+--- a/sbuild/sbuild-chroot.cc
++++ b/sbuild/sbuild-chroot.cc
+@@ -57,6 +57,7 @@
+ #include <fcntl.h>
+ 
+ #include <boost/format.hpp>
++#include <boost/filesystem.hpp>
+ 
+ using boost::format;
+ using namespace sbuild;
+@@ -580,6 +581,7 @@ sbuild::chroot::setup_env (chroot const& chroot,
+ void
+ sbuild::chroot::setup_session_info (bool start)
+ {
++  boost::filesystem::create_directories(boost::filesystem::path(SCHROOT_SESSION_DIR));
+   /* Create or unlink session information. */
+   std::string file = std::string(SCHROOT_SESSION_DIR) + "/" + get_name();
+ 
+-- 
+2.23.1
+

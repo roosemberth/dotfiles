@@ -1,0 +1,119 @@
+From 779ce41d6fb06e8738b0c0cce52a3b0d801a7b54 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Sun, 8 Mar 2020 01:04:46 +0100
+Subject: [PATCH 3/9] Override schroot.conf and conf directory using
+ environment variables
+
+- SCHROOT_CONF: Use alternate `schroot.conf` file.
+- SCHROOT_CONF_CHROOT_D: Use alternate `schroot.conf.d` directory.
+
+Note: This introduces a potential security vulnerability if schroot called from a SUID
+wrapper. Such wrapper MUST sanitize these variables prior calling schroot.
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ bin/schroot/schroot-main-base.cc | 37 ++++++++++++++++++++++++++------
+ man/schroot.conf.5.man           |  6 ++++--
+ 2 files changed, 35 insertions(+), 8 deletions(-)
+
+diff --git a/bin/schroot/schroot-main-base.cc b/bin/schroot/schroot-main-base.cc
+index b09a83ef..5441ade7 100644
+--- a/bin/schroot/schroot-main-base.cc
++++ b/bin/schroot/schroot-main-base.cc
+@@ -243,6 +243,22 @@ main_base::get_chroot_options ()
+     }
+ }
+ 
++static const char*
++get_config_path ()
++{
++  if (const char* env_schroot_conf = std::getenv("SCHROOT_CONF"))
++    return env_schroot_conf;
++  return SCHROOT_CONF;
++}
++
++static const char*
++get_config_d_path()
++{
++  if (const char* env_schroot_conf_chroot_d = std::getenv("SCHROOT_CONF_D"))
++    return env_schroot_conf_chroot_d;
++  return SCHROOT_CONF_CHROOT_D;
++}
++
+ void
+ main_base::load_config ()
+ {
+@@ -251,8 +267,8 @@ main_base::load_config ()
+      any chroot type or session, or displaying chroot information. */
+   if (this->options->load_chroots == true)
+     {
+-      this->config->add("chroot", SCHROOT_CONF);
+-      this->config->add("chroot", SCHROOT_CONF_CHROOT_D);
++      this->config->add("chroot", get_config_path());
++      this->config->add("chroot", get_config_d_path());
+     }
+   /* The session chroot list is used when running or ending an
+      existing session, or displaying chroot information. */
+@@ -280,17 +296,26 @@ main_base::run_impl ()
+ 
+   if (this->options->load_chroots &&
+       this->config->get_chroots("chroot").empty() &&
+-      this->options->quiet == false)
+-    log_exception_warning(error(CHROOT_FILE2, SCHROOT_CONF, SCHROOT_CONF_CHROOT_D));
++      this->options->quiet == false) {
++    const char *schroot_conf_loc;
++    const char *schroot_conf_d_loc;
++
++    schroot_conf_loc = get_config_path();
++    schroot_conf_d_loc = get_config_d_path();
++
++    log_exception_warning(error(CHROOT_FILE2, schroot_conf_loc, schroot_conf_d_loc));
++  }
+ 
+   /* Get list of chroots to use */
+   get_chroot_options();
+   if (this->chroots.empty())
+     {
++      const char *schroot_conf_loc = get_config_path();
++
+       if (!(this->options->all_chroots == true ||
+             this->options->all_sessions == true ||
+             this->options->all_source_chroots == true))
+-        throw error(SCHROOT_CONF, CHROOT_NOTDEFINED);
++        throw error(schroot_conf_loc, CHROOT_NOTDEFINED);
+       else
+         {
+           // If one of the --all options was used, then don't treat
+@@ -299,7 +324,7 @@ main_base::run_impl ()
+           // changes in get_chroot_options.
+           if (this->options->verbose)
+             log_exception_warning(error((this->options->all_chroots == true) ?
+-                                        SCHROOT_CONF : SCHROOT_SESSION_DIR,
++                                        schroot_conf_loc : SCHROOT_SESSION_DIR,
+                                         CHROOT_NOTDEFINED));
+           return EXIT_SUCCESS;
+         }
+diff --git a/man/schroot.conf.5.man b/man/schroot.conf.5.man
+index 93268b95..e44d76d5 100644
+--- a/man/schroot.conf.5.man
++++ b/man/schroot.conf.5.man
+@@ -665,12 +665,14 @@ lvm\-snapshot\-options=\-\-size 2G
+ .TP
+ \f[BI]\*[SCHROOT_CONF]\fP
+ The system-wide chroot definition file.  This file must be owned by the root
+-user, and not be writable by other.
++user, and not be writable by other. This file may be overriden using
++environment variable SCHROOT_CONF.
+ .TP
+ \f[BI]\*[SCHROOT_CONF_CHROOT_D]\fP
+ Additional chroot definitions may be placed in files under this directory.
+ They are treated in exactly that same manner as \fI\*[SCHROOT_CONF]\fP.  Each
+-file may contain one or more chroot definitions.
++file may contain one or more chroot definitions. This directory may be overriden
++using environment variable SCHROOT_CONF_D.
+ .SS Setup script configuration
+ The directory \f[BI]\*[SCHROOT_SYSCONF_DIR]/default\fP contains the default
+ settings used by setup scripts.
+-- 
+2.23.1
+
