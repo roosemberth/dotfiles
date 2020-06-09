@@ -94,11 +94,17 @@ opaque configurations.
 
 Files under `nix/secrets` are encrypted to my GPG key using [git-crypt
 ](https://github.com/AGWA/git-crypt).
-The top-level of the secrets system is provided in `nix/secrets.nix`.
+The secrets attrset is declared in `nix/secrets.nix`.
 I intend to keep this file as transparent as possible so that anybody can
 make themselves an idea of the secrets structure.
 
-I try to keep as less secrets as possible.
+The secrets attrset is added to the includes call scope.
+This allows modules and other sourced nix files (such as machine static
+configuration) to simply take the argument `secrets` as an input, without
+worrying about how these secrets were provisioned.
+Modules may then access secrets as a regular attribute set.
+
+I try to keep secrets as minimal as possible.
 
 ## Application configurations
 
