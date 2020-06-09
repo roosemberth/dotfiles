@@ -103,7 +103,7 @@ I try to keep as less secrets as possible.
 ## Application configurations
 
 Because I mainly use NixOS to manage my systems, I tend to use NixOS or
-[Home Manager](Home manager) modules to configure applications.
+[Home Manager][Home manager] modules to configure applications.
 
 Those that I manually configure, I try to keep as distribution-agnostic and
 portable as possible.
@@ -120,7 +120,7 @@ environment.
 ### XDG/FHS
 
 I try to keep the top-level user home directory as clean as possible by
-honouring the [XDG base directory specification](xdg), adapted to recreate
+honouring the [XDG base directory specification][xdg], adapted to recreate
 the [Linux file system hierarchy][fhs] (FHS) under `~/.local`.
 
 In detail, this means that the following environment variables are set:
