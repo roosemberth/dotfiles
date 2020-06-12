@@ -12,7 +12,7 @@ in
     cleanTmpDir = true;
     initrd = {
       availableKernelModules = [ "xhci_pci" "nvme" "sd_mod" ];
-      kernelModules = ["dm_crypt" "cbc" "aes_x86_64" "kvm-intel" "e1000e"];
+      kernelModules = ["dm_crypt" "cbc" "kvm-intel" "e1000e"];
       luks.devices."${hostname}".device = "/dev/disk/by-uuid/${uuids.systemDevice}";
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
