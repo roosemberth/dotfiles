@@ -85,23 +85,18 @@ in {
             "u" = "pipeto ${pkgs.urlscan}/bin/urlscan";
           };
         };
-        extraConfig = ''
-          auto_remove_unread = True
-          envelope_html2txt = "pandoc -f html -t markdown"
-          envelope_txt2html = "pandoc -f markdown -t html -s --self-contained"
-          handle_mouse = True
-          initial_command = ${defaultQuery}
-          input_timeout = 0.3
-
-          prefer_plaintext = True
-          search.exclude_tags = "deleted"
-          tabwidth = 2
-          terminal_cmd = "alacritty -e"
-          thread_indent_replies = 2
-
-          ask_subject = True
-          user_agent = "notmuch"
-        '';
+        settings = {
+          ask_subject = true;
+          envelope_html2txt = "pandoc -f html -t markdown";
+          envelope_txt2html = "pandoc -f markdown -t html -s --self-contained";
+          initial_command = defaultQuery;
+          input_timeout = 0.3;
+          "search.exclude_tags" = "deleted";
+          tabwidth = 2;
+          terminal_cmd = "alacritty -e";
+          thread_indent_replies = 2;
+          user_agent = "notmuch";
+        };
       };
 
       programs.mbsync.enable = true;
