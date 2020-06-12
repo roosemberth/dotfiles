@@ -29,7 +29,9 @@ in
 
   hardware.enableRedistributableFirmware = true;
 
-  swapDevices = [ ];
+  swapDevices = [
+    { device = "/mnt/root-btrfs/subvolumes/swap/swapfile1"; }
+  ];
 
   fileSystems = {
     "/" = {
