@@ -85,6 +85,7 @@ in
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
+  services.btrfs.autoScrub.enable = true;
   services.snapper.configs = let
     extraConfig = ''
       TIMELINE_CREATE="yes"
