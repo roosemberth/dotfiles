@@ -24,7 +24,15 @@ in
       description = "Roosemberth Palacios";
       hashedPassword = secrets.users.roosemberth.hashedPassword;
       isNormalUser = true;
-      extraGroups = ["docker" "libvirtd" "networkmanager" "wheel" "input" "video"];
+      extraGroups = [
+        "docker"
+        "input"
+        "libvirtd"
+        "networkmanager"
+        "video"
+        "wheel"
+        "wireshark"
+      ];
       shell = pkgs.zsh;
     };
 
