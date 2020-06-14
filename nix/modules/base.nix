@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
-  vim' = pkgs.writeShellScriptBin "vim" ''exec ${pkgs.neovim}/bin/nvim "$@"'';
+  neovim' = pkgs.neovim.override { vimAlias = true; };
 in
 {
   options.roos.baseConfig.enable = mkEnableOption "Arbitrary base configuration.";
@@ -71,7 +71,7 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      cacert curl hdparm htop iotop neovim vim' wget exfat nfsUtils
+      cacert curl hdparm htop iotop neovim' wget exfat nfsUtils
     ];
 
     programs.bash.enableCompletion = true;
