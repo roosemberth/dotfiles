@@ -16,6 +16,10 @@ in
       luks.devices."${hostname}".device = "/dev/disk/by-uuid/${uuids.systemDevice}";
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
+    kernelParams = [
+      "i915.enable_guc=3"  # May cause instability with hibernation
+      "mem_sleep_default=deep"
+    ];
     loader = {
       grub = {
         enable = true;
