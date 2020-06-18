@@ -24,7 +24,7 @@ in
         ];
 
     roos.sConfigFn = userCfg: {
-      home.packages = with pkgs; [ mopidy' ]; # beets ];
+      home.packages = with pkgs; [ mopidy' beets ];
 
       home.file."Media/Music/.keep".text = ""; # Placeholder
       xdg.configFile."beets/config.yaml".source =
