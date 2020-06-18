@@ -25,6 +25,17 @@ in
 
     roos.sConfigFn = userCfg: {
       home.packages = with pkgs; [ mopidy' ]; # beets ];
+
+      home.file."Media/Music/.keep".text = ""; # Placeholder
+      xdg.configFile."beets/config.yaml".source =
+        util.renderDotfile "etc/beets/config.yaml" {
+          configHome = userCfg.xdg.configHome;
+          dataHome = userCfg.xdg.dataHome;
+          musicDirectory = "${userCfg.home.homeDirectory}/Media/Music";
+        };
+      xdg.dataFile."beets/.keep".text = "";  # Placeholder
+
+      # Mopidy configuration
       xdg.configFile."mopidy/mopidy.conf".source =
         let
           spotifySecret =
@@ -39,15 +50,23 @@ in
           spotifyUserName = spotifySecret "username";
           spotifyPassword = spotifySecret "password";
         };
-      xdg.configFile."beets/config.yaml".source =
-        util.renderDotfile "etc/beets/config.yaml" {
-          configHome = userCfg.xdg.configHome;
-          dataHome = userCfg.xdg.dataHome;
-          musicDirectory = "${userCfg.home.homeDirectory}/Media/Music";
-        };
       xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
-      xdg.dataFile."beets/.keep".text = "";  # Placeholder
-      home.file."Media/Music/.keep".text = ""; # Placeholder
+      systemd.user.services.mopidy = {
+        Unit.After = [ "network.target" "sound.target" ];
+        Unit.Description = "Mopidy daemon";
+        Unit.Conflicts = [ "mpd.service" ];
+        Service.Environment = "PATH=${userCfg.home.profileDirectory}/bin";
+        Service.ExecStart = "${mopidy'}/bin/mopidy";
+      };
+
+      # MPD configuration
+      services.mpd.enable = true;
+      services.mpd.musicDirectory =
+        "${userCfg.home.homeDirectory}/Media/Music";
+      services.mpd.playlistDirectory = "/tmp";
+      # Disable autostart
+      systemd.user.services.mpd.Install.WantedBy = lib.mkForce [];
+      systemd.user.services.mpd.Unit.Conflicts = [ "mopidy.service" ];
     };
 
     roos.gConfig = {
