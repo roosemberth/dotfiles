@@ -80,7 +80,10 @@
   '';
 
   services = {
-    logind.extraConfig = "HandlePowerKey=ignore";
+    logind.extraConfig = ''
+      HandlePowerKey=ignore
+      RuntimeDirectorySize=95%
+    '';
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     postgresql = {
