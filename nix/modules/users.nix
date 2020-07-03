@@ -41,17 +41,6 @@ in {
       '';
     };
 
-    impureDotfiles = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        If enabled, derivations requiring files in the dotfiles repository
-        will use a symlink in the nix store to the dotfiles repository.
-        This is intended for debugging and should generally be set to false.
-        When false, paths from the dotfiles will be copied into the nix store.
-      '';
-    };
-
     user-profiles = mkOption {
       type = userProfileType;
       default = { reduced = []; simple = []; graphical = []; };

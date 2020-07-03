@@ -2,12 +2,7 @@
 let
   dotfiles = assert config.roos.dotfilesPath != null; config.roos.dotfilesPath;
 in {
-  fetchDotfile = target: let
-    impure = config.roos.impureDotfiles;
-    name = "${if impure then "impure-" else ""}dotfile-path";
-  in pkgs.runCommandNoCCLocal name {} ''
-    ln -s "${if impure then toString dotfiles else dotfiles}/${target}" "$out"
-  '';
+  fetchDotfile = target: "${dotfiles}/${target}";
 
   /* Replaces every occurrence of @varName@ in a copy of every file in path,
    * where varName is any variable in the specified attr set. If path is a file
