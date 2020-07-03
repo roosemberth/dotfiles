@@ -16,6 +16,8 @@ in
       luks.devices."${hostname}".device = "/dev/disk/by-uuid/${uuids.systemDevice}";
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
+    kernelModules = ["acpi_call"];
+    extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
     loader = {
       grub = {
         enable = true;
