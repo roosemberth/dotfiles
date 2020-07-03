@@ -5,6 +5,11 @@
     ./Mimir-static.nix
   ];
 
+  # This can be removed when the default kernel is at least version 5.6
+  # https://github.com/NixOS/nixpkgs/pull/86168
+  boot.kernelPackages = assert lib.versionOlder pkgs.linux.version "5.6";
+    (lib.mkDefault pkgs.linuxPackages_5_6);
+
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernelModules = [ "kvm-intel" ];
@@ -26,6 +31,14 @@
     pulseaudio.enable = true;
     pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
     pulseaudio.package = pkgs.pulseaudioFull;
+    # This can be removed when PulseAudio is at least version 14
+    # https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_7)#Audio
+    pulseaudio.extraConfig =
+      assert lib.versionOlder config.hardware.pulseaudio.package.version "14";
+    ''
+      load-module module-alsa-sink   device=hw:0,0 channels=4
+      load-module module-alsa-source device=hw:0,6 channels=4
+    '';
 
     sane.enable = true;
     cpu.intel.updateMicrocode = true;
