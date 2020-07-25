@@ -114,8 +114,7 @@
   };
 
   system.stateVersion = "19.09";
-  # Not as long as we're running on nixpkgs-unstable
-  # system.autoUpgrade.enable = true;
+  system.autoUpgrade.enable = true;
 
   time.timeZone = "Europe/Zurich";
 
