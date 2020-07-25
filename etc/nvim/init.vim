@@ -127,7 +127,7 @@ let g:airline#extensions#tabline#enabled = 1
 
 " Behaviour plugins
 call deoplete#enable()
-call dirmark#set_cache_directory_path(stdpath('data').'/dirmark') " “cache”...
+call dirmark#set_data_directory_path(stdpath('data').'/dirmark') " “cache”...
 
 " Denite {{{
 autocmd FileType denite call s:denite_my_settings()
