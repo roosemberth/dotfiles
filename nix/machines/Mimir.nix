@@ -40,7 +40,6 @@
       load-module module-alsa-source device=hw:0,6 channels=4
     '';
 
-    sane.enable = true;
     cpu.intel.updateMicrocode = true;
 
     opengl.enable = true;
