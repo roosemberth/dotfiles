@@ -117,6 +117,9 @@ let b:ale_python_pylint_options="--disable=import-error"
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
 let g:ale_lint_on_insert_leave=1
 let g:ale_lint_on_text_changed="normal"
+let g:ale_linters_ignore=
+  \ { 'haskell': ['stack-build']
+  \ }
 
 " fix gruvbox's highlight for Ale
 highlight ALEInfo ctermfg=109 cterm=italic
