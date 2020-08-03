@@ -261,6 +261,7 @@ au BufEnter term://* startinsert
 nnoremap <leader>g :e %:h:r<CR>
 au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
 nnoremap <leader>T :Tags<CR>
+nnoremap <leader>S :GFiles?<CR>
 nnoremap <leader>F :Files<CR>
 nnoremap <leader><C-f> :call <SID>fzf_dirmark()<CR>
 nnoremap <leader>B :Buffers<CR>
