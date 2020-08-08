@@ -48,16 +48,6 @@ in
         cacheHome = "${homedir}/.local/var/cache";
         configHome = "${homedir}/.local/etc";
         dataHome = "${homedir}/.local/var/lib";
-        mime.enable = true;
-        mimeApps.enable = true;
-        userDirs = {
-          enable = true;
-          download = "/tmp";
-          music = "$HOME/Media/Music";
-          pictures = "$HOME/Media/Pictures";
-          publicShare = "$HOME/Public";
-          videos = "$HOME/Media/Videos";
-        };
       };
 
       xdg.configFile."nvim/init.vim".source =
@@ -69,6 +59,19 @@ in
         posix_man_pages man-pages
         python3 python3Packages.ipython python3Packages.glances
       ];
+
+      xdg = {
+        mime.enable = true;
+        mimeApps.enable = true;
+        userDirs = {
+          enable = true;
+          download = "/tmp";
+          music = "$HOME/Media/Music";
+          pictures = "$HOME/Media/Pictures";
+          publicShare = "$HOME/Public";
+          videos = "$HOME/Media/Videos";
+        };
+      };
     };
 
     environment.systemPackages = with pkgs; [
