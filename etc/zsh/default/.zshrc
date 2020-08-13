@@ -176,7 +176,7 @@ bindkey -M viins ''    kill-line
 bindkey -M viins ''    up-line-or-history
 bindkey -M viins ''    down-line-or-history
 bindkey -M viins ''    backward-kill-line
-bindkey -M viins ''    backward-kill-word
+bindkey -M viins ''    vi-backward-kill-word
 bindkey -M viins '^@'    vi-forward-word  # C-<Space>
 bindkey -M viins ''    push-input       # Save current line for later
 
