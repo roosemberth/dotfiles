@@ -73,6 +73,7 @@ in
             old.cmakeFlags ++ ["-DENABLE_BUBBLEWRAP_SANDBOX=OFF"];
         });})
         gnome3.gucharmap
+        gnome3.adwaita-icon-theme
         gtk3  # gtk-launch
         pinentry'
         tdesktop
