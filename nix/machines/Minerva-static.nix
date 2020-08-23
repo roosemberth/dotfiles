@@ -2,7 +2,7 @@
 let
   hostname = config.networking.hostName;
   uuids = {
-    bootPart = "5d3ba400-a82a-6045-92be-23d12cfa9790";
+    bootPart = "141D-400F";
     systemDevice = "a7f508da-7f10-4972-b1c0-b22ba4ede8f2";
   };
 in
@@ -43,7 +43,7 @@ in
   in {
     "/boot" = {
       fsType = "vfat";
-      device = "/dev/disk/by-partuuid/${uuids.bootPart}";
+      device = "/dev/disk/by-uuid/${uuids.bootPart}";
     };
     "/" = bindActiveSubvolume [] "rootfs";
     "/var" = bindActiveSubvolume ["autodefrag"] "var";
