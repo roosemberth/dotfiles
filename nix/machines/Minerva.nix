@@ -18,6 +18,7 @@
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
 
+  security.pam.enableSSHAgentAuth = true;
   services = {
     logind.lidSwitch = "ignore";
     logind.extraConfig = ''HandlePowerKey="ignore"'';
