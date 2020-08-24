@@ -14,6 +14,7 @@
   networking.useNetworkd = true;
   networking.useDHCP = false;
   networking.interfaces.enp0s31f6.useDHCP = true;
+  networking.interfaces.enp0s31f6.tempAddress = "disabled";
 
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
