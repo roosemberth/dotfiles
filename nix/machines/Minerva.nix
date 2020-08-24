@@ -51,4 +51,6 @@
       Kernel:  ${boot.kernelPackages.kernel.version}
     '';
   };
+
+  virtualisation.libvirtd.enable = true;
 }
