@@ -10,18 +10,22 @@ in {
         username = userCfg.home.username;
         emailAccounts = secrets.users.${username}.emailAccounts;
       in mkIf (hasAttrByPath [username "emailAccounts"] secrets.users) {
-        accounts = flip mapAttrs emailAccounts (accName: secretCfg: let
-          accountCfg = filterAttrs (n: _: n != "passwordPath") secretCfg;
-        in accountCfg // {
+        accounts = flip mapAttrs emailAccounts (
+          accName: secretCfg: secretCfg // {
           alot.sendMailCommand = "msmtp --account=${accName} -t";
           passwordCommand =
-            "${pkgs.pass}/bin/pass show ${secretCfg.passwordPath}";
+            "${pkgs.gnome3.libsecret}/bin/secret-tool lookup mbsync ${accName}";
         });
         maildirBasePath = ".local/var/mail";
       };
-      home.packages = with pkgs; [
-        gnupg mailcap pass-otp gnome3.libsecret
+      home.packages = with pkgs;
+        let gnome-keyring = # Install gnome-keyring without suid-wrapper
+              assert lib.versionOlder gnome3.gnome-keyring.version "3.35.0";
+              gnome3.gnome-keyring.overrideAttrs(_:{postFixup="";});
+        in [
+        gnupg mailcap pass-otp
         taskwarrior timewarrior python3Packages.bugwarrior
+        gnome-keyring gcr gnome3.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
@@ -105,9 +109,6 @@ in {
       programs.notmuch.hooks.postNew = "afew --tag --new";
       programs.notmuch.hooks.preNew = "mbsync --all";
       programs.notmuch.new.tags = [ "new" ];
-
-      services.gnome-keyring.enable = true;
-      services.gnome-keyring.components = ["pkcs11" "secrets"];
 
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
