@@ -50,9 +50,6 @@ if 'project' in new:
     if '.' in project:
         tags.extend([tag for tag in project.split('.')])
 
-if 'tags' in new:
-    tags.extend(new['tags'])
-
 combined = ' '.join(['"%s"' % tag for tag in tags]).encode('utf-8').strip()
 
 # Started task.
