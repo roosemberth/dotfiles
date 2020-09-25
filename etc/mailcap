@@ -2,5 +2,6 @@ application/*; xdg-open "%s"
 audio/*; xdg-open "%s"
 video/*; xdg-open "%s"
 image/*; xdg-open "%s"
-text/*; xdg-open "%s"
 text/html; w3m -dump -o -document_charset=%{charset} "%s"; nametemplate=%s.html; copiousoutput
+text/plain; fmt -w 100 -s %s
+text/*; xdg-open "%s"
