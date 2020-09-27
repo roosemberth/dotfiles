@@ -23,7 +23,7 @@ in {
               assert lib.versionOlder gnome3.gnome-keyring.version "3.35.0";
               gnome3.gnome-keyring.overrideAttrs(_:{postFixup="";});
         in [
-        gnupg mailcap pass-otp
+        gnupg mailcap pass-otp w3m xdg_utils
         taskwarrior timewarrior python3Packages.bugwarrior
         gnome-keyring gcr gnome3.libsecret
       ];
