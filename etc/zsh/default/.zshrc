@@ -127,6 +127,7 @@ if [ $(id -u) != 0 ]; then
         antigen bundle zsh-users/zsh-syntax-highlighting
         antigen bundle peterhurford/git-it-on.zsh
         antigen bundle ninrod/pass-zsh-completion
+        antigen bundle Vifon/deer
 
         antigen apply
     fi
@@ -179,6 +180,11 @@ bindkey -M viins ''    backward-kill-line
 bindkey -M viins ''    vi-backward-kill-word
 bindkey -M viins '^@'    vi-forward-word  # C-<Space>
 bindkey -M viins ''    push-input       # Save current line for later
+
+# ranger-like path search
+autoload -U deer
+zle -N deer
+bindkey -M viins '' deer
 
 # Use vim to edit command lines:
 autoload -U edit-command-line
