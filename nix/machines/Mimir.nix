@@ -8,7 +8,7 @@
   # This can be removed when the default kernel is at least version 5.6
   # https://github.com/NixOS/nixpkgs/pull/86168
   boot.kernelPackages = assert lib.versionOlder pkgs.linux.version "5.6";
-    (lib.mkDefault pkgs.linuxPackages_5_6);
+    (lib.mkDefault pkgs.linuxPackages_latest);
 
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
@@ -67,8 +67,8 @@
 
   nixpkgs = {
     config = {
-      packageOverrides = pkgs: {
-        vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+      packageOverrides = p: {
+        vaapiIntel = p.vaapiIntel.override { enableHybridCodec = true; };
       };
     };
   };
@@ -86,9 +86,9 @@
   roos.media.enable = true;
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
-  roos.gConfig = {
-    services.kdeconnect.enable = true;
-  };
+  # roos.gConfig = {
+  #   services.kdeconnect.enable = true;
+  # };
   roos.wayland.enable = true;
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";

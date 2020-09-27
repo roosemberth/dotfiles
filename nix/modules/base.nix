@@ -57,7 +57,7 @@ in
     roos.sConfig = {
       home.packages = with pkgs; [
         posix_man_pages man-pages
-        python3 python3Packages.ipython python3Packages.glances
+        python3 python3Packages.ipython glances
       ];
 
       xdg = {
