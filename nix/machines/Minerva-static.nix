@@ -9,9 +9,23 @@ in
 {
   boot = {
     initrd = {
+      availableKernelModules = [ "e1000e" ];
       luks.devices."${hostname}".device =
         "/dev/disk/by-uuid/${uuids.systemDevice}";
-      supportedFilesystems = [ "btrfs" ];
+
+      network.enable = true;
+      network.ssh.enable = true;
+      network.ssh.authorizedKeys = secrets.adminPubKeys;
+      network.ssh.hostECDSAKey =
+        (secrets.forHost hostname).keys.ssh-initramfs.minerva-initramfs-ecdsa;
+      # network.udhcpc.command = "udhcpc6";
+      network.postCommands = ''
+        ip a add 10.0.18.20/24 dev enp0s31f6 || true
+        ip l set dev enp0s31f6 up || true
+        ip a
+      '';
+
+      supportedFilesystems = [ "btrfs" "vfat" ];
     };
     loader.grub = {
       enable = true;
