@@ -81,6 +81,7 @@
   };
 
   roos.agenda.enable = true;
+  roos.dev.enable = true;
   roos.dotfilesPath = ../..;
   roos.media.enable = true;
   roos.steam.enable = true;
