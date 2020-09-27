@@ -76,6 +76,7 @@ in
 
     environment.systemPackages = with pkgs; [
       cacert curl hdparm htop iotop neovim' wget exfat nfsUtils
+      fzf
     ];
 
     programs.bash.enableCompletion = true;
