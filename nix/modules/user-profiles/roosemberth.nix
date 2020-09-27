@@ -68,10 +68,7 @@ in
       home.packages = (with pkgs; [
         brightnessctl
         firefox
-        (epiphany.override {webkitgtk = pkgs.webkitgtk.overrideAttrs (old: {
-          cmakeFlags = assert lib.strings.versionOlder old.version "2.28.1";
-            old.cmakeFlags ++ ["-DENABLE_BUBBLEWRAP_SANDBOX=OFF"];
-        });})
+        epiphany
         gnome3.gucharmap
         gnome3.adwaita-icon-theme
         gtk3  # gtk-launch
