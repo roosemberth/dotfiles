@@ -110,6 +110,8 @@ if executable('ag') " Use ag instead of ack if possible
   let g:ackprg = 'ag --vimgrep'
 endif
 
+let g:tex_flavor = 'latex'
+
 let b:ale_python_mypy_options="--ignore-missing-imports"
 let b:ale_python_pylint_options="--disable=import-error"
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%:%code%]'
