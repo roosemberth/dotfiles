@@ -27,6 +27,12 @@ Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-tbone'
 Plug 'w0rp/ale'
+Plug 'vimwiki/vimwiki'
+try " Do not load taskwiki if tasklib module is not installed.
+  py3 import tasklib
+  Plug 'tools-life/taskwiki'
+catch
+endtry
 
 " Behaviour
 Plug 'JarrodCTaylor/vim-reflection'
@@ -125,6 +131,8 @@ let g:ale_linters_ignore=
 highlight ALEInfo ctermfg=109 cterm=italic
 highlight ALEWarning ctermfg=214 cterm=italic
 highlight ALEError ctermfg=167 cterm=italic
+
+let g:vimwiki_list = [{'path': '~/Documents/0-Runtime/wiki/'}]
 
 let g:airline#extensions#tabline#enabled = 1
 

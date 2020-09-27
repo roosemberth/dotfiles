@@ -1,7 +1,15 @@
 { config, pkgs, lib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
-  neovim' = pkgs.neovim.override { vimAlias = true; };
+  neovim' = pkgs.neovim.override {
+    vimAlias = true;
+    extraPython3Packages = p: with p; [
+      (tasklib.overrideAttrs(o: {src = o.src.override ({
+        version = assert lib.versionOlder o.version "2.2.1"; "2.2.1";
+        sha256 = "1xck0qgvqs1al95mbm4nlwzvp27pkkvspy7dcimqfa4r8qs5lli1";
+      });}))
+    ];
+  };
 in
 {
   options.roos.baseConfig.enable = mkEnableOption "Arbitrary base configuration.";
