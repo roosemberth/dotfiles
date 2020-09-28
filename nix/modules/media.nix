@@ -3,8 +3,8 @@ let
   util = import ./util.nix { inherit config pkgs lib; };
   mopidy' = with pkgs; buildEnv {
     name = "mopidy-with-extensions-${mopidy.version}";
-    paths = lib.closePropagation (with pkgs; [
-      mopidy-spotify mopidy-iris
+    paths = lib.closePropagation (with pkgs.mopidyPackages; [
+      mopidy-spotify mopidy-iris mopidy-mpd
     ]);
     pathsToLink = [ "/${python3.sitePackages}" ];
     buildInputs = [ makeWrapper ];
