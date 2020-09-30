@@ -102,6 +102,17 @@
       HandlePowerKey=ignore
       RuntimeDirectorySize=95%
     '';
+    nginx.enable = true;
+    nginx.virtualHosts = {
+      localhost.default = true;
+      # Default redirect to HTTPs (e.g. socat rec.la testing).
+      localhost.extraConfig = "return 301 https://$host$request_uri;";
+      "${config.networking.hostName}.orbstheorem.ch" = {
+        root = "/srv/shared";
+        locations."/".extraConfig = "return 307 /web/;";
+        locations."/web".extraConfig = "autoindex on;";
+      };
+    };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     postgresql = {
