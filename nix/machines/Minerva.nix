@@ -30,7 +30,7 @@
     upower.enable = true;
   };
 
-  system.stateVersion = "20.03";
+  system.stateVersion = "20.09";
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;
   # FIXME: Use systemd.watchdog.runtimeTime when merged
