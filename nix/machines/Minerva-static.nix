@@ -35,10 +35,11 @@ in
       gfxmodeEfi = "1280x1024x32,1024x768x32,auto";
     };
   };
-  environment.etc."secrets/initrd/ssh_host_ed25519".source =
-    (secrets.forHost hostname).keys.ssh-initramfs.ed25519;
-  environment.etc."secrets/initrd/ssh_host_ecdsa".source =
-    (secrets.forHost hostname).keys.ssh-initramfs.ecdsa;
+  # See https://github.com/NixOS/nixpkgs/pull/91744 to restore this to hostKeys.
+  #environment.etc."secrets/initrd/ssh_host_ed25519".source =
+  #  (secrets.forHost hostname).keys.ssh-initramfs.ed25519;
+  #environment.etc."secrets/initrd/ssh_host_ecdsa".source =
+  #  (secrets.forHost hostname).keys.ssh-initramfs.ecdsa;
 
   hardware.enableRedistributableFirmware = true;
   swapDevices = [ ];
