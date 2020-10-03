@@ -23,6 +23,8 @@
 
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
+  roos.wireguard.enable = true;
+  roos.wireguard.gwServer = "Hellendaal";
 
   security.pam.enableSSHAgentAuth = true;
   services = {
