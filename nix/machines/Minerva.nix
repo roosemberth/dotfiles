@@ -10,11 +10,16 @@
   boot.kernelModules = [ "kvm-intel" ];
   hardware.cpu.intel.updateMicrocode = true;
 
+  networking.firewall.allowedTCPPorts = [ 53 ];
+  networking.firewall.allowedUDPPorts = [ 53 ];
   networking.hostName = "Minerva";
   networking.useNetworkd = true;
   networking.useDHCP = false;
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.enp0s31f6.tempAddress = "disabled";
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = ["ve-+"];
+  networking.nat.externalInterface = "enp0s31f6";
 
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
@@ -25,6 +30,7 @@
     logind.extraConfig = ''HandlePowerKey="ignore"'';
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    # resolved.enable = false;  # Use the named container DNS.
     tlp.enable = true;
     tlp.extraConfig = ''CPU_SCALING_GOVERNOR_ON_AC=performance'';
     upower.enable = true;
@@ -53,4 +59,13 @@
   };
 
   virtualisation.libvirtd.enable = true;
+
+  containers.named = {
+    autoStart = true;
+    config = { ... }: { imports = [../lib ./containers/named.nix]; };
+    forwardPorts = [
+      {hostPort = 53; protocol = "tcp";}
+      {hostPort = 53; protocol = "udp";}
+    ];
+  };
 }
