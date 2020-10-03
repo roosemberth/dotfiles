@@ -17,7 +17,7 @@ in
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
     kernelModules = ["acpi_call"];
-    extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
+    extraModulePackages = with config.boot.kernelPackages; [ acpi_call v4l2loopback ];
     loader = {
       grub = {
         enable = true;
