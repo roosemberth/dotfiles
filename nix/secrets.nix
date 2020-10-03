@@ -1,5 +1,5 @@
-{ lib, _called_by_injector ? false }:
-with lib; assert (assertMsg _called_by_injector
+{ lib, _secrets_loaded_by_injector ? false, ... }:
+with lib; assert (assertMsg _secrets_loaded_by_injector
                   "The secrets module should not be called directly.");
 let
   readSecretPath = path: strings.fileContents (toString ./secrets + "/" + path);

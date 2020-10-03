@@ -6,7 +6,7 @@
       let
         secrets = import ../secrets.nix {
           inherit lib;
-          _called_by_injector = true;
+          _secrets_loaded_by_injector = true;
         };
       in
         assert secrets.secretsAvailable; secrets;
