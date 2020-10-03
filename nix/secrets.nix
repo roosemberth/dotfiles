@@ -18,7 +18,7 @@ in recursiveUpdate ({
         path = ./secrets + "/machines/${hostname}/ssh-initramfs-keys/";
         isPrivateKey = name: type: type == "regular" && ! strings.hasSuffix ".pub" name;
         keys = attrNames (filterAttrs isPrivateKey (builtins.readDir path));
-      in lib.genAttrs keys (key: "${path}/${key}");
+      in lib.genAttrs keys (key: path + "/${key}");
       wireguard = wireguardSecrets hostname;
     };
   }) (attrByPath [hostname] {} {
