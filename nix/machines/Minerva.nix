@@ -41,8 +41,6 @@
   system.stateVersion = "20.09";
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;
-  # FIXME: Use systemd.watchdog.runtimeTime when merged
-  systemd.extraConfig = "RuntimeWatchdogSec=10s";
 
   time.timeZone = "Europe/Zurich";
 

@@ -8,6 +8,7 @@ let
 in
 {
   boot = {
+    blacklistedKernelModules = [ "iTCO_wdt" ];
     initrd = {
       availableKernelModules = [ "e1000e" ];
       luks.devices."${hostname}".device =
