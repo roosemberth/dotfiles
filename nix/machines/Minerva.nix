@@ -4,6 +4,7 @@
     ../modules
     ./Minerva-static.nix
     ./containers/databases.nix
+    ./containers/named.nix
   ];
 
   boot.cleanTmpDir = true;
@@ -60,13 +61,4 @@
   };
 
   virtualisation.libvirtd.enable = true;
-
-  containers.named = {
-    autoStart = true;
-    config = { ... }: { imports = [../lib ./containers/named.nix]; };
-    forwardPorts = [
-      {hostPort = 53; protocol = "tcp";}
-      {hostPort = 53; protocol = "udp";}
-    ];
-  };
 }
