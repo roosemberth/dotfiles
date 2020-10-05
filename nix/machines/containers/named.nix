@@ -25,4 +25,7 @@
       {hostPort = 53; protocol = "udp";}
     ];
   };
+
+  networking.search = with secrets.network.zksDNS; [ search ];
+  networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
 }

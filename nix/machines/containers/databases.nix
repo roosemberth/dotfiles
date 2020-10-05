@@ -19,6 +19,9 @@
     forwardPorts = [ { hostPort = 5432; protocol = "tcp"; } ];
   };
 
+  networking.search = with secrets.network.zksDNS; [ search ];
+  networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
+
   systemd.services.postgresql-paths = {
     description = "Prepare paths used by PostgreSQL.";
     requiredBy = [ "container@databases.service" ];
