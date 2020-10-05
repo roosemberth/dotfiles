@@ -3,6 +3,7 @@
   imports = [
     ../modules
     ./Minerva-static.nix
+    ./containers/databases.nix
   ];
 
   boot.cleanTmpDir = true;
