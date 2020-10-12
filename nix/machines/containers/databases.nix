@@ -59,7 +59,7 @@
 
         MOUNT_POINT="$(findmnt -DnT "$EXISTING_TARGET_PREFIX" | awk '{print $NF}')"
         # Path of the TARGET inside the btrfs mount point.
-        SUBPATH="$${TARGET#$MOUNT_POINT/}"
+        SUBPATH="''${TARGET#$MOUNT_POINT/}"
 
         # Test if the target is already a btrfs subvolume.
         if ! btrfs subvolume list $MOUNT_POINT | grep -Eq "$SUBPATH\$"; then
