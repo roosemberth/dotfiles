@@ -14,6 +14,11 @@
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernelModules = [ "kvm-intel" ];
+
+  environment.systemPackages = with pkgs; [
+    gitAndTools.git-annex
+  ];
+
   hardware.cpu.intel.updateMicrocode = true;
 
   networking.firewall.allowedTCPPorts = [ 53 ];
