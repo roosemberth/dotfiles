@@ -3,15 +3,16 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $lockcmd swaylock -f -c 00000050
+set $lockcmd swaylock -c 00000050
+set $sleepinhibitlock systemd-inhibit --what=handle-lid-switch $lockcmd
 
 # Session idling management
 exec swayidle -w idlehint 300 \
-  timeout 300   "$lockcmd" \
+  timeout 300   "$lockcmd -f" \
   timeout 600   'swaymsg "output * dpms off"' \
   resume        'swaymsg "output * dpms on"' \
-  before-sleep  "$lockcmd" \
-  lock          "$lockcmd"
+  before-sleep  "$lockcmd -f" \
+  lock          "$lockcmd -f"
   # No unlock until I can get a pidlock...
 
 exec systemctl --user set-environment DISPLAY="$DISPLAY" WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
@@ -63,7 +64,7 @@ bindsym --locked $mod+End                    exec mpc prev
 bindsym --locked $mod+Insert                 exec mpc next
 bindsym --locked XF86Display                 exec sm -i
 bindsym --locked XF86Display+Shift           exec sm
-bindsym --locked XF86Favorites               exec $lockcmd
+bindsym --locked XF86Favorites               exec $sleepinhibitlock
 bindsym --locked XF86MonBrightnessDown       exec brightnessctl s 5%-
 bindsym --locked XF86MonBrightnessDown+Shift exec brightnessctl s 1
 bindsym --locked XF86MonBrightnessUp         exec brightnessctl s 5%+
@@ -192,3 +193,5 @@ for_window [app_id="^nm-connection-editor$"] floating enable
 for_window [title="^About Mozilla Firefox$"] floating enable
 for_window [title="^Steam - Self Updater$"] floating enable
 for_window [title="^Steam Guard - Computer Authorization Required$"] floating enable
+
+# vim:ft=config
