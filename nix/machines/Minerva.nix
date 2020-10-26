@@ -52,7 +52,8 @@ in {
     logind.extraConfig = ''HandlePowerKey="ignore"'';
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
-    # resolved.enable = false;  # Use the named container DNS.
+    resolved.dnssec = "false";  # The named container DNS does not provide DNSSEC.
+    resolved.llmnr = "false";
     tlp.enable = true;
     tlp.extraConfig = ''CPU_SCALING_GOVERNOR_ON_AC=performance'';
     upower.enable = true;
