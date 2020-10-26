@@ -1,10 +1,19 @@
 { config, pkgs, lib, ... }:
-{
+let
+  # Hack since secrets are not available to the machine top-level definition...
+  networkDnsConfig =
+    { secrets, ... }:
+    {
+      networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
+      networking.search = with secrets.network.zksDNS; [ search ];
+    };
+in {
   imports = [
     ../modules
     ./Minerva-static.nix
     ./containers/databases.nix
     ./containers/named.nix
+    networkDnsConfig
   ];
 
   # btrfs xxhash support requires >=5.5
