@@ -31,5 +31,12 @@
       yq
       virt-viewer
     ];
+
+    services.udev.extraRules = ''
+      # Remarkable tablet upload mode (I.MX6)
+      ACTION=="add",ATTRS{idProduct}=="0063",ATTRS{idVendor}=="15a2",MODE="0666"
+      # Have usb tty devices accesible
+      ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
+    '';
   };
 }
