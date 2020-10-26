@@ -33,6 +33,7 @@ try " Do not load taskwiki if tasklib module is not installed.
   Plug 'tools-life/taskwiki'
 catch
 endtry
+Plug 'direnv/direnv.vim'
 
 " Behaviour
 Plug 'JarrodCTaylor/vim-reflection'

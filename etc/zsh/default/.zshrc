@@ -70,6 +70,9 @@ if command -v fzf-share &> /dev/null; then
   source "$(fzf-share)/completion.zsh"
   source "$(fzf-share)/key-bindings.zsh"
 fi
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
 # }}}
 
 # -----------------------------------------------------------------------------

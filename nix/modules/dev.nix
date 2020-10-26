@@ -3,7 +3,8 @@
   options.roos.dev.enable = mkEnableOption "Install language development packages";
 
   config = mkIf config.roos.dev.enable {
-    roos.gConfig.home.packages = with pkgs; [
+    roos.sConfig.services.lorri.enable = true;
+    roos.sConfig.home.packages = with pkgs; [
       # C/C++
       clang
       clang-tools
@@ -30,6 +31,8 @@
       jq
       yq
       virt-viewer
+      # lorri
+      direnv
     ];
 
     services.udev.extraRules = ''
