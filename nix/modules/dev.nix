@@ -19,7 +19,7 @@
       yarn
       # Java
       maven
-      openjdk11
+      openjdk14
       # Python
       python3Packages.black
       # Embedded
