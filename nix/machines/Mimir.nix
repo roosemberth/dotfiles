@@ -1,8 +1,18 @@
 { config, pkgs, lib, ... }:
-{
+let
+  # Hack since secrets are not available to the machine top-level definition...
+  networkDnsConfig =
+    { secrets, ... }:
+    {
+      networking.networkmanager.insertNameservers =
+        with secrets.network.zksDNS; v6 ++ v4;
+      networking.search = with secrets.network.zksDNS; [ search "int.${search}" ];
+    };
+in {
   imports = [
     ../modules
     ./Mimir-static.nix
+    networkDnsConfig
   ];
 
   # This can be removed when the default kernel is at least version 5.6
