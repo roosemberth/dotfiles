@@ -110,6 +110,12 @@
         root = "/srv/shared";
         locations."/".extraConfig = "return 307 /web/;";
         locations."/web".extraConfig = "autoindex on;";
+        locations."~ ^/(.+?)/(.*)$".extraConfig = ''
+          alias /srv/shared/usr/$1/$2;
+          autoindex on;
+          auth_basic "Speak friend and come in";
+          auth_basic_user_file /srv/shared/usr/$1/.htpasswd;
+        '';
       };
     };
     openssh.enable = true;
