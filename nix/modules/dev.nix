@@ -18,9 +18,6 @@
       # Node
       nodejs
       yarn
-      # Java
-      maven
-      openjdk14
       # Python
       python3Packages.black
       # Embedded
