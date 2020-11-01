@@ -22,8 +22,9 @@ let
                 && file != "default.nix"
                 && file != "util.nix")
     (files dir));
-
-in
-{
-  imports = [ ../lib ] ++ validFiles ./.;
+in {
+  _module.args = {
+    secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
+  };
+  imports = validFiles ./.;
 }
