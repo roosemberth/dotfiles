@@ -32,6 +32,7 @@ let
     (files dir));
 in {
   _module.args = {
+    hmlib = import (hm + "/modules/lib") { inherit lib; };
     secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
   };
   imports = [ (hm + "/nixos") ] ++ validFiles ./.;
