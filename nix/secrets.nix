@@ -9,6 +9,11 @@ let
     };
   admins = import ./secrets/users/admins.nix { inherit lib; };
   opaque = import ./secrets/opaque.nix { inherit lib; };
+
+  keyring-names =
+  let files = builtins.readDir ./secrets/keyrings;
+      keys = attrNames (filterAttrs (name: _: hasSuffix ".asc" name) files);
+  in map (removeSuffix ".asc") keys;
 in recursiveUpdate ({
   adminPubKeys = admins.authorizedPublicKeys;
 
@@ -27,5 +32,10 @@ in recursiveUpdate ({
 
   network = import ./secrets/network.nix {};
   users.roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
+  keyrings = genAttrs keyring-names (name: {
+    inherit name;
+    key = ./. + "/secrets/keyrings/${name}.asc";
+    archive = ./. + "/secrets/keyrings/${name}.zip";
+  });
   secretsAvailable = true;
 }) opaque.secrets
