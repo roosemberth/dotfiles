@@ -37,5 +37,4 @@ in recursiveUpdate ({
     key = ./. + "/secrets/keyrings/${name}.asc";
     archive = ./. + "/secrets/keyrings/${name}.zip";
   });
-  secretsAvailable = true;
 }) opaque.secrets

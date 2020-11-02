@@ -49,17 +49,16 @@ in {
   in mkIf cfg.enable {
     networking.firewall.allowedUDPPorts = [ listenPort ];
     networking.firewall.trustedInterfaces = [ cfg.interface ];
-    networking.wireguard.interfaces.${cfg.interface} =
-      if !secrets.secretsAvailable then {} else {
-        inherit listenPort;
-        ips = with secrets.network.zkx.${hostname}; [host4 host6];
-        privateKey = (secrets.forHost hostname).keys.wireguard.private;
-        peers = if cfg.gwServer == null then attrValues bastions
-          else assert gwServerAssert; [(bastions.${cfg.gwServer} // {
-            allowedIPs = allNetworkIPs;
-          })];
-        allowedIPsAsRoutes = false;
-      };
+    networking.wireguard.interfaces.${cfg.interface} = {
+      inherit listenPort;
+      ips = with secrets.network.zkx.${hostname}; [host4 host6];
+      privateKey = (secrets.forHost hostname).keys.wireguard.private;
+      peers = if cfg.gwServer == null then attrValues bastions
+        else assert gwServerAssert; [(bastions.${cfg.gwServer} // {
+          allowedIPs = allNetworkIPs;
+        })];
+      allowedIPsAsRoutes = false;
+    };
 
     security.sudo.extraConfig = ''
       %wheel ALL=(root) NOPASSWD: /run/current-system/sw/bin/wg
