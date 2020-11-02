@@ -134,15 +134,6 @@ in {
     # home-manager.useUserPackages = true;
     home-manager.verbose = true;
 
-    # Source home-manager environment
-    environment.extraInit = concatMapStringsSep "\n" (user: let
-      homedir = config.users.users.${user}.home;
-    in ''
-      if [ "$(id -un)" = "${user}" ]; then
-        . "${homedir}/.nix-profile/etc/profile.d/hm-session-vars.sh"
-      fi
-    '') usersWithProfiles;
-
     assertions = [
       {
         assertion = let

@@ -30,10 +30,18 @@ let
                 && file != "default.nix"
                 && file != "util.nix")
     (files dir));
+  sourceHmEnv = {
+    # Source home-manager environment
+    config.environment.extraInit = ''
+      if [ -d "$HOME/.nix-profile/etc/profile.d" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+      fi
+    '';
+  };
 in {
   _module.args = {
     hmlib = import (hm + "/modules/lib") { inherit lib; };
     secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
   };
-  imports = [ (hm + "/nixos") ] ++ validFiles ./.;
+  imports = [ (hm + "/nixos") sourceHmEnv ] ++ validFiles ./.;
 }
