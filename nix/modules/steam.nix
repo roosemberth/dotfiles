@@ -10,9 +10,6 @@ in
   options.roos.steam.enable = mkEnableOption "Enable steam support";
 
   config = mkIf config.roos.steam.enable {
-    # FIXME: See media.nix
-    # nixpkgs.config.allowUnfreePredicate = pkg: getName pkg == "steam-original";
-
     roos.gConfig.home.packages = [steam' steam'.run];
 
     hardware.opengl.driSupport32Bit = true;

@@ -18,11 +18,6 @@ in
   options.roos.media.enable = mkEnableOption "Enable media suite.";
 
   config = mkIf config.roos.media.enable {
-    nixpkgs.config.allowUnfreePredicate =
-      pkg: elem (getName pkg) ["libspotify" "pyspotify"
-        "steam-original" # FIXME: See steam.nix
-        ];
-
     roos.sConfigFn = userCfg: {
       home.packages = with pkgs; [ mopidy' beets ];
 
