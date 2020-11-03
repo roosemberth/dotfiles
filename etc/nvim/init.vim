@@ -134,6 +134,8 @@ highlight ALEWarning ctermfg=214 cterm=italic
 highlight ALEError ctermfg=167 cterm=italic
 
 let g:vimwiki_list = [{'path': '~/Documents/0-Runtime/wiki/'}]
+let g:vimwiki_key_mappings = { 'all_maps': 0, 'html': 1, 'mouse': 1 }
+call vimwiki#vars#init()
 
 let g:airline#extensions#tabline#enabled = 1
 
@@ -320,6 +322,9 @@ nnoremap <C-w><C-t> :execute 'tabnew '.expand('%')<CR>
 nnoremap <C-w>w :execute 'split '.expand('<cfile>')<CR>
 nnoremap <C-w>e :execute 'vsplit '.expand('<cfile>')<CR>
 nnoremap <C-w>t :execute 'tabnew '.expand('<cfile>')<CR>
+
+" Vimwiki
+nnoremap <leader>ww :VimwikiIndex<CR>
 
 " Everything else...
 cnoremap w!! w !sudo tee % >/dev/null<CR>
