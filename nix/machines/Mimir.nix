@@ -92,6 +92,7 @@ in {
   roos.agenda.enable = true;
   roos.dev.enable = true;
   roos.dotfilesPath = ../..;
+  roos.eivd.enable = true;
   roos.media.enable = true;
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
