@@ -101,6 +101,9 @@
           if [ -z "$KEYRING" ]; then
             die $E_USER "A keyring must be specified."
           fi
+          if [ -z "$PASSWORD" ]; then
+            die $E_USER "A password to lookup must be specified."
+          fi
 
           #--------------------------------------------------------
           set -e
@@ -135,13 +138,9 @@
             chmod 700 "${cfg.xdg.dataHome}/keyrings/$k/gpg"
             GNUPGHOME="${cfg.xdg.dataHome}/keyrings/$k/gpg" \
               gpg --import "${cfg.xdg.dataHome}/keyrings/$k/key"
-            ${pkgs.unzip}/bin/unzip -d "${cfg.xdg.dataHome}/keyrings" -o \
-              "${cfg.xdg.dataHome}/keyrings/$k/archive"
           done
         '';
 
-        # FIXME: Out-of-place
-        systemd.user.startServices = true;
         xdg.enable = true;
       }
     ) config.roos.user-keyrings;
