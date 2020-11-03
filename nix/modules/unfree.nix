@@ -3,6 +3,7 @@
 { config, lib, ... }: with lib;
 let
   allowedList = []
+    ++ optionals config.roos.eivd.enable ["teams"]
     ++ optionals config.roos.media.enable ["libspotify" "pyspotify"]
     ++ optionals config.roos.steam.enable ["steam-original"]
     ;

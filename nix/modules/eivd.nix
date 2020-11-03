@@ -28,6 +28,10 @@
       ];
     };
 
+    roos.gConfig = {
+      home.packages = with pkgs; [ teams ];
+    };
+
     systemd.services.eivd-mysql = {
       description = "Prepare paths used by MySQL in the eivd container.";
       requiredBy = [ "container@eivd-mysql.service" ];
