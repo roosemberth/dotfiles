@@ -59,6 +59,7 @@ Plug 'lervag/vimtex'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'vim-scripts/Arduino-syntax-file'
 Plug 'vim-scripts/deb.vim'
+Plug 'aklt/plantuml-syntax'
 
 call plug#end()
 
