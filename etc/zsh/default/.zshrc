@@ -167,6 +167,14 @@ zshaddhistory() {  # Filter commands going to the history
         fg|bg) return 1 ;;
     esac
 }
+
+wrapToProject() {
+    find ~/ws -maxdepth 5 -not -path '*/.*' -type d 2> /dev/null | fzf | read -r dest
+    [ -z "$dest" ] && return
+    pushd "$dest"
+    ranger < /dev/tty
+    zle reset-prompt
+}
 # }}}
 
 # -----------------------------------------------------------------------------
@@ -188,6 +196,9 @@ bindkey -M viins ''    push-input       # Save current line for later
 autoload -U deer
 zle -N deer
 bindkey -M viins '' deer
+
+zle -N wrapToProject
+bindkey -M viins '' wrapToProject
 
 # Use vim to edit command lines:
 autoload -U edit-command-line
