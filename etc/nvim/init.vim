@@ -61,6 +61,17 @@ Plug 'vim-scripts/Arduino-syntax-file'
 Plug 'vim-scripts/deb.vim'
 Plug 'aklt/plantuml-syntax'
 
+" Coc-stuff
+if executable('node') && executable('yarn')
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  if executable('clangd')
+    Plug 'clangd/coc-clangd', {'do': 'yarn install --frozen-lockfile'}
+  endif
+  if executable('java')
+    Plug 'neoclide/coc-java', {'do': 'yarn install --frozen-lockfile'}
+  endif
+endif
+
 call plug#end()
 
 if exists('s:should_bootstrap_plug')
@@ -216,6 +227,55 @@ command! -nargs=? -complete=dir GenTags call s:_GenTags(<f-args>)
 
 au FileType c call FT_c()
 au FileType haskell call FT_haskell()
+
+" Language server stuff
+set updatetime=300
+set shortmess+=c
+set signcolumn=yes
+
+call coc#config('languageserver',
+  \{ "haskell": {
+  \    "command": "haskell-language-server-wrapper",
+  \    "args": ["--lsp"],
+  \    "rootPatterns": [ "*.cabal", "package.yaml" ],
+  \    "filetypes": [ "hs", "lhs", "haskell", "lhaskell" ],
+  \  }
+  \})
+
+if executable('haskell-language-server-wrapper')
+  let g:ale_linters_ignore=
+    \ { 'haskell': ['stack-build', 'ghc', 'stack_ghc']
+    \ }
+endif
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "<Down>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <silent><expr> <C-n> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position. Coc only does snippet and additional edit on confirm.
+if exists('*complete_info')
+  inoremap <expr> <cr> complete_info()["selected"] != "-1"
+    \? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Handy commands
+command! -nargs=0 Format :call CocAction('format') |
+  \:call CocAction('runCommand', 'editor.action.organizeImport')
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
 " }}}
 
 " -----------------------------------------------------------------------------
@@ -323,6 +383,21 @@ nnoremap <C-w><C-t> :execute 'tabnew '.expand('%')<CR>
 nnoremap <C-w>w :execute 'split '.expand('<cfile>')<CR>
 nnoremap <C-w>e :execute 'vsplit '.expand('<cfile>')<CR>
 nnoremap <C-w>t :execute 'tabnew '.expand('<cfile>')<CR>
+
+" Language server
+nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>ac <Plug>(coc-codeaction)
+nmap <leader>qf <Plug>(coc-fix-current)
+
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+nnoremap <silent> I          :call CocAction('doHover')<CR>
+nnoremap <silent> <C-A>      :CocList actions<CR>
 
 " Vimwiki
 nnoremap <leader>ww :VimwikiIndex<CR>
