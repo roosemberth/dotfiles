@@ -84,7 +84,6 @@ in {
 
   programs = {
     dconf.enable = true;
-    sway.enable = true;
     wireshark.enable = true;
     wireshark.package = pkgs.wireshark;
   };
@@ -99,7 +98,7 @@ in {
   # roos.gConfig = {
   #   services.kdeconnect.enable = true;
   # };
-  roos.wayland.enable = true;
+  roos.sway.enable = true;
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";
 

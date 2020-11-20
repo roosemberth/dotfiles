@@ -2,9 +2,9 @@
 let
   util = import ./util.nix { inherit config pkgs lib; };
 in {
-  options.roos.wayland.enable = mkEnableOption "Enable wayland support.";
+  options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
-  config = mkIf config.roos.wayland.enable {
+  config = mkIf config.roos.sway.enable {
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass.override { waylandSupport = true; };
     };
@@ -30,5 +30,7 @@ in {
         };
       };
     };
+
+    programs.sway.enable = true;
   };
 }
