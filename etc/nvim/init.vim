@@ -332,7 +332,7 @@ nnoremap <C-w>t :new \| call termopen([$SHELL], {'cwd': expand('#:p:h')}) \| sta
 au BufEnter term://* startinsert
 
 " Exploring files
-nnoremap <leader>g :e %:h:r<CR>
+nnoremap <leader>u :e %:h:r<CR>
 au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
 nnoremap <leader>T :Tags<CR>
 nnoremap <leader>S :GFiles?<CR>
