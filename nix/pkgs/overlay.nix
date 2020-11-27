@@ -19,4 +19,11 @@ final: prev: {
       platforms = platforms.linux;
     };
   };
+  # While https://github.com/NixOS/nixpkgs/pull/105182 is being merged
+  firejail = prev.firejail.overrideAttrs (o: {
+    patches = (o.patches or []) ++ [
+      ./firejail/mount-nix-dir-on-overlay.patch
+      ./firejail/fbuilder-call-firejail-on-path.patch
+    ];
+  });
 }
