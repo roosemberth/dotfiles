@@ -28,8 +28,31 @@
       ];
     };
 
-    roos.gConfig = {
-      home.packages = with pkgs; [ teams ];
+    roos.gConfig = let
+      teams = with pkgs;
+        assert (assertMsg config.programs.firejail.enable
+          "firejail is required to run MS teams");
+        stdenv.mkDerivation {
+          name = "jailed-MS-teams";
+          # Can't use makeWrapper since firejail should be called from PATH
+          buildCommand = ''
+            mkdir -p "$out/bin" "$out/share/applications"
+            echo "#! /bin/sh -e" > "$out/bin/teams"
+            echo exec firejail --overlay-named=teams \
+              '"${pkgs.teams}/bin/teams"' >> "$out/bin/teams"
+            chmod +x "$out/bin/teams"
+
+            cp "${pkgs.teams}/share/applications/teams.desktop" \
+              "$out/share/applications/teams.desktop"
+          '';
+          preferLocalBuild = true;
+          allowSubstitutes = false;
+        };
+    in {
+      home.packages = [ teams ];
+      xdg.mimeApps.defaultApplications = {
+        "x-scheme-handler/msteams" = ["teams.desktop"];
+      };
     };
 
     systemd.services.eivd-mysql = {
