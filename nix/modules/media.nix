@@ -46,12 +46,14 @@ in
           spotifyPassword = spotifySecret "password";
         };
       xdg.dataFile."mopidy/Playlists/.keep".text = "";  # Placeholder
-      systemd.user.services.mopidy = {
+      systemd.user.services.mopidy =
+      let
+        configPath = "${userCfg.xdg.configHome}/mopidy/mopidy.conf";
+      in {
         Unit.After = [ "network.target" "sound.target" ];
         Unit.Description = "Mopidy daemon";
         Unit.Conflicts = [ "mpd.service" ];
-        Service.Environment = "PATH=${userCfg.home.profileDirectory}/bin";
-        Service.ExecStart = "${mopidy'}/bin/mopidy";
+        Service.ExecStart = "${mopidy'}/bin/mopidy --config ${configPath}";
       };
 
       # MPD configuration
