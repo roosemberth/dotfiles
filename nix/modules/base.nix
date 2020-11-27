@@ -39,6 +39,7 @@ in
         zsh-completions
       ]);
 
+      home.sessionPath = [ "\$HOME/.local/bin" ];
       home.sessionVariables = rec {
         ZDOTDIR = util.fetchDotfile "etc/zsh/default";
         ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
