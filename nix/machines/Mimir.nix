@@ -84,6 +84,7 @@ in {
 
   programs = {
     dconf.enable = true;
+    firejail.enable = true;
     wireshark.enable = true;
     wireshark.package = pkgs.wireshark;
   };
