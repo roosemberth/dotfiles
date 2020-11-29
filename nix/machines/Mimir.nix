@@ -108,6 +108,7 @@ in {
   '';
 
   services = {
+    gvfs.enable = true;
     logind.extraConfig = ''
       HandlePowerKey=ignore
       RuntimeDirectorySize=95%
