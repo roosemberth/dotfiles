@@ -142,6 +142,10 @@ in {
       '';
     };
     tlp.enable = true;
+    udev.extraRules = ''
+      # Rename built-in interface with proprietary connector
+      SUBSYSTEM=="net",ACTION=="add",KERNEL=="enp0s31f6",NAME="useless"
+    '';
     upower.enable = true;
   };
 
