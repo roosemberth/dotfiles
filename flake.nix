@@ -4,15 +4,11 @@
     "github:nix-community/home-manager/release-20.09";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, home-manager }:
-  let
-    hmlib = nixpkgs.lib.hm;
-  in {
+  outputs = { self, nixpkgs, home-manager }: {
     nixosConfigurations = {
       Mimir = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [({ ... }: {
-          _module.args = { inherit hmlib; };
           imports = [
             ./nix/machines/Mimir.nix
             home-manager.nixosModules.home-manager

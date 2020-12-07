@@ -1,5 +1,5 @@
 # This module manages user keyrings.
-{ config, pkgs, lib, hmlib, secrets, ... }: with lib;
+{ config, pkgs, lib, secrets, ... }: with lib;
 {
   options.roos.user-keyrings = with types; mkOption {
     description = "User keyring submodules.";
@@ -131,7 +131,7 @@
         home.activation.keyrings =
         let
           keyring-names = map ({name, ...}: name) keyrings;
-        in hmlib.dag.entryAfter [ "linkGeneration" "installPackages" ] ''
+        in lib.hm.dag.entryAfter [ "linkGeneration" "installPackages" ] ''
           # Import GPG keys and extract password store for each keyring
           for k in ${escapeShellArgs keyring-names}; do
             mkdir -p "${cfg.xdg.dataHome}/keyrings/$k/gpg"
