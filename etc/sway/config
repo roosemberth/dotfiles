@@ -189,6 +189,7 @@ for_window [class=Pinentry-gtk-2] border normal
 for_window [app_id=launcher] floating enable
 for_window [app_id=Scratchpad-flyway] floating enable, mark --add center-float
 for_window [title="^Complete Installation$"] floating enable
+for_window [title="^Firefox — Sharing Indicator$"] floating enable
 for_window [title="^Steam - News (.* of .*)$"] floating enable
 for_window [app_id="^nm-connection-editor$"] floating enable
 for_window [title="^About Mozilla Firefox$"] floating enable
