@@ -12,7 +12,17 @@
       ctags
       gnumake
       # Haskell
-      ghc
+      (ghc.withHoogle (p: with p; [
+        QuickCheck
+        aeson
+        generic-arbitrary
+        haskell-language-server
+        optparse-applicative
+        parsec
+        protolude
+        quickcheck-instances
+        yaml
+      ]))
       haskellPackages.fast-tags
       stack
       # Node
