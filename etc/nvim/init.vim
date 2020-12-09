@@ -27,10 +27,10 @@ Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-tbone'
 Plug 'w0rp/ale'
-Plug 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex' }
 try " Do not load taskwiki if tasklib module is not installed.
   py3 import tasklib
-  Plug 'tools-life/taskwiki'
+  Plug 'tools-life/taskwiki', { 'on': 'VimwikiIndex' }
 catch
 endtry
 Plug 'direnv/direnv.vim'
@@ -147,7 +147,6 @@ highlight ALEError ctermfg=167 cterm=italic
 
 let g:vimwiki_list = [{'path': '~/Documents/0-Runtime/wiki/'}]
 let g:vimwiki_key_mappings = { 'all_maps': 0, 'html': 1, 'mouse': 1 }
-call vimwiki#vars#init()
 
 let g:airline#extensions#tabline#enabled = 1
 
