@@ -5,8 +5,8 @@ let
   sourceHmEnv = {
     # Source home-manager environment
     config.environment.extraInit = ''
-      if [ -d "$HOME/.nix-profile/etc/profile.d" ]; then
-        . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+      if [ -d "/etc/profiles/per-user/$USER/etc/profile.d" ]; then
+        . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
       fi
     '';
   };
