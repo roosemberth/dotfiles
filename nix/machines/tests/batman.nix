@@ -1,42 +1,31 @@
 { config, lib, pkgs, secrets, nixosSystem, ... }:
 let
-  netopts-script = pkgs.writeShellScript "get-qemu-batman-network-opts" ''
-    SOCKET_NET_PORT=57300
-    declare -a NETWORK_OPTS
-    NETWORK_OPTS+=(-nic hubport,hubid=1,id=n1,model=virtio)
-    if ! ${pkgs.iproute}/bin/ss -an \
-        | grep -qE 'tcp.*LISTEN.*:'"$SOCKET_NET_PORT"'\s'; then
-      # Start first instance
-      NETWORK_OPTS+=(-netdev socket,id=netsock,listen=:"$SOCKET_NET_PORT")
-      NETWORK_OPTS+=(-netdev hubport,id=h0,hubid=1,netdev=netsock)
+  base = {...}: {
+    imports = [ ./base.nix ];
+    services.sshd.enable = true;
+    networking.firewall.enable = false;
+  };
 
-      # Connect a hub to the user network for DHCP, TFTP, ...
-      NETWORK_OPTS+=(-netdev user,id=m1,tftp=.,hostfwd=::9001-:9000)
-      NETWORK_OPTS+=(-netdev hubport,id=h1,hubid=1,netdev=m1)
-    else
-      # Start subordinate instance
-      NETWORK_OPTS+=(-netdev socket,id=netsock,connect=localhost:"$SOCKET_NET_PORT")
-      NETWORK_OPTS+=(-netdev hubport,id=h0,hubid=1,netdev=netsock)
-    fi
-    echo "''${NETWORK_OPTS[@]}"
-  '';
-  mkVm = hostname: configuration: (nixosSystem {
-    system = "x86_64-linux";
-    modules = [({ ... }: {
-      imports = [ ./base.nix configuration ];
-      networking.hostName = hostname;
-      virtualisation.qemu.networkingOptions = [ "$(${netopts-script})" ];
-    })];
-  }).config.system.build.vm;
-
-  vmsModule = {config, ...}: {
+  nestedVMs = {config, ...}: {
     options.vms = with lib.options; mkOption {
       default = {};
       type = lib.types.attrs;
       description = "VMs to provision with their configuration.";
     };
 
-    config = with lib; {
+    config = with lib; let
+      mkVm = hostname: configuration: (nixosSystem {
+        system = "x86_64-linux";
+        modules = [({ ... }: {
+          imports = [ base configuration ];
+          networking.hostName = hostname;
+          virtualisation.qemu.networkingOptions = [
+            "-nic bridge,id=n1,br=vms,model=virtio"
+          ];
+        })];
+      }).config.system.build.vm;
+    in mkIf (config.vms != {}) {
+      environment.etc."qemu/bridge.conf".text = "allow vms";
       systemd.services = mapAttrs' (name: cfg: nameValuePair "vm@${name}" {
         script = "${mkVm name cfg}/bin/run-${name}-vm";
         serviceConfig.Restart = "on-failure";
@@ -50,11 +39,43 @@ let
   };
 in
 {
-  imports = [ ./base.nix vmsModule ];
+  imports = [ base nestedVMs ];
+
+  boot.kernel.sysctl."net.ipv6.conf.vms.forwarding" = 1;
+
+  networking.bridges.vms.interfaces = [];
+  networking.bridges.vms.rstp = true;
+  networking.interfaces.vms.ipv6.addresses = [
+    { address = "2001:db8::1"; prefixLength = 48; }
+  ];
+  networking.hostName = "batman-hyp";
+  networking.interfaces.eth0.tempAddress = "disabled";
+  networking.interfaces.eth0.useDHCP = true;
+  networking.useDHCP = false;
+
+  services.radvd.enable = true;
+  services.radvd.config = ''
+    interface vms {
+      AdvSendAdvert on;
+      prefix 2001:db8::/64;
+    };
+  '';
+
   virtualisation.memorySize = 1024;
+  virtualisation.qemu.networkingOptions = [
+    "-net nic,netdev=user.0,model=virtio"
+    "-netdev user,id=user.0,hostfwd=tcp::60022-:22"
+  ];
+
   vms = {
-    foo = {};
-    bar = {};
-    baz = {};
+    foo = {
+      networking.interfaces.eth0.macAddress = "02:b0:13:8d:24:80";
+    };
+    bar = {
+      networking.interfaces.eth0.macAddress = "02:fb:fc:f5:46:26";
+    };
+    baz = {
+      networking.interfaces.eth0.macAddress = "02:aa:79:13:2b:b0";
+    };
   };
 }
