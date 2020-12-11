@@ -1,5 +1,6 @@
-{ config, lib, pkgs, secrets, ... }:
+{ config, lib, pkgs, secrets, modulesPath, ... }:
 {
+  imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
@@ -24,4 +25,13 @@
   users.extraUsers.roos.password = "roos";
   users.extraUsers.roos.isNormalUser = true;
   users.extraUsers.roos.extraGroups = ["wheel"];
+
+  virtualisation.qemu.options = [
+    "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
+    "-chardev stdio,mux=on,id=char0,signal=off"
+    "-mon chardev=char0,mode=readline"
+    "-serial chardev:char0"
+    "-snapshot"
+    "-nographic"
+  ];
 }
