@@ -6,6 +6,13 @@
 
   outputs = { self, nixpkgs, home-manager }: {
     nixosConfigurations = {
+      batman = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [({ ... }: {
+          _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
+          imports = [ ./nix/machines/tests/batman.nix ];
+        })];
+      };
       Mimir = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [({ ... }: {
