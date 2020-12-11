@@ -28,9 +28,33 @@ let
       virtualisation.qemu.networkingOptions = [ "$(${netopts-script})" ];
     })];
   }).config.system.build.vm;
+
+  vmsModule = {config, ...}: {
+    options.vms = with lib.options; mkOption {
+      default = {};
+      type = lib.types.attrs;
+      description = "VMs to provision with their configuration.";
+    };
+
+    config = with lib; {
+      systemd.services = mapAttrs' (name: cfg: nameValuePair "vm@${name}" {
+        script = "${mkVm name cfg}/bin/run-${name}-vm";
+        serviceConfig.Restart = "on-failure";
+        serviceConfig.Slice = "machine.slice";
+        wantedBy = [ "machines.target" ];
+        wants = [ "network.target" ];
+        after = [ "network.target" ];
+        restartIfChanged = true;
+      }) config.vms;
+    };
+  };
 in
 {
-  imports = [ ./base.nix ];
+  imports = [ ./base.nix vmsModule ];
   virtualisation.memorySize = 1024;
-  environment.systemPackages = [ (mkVm "foo" {}) ];
+  vms = {
+    foo = {};
+    bar = {};
+    baz = {};
+  };
 }
