@@ -1,7 +1,4 @@
 { config, lib, pkgs, secrets, ... }:
-let
-  hostname = config.networking.hostName;
-in
 {
   boot.loader.grub = {
     enable = true;
@@ -16,7 +13,7 @@ in
   security.sudo.enable = true;
   security.sudo.wheelNeedsPassword = false;
 
-  services.journald.console = "/dev/console";
+  services.journald.console = "/dev/ttyS0";
   services.mingetty.autologinUser = "roos";
   systemd.coredump.enable = true;
   security.pam.loginLimits = [{
