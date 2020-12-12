@@ -44,12 +44,10 @@ in
   boot.kernel.sysctl."net.ipv6.conf.vms.forwarding" = 1;
 
   networking.bridges.vms.interfaces = [];
-  networking.bridges.vms.rstp = true;
   networking.interfaces.vms.ipv6.addresses = [
     { address = "2001:db8::1"; prefixLength = 48; }
   ];
   networking.hostName = "batman-hyp";
-  networking.interfaces.eth0.tempAddress = "disabled";
   networking.interfaces.eth0.useDHCP = true;
   networking.useDHCP = false;
 
@@ -68,14 +66,8 @@ in
   ];
 
   vms = {
-    foo = {
-      networking.interfaces.eth0.macAddress = "02:b0:13:8d:24:80";
-    };
-    bar = {
-      networking.interfaces.eth0.macAddress = "02:fb:fc:f5:46:26";
-    };
-    baz = {
-      networking.interfaces.eth0.macAddress = "02:aa:79:13:2b:b0";
-    };
+    foo = { };
+    bar = { };
+    baz = { };
   };
 }

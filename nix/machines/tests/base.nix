@@ -7,9 +7,21 @@
     efiInstallAsRemovable = true;
     device = "nodev";
   };
+  environment.etc."systemd/network/00-random-mac.link".text = ''
+    [Match]
+    OriginalName=*
+
+    [Link]
+    MACAddressPolicy=random
+  '';
 
   fileSystems."/boot" = { fsType = "vfat"; device = "/dev/sda1"; };
   fileSystems."/".device = "/dev/sda2";
+
+  networking.firewall.allowedUDPPorts = [ 5355 ];
+  networking.interfaces.eth0.useDHCP = true;
+  networking.useDHCP = false;
+  networking.useNetworkd = true;
 
   security.sudo.enable = true;
   security.sudo.wheelNeedsPassword = false;
