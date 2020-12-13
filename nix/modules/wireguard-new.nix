@@ -9,7 +9,7 @@ let
   networkHostOpts = { host, ... }: {
     options.ipv4 = nixosIfaceOpts.ipv4.addresses;
     options.ipv6 = nixosIfaceOpts.ipv6.addresses;
-    options.endpoint = mkOption {
+    options.addr = mkOption {
       type = with types; nullOr str;
     };
     options.keys.public = mkOption {
@@ -18,19 +18,24 @@ let
     options.keys.private = mkOption {
       type = with types; nullOr str;
     };
+    options.peeringport =
+      let wgIfaceType = options.networking.wireguard.interfaces.type;
+          wgIfaceOpts = (wgIfaceType.functor.wrapped.getSubOptions []);
+      in wgIfaceOpts.listenPort // {
+        description = ''
+          Port this host will use connect to every other node in the network.
+        '';
+      };
   };
 
   wgIfaceOpts = { config, ... }: {
-    options.listenPort =
-      let wgIfaceType = options.networking.wireguard.interfaces.type;
-          wgIfaceOpts = (wgIfaceType.functor.wrapped.getSubOptions []);
-      in wgIfaceOpts.listenPort;
     options.network = mkOption {
       default = {};
       example = {
         h1 = {
           ipv4 = [ { address = "192.168.0.1"; prefixLength = 24; } ];
-          endpoint = "demo.wireguard.io:12913";
+          addr = "demo.wireguard.io:12913";
+          peeringport = 48100;
         };
         h2.ipv4 = [ { address = "192.168.0.2"; prefixLength = 24; } ];
       };
@@ -41,11 +46,6 @@ let
       '';
       type = with types; attrsOf (submodule networkHostOpts);
     };
-    config.listenPort =
-      let msg = "A listenPort or an endpoint in the network is required";
-          endpoint = assert (assertMsg (hasAttr hostname config.network) msg);
-            config.network.${hostname}.endpoint;
-      in mkDefault (toInt (head (tail (strings.splitString ":" endpoint))));
 
   };
 
@@ -62,18 +62,31 @@ in {
 
   config = mkIf (cfg != {}) {
     networking.firewall.allowedUDPPorts =
-      mapAttrsToList (_: { listenPort, ... }: listenPort) cfg;
-    networking.firewall.trustedInterfaces = attrNames cfg;
-    networking.wireguard.interfaces = mapAttrs (_: { network, listenPort }: {
-      inherit listenPort;
-      ips = map addrToZoneStr (with network."${hostname}"; ipv4 ++ ipv6);
-      privateKey = network."${hostname}".keys.private;
-      peers = flip mapAttrsToList network (_: hostcfg: {
-        endpoint = hostcfg.endpoint;
-        allowedIPs = map addrToZoneStr (with hostcfg; ipv4 ++ ipv6);
-        persistentKeepalive = 30;
-        publicKey = hostcfg.keys.public;
-      });
-    }) cfg;
+      let getpeeringports = c: mapAttrsToList (_: p: p.peeringport) c.network;
+      in unique (flatten (mapAttrsToList (_: getpeeringports) cfg));
+    networking.firewall.trustedInterfaces =
+      let genIfaces = iface-base: { network }:
+            mapAttrsToList (peer: _: "${iface-base}-${peer}") network;
+      in flatten (mapAttrsToList genIfaces cfg);
+    networking.wireguard.interfaces =
+      let hostAddrs = h: with h; map addrToZoneStr (ipv4 ++ ipv6);
+          netAddrs = net: flatten (forEach (attrValues net) hostAddrs);
+          genIfaces = iface-base: { network }: let net = network; in
+            mapAttrsToList (peer: { peeringport, ... }:
+              nameValuePair "${iface-base}-${peer}" {
+                listenPort = peeringport;
+                ips = hostAddrs network."${hostname}";
+                privateKey = net."${hostname}".keys.private;
+                allowedIPsAsRoutes = false;
+                peers = [{
+                  endpoint =
+                    let port = net."${hostname}".peeringport;
+                    in net."${peer}".addr + ":" + (toString port);
+                  allowedIPs = netAddrs net;
+                  persistentKeepalive = 30;
+                  publicKey = net."${peer}".keys.public;
+                }];
+              }) (filterAttrs (n: _: n != hostname) net);
+      in listToAttrs (flatten (mapAttrsToList genIfaces cfg));
   };
 }

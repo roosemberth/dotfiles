@@ -3,6 +3,7 @@ let
   base = {...}: {
     imports = [ ./base.nix ];
     services.sshd.enable = true;
+    #networking.firewall.enable = false;
   };
 
   nestedVMs = {config, ...}: {
@@ -40,7 +41,7 @@ in
 {
   imports = [ base nestedVMs ];
 
-  boot.kernel.sysctl."net.ipv6.conf.vms.forwarding" = 1;
+  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = 1;
 
   networking.bridges.vms.interfaces = [];
   networking.interfaces.vms.ipv6.addresses = [
@@ -67,24 +68,27 @@ in
   vms = let
     network = {
       foo = {
-        ipv6 = [ { address = "fdf1::1"; prefixLength = 48; } ];
-        endpoint = "foo:12913";
+        ipv6 = [ { address = "fdf1::1"; prefixLength = 128; } ];
+        addr = "foo";
+        peeringport = 12913;
         keys = {
           private = "oGJb4BGu0RszZqjiP0rGKq7UMw3ezEPmuoYcgmXiQGQ=";
           public = "3isW0b/MOb9CIGluevGUNnXzfLv3qTtG795HnlGmaXw=";
         };
       };
       bar = {
-        ipv6 = [ { address = "fdf2::1"; prefixLength = 48; } ];
-        endpoint = "bar:12913";
+        ipv6 = [ { address = "fdf2::1"; prefixLength = 128; } ];
+        addr = "bar";
+        peeringport = 12914;
         keys = {
           private = "QK/uo2fPmNFDgXT+FoMlTR+OzvovjWAT30z7aUI7PkQ=";
           public = "Emd5dTlYBI8lekywF//bEWHn/Yr+Ljoffik1POW1xVI=";
         };
       };
       baz = {
-        ipv6 = [ { address = "fdf3::1"; prefixLength = 48; } ];
-        endpoint = "baz:12913";
+        ipv6 = [ { address = "fdf3::1"; prefixLength = 128; } ];
+        addr = "baz";
+        peeringport = 12915;
         keys = {
           private = "+Io7dND17QTHyGLHndyLvQQ8q1b0fvnXGz7o2i95s0E=";
           public = "5vtgp8LBkLubNXQWomKEm8nmf2q1XlVlS0ETBOVfwSI=";
