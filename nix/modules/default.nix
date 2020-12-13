@@ -32,5 +32,6 @@ in {
     ./user-profiles/roosemberth.nix
     ./users.nix
     ./wireguard.nix
+    ./wireguard-new.nix
   ];
 }
