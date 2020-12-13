@@ -1,9 +1,8 @@
-{ config, lib, pkgs, secrets, nixosSystem, ... }:
+{ config, lib, pkgs, secrets, nixosSystem, home-manager, ... }:
 let
   base = {...}: {
     imports = [ ./base.nix ];
     services.sshd.enable = true;
-    networking.firewall.enable = false;
   };
 
   nestedVMs = {config, ...}: {
@@ -17,7 +16,7 @@ let
       mkVm = hostname: configuration: (nixosSystem {
         system = "x86_64-linux";
         modules = [({ ... }: {
-          imports = [ base configuration ];
+          imports = [ base home-manager ../../modules configuration ];
           networking.hostName = hostname;
           virtualisation.qemu.networkingOptions = [
             "-nic bridge,id=n1,br=vms,model=virtio"
@@ -65,9 +64,42 @@ in
     "-netdev user,id=user.0,hostfwd=tcp::60022-:22"
   ];
 
-  vms = {
-    foo = { };
-    bar = { };
-    baz = { };
+  vms = let
+    network = {
+      foo = {
+        ipv6 = [ { address = "fdf1::1"; prefixLength = 48; } ];
+        endpoint = "foo:12913";
+        keys = {
+          private = "oGJb4BGu0RszZqjiP0rGKq7UMw3ezEPmuoYcgmXiQGQ=";
+          public = "3isW0b/MOb9CIGluevGUNnXzfLv3qTtG795HnlGmaXw=";
+        };
+      };
+      bar = {
+        ipv6 = [ { address = "fdf2::1"; prefixLength = 48; } ];
+        endpoint = "bar:12913";
+        keys = {
+          private = "QK/uo2fPmNFDgXT+FoMlTR+OzvovjWAT30z7aUI7PkQ=";
+          public = "Emd5dTlYBI8lekywF//bEWHn/Yr+Ljoffik1POW1xVI=";
+        };
+      };
+      baz = {
+        ipv6 = [ { address = "fdf3::1"; prefixLength = 48; } ];
+        endpoint = "baz:12913";
+        keys = {
+          private = "+Io7dND17QTHyGLHndyLvQQ8q1b0fvnXGz7o2i95s0E=";
+          public = "5vtgp8LBkLubNXQWomKEm8nmf2q1XlVlS0ETBOVfwSI=";
+        };
+      };
+    };
+  in {
+    foo = {
+      roos.wireguard-new.core-net.network = network;
+    };
+    bar = {
+      roos.wireguard-new.core-net.network = network;
+    };
+    baz = {
+      roos.wireguard-new.core-net.network = network;
+    };
   };
 }

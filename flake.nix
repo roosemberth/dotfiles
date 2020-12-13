@@ -10,6 +10,7 @@
         system = "x86_64-linux";
         modules = [({ ... }: {
           _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
+          _module.args.home-manager = home-manager.nixosModules.home-manager;
           imports = [ ./nix/machines/tests/batman.nix ];
         })];
       };
