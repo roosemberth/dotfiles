@@ -4,31 +4,30 @@
     "github:nix-community/home-manager/release-20.09";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, home-manager }: {
+  outputs = { self, nixpkgs, home-manager }: let
+    defFlakeSystem = baseCfg: nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [({ ... }: {
+        imports = [
+          baseCfg
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+          }
+        ];
+        # Let 'nixos-version --json' know the Git revision of this flake.
+        system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+        nix.registry.nixpkgs.flake = nixpkgs;
+      })];
+    };
+  in {
     nixosConfigurations = {
-      batman = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [({ ... }: {
-          _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
-          _module.args.home-manager = home-manager.nixosModules.home-manager;
-          imports = [ ./nix/machines/tests/batman.nix ];
-        })];
-      };
-      Mimir = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [({ ... }: {
-          imports = [
-            ./nix/machines/Mimir.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-            }
-          ];
-          # Let 'nixos-version --json' know the Git revision of this flake.
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-          nix.registry.nixpkgs.flake = nixpkgs;
-        })];
+      Mimir = defFlakeSystem ./nix/machines/Mimir.nix;
+      batman = defFlakeSystem {
+        _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
+        _module.args.home-manager = home-manager.nixosModules.home-manager;
+        imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
   };
