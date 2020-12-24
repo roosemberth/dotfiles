@@ -60,6 +60,9 @@ Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'vim-scripts/Arduino-syntax-file'
 Plug 'vim-scripts/deb.vim'
 Plug 'aklt/plantuml-syntax'
+Plug 'vim-scripts/ebnf.vim'
+Plug 'andy-morris/alex.vim'
+Plug 'andy-morris/happy.vim'
 
 " Coc-stuff
 if executable('node') && executable('yarn')
