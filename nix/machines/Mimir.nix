@@ -103,6 +103,7 @@ in {
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";
 
+  security.wrappers.wshowkeys.source = "${pkgs.wshowkeys}/bin/wshowkeys";
   security.sudo.extraConfig = ''
     roosemberth ALL=(postgres) NOPASSWD: /run/current-system/sw/bin/psql
   '';
