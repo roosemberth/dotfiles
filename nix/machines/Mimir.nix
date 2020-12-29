@@ -72,6 +72,7 @@ in {
       keep-derivations = true
     '';
     package = pkgs.nixUnstable;
+    trustedUsers = [ "roosemberth" ];
   };
 
   nixpkgs = {
