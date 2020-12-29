@@ -30,6 +30,9 @@ in {
 
   hardware.cpu.intel.updateMicrocode = true;
 
+  nix.extraOptions = "experimental-features = nix-command flakes";
+  nix.package = pkgs.nixUnstable;
+
   networking.firewall.allowedTCPPorts = [ 53 ];
   networking.firewall.allowedUDPPorts = [ 53 ];
   networking.hostName = "Minerva";
@@ -55,7 +58,7 @@ in {
     resolved.dnssec = "false";  # The named container DNS does not provide DNSSEC.
     resolved.llmnr = "false";
     tlp.enable = true;
-    tlp.extraConfig = ''CPU_SCALING_GOVERNOR_ON_AC=performance'';
+    tlp.settings.CPU_SCALING_GOVERNOR_ON_AC = "performance";
     upower.enable = true;
   };
 
