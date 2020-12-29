@@ -24,6 +24,7 @@
   in {
     nixosConfigurations = {
       Mimir = defFlakeSystem ./nix/machines/Mimir.nix;
+      Minerva = defFlakeSystem ./nix/machines/Minerva.nix;
       batman = defFlakeSystem {
         _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
         _module.args.home-manager = home-manager.nixosModules.home-manager;
