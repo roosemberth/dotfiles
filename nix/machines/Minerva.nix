@@ -32,6 +32,7 @@ in {
 
   nix.extraOptions = "experimental-features = nix-command flakes";
   nix.package = pkgs.nixUnstable;
+  nix.trustedUsers = [ "roosemberth" ];
 
   networking.firewall.allowedTCPPorts = [ 53 ];
   networking.firewall.allowedUDPPorts = [ 53 ];
