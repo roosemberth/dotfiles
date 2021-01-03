@@ -95,6 +95,8 @@ in {
   roos.dotfilesPath = ../..;
   roos.eivd.enable = true;
   roos.media.enable = true;
+  roos.nginx-fileshare.enable = true;
+  roos.nginx-fileshare.directory = "/srv/shared";
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
   # roos.gConfig = {
@@ -116,21 +118,10 @@ in {
       RuntimeDirectorySize=95%
     '';
     nginx.enable = true;
-    nginx.virtualHosts = {
-      localhost.default = true;
-      # Default redirect to HTTPs (e.g. socat rec.la testing).
-      localhost.extraConfig = "return 301 https://$host$request_uri;";
-      "${config.networking.hostName}.orbstheorem.ch" = {
-        root = "/srv/shared";
-        locations."/".extraConfig = "return 307 /web/;";
-        locations."/web".extraConfig = "autoindex on;";
-        locations."~ ^/(.+?)/(.*)$".extraConfig = ''
-          alias /srv/shared/usr/$1/$2;
-          autoindex on;
-          auth_basic "Speak friend and come in";
-          auth_basic_user_file /srv/shared/usr/$1/.htpasswd;
-        '';
-      };
+    # Default redirect to HTTPs (e.g. socat rec.la testing).
+    nginx.virtualHosts.localhost = {
+      default = true;
+      extraConfig = "return 301 https://$host$request_uri;";
     };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";

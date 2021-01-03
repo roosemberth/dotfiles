@@ -25,6 +25,7 @@ in {
     ./eivd.nix
     ./keyring.nix
     ./media.nix
+    ./nginx-fileshare.nix
     ./overlays.nix
     ./steam.nix
     ./sway.nix
