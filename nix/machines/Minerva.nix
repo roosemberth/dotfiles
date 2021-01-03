@@ -46,6 +46,8 @@ in {
   networking.nat.externalInterface = "enp0s31f6";
 
   roos.dotfilesPath = ../..;
+  roos.nginx-fileshare.enable = true;
+  roos.nginx-fileshare.directory = "/srv/shared";
   roos.user-profiles.reduced = ["roosemberth"];
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";
