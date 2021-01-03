@@ -49,7 +49,7 @@ in {
       '';
 
       programs.alot = let
-        defaultQuery = "search tag:force_show or (not (tag:killed or tag:deleted) and tag:inbox)";
+        defaultQuery = "search tag:force_show or (not (tag:killed or tag:deleted) and (tag:inbox or tag:draft))";
         moveNextIncl = query: "move next ${query}; move previous ${query}";
       in {
         enable = true;
