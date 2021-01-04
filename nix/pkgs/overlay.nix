@@ -31,4 +31,15 @@ final: prev: {
       rev = "6388a49e0f431d6d5fcbd152b8ae4fa8e87884ee";
     };
   };
+  wl-clipboard-x11 = with final; stdenv.mkDerivation rec {
+    name = "wl-clipboard-x11";
+    version = "5";
+    src = fetchFromGitHub {
+      owner = "brunelli";
+      repo = "wl-clipboard-x11";
+      rev = "v${version}";
+      sha256 = "sha256-i+oF1Mu72O5WPTWzqsvo4l2CERWWp4Jq/U0DffPZ8vg=";
+    };
+    makeFlags = [ "PREFIX=$(out)" ];
+  };
 }
