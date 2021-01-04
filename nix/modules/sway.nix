@@ -14,7 +14,9 @@ in {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
       };
-      home.packages = with pkgs; [ sway mako slurp grim wdisplays wl-clipboard ];
+      home.packages = with pkgs; [
+        sway mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
+      ];
       xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
       xdg.configFile."sway/config".source = util.fetchDotfile "etc/sway/config";
 
