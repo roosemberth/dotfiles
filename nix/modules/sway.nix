@@ -10,6 +10,8 @@ in {
     };
 
     roos.gConfig = {
+      gtk.enable = true;
+      gtk.gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
       home.sessionVariables = {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
