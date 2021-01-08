@@ -13,6 +13,7 @@ in {
     ./Minerva-static.nix
     ./containers/databases.nix
     ./containers/named.nix
+    ./containers/cabillaud-mysql.nix
     networkDnsConfig
   ];
 
