@@ -110,6 +110,7 @@ in
     };
   in {
     "home" = mkCfg "/home";
+    "roos-home" = userCfg "roosemberth" "/home/roosemberth";
     "roos-var" = userCfg "roosemberth" "/home/roosemberth/.local/var";
     "roos-ws" = userCfg "roosemberth" "/home/roosemberth/ws";
     "roos-ws-platforms" = userCfg "roosemberth" "/home/roosemberth/ws/2-Platforms";
