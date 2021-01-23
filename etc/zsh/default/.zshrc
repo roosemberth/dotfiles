@@ -151,8 +151,6 @@ setopt prompt_subst  # Allow substitutions as part of prompt format string
 setopt pushd_silent
 setopt pushd_to_home
 setopt sh_word_split  # Handle IFS as SH
-
-unsetopt bang_hist  # Don't expand history elements with '!' character
 # }}}
 
 # -----------------------------------------------------------------------------
