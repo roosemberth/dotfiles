@@ -20,7 +20,7 @@ in {
     services.nginx.virtualHosts."${cfg.host}" = {
       root = cfg.directory;
       locations."/".extraConfig = "return 307 /public/;";
-      locations."/public".extraConfig = "autoindex on;";
+      locations."^~ /public".extraConfig = "autoindex on;";
       locations."~ ^/(.+?)/(.*)$".extraConfig = ''
         alias ${cfg.directory}/usr/$1/$2;
         autoindex on;
