@@ -2,19 +2,6 @@
 let
   usersWithProfiles =
     flatten (with config.roos.user-profiles; [ graphical reduced simple ]);
-  pinentry' = let
-    # Disable GNOME secrets integration...
-    mypinentry = pkgs.pinentry.override({ libsecret = null; });
-    pinentry-curses = getOutput "curses" mypinentry;
-    pinentry-gtk2   = getOutput "gtk2"   mypinentry;
-  in pkgs.writeShellScriptBin "pinentry" ''
-    if [[ "$XDG_SESSION_TYPE" == "wayland" || "$XDG_SESSION_TYPE" = "x11" ]]; then
-      exec ${pinentry-gtk2}/bin/pinentry-gtk-2 "$@"
-    else
-      ${pkgs.ncurses}/bin/reset
-      exec ${pinentry-curses}/bin/pinentry-curses "$@"
-    fi
-  '';
 in
 {
   config = mkIf (elem "roosemberth" usersWithProfiles) {
@@ -72,14 +59,9 @@ in
     roos.gConfig = {
       home.packages = (with pkgs; [
         brightnessctl
-        firefox
-        epiphany
-        gnome3.gucharmap
         gnome3.adwaita-icon-theme
         gtk3  # gtk-launch
-        pinentry'
         tdesktop
-        x11_ssh_askpass
       ]);
     };
 

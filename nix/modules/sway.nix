@@ -1,6 +1,19 @@
 { config, pkgs, lib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
+  pinentry' = let
+    # Disable GNOME secrets integration...
+    mypinentry = pkgs.pinentry.override({ libsecret = null; });
+    pinentry-curses = getOutput "curses" mypinentry;
+    pinentry-gtk2   = getOutput "gtk2"   mypinentry;
+  in pkgs.writeShellScriptBin "pinentry" ''
+    if [[ "$XDG_SESSION_TYPE" == "wayland" || "$XDG_SESSION_TYPE" = "x11" ]]; then
+      exec ${pinentry-gtk2}/bin/pinentry-gtk-2 "$@"
+    else
+      ${pkgs.ncurses}/bin/reset
+      exec ${pinentry-curses}/bin/pinentry-curses "$@"
+    fi
+  '';
 in {
   options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
@@ -17,7 +30,8 @@ in {
         QT_QPA_PLATFORM = "wayland-egl";
       };
       home.packages = with pkgs; [
-        sway mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
+        mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
+        pinentry' firefox epiphany x11_ssh_askpass
       ];
       xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
       xdg.configFile."sway/config".source = util.fetchDotfile "etc/sway/config";
