@@ -80,6 +80,10 @@ in {
     config = {
       packageOverrides = p: {
         vaapiIntel = p.vaapiIntel.override { enableHybridCodec = true; };
+        firejail = assert p.firejail.version == "0.9.64.4";
+                   p.firejail.overrideAttrs(o: {
+          patches = (o.patches or []) ++ [ ./enable-overlayfs.patch ];
+        });
       };
     };
   };

@@ -1,0 +1,71 @@
+--- a/configure	2021-02-21 12:23:51.943552328 +0100
++++ b/configure	2021-02-21 12:33:31.771601651 +0100
+@@ -711,6 +711,7 @@
+ enable_analyzer
+ enable_apparmor
+ enable_dbusproxy
++enable_overlayfs
+ enable_usertmpfs
+ enable_man
+ enable_firetunnel
+@@ -1366,6 +1366,7 @@
+   --enable-analyzer       enable GCC 10 static analyzer
+   --enable-apparmor       enable apparmor
+   --disable-dbusproxy     disable dbus proxy
++  --disable-overlayfs     disable overlayfs
+   --disable-usertmpfs     disable tmpfs as regular user
+   --disable-man           disable man pages
+   --disable-firetunnel    disable firetunnel
+@@ -3531,13 +3533,19 @@
+ # overlayfs features temporarely disabled pending fixes
+ HAVE_OVERLAYFS=""
+ 
+-#
+-#AC_ARG_ENABLE([overlayfs],
+-#    AS_HELP_STRING([--disable-overlayfs], [disable overlayfs]))
+-#AS_IF([test "x$enable_overlayfs" != "xno"], [
+-#	HAVE_OVERLAYFS="-DHAVE_OVERLAYFS"
+-#	AC_SUBST(HAVE_OVERLAYFS)
+-#])
++# Roos override to enable overlayfs nonetheless after studing the related advisory.
++# https://unparalleled.eu/publications/2021/advisory-unpar-2021-0.txt
++# https://unparalleled.eu/blog/2021/20210208-rigged-race-against-firejail-for-local-root/
++# Check whether --enable-overlayfs was given.
++if test "${enable_overlayfs+set}" = set; then :
++  enableval=$enable_overlayfs;
++fi
++
++if test "x$enable_overlayfs" != "xno"; then :
++
++	HAVE_OVERLAYFS="-DHAVE_OVERLAYFS"
++
++fi
+ 
+ HAVE_USERTMPS=""
+ # Check whether --enable-usertmpfs was given.
+--- a/configure.ac	2021-02-21 12:34:16.163470990 +0100
++++ b/configure.ac	2021-02-21 12:34:18.826463204 +0100
+@@ -69,13 +69,16 @@
+ # overlayfs features temporarely disabled pending fixes
+ HAVE_OVERLAYFS=""
+ AC_SUBST(HAVE_OVERLAYFS)
+-#
+-#AC_ARG_ENABLE([overlayfs],
+-#    AS_HELP_STRING([--disable-overlayfs], [disable overlayfs]))
+-#AS_IF([test "x$enable_overlayfs" != "xno"], [
+-#	HAVE_OVERLAYFS="-DHAVE_OVERLAYFS"
+-#	AC_SUBST(HAVE_OVERLAYFS)
+-#])
++
++# Roos' override to enable overlayfs nonetheless after studing the related advisory.
++# https://unparalleled.eu/publications/2021/advisory-unpar-2021-0.txt
++# https://unparalleled.eu/blog/2021/20210208-rigged-race-against-firejail-for-local-root/
++AC_ARG_ENABLE([overlayfs],
++    AS_HELP_STRING([--disable-overlayfs], [disable overlayfs]))
++AS_IF([test "x$enable_overlayfs" != "xno"], [
++	HAVE_OVERLAYFS="-DHAVE_OVERLAYFS"
++	AC_SUBST(HAVE_OVERLAYFS)
++])
+ 
+ HAVE_USERTMPS=""
+ AC_ARG_ENABLE([usertmpfs],
