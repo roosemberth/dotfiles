@@ -31,7 +31,7 @@ in recursiveUpdate ({
   });
 
   network = import ./secrets/network.nix {};
-  users.roosemberth = import ./secrets/users/roosemberth.nix { inherit lib; };
+  users = import ./secrets/users/users.nix { inherit lib; };
   keyrings = genAttrs keyring-names (name: {
     inherit name;
     key = ./. + "/secrets/keyrings/${name}.asc";
