@@ -37,9 +37,9 @@
   }];
 
   users.mutableUsers = false;
-  users.extraUsers.roos.password = "roos";
-  users.extraUsers.roos.isNormalUser = true;
-  users.extraUsers.roos.extraGroups = ["wheel"];
+  users.users.roos.password = "roos";
+  users.users.roos.isNormalUser = true;
+  users.users.roos.extraGroups = ["wheel"];
 
   virtualisation.qemu.options = [
     "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
