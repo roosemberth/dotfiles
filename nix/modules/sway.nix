@@ -60,5 +60,16 @@ in {
     };
 
     programs.sway.enable = true;
+    programs.sway.wrapperFeatures.gtk = true;
+    programs.sway.extraSessionCommands = ''
+      export MOZ_ENABLE_WAYLAND=1
+      export MOZ_USE_XINPUT2=1
+      export XDG_SESSION_TYPE=wayland
+      export XDG_CURRENT_DESKTOP=sway
+    '';
+    xdg.portal.enable = true;
+    xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+    xdg.portal.gtkUsePortal = true;
+    services.pipewire.enable = true;
   };
 }
