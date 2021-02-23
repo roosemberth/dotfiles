@@ -105,7 +105,7 @@ in {
 
       programs.mbsync.enable = true;
       programs.msmtp.enable = true;
-      programs.notmuch.enable = true;
+      programs.notmuch.enable = userCfg.accounts.email.accounts != {};
       programs.notmuch.hooks.postNew = "afew --tag --new";
       programs.notmuch.hooks.preNew = "mbsync --all";
       programs.notmuch.new.tags = [ "new" ];
