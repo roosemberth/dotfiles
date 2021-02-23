@@ -12,6 +12,7 @@ in {
   imports = [
     ../modules
     ./Mimir-static.nix
+    ./specialisations/Mimir.nix
     networkDnsConfig
   ];
 
