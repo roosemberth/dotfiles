@@ -23,6 +23,9 @@
   networking.useDHCP = false;
   networking.useNetworkd = true;
 
+  nix.package = pkgs.nixUnstable;
+  nix.trustedUsers = [ "roos" ];
+
   security.sudo.enable = true;
   security.sudo.wheelNeedsPassword = false;
 
