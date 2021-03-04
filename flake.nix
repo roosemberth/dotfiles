@@ -3,8 +3,9 @@
   inputs.home-manager.url =
     "github:nix-community/home-manager/release-20.09";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, home-manager }: let
+  outputs = flakes@{ self, nixpkgs, home-manager, flake-utils }: let
     defFlakeSystem = baseCfg: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ ... }: {
@@ -21,6 +22,8 @@
         nix.registry.nixpkgs.flake = nixpkgs;
       })];
     };
+    forAllSystems = fn: nixpkgs.lib.genAttrs flake-utils.lib.defaultSystems
+      (system: fn (import nixpkgs { inherit system; }));
   in {
     nixosConfigurations = {
       Mimir = defFlakeSystem ./nix/machines/Mimir.nix;
@@ -31,5 +34,15 @@
         imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
+    apps = with nixpkgs.lib; (forAllSystems (pkgs: let
+      toApp = name: drv: let host = removePrefix "vms/" name; in
+        { type = "app"; program = "${drv}/bin/run-${host}-vm"; };
+      isVm = name: _: hasPrefix "vms/" name;
+      vmApps = mapAttrs toApp (filterAttrs isVm self.packages."${pkgs.system}");
+    in vmApps));
+    packages = (forAllSystems (pkgs: flake-utils.lib.flattenTree {
+      vms = pkgs.lib.recurseIntoAttrs
+        (import ./nix/machines/vms.nix { inherit flakes pkgs; });
+    }));
   };
 }
