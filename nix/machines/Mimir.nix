@@ -4,8 +4,13 @@ let
   networkDnsConfig =
     { secrets, ... }:
     {
-      networking.networkmanager.insertNameservers =
-        with secrets.network.zksDNS; v6 ++ v4;
+      environment.etc."NetworkManager/dnsmasq.d/10-mimir-local.conf".text =
+        with secrets.network; with lib; let
+          dnsZones = map (p: p.name) allDnsZones;
+          dnsSrvs = zksDNS.v6 ++ zksDNS.v4;
+          cfgLine = net: ip: "server=/${net}/${ip}";
+        in concatStringsSep "\n" (crossLists cfgLine [dnsZones dnsSrvs]);
+      networking.networkmanager.dns = "dnsmasq";
       networking.search = with secrets.network.zksDNS; [ search "int.${search}" ];
     };
 in {
