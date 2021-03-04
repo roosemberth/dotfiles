@@ -124,6 +124,7 @@ in {
       home.packages = with pkgs; [ evince ];
       xdg.mimeApps.associations.added = {
         "application/pdf" = ["org.gnome.Evince.desktop"];
+        "image/png" = ["eog.desktop"];
       };
     };
   };
