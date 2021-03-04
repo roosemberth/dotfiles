@@ -45,6 +45,9 @@
     services.udev.extraRules = ''
       # Remarkable tablet upload mode (I.MX6)
       ACTION=="add",ATTRS{idProduct}=="0063",ATTRS{idVendor}=="15a2",MODE="0666"
+      # Remarkable RNDIS mode
+      ACTION=="add",SUBSYSTEM=="net",SUBSYSTEM=="usb",ATTRS{idProduct}=="4010",ATTRS{idVendor}=="04b3",NAME="reMarkable"
+
       # Have usb tty devices accesible
       ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
       # ESP8266 D1-mini

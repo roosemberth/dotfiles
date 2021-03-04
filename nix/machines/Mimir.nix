@@ -139,6 +139,11 @@ in {
       '';
     };
     tlp.enable = true;
+    udev.extraHwdb = ''
+      evdev:input:b0018v056Ap0000*
+       EVDEV_ABS_00=::20
+       EVDEV_ABS_01=::20
+    '';
     udev.extraRules = ''
       # Rename built-in interface with proprietary connector
       SUBSYSTEM=="net",ACTION=="add",KERNEL=="enp0s31f6",NAME="useless"
