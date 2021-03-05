@@ -80,6 +80,8 @@ in {
     '';
     package = pkgs.nixUnstable;
     trustedUsers = [ "roosemberth" ];
+    # Is this a good idea?
+    registry.df.flake.outPath = "/home/roosemberth/ws/1-Repositories/dotfiles";
   };
 
   nixpkgs = {
