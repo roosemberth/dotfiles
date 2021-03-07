@@ -1,7 +1,6 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
-  inputs.home-manager.url =
-    "github:nix-community/home-manager/release-20.09";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+  inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 

@@ -48,14 +48,6 @@ in {
     pulseaudio.enable = true;
     pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
     pulseaudio.package = pkgs.pulseaudioFull;
-    # This can be removed when PulseAudio is at least version 14
-    # https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_7)#Audio
-    pulseaudio.extraConfig =
-      assert lib.versionOlder config.hardware.pulseaudio.package.version "14";
-    ''
-      load-module module-alsa-sink   device=hw:0,0 channels=4
-      load-module module-alsa-source device=hw:0,6 channels=4
-    '';
 
     cpu.intel.updateMicrocode = true;
 

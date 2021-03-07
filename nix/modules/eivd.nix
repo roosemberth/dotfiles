@@ -23,8 +23,8 @@
     roos.sConfig = {
       home.packages = with pkgs; [
         # POO1
-        (maven.override { jdk = openjdk14; })
-        openjdk14
+        maven
+        openjdk
       ];
     };
 
