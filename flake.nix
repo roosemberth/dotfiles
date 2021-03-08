@@ -8,6 +8,7 @@
     defFlakeSystem = baseCfg: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ ... }: {
+        _module.args.hmlib = home-manager.lib.hm;
         imports = [
           baseCfg
           home-manager.nixosModules.home-manager

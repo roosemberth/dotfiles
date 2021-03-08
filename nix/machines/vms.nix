@@ -3,6 +3,7 @@ let
   mkVm = hostname: configuration: (flakes.nixpkgs.lib.nixosSystem {
     system = pkgs.system;
     modules = [({ ... }: {
+      _module.args.hmlib = flakes.home-manager.lib.hm;
       imports = [
         ./tests/base.nix
         flakes.home-manager.nixosModules.home-manager
