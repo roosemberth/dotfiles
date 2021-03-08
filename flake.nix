@@ -14,6 +14,8 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules =
+              (import ./nix/home-manager {}).allModules;
           }
         ];
         # Let 'nixos-version --json' know the Git revision of this flake.

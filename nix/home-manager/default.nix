@@ -1,0 +1,6 @@
+{ ... }:
+{
+  allModules = [
+    ./test-module.nix
+  ];
+}

@@ -12,6 +12,7 @@ let
       networking.hostName = hostname;
       services.sshd.enable = true;
       networking.firewall.enable = false;
+      home-manager.sharedModules = (import ../home-manager {}).allModules;
     })];
   }).config.system.build.vm;
 in {
@@ -28,13 +29,6 @@ in {
     };
     home-manager.users.roos.home.stateVersion = "20.09";
     home-manager.users.roos.systemd.user.startServices = true;
-    home-manager.users.roos.systemd.user.services.foo-test = {
-      Service.ExecStart = let
-        script = pkgs.writeShellScript "foo-test"
-        "echo 'User process ran' | ${pkgs.systemd}/bin/systemd-cat";
-      in "${script}";
-      Service.RemainAfterExit = true;
-      Install.WantedBy = [ "default.target" ];
-    };
+    home-manager.users.roos.programs.test-service.enable = true;
   };
 }
