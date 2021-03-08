@@ -16,6 +16,25 @@ let
   }).config.system.build.vm;
 in {
   foo = mkVm "foo" {
-    virtualisation.enableGraphics = true;
+    systemd.services.enable-roos-linger = {
+      after = [ "systemd-logind.service" ];
+      bindsTo = [ "systemd-logind.service" ];
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.systemd}/bin/loginctl enable-linger roos";
+      };
+    };
+    home-manager.users.roos.home.stateVersion = "20.09";
+    home-manager.users.roos.systemd.user.startServices = true;
+    home-manager.users.roos.systemd.user.services.foo-test = {
+      Service.ExecStart = let
+        script = pkgs.writeShellScript "foo-test"
+        "echo 'User process ran' | ${pkgs.systemd}/bin/systemd-cat";
+      in "${script}";
+      Service.RemainAfterExit = true;
+      Install.WantedBy = [ "default.target" ];
+    };
   };
 }
