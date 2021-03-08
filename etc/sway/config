@@ -56,7 +56,8 @@ bindsym $mod+v          exec mpv "$(wl-paste)" --load-unsafe-playlists \
 bindsym $mod+Return         exec alacritty -e tmux
 bindsym $mod+Return+Control exec\
   OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER\
-  alacritty -d 120 10 --class launcher -e zsh
+  alacritty -o window.dimensions.columns=120 -o window.dimensions.lines=10\
+  --class launcher -e zsh
 bindsym $mod+Return+Shift   exec alacritty
 
 ## Services
