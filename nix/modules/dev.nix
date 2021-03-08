@@ -16,7 +16,6 @@
         QuickCheck
         aeson
         generic-arbitrary
-        haskell-language-server
         optparse-applicative
         parsec
         protolude
@@ -24,6 +23,7 @@
         yaml
       ]))
       haskellPackages.fast-tags
+      haskell-language-server
       stack
       # Node
       nodejs
