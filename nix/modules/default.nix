@@ -19,6 +19,8 @@ in {
   # Restricted evaluation doesn't like getDir.
   imports = [
     sourceHmEnv
+    # FIXME: This is horrible, I should find a way to remove it
+    ({ secrets, ... }: { home-manager.extraSpecialArgs.secrets = secrets; })
     ./agenda.nix
     ./base.nix
     ./dev.nix
