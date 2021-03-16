@@ -47,6 +47,8 @@
       ACTION=="add",ATTRS{idProduct}=="0063",ATTRS{idVendor}=="15a2",MODE="0666"
       # Have usb tty devices accesible
       ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
+      # ESP8266 D1-mini
+      ACTION=="add",ATTRS{idProduct}=="1a86",ATTRS{idVendor}=="7523",MODE="0666"
     '';
   };
 }
