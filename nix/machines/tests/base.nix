@@ -3,6 +3,12 @@
   imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
 
   options.virtualisation.enableGraphics = lib.mkEnableOption "Graphics support";
+  options.virtualisation.configureNetwork = lib.mkOption {
+    description = "Whether to configure VM network services";
+    default = true;
+    type = lib.types.bool;
+  };
+
   config = {
     boot.loader.grub = {
       enable = true;
@@ -10,6 +16,7 @@
       efiInstallAsRemovable = true;
       device = "nodev";
     };
+
     environment.etc."systemd/network/00-random-mac.link".text = ''
       [Match]
       OriginalName=*
@@ -21,10 +28,12 @@
     fileSystems."/boot" = { fsType = "vfat"; device = "/dev/sda1"; };
     fileSystems."/".device = "/dev/sda2";
 
-    networking.firewall.allowedUDPPorts = [ 5355 ];
-    networking.interfaces.eth0.useDHCP = true;
-    networking.useDHCP = false;
-    networking.useNetworkd = true;
+    networking = lib.mkIf config.virtualisation.configureNetwork {
+      firewall.allowedUDPPorts = [ 5355 ];
+      interfaces.eth0.useDHCP = true;
+      useDHCP = false;
+      useNetworkd = true;
+    };
 
     nix.package = pkgs.nixUnstable;
     nix.trustedUsers = [ "roos" ];
