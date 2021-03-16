@@ -26,9 +26,7 @@ in recursiveUpdate ({
       in lib.genAttrs keys (key: path + "/${key}");
       wireguard = wireguardSecrets hostname;
     };
-  }) (attrByPath [hostname] {} {
-    # Azulejo.foo.bar = 5;  # This will add `foo.bar` for Azulejo
-  });
+  }) (attrByPath [hostname] {} opaque.secrets.hosts);
 
   network = import ./secrets/network.nix {};
   users = import ./secrets/users/users.nix { inherit lib; };
