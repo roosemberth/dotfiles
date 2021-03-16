@@ -33,7 +33,7 @@
     security.sudo.wheelNeedsPassword = false;
 
     services.journald.console = "/dev/ttyS0";
-    services.mingetty.autologinUser = "roos";
+    services.getty.autologinUser = "roos";
     systemd.coredump.enable = true;
     security.pam.loginLimits = [{
       domain = "*"; item = "core"; type = "-"; value = "-1";
