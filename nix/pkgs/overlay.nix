@@ -2,6 +2,7 @@ final: prev: {
   mfgtools = final.callPackage ./mfgtools { };
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
+  pass-keyrings = final.callPackage ./pass-keyring.nix { };
   matrix-federation-tester = with final; buildGoModule rec {
     pname = "matrix-federation-tester";
     version = "0.2";
