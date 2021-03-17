@@ -58,8 +58,6 @@ in {
 
   networking.hostName = "Mimir";
   networking.networkmanager.enable = true;
-  networking.networkmanager.packages =
-    with pkgs.gnome3; [ networkmanager-openconnect ];
 
   nix = {
     binaryCaches = [
