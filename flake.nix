@@ -46,5 +46,8 @@
       vms = pkgs.lib.recurseIntoAttrs
         (import ./nix/machines/vms.nix { inherit flakes pkgs; });
     }));
+    templates.generic.path = ./nix/flake-templates/generic;
+    templates.generic.description = "Generic template for my projects.";
+    defaultTemplate = self.templates.generic;
   };
 }
