@@ -21,11 +21,6 @@ in {
     networkDnsConfig
   ];
 
-  # This can be removed when the default kernel is at least version 5.6
-  # https://github.com/NixOS/nixpkgs/pull/86168
-  boot.kernelPackages = assert lib.versionOlder pkgs.linux.version "5.6";
-    (lib.mkDefault pkgs.linuxPackages_latest);
-
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
