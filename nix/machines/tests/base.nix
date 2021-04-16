@@ -37,6 +37,7 @@
 
     nix.package = pkgs.nixUnstable;
     nix.trustedUsers = [ "roos" ];
+    nix.extraOptions = "experimental-features = nix-command flakes";
 
     security.sudo.enable = true;
     security.sudo.wheelNeedsPassword = false;

@@ -11,6 +11,7 @@ let
         configuration
       ];
       networking.hostName = hostname;
+      nix.registry.nixpkgs.flake = flakes.nixpkgs;
       services.sshd.enable = true;
       networking.firewall.enable = false;
       home-manager.sharedModules = (import ../home-manager {}).allModules;
