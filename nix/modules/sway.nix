@@ -31,7 +31,8 @@ in {
       };
       home.packages = with pkgs; [
         mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
-        pinentry' firefox epiphany x11_ssh_askpass
+        pinentry' firefox-wayland epiphany x11_ssh_askpass
+        adwaita-qt pulseaudio wireplumber
       ];
       xdg.configFile."mako/config".source = util.fetchDotfile "etc/mako/config";
       xdg.configFile."sway/config".source = util.fetchDotfile "etc/sway/config";
