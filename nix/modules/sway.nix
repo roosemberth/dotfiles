@@ -25,9 +25,15 @@ in {
     roos.gConfig = {
       gtk.enable = true;
       gtk.gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+      qt.enable = true;
+      qt.platformTheme = "gtk";
+      qt.style.name = "adwaita-dark";
       home.sessionVariables = {
         MOZ_ENABLE_WAYLAND = 1;
         QT_QPA_PLATFORM = "wayland-egl";
+        QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
+        SDL_VIDEODRIVER = "wayland";
+        _JAVA_AWT_WM_NONREPARENTING = 1;
       };
       home.packages = with pkgs; [
         mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
