@@ -40,15 +40,14 @@ in {
   hardware = {
     bluetooth.enable = true;
     bluetooth.package = pkgs.bluezFull;
-    pulseaudio.enable = true;
-    pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
-    pulseaudio.package = pkgs.pulseaudioFull;
 
     cpu.intel.updateMicrocode = true;
 
     opengl.enable = true;
     opengl.extraPackages = with pkgs;
       [ vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver ];
+
+    pulseaudio.enable = false;
   };
 
   networking.hostName = "Mimir";
@@ -123,6 +122,31 @@ in {
     };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+
+    pipewire = {
+      pulse.enable = true;
+      jack.enable = true;
+      alsa.enable = true;
+      media-session.enable = true;
+      media-session.config.bluez-monitor.rules = [
+        { # Matches all bluetooth cards
+          matches = [ { "device.name" = "~bluez_card.*"; } ];
+          actions."update-props" = {
+            "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+            # mSBC is not expected to work on all headset + adapter combinations.
+            "bluez5.msbc-support" = true;
+          };
+        }
+        {
+          actions."node.pause-on-idle" = false;
+          matches = [
+            { "node.name" = "~bluez_input.*"; }
+            { "node.name" = "~bluez_output.*"; }
+          ];
+        }
+      ];
+    };
+
     postgresql = {
       enable = true;
       enableTCPIP = true;
