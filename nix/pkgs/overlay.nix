@@ -59,4 +59,28 @@ final: prev: {
       rev = "44c96b6c4924fe0e1d15a43fdf7a19f728a0f3d2";
     };
   };
+
+  jack-mixer = with final; python3.pkgs.buildPythonApplication {
+    name = "jack-mixer";
+    version = "release-16";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/jack-mixer/jack_mixer/releases/download/release-16/jack_mixer-16.tar.xz";
+      hash = "sha256-yVNc9gbhU04ibh4LwAU2vHCfgINfpEYwqmfcSAxgnfk=";
+    };
+
+    format = "other";
+
+    patchPhase = "sed '/add_install_script/d' -i meson.build";
+    hardeningDisable = [ "format" ];
+
+    buildInputs = with pkgs; [ libjack2 glib python3 ];
+    nativeBuildInputs = with pkgs; [
+      meson ninja pkgconfig wrapGAppsHook python3.pkgs.docutils gettextWithExpat
+    ];
+
+    propagatedBuildInputs = with python3.pkgs; [
+      pygobject3 pycairo xdg gtk3 gobject-introspection
+    ];
+  };
 }
