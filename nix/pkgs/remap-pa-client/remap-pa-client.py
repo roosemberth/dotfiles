@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from contextlib import contextmanager
-from pulsectl.pulsectl import Pulse, PulseClientInfo, PulseCardInfo
 from pathlib import Path
+from pulsectl.pulsectl import Pulse, PulseClientInfo, PulseCardInfo
+from typing import Iterable
 import os
 import subprocess
 import tempfile
@@ -24,6 +25,22 @@ def tmp_file_pair():
         os.rmdir(tmpdir)
 
 
+def ask_choice_alacritty_fzf(choices: Iterable[str]) -> str:
+    with tmp_file_pair() as (f1, f2):
+        Path(f1).write_text("\n".join(choices))
+        cmd = [
+            "alacritty",
+            "--class",
+            "launcher",
+            "-e",
+            "sh",
+            "-c",
+            "cat " + f1 + " | fzf --reverse > " + f2,
+        ]
+        subprocess.run(cmd)
+        return Path(f2).read_text()
+
+
 def displaySwitcherAndRedirect(pa: Pulse, pid: int) -> str:
     """Display a window for the user to pick an audio sink to move the pid to.
 
@@ -40,33 +57,29 @@ def displaySwitcherAndRedirect(pa: Pulse, pid: int) -> str:
             return False
         return clt.proplist["application.process.id"] == str(pid)
 
-    filtered = [clt for clt in pa.client_list() if filter_client_with_pid(clt)]
-    if not filtered:
-        return "Could not find the sink input to move."
-    target_client_id = filtered[0].index
+    clients = [clt for clt in pa.client_list() if clt.name != pa.name]
+    if not clients:
+        return "No pulseaudio clients were found"
 
-    sinks_lines  = [str(s.index) + " " + s.description for s in pa.sink_list()]
+    filtered = [clt for clt in clients if filter_client_with_pid(clt)]
+    if filtered:
+        target_client_id = filtered[0].index
+    else:
+        clients_lines = [str(clt.index) + " " + clt.name for clt in clients]
+        target_client = ask_choice_alacritty_fzf(clients_lines)
+        if not target_client:
+            return "Could not find client to move and user failed to choose one."
+        target_client_id = int(target_client.split(" ")[0])
+
+    sinks_lines = [str(s.index) + " " + s.description for s in pa.sink_list()]
     sinks_lines.reverse()  # Empirically more useful...
 
-    with tmp_file_pair() as (f1, f2):
-        print(sinks_lines)
-        Path(f1).write_text("\n".join(sinks_lines))
-        cmd = [
-            "alacritty",
-            "--class",
-            "launcher",
-            "-e",
-            "sh",
-            "-c",
-            "cat " + f1 + " | fzf --reverse > " + f2,
-        ]
-        subprocess.run(cmd)
-        outs = Path(f2).read_text().split(' ')
+    target_sink = ask_choice_alacritty_fzf(sinks_lines)
 
-    if not outs:
+    if not target_sink:
         return "The user did not choose any sink."
 
-    target_sink_id = int(outs[0])
+    target_sink_id = int(target_sink.split(" ")[0])
     print("Moving to " + str(target_sink_id))
 
     sink_inputs_to_redirect = [
