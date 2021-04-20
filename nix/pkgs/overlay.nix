@@ -83,4 +83,17 @@ final: prev: {
       pygobject3 pycairo xdg gtk3 gobject-introspection
     ];
   };
+  remap-pa-client = with final; python3.pkgs.buildPythonApplication {
+    pname = "remap-pa-client";
+    version = "0.0";
+    src = ./remap-pa-client/remap-pa-client.py;
+    dontUnpack = true;
+    format = "other";
+    propagatedBuildInputs = [ python3.pkgs.pulsectl jq alacritty fzf sway ];
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src "$out/bin/remap-pa-client"
+      chmod +x "$out/bin/remap-pa-client"
+    '';
+  };
 }
