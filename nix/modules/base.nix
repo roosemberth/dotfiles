@@ -1,10 +1,6 @@
 { config, pkgs, lib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
-  neovim' = pkgs.neovim.override {
-    vimAlias = true;
-    extraPython3Packages = p: with p; [ tasklib ];
-  };
 in
 {
   options.roos.baseConfig.enable = mkEnableOption "Arbitrary base configuration.";
@@ -63,6 +59,7 @@ in
         posix_man_pages man-pages
         python3 python3Packages.ipython glances
       ];
+      programs.vim-roos.enable = true;
 
       xdg = {
         mime.enable = true;
@@ -79,7 +76,7 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      cacert curl hdparm htop iotop neovim' wget exfat nfsUtils
+      cacert curl hdparm htop iotop wget exfat nfsUtils
       fzf
     ];
 
