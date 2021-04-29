@@ -16,8 +16,11 @@ in {
         enable = true;
         enableTCPIP = true;
         authentication = ''
-          local all all              trust
-          host  all all 10.13.0.1/16 md5
+          local all all               trust
+          # Site network
+          host  all all 10.13.0.1/16  md5
+          # ipv4 containers on this host
+          host  all all 10.231.0.0/16 md5
         '';
         settings.log_connections = true;
       };
