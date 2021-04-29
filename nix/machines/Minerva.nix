@@ -18,10 +18,6 @@ in {
     networkDnsConfig
   ];
 
-  # btrfs xxhash support requires >=5.5
-  boot.kernelPackages = assert lib.versionOlder pkgs.linux.version "5.6";
-    (lib.mkDefault pkgs.linuxPackages_latest);
-
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernelModules = [ "kvm-intel" ];
