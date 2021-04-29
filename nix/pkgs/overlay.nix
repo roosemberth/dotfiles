@@ -97,4 +97,5 @@ final: prev: {
     '';
   };
   nvim-roos = final.callPackage ./nvim-roos {};
+  mopidy-roos = final.callPackage ./mopidy {};
 }

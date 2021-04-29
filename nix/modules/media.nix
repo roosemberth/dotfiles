@@ -1,25 +1,13 @@
 { config, pkgs, lib, secrets, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
-  mopidy' = with pkgs; buildEnv {
-    name = "mopidy-with-extensions-${mopidy.version}";
-    paths = lib.closePropagation (with pkgs.mopidyPackages; [
-      mopidy-spotify mopidy-iris mopidy-mpd mopidy-local
-    ]);
-    pathsToLink = [ "/${python3.sitePackages}" ];
-    buildInputs = [ makeWrapper ];
-    postBuild = ''
-      makeWrapper ${mopidy}/bin/mopidy $out/bin/mopidy \
-      --prefix PYTHONPATH : $out/${python3.sitePackages}
-    '';
-  };
 in
 {
   options.roos.media.enable = mkEnableOption "Enable media suite.";
 
   config = mkIf config.roos.media.enable {
     roos.sConfigFn = userCfg: {
-      home.packages = with pkgs; [ mopidy' beets ];
+      home.packages = with pkgs; [ mopidy-roos beets ];
 
       home.file."Media/Music/.keep".text = ""; # Placeholder
       xdg.configFile."beets/config.yaml".source =
@@ -53,7 +41,8 @@ in
         Unit.After = [ "network.target" "sound.target" ];
         Unit.Description = "Mopidy daemon";
         Unit.Conflicts = [ "mpd.service" ];
-        Service.ExecStart = "${mopidy'}/bin/mopidy --config ${configPath}";
+        Service.ExecStart =
+          "${pkgs.mopidy-roos}/bin/mopidy --config ${configPath}";
       };
 
       # MPD configuration
