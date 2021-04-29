@@ -3,6 +3,8 @@
 , lib
 , vimPlugins
 , vimUtils
+, nix
+, nixUnstable
 , ...
 }: let
   Mark = vimUtils.buildVimPluginFrom2Nix {
@@ -59,6 +61,15 @@
       hash = "sha256-6cOSF04+yWw0dTN9ybeRXl7KEc+Gx57IcG045dRXKLI=";
     };
     meta.homepage = "https://github.com/vim-scripts/deb.vim/";
+  };
+  mynix-tools = let
+    # Should stabilize once nix has been upgraded.
+    nix' = assert !lib.versionAtLeast nix.version "2.4"; nixUnstable;
+  in vimUtils.buildVimPluginFrom2Nix {
+    pname = "nix-edit";
+    version = "0.0";
+    src = ./mynix-tools;
+    propagatedBuildInputs = [ nix' ];
   };
 in neovim.override {
   vimAlias = true;
@@ -124,6 +135,7 @@ in neovim.override {
         vim-markdown
         vim-nix
         vimtex
+        mynix-tools
 
       # Ideally, I would like to load coc & friends on-demand...
       #];
