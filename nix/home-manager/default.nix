@@ -3,6 +3,6 @@
   allModules = [
     ./test-module.nix
     ./email-gateway.nix
-    ./vim
+    ./vim-roos.nix
   ];
 }

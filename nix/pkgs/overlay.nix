@@ -96,4 +96,5 @@ final: prev: {
       chmod +x "$out/bin/remap-pa-client"
     '';
   };
+  nvim-roos = final.callPackage ./nvim-roos {};
 }
