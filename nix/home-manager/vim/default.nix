@@ -112,6 +112,7 @@ let
           Improved-AnsiEsc
           ale
           arduino-syntax-file
+          dart-vim-plugin
           deb
           deorise-nvim
           plantuml-syntax
