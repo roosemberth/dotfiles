@@ -15,6 +15,7 @@ in {
     ./containers/named.nix
     ./containers/cabillaud-mysql.nix
     ./containers/greenzz.nix
+    ./containers/matrix.nix
     networkDnsConfig
   ];
 
