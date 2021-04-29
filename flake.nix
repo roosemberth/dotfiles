@@ -18,6 +18,7 @@
             home-manager.useUserPackages = true;
             home-manager.sharedModules =
               (import ./nix/home-manager {}).allModules;
+            nixpkgs.overlays = [ self.overlay ];
           }
         ];
         # Let 'nixos-version --json' know the Git revision of this flake.
@@ -28,7 +29,7 @@
       })];
     };
     forAllSystems = fn: nixpkgs.lib.genAttrs flake-utils.lib.defaultSystems
-      (system: fn (import nixpkgs { inherit system; }));
+      (sys: fn (import nixpkgs { system = sys; overlays = [ self.overlay ]; }));
   in {
     nixosConfigurations = {
       Mimir = defFlakeSystem ./nix/machines/Mimir.nix;
@@ -45,10 +46,14 @@
       isVm = name: _: hasPrefix "vms/" name;
       vmApps = mapAttrs toApp (filterAttrs isVm self.packages."${pkgs.system}");
     in vmApps));
+
+    overlay = import ./nix/pkgs/overlay.nix;
+
     packages = (forAllSystems (pkgs: flake-utils.lib.flattenTree {
       vms = pkgs.lib.recurseIntoAttrs
         (import ./nix/machines/vms.nix { inherit flakes pkgs; });
-    }));
+    } // (with nixpkgs.lib; getAttrs (attrNames (self.overlay {} {})) pkgs)));
+
     templates.generic.path = ./nix/flake-templates/generic;
     templates.generic.description = "Generic template for my projects.";
     defaultTemplate = self.templates.generic;

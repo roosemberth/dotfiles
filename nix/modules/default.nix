@@ -28,7 +28,6 @@ in {
     ./keyring.nix
     ./media.nix
     ./nginx-fileshare.nix
-    ./overlays.nix
     ./steam.nix
     ./sway.nix
     ./unfree.nix
