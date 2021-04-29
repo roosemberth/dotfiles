@@ -54,6 +54,7 @@ in {
   services = {
     logind.lidSwitch = "ignore";
     logind.extraConfig = ''HandlePowerKey="ignore"'';
+    netdata.enable = true;
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     resolved.dnssec = "false";  # The named container DNS does not provide DNSSEC.
