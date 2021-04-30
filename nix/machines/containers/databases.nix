@@ -49,8 +49,6 @@ in {
   };
 
   networking.firewall.allowedTCPPorts = [ 39425 ];
-  networking.search = with secrets.network.zksDNS; [ search ];
-  networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
 
   systemd.services.postgresql-paths = {
     description = "Prepare paths used by PostgreSQL.";
