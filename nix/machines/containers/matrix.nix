@@ -5,7 +5,7 @@
     bindMounts.synapse-data.mountPoint = "/var/lib/matrix-synapse";
     bindMounts.synapse-data.isReadOnly = false;
     config = {
-      networking.firewall.allowedTCPPorts = [ 8448 ];
+      networking.firewall.allowedTCPPorts = [ 8448 9092 ];
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
@@ -30,7 +30,13 @@
           resources = [{ names = [ "client" "federation" ]; compress = true; }];
           tls = false;
           x_forwarded = true;
+        } {
+          port = 9092;
+          type = "metrics";
+          resources = [];
+          tls = false;
         }];
+        enable_metrics = true;
         max_upload_size = "100M";
         url_preview_enabled = true;
         report_stats = true;
@@ -52,6 +58,7 @@
     privateNetwork = true;
     forwardPorts = [
       { hostPort = 8448; protocol = "tcp"; }
+      { hostPort = 9092; protocol = "tcp"; }
     ];
   };
 
@@ -69,8 +76,11 @@
     iptables -A INPUT -s 10.231.136.4/32 -j LOG \
       --log-prefix "dropped restricted connection" --log-level 6
     iptables -A INPUT -s 10.231.136.4/32 -j DROP
-    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.255.5/32 -j ACCEPT
     # Allow access to the database
+    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.255.5/32 -j ACCEPT
+    # Allow replies from the metrics port
+    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.0.0/16 \
+      -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
     iptables -A FORWARD -s 10.231.136.4/32 -o ${exitIface} -j ACCEPT
     iptables -A FORWARD -s 10.231.136.4/32 -j LOG \
       --log-prefix "dropped restricted fwd connection" --log-level 6
