@@ -34,6 +34,9 @@
             "localhost:9100"
             "minerva.int:9100"
           ];}];
+        } {
+          job_name = "postgres";
+          static_configs = [{ targets = [ "minerva.int:9187" ];}];
         }];
       };
     };
