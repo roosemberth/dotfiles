@@ -59,6 +59,7 @@ in {
     netdata.enable = true;
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    prometheus.exporters.node.enable = true;
     resolved.dnssec = "false";  # The named container DNS does not provide DNSSEC.
     resolved.llmnr = "false";
     tlp.enable = true;
