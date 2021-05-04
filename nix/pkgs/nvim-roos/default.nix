@@ -84,7 +84,7 @@ in neovim.override {
     in lib.concatStringsSep "\n" (lib.filter (x: x != "") entries) + ''
       " Manually configured entries to use Plug's lazy load feature
       source ${vimPlugins.vim-plug.rtp}/plug.vim
-      call plug#begin('/dev/null')
+      call plug#begin(tempname())
 
       Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
       try " Do not load taskwiki if tasklib module is not installed.
