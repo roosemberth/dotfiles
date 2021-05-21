@@ -158,6 +158,7 @@ in {
       '';
     };
     tlp.enable = true;
+    power-profiles-daemon.enable = false;  # Conflicts with TLP
     udev.extraHwdb = ''
       evdev:input:b0018v056Ap0000*
        EVDEV_ABS_00=::20
