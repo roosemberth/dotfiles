@@ -98,4 +98,16 @@ final: prev: {
   };
   nvim-roos = final.callPackage ./nvim-roos {};
   mopidy-roos = final.callPackage ./mopidy {};
+  alot = assert final.lib.versionAtLeast "0.9.1" prev.alot.version;
+    prev.alot.overrideAttrs(o: {
+      version = "0.9.1-git";
+      src = final.fetchFromGitHub {
+        owner = "pazz";
+        repo = "alot";
+        rev = "a814a7744e0e7d98656980fcdae3ed712a299d8e";
+        hash = "sha256-UsWsWGr1zgY4KpSK9bgzXhW6fdqIWTa5A0kddxhyfAs=";
+      };
+      propagatedBuildInputs = o.propagatedBuildInputs or [] ++
+        (with prev.python3Packages; [notmuch2]);
+    });
 }
