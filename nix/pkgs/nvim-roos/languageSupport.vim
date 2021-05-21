@@ -28,6 +28,14 @@ autocmd User CocNvimInit call coc#config('languageserver',
   \  }
   \})
 
+autocmd User CocNvimInit call coc#config('coc.preferences.rootPatterns', [
+  \ 'pom.xml',
+  \ 'package.yaml', '.cabal',
+  \ 'pubspec.yaml',
+  \ 'setup.py',
+  \ '.git', '.lock',
+  \ ])
+
 if executable('haskell-language-server-wrapper')
   let g:ale_linters_ignore=
     \ { 'haskell': ['stack-build', 'ghc', 'stack_ghc']
