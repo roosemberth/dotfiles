@@ -40,6 +40,9 @@
         max_upload_size = "100M";
         url_preview_enabled = true;
         report_stats = true;
+        extraConfig = assert pkgs.matrix-synapse.version == "1.34.0"; ''
+          experimental_features: { spaces_enabled: true }
+        '';
         inherit (secrets.matrix)
           turn_uris
           turn_shared_secret
