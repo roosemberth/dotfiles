@@ -53,6 +53,7 @@ in
         tig
         weechat
         xxd
+        gomuks
       ]);
     };
 
