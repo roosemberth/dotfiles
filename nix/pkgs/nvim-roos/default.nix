@@ -149,6 +149,8 @@ in neovim.override {
         coc-nvim
         coc-pyright
         coc-spell-checker
+        coc-tsserver
+        coc-eslint
       ];
     };
   };
