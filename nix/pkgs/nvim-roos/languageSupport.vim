@@ -88,7 +88,8 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 nnoremap <silent> I          :call CocAction('doHover')<CR>
-nnoremap <silent> <C-A>      :CocList actions<CR>
+nnoremap <silent> <leader>A  :CocList actions<CR>
+nnoremap <silent> <leader>C  :CocList commands<CR>
 
 " Markdown clipboard image
 au FileType markdown nnoremap <silent> <leader>p :execute '
