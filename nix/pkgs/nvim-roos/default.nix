@@ -71,87 +71,112 @@
     src = ./mynix-tools;
     propagatedBuildInputs = [ nix' ];
   };
-in neovim.override {
-  vimAlias = true;
-  extraPython3Packages = p: with p; [ tasklib ];
-  configure = {
-    customRC = let
-      entries = map builtins.readFile [
+
+  essentialPlugins = with vimPlugins; {
+    start = [
+      # Visuals
+      Mark
+      traces-vim
+      vim-airline
+      vim-css-color
+      vim-gruvbox8
+      vim-highlightedyank
+      # Integrations
+      ack-vim
+      md-img-paste-vim
+      ranger-vim
+      vim-dispatch
+      vim-fugitive
+      vim-gitgutter
+      vim-tbone
+      # Behaviour
+      fzf-vim
+      nvim-autopairs
+      quickfix-reflector-vim
+      vim-easy-align
+      vim-surround
+    ];
+  };
+
+  languageSupportPlugins = with vimPlugins; {
+    start = [
+      Improved-AnsiEsc
+      ale
+      arduino-syntax-file
+      dart-vim-plugin
+      deb
+      deorise-nvim
+      plantuml-syntax
+      vim-clang-format
+      vim-markdown
+      vim-nix
+      vimtex
+      mynix-tools
+    # Ideally, I would like to load coc & friends on-demand...
+    #];
+    #opt = [
+      coc-clangd
+      coc-clangd
+      coc-java
+      coc-json
+      coc-markdownlint
+      coc-nvim
+      coc-pyright
+      coc-spell-checker
+      coc-tsserver
+      coc-eslint
+    ];
+  };
+
+  composeConfig = files: let
+    entries = map builtins.readFile files;
+  in lib.concatStringsSep "\n" (lib.filter (x: x != "") entries);
+
+  mkPlugSection = contents: ''
+    " Manually configured entries to use Plug's lazy load feature
+    source ${vimPlugins.vim-plug.rtp}/plug.vim
+    call plug#begin(tempname())
+
+    ${contents}
+
+    call plug#end()
+  '';
+
+in {
+  core = neovim.override {
+    vimAlias = true;
+    configure.customRC = composeConfig [./core.vim] + mkPlugSection "";
+  };
+
+  essential = neovim.override {
+    vimAlias = true;
+    configure = {
+      customRC = composeConfig [
+        ./core.vim
+        ./essentials.vim
+      ] + mkPlugSection "";
+      packages.essentials = essentialPlugins;
+    };
+  };
+
+  full = neovim.override {
+    vimAlias = true;
+    extraPython3Packages = p: with p; [ tasklib ];
+    configure = {
+      customRC = composeConfig [
         ./core.vim
         ./essentials.vim
         ./languageSupport.vim
-      ];
-    in lib.concatStringsSep "\n" (lib.filter (x: x != "") entries) + ''
-      " Manually configured entries to use Plug's lazy load feature
-      source ${vimPlugins.vim-plug.rtp}/plug.vim
-      call plug#begin(tempname())
-
-      Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
-      try " Do not load taskwiki if tasklib module is not installed.
+      ] + mkPlugSection ''
+        Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
+        try " Do not load taskwiki if tasklib module is not installed.
         py3 import tasklib
         Plug '${vimPlugins.taskwiki.rtp}', { 'on': 'VimwikiIndex' }
-      catch
-      endtry
-
-      call plug#end()
-    '';
-    packages.essentials = with vimPlugins; {
-      start = [
-        # Visuals
-        Mark
-        traces-vim
-        vim-airline
-        vim-css-color
-        vim-gruvbox8
-        vim-highlightedyank
-
-        # Integrations
-        ack-vim
-        md-img-paste-vim
-        ranger-vim
-        vim-dispatch
-        vim-fugitive
-        vim-gitgutter
-        vim-tbone
-
-        # Behaviour
-        fzf-vim
-        nvim-autopairs
-        quickfix-reflector-vim
-        vim-easy-align
-        vim-surround
-      ];
-    };
-    packages.languageSupport = with vimPlugins; {
-      start = [
-        Improved-AnsiEsc
-        ale
-        arduino-syntax-file
-        dart-vim-plugin
-        deb
-        deorise-nvim
-        plantuml-syntax
-        vim-clang-format
-        vim-markdown
-        vim-nix
-        vimtex
-        mynix-tools
-
-      # Ideally, I would like to load coc & friends on-demand...
-      #];
-      #opt = [
-
-        coc-clangd
-        coc-clangd
-        coc-java
-        coc-json
-        coc-markdownlint
-        coc-nvim
-        coc-pyright
-        coc-spell-checker
-        coc-tsserver
-        coc-eslint
-      ];
+        catch
+        endtry
+      '';
+      packages.essentials = essentialPlugins;
+      packages.languageSupport = languageSupportPlugins;
     };
   };
 }

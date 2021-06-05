@@ -1,4 +1,6 @@
-final: prev: {
+final: prev: let
+  nvim = final.callPackage ./nvim-roos {};
+in {
   mfgtools = final.callPackage ./mfgtools { };
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
@@ -96,7 +98,9 @@ final: prev: {
       chmod +x "$out/bin/remap-pa-client"
     '';
   };
-  nvim-roos = final.callPackage ./nvim-roos {};
+  nvim-roos = nvim.full;
+  nvim-roos-bare = nvim.essential;
+  nvim-roos-core = nvim.core;
   mopidy-roos = final.callPackage ./mopidy {};
   alot = assert final.lib.versionAtLeast "0.9.1" prev.alot.version;
     prev.alot.overrideAttrs(o: {
