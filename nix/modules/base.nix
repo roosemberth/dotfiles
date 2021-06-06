@@ -28,7 +28,6 @@ in
         openssl
         tmux
         zsh-completions
-        nvim-roos-bare
       ]);
 
       home.sessionPath = [ "\$HOME/.local/bin" ];
