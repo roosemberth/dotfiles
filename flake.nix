@@ -1,11 +1,12 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
-  inputs.stable.url = "github:NixOS/nixpkgs/nixos-21.05";
+  inputs.nixpkgs-20_09.url = "github:NixOS/nixpkgs/nixos-20.09";
   inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.home-manager.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = flakes@{ self, nixpkgs, home-manager, flake-utils, stable }: let
+  outputs = flakes@{ self, nixpkgs, home-manager, flake-utils, nixpkgs-20_09 }:
+  let
     defFlakeSystem = baseCfg: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ ... }: {
@@ -25,7 +26,7 @@
         system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
         nix.registry.p.flake = nixpkgs;
         nix.registry.nixpkgs.flake = nixpkgs;
-        nix.registry.stable.flake = stable;
+        nix.registry.p2009.flake = nixpkgs-20_09;
       })];
     };
     forAllSystems = fn: nixpkgs.lib.genAttrs flake-utils.lib.defaultSystems
