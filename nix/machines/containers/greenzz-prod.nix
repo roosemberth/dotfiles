@@ -1,16 +1,23 @@
 { config, pkgs, secrets, ... }: let
   removeCIDR = ip: builtins.head (builtins.split "/" ip);
+  hostDataBase = "/mnt/cabinet/minerva-data";
 in {
   containers.greenzz-prod = {
     autoStart = true;
-    bindMounts.psql-data.hostPath = "/mnt/cabinet/minerva-data/greenzz-prod-psql";
+    bindMounts.psql-data.hostPath = "${hostDataBase}/greenzz-prod-psql";
     bindMounts.psql-data.mountPoint = "/var/lib/postgresql";
     bindMounts.psql-data.isReadOnly = false;
-    bindMounts.influxdb.hostPath = "/mnt/cabinet/minerva-data/greenzz-prod-influxdb";
+    bindMounts.influxdb.hostPath = "${hostDataBase}/greenzz-prod-influxdb";
     bindMounts.influxdb.mountPoint = "/var/db/influxdb";
     bindMounts.influxdb.isReadOnly = false;
+    bindMounts.greenzz-server.hostPath = "${hostDataBase}/greenzz-prod-server";
+    bindMounts.greenzz-server.mountPoint = "/var/lib/greenzz-server";
+    bindMounts.greenzz-server.isReadOnly = false;
+    bindMounts.grafana.hostPath = "/mnt/cabinet/minerva-data/greenzz-prod-grafana";
+    bindMounts.grafana.mountPoint = "/var/lib/grafana";
+    bindMounts.grafana.isReadOnly = false;
     config = {
-      networking.firewall.allowedTCPPorts = [ 44107 44108 44109 ];
+      networking.firewall.allowedTCPPorts = [ 43000 43001 44108 ];
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
@@ -20,7 +27,7 @@ in {
       nix.extraOptions = "experimental-features = nix-command flakes";
       services.postgresql = {
         enable = true;
-        port = 44107;
+        port = 43002;
         enableTCPIP = true;
         authentication = ''
           local all all                 trust
@@ -33,11 +40,51 @@ in {
       };
       services.influxdb = {
         enable = true;
-        extraConfig = {
-          http.auth-enabled = true;
-          http.bind-address = ":44108";
+        extraConfig.http.bind-address = ":44108";
+        package = assert !pkgs.lib.versionOlder "2.0" pkgs.influxdb.version;
+          pkgs.influxdb;
+      };
+      services.grafana = {
+        enable = true;
+        addr = "10.231.136.5";
+        port = 43001;
+        domain = "greenzz.orbstheorem.ch";
+        rootUrl = "https://greenzz.orbstheorem.ch/grafana/";
+        extraOptions.SERVER_SERVE_FROM_SUB_PATH = "true";
+      };
+      systemd.services.greenzz-server = let
+        configFile = pkgs.writeTextFile {
+          name = "greenzz-server.conf.yml";
+          text = with secrets.greenzz-prod; builtins.toJSON {
+            db = { inherit (server-db) url username password; };
+            influx = { inherit (server-influx) url username password; };
+            server.port = 43000;
+            greenzz.datasource.dailyPhotos.path =
+              "/var/lib/greenzz-server/daily-photos";
+          };
+        };
+      in {
+        description = "Greenzz application server";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
+        serviceConfig = {
+          ExecStart = ''
+            ${pkgs.greenzz-server}/bin/greenzz-server \
+              --spring.config.location=classpath:/application.properties,${configFile}
+          '';
+          Restart = "always";
+          PrivateTmp = true;
+          ProtectHome = "tmpfs";
+          ProtectSystem = "strict";
+          WorkingDirectory = "/var/lib/greenzz-server";
+          User = "greenzz-server";
+          Group = "greenzz-server";
         };
       };
+      users.users.greenzz-server.uid = 43001;
+      users.users.greenzz-server.description = "Greenzz server user";
+      users.users.greenzz-server.isSystemUser = true;
+      users.groups.greenzz-server.gid = 43001;
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...
@@ -45,7 +92,8 @@ in {
     hostBridge = "containers";
     privateNetwork = true;
     forwardPorts = [
-      { hostPort = 44107; protocol = "tcp"; }
+      { hostPort = 43000; protocol = "tcp"; }
+      { hostPort = 43001; protocol = "tcp"; }
       { hostPort = 44108; protocol = "tcp"; }
     ];
   };
