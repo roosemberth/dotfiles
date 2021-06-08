@@ -114,4 +114,5 @@ in {
       propagatedBuildInputs = o.propagatedBuildInputs or [] ++
         (with prev.python3Packages; [notmuch2]);
     });
+  greenzz-server = final.callPackage ./greenzz-server {};
 }
