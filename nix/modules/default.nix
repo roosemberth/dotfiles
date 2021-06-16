@@ -29,10 +29,10 @@ in {
     ./media.nix
     ./nginx-fileshare.nix
     ./steam.nix
-    ./sway.nix
     ./unfree.nix
     ./user-profiles/roosemberth.nix
     ./users.nix
+    ./wayland-session.nix
     ./wireguard.nix
     ./wireguard-new.nix
   ];
