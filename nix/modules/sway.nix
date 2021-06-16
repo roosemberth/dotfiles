@@ -17,7 +17,6 @@
       export XDG_CURRENT_DESKTOP=sway
     '';
     xdg.portal.enable = true;
-    xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
     xdg.portal.gtkUsePortal = true;
     services.pipewire.enable = true;
   };
