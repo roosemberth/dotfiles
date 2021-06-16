@@ -10,6 +10,7 @@ in {
     ./test-module.nix
     ./email-gateway.nix
     ./vim-roos.nix
+    ./sway-session.nix
     dotfilesHarness
   ];
 }
