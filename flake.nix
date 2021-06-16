@@ -11,16 +11,18 @@
       system = "x86_64-linux";
       modules = [({ ... }: {
         _module.args.hmlib = home-manager.lib.hm;
-        imports = [
-          baseCfg
-          home-manager.nixosModules.home-manager
-          {
+        imports = let
+          hmHarness = { config, lib, ... }: {
+            imports = [ home-manager.nixosModules.home-manager ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules =
-              (import ./nix/home-manager {}).allModules;
+              (import ./nix/home-manager { inherit config lib; }).allModules;
             nixpkgs.overlays = [ self.overlay ];
-          }
+          };
+        in [
+          baseCfg
+          hmHarness
         ];
         # Let 'nixos-version --json' know the Git revision of this flake.
         system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
