@@ -41,8 +41,10 @@ in
         Unit.After = [ "network.target" "sound.target" ];
         Unit.Description = "Mopidy daemon";
         Unit.Conflicts = [ "mpd.service" ];
+        Unit.PartOf = [ "basic.target" ];
         Service.ExecStart =
           "${pkgs.mopidy-roos}/bin/mopidy --config ${configPath}";
+        Install.WantedBy = [ "basic.target" ];
       };
 
       # MPD configuration
