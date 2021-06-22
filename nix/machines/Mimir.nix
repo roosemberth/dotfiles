@@ -4,14 +4,18 @@ let
   networkDnsConfig =
     { secrets, ... }:
     {
-      environment.etc."NetworkManager/dnsmasq.d/10-mimir-local.conf".text =
-        with secrets.network; with lib; let
-          dnsZones = map (p: p.name) allDnsZones;
-          dnsSrvs = zksDNS.v6 ++ zksDNS.v4;
-          cfgLine = net: ip: "server=/${net}/${ip}";
-        in concatStringsSep "\n" (crossLists cfgLine [dnsZones dnsSrvs]);
-      networking.networkmanager.dns = "dnsmasq";
+      networking.networkmanager.dns = "systemd-resolved";
       networking.search = with secrets.network.zksDNS; [ search "int.${search}" ];
+      services.resolved = {
+        enable = true;
+        llmnr = "true";
+        dnssec = "false";
+        extraConfig = with secrets.network; with lib; let
+          dnsZones = map (p: p.name) allDnsZones;
+          dnsSrvs = (map (ip: "[${ip}]") zksDNS.v6) ++ zksDNS.v4;
+          sni = net: ip: "${ip}#${net}";
+        in "DNS=" + concatStringsSep " " (crossLists sni [dnsZones dnsSrvs]);
+      };
     };
 in {
   imports = [
