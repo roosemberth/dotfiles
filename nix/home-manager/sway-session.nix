@@ -34,6 +34,7 @@ in {
       mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
       pinentry' firefox-wayland epiphany x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
+      wayvnc
     ];
     xdg.configFile."mako/config".source =
       dotfileUtils.fetchDotfile "etc/mako/config";

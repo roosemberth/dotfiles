@@ -26,6 +26,9 @@ input * xkb_options "caps:escape"
 
 output eDP-1 scale 1
 
+# Used for using the remarkable tablet as a second screen
+output HEADLESS-1 mode 1404x1872
+
 # Appearance
 default_border pixel 1
 default_floating_border pixel 1
