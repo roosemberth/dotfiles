@@ -96,7 +96,6 @@ in {
   roos.agenda.enable = true;
   roos.dev.enable = true;
   roos.dotfilesPath = ../..;
-  roos.eivd.enable = true;
   roos.media.enable = true;
   roos.nginx-fileshare.enable = true;
   roos.nginx-fileshare.directory = "/srv/shared";

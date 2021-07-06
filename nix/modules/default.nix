@@ -24,7 +24,6 @@ in {
     ./agenda.nix
     ./base.nix
     ./dev.nix
-    ./eivd.nix
     ./keyring.nix
     ./media.nix
     ./nginx-fileshare.nix

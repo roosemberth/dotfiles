@@ -5,7 +5,6 @@
     users.users.foo.isNormalUser = true;
     users.users.foo.password = secrets.users.foo.password;
     users.users.foo.extraGroups = [ "input" "video" ];
-    users.users.foo.packages = [ pkgs.teams ];
     users.users.foo.shell = pkgs.zsh;
     services.xserver.enable = true;
     services.xserver.desktopManager.gnome3.enable = true;
