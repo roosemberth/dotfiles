@@ -13,8 +13,8 @@ let
         extraConfig = with secrets.network; with lib; let
           dnsZones = map (p: p.name) allDnsZones;
           dnsSrvs = (map (ip: "[${ip}]") zksDNS.v6) ++ zksDNS.v4;
-          sni = net: ip: "${ip}#${net}";
-        in "DNS=" + concatStringsSep " " (crossLists sni [dnsZones dnsSrvs]);
+          netXsrv = cartesianProductOfSets { net = dnsZones; srv = dnsSrvs; };
+        in "DNS=" + concatMapStringsSep " " (x: "${x.srv}#${x.net}") netXsrv;
       };
     };
 in {

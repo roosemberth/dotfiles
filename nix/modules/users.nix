@@ -99,17 +99,20 @@ in {
 
   config = let
     mkUserCfgs = users: cfgFilter: let
-      cfgs = cfgFilter options.roos;
-    in mkMerge (flip crossLists [users cfgs] (user: cfg: {
-      ${user} = mkAliasDefinitions cfg;
-    }));
+      userXcfg = cartesianProductOfSets
+        { user = users; cfg = cfgFilter options.roos; };
+    in mkMerge (map (x: {
+      ${x.user} = mkAliasDefinitions x.cfg;
+    }) userXcfg);
     mergeFunctorWithUser = user: x:  # x is a merge of functions to user configs
       mkMerge (map (f: f config.home-manager.users.${user}) x.contents);
     callUserCfgFns = users: cfgFilter: let
-      cfgFns = cfgFilter options.roos;
-    in mkMerge (flip crossLists [users cfgFns] (user: cfgFn: {
-      ${user} = mkAliasAndWrapDefinitions (mergeFunctorWithUser user) cfgFn;
-    }));
+      userXcfgfn = cartesianProductOfSets
+        { user = users; cfgFn = cfgFilter options.roos; };
+    in mkMerge (map (x: {
+      ${x.user} = mkAliasAndWrapDefinitions
+        (mergeFunctorWithUser x.user) x.cfgFn;
+    }) userXcfgfn);
     userCfgs = with config.roos.user-profiles; {
       usersWithReducedConfigurations = mkMerge [
         (mkUserCfgs reduced (c: with c; [rConfig]))
