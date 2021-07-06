@@ -7,7 +7,7 @@
     users.users.foo.extraGroups = [ "input" "video" ];
     users.users.foo.shell = pkgs.zsh;
     services.xserver.enable = true;
-    services.xserver.desktopManager.gnome3.enable = true;
+    services.xserver.desktopManager.gnome.enable = true;
     services.xserver.displayManager.gdm.enable = true;
     services.xserver.autorun = false;
     services.xserver.displayManager.sessionCommands =
