@@ -60,5 +60,7 @@ in
     roos.gConfig = {
       home.packages = with pkgs; [ mpv youtube-dl ffmpeg-full ];
     };
+
+    security.rtkit.enable = true;
   };
 }
