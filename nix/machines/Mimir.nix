@@ -127,6 +127,7 @@ in {
     };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    hardware.bolt.enable = true;
 
     pipewire = {
       pulse.enable = true;
