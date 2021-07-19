@@ -10,6 +10,7 @@
     roos.gConfig.config.sessions.sway.enable = true;
 
     programs.sway.enable = true;
+    programs.sway.extraPackages = [];  # Managed by sway-session.nix
     programs.sway.wrapperFeatures.gtk = true;
     programs.sway.extraSessionCommands = ''
       export MOZ_ENABLE_WAYLAND=1
