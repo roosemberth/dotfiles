@@ -2,6 +2,7 @@
   options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
   config = mkIf config.roos.sway.enable {
+    fonts.fonts = [ pkgs.font-awesome ];
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass.override { waylandSupport = true; };
     };
