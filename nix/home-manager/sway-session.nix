@@ -31,7 +31,7 @@ in {
       _JAVA_AWT_WM_NONREPARENTING = 1;
     };
     home.packages = with pkgs; [
-      mako slurp grim wdisplays wl-clipboard wl-clipboard-x11
+      mako slurp grim swappy wdisplays wl-clipboard wl-clipboard-x11
       pinentry' firefox-wayland epiphany x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
