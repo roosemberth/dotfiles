@@ -34,6 +34,9 @@
   in {
     nixosConfigurations = {
       Mimir = defFlakeSystem ./nix/machines/Mimir.nix;
+      Mimir-vm = defFlakeSystem ({ modulesPath, ... }: {
+        imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
+      });
       Minerva = defFlakeSystem ./nix/machines/Minerva.nix;
       batman = defFlakeSystem {
         _module.args.nixosSystem = nixpkgs.lib.nixosSystem;
