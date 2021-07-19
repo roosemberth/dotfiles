@@ -1,0 +1,99 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 20,
+
+  "modules-left": ["sway/workspaces", "sway/mode"],
+  "modules-center": ["sway/window"],
+  "modules-right": [
+    "idle_inhibitor",
+    "pulseaudio",
+    "network",
+    "cpu",
+    "memory",
+    "battery",
+    "temperature",
+    "tray",
+    "clock"
+  ],
+
+  "sway/workspaces": {
+    "numeric-first": true,
+    "format": "{icon} {value}",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "urgent": "",
+      "focused": "",
+      "default": ""
+    }
+  },
+  "sway/mode": {
+    "format": "<span style=\"italic\">{}</span>"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 10
+  },
+  "clock": {
+    "format": "{:%H:%M:%S}",
+    "interval": 1,
+    "tooltip-format": "{:%Y-%m-%d %H:%M:%S}"
+  },
+  "cpu": {
+    "format": "{usage}% ",
+    "interval": 5,
+    "states": {
+      "active": 20,
+      "loaded": 80
+    }
+  },
+  "memory": {
+    "format": "{}% "
+  },
+  "battery": {
+    "bat": "BAT0",
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{capacity}% {icon}",
+    "format-full": "",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "temperature": {
+    "thermal-zone": 4,
+    "critical-threshold": 80,
+    "format": "{temperatureC}°C "
+  },
+  "network": {
+    "format-wifi": "{signalStrength}% ",
+    "tooltip-format-wifi": "{essid} ({signaldBm}dBm/{signalStrength}%)",
+    "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+    "format-disconnected": ""
+  },
+  "pulseaudio": {
+    "format": "{desc} {volume}% {icon}",
+    "format-bluetooth": "{volume}% {icon}",
+    "format-muted": "",
+    "format-icons": {
+      "headphones": "",
+      "handsfree": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", ""]
+    },
+    "on-click": "pavucontrol"
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
+  }
+}

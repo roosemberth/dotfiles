@@ -12,6 +12,20 @@
       exec ${pinentry-curses}/bin/pinentry-curses "$@"
     fi
   '';
+
+  waybar' = with pkgs; let
+    cfgFile = dotfileUtils.fetchDotfile "etc/waybar/config";
+    styleFile = dotfileUtils.fetchDotfile "etc/waybar/style.css";
+  in stdenv.mkDerivation {
+    name = "waybar-with-config";
+    version = waybar.version;
+    nativeBuildInputs = [ makeWrapper ];
+
+    buildCommand = ''
+      makeWrapper ${waybar}/bin/waybar "$out/bin/waybar" \
+        --add-flags "--config ${cfgFile} --style ${styleFile}"
+    '';
+  };
 in {
   options.sessions.sway.enable = mkEnableOption "Sway-based wayland session";
 
@@ -31,7 +45,7 @@ in {
       _JAVA_AWT_WM_NONREPARENTING = 1;
     };
     home.packages = with pkgs; [
-      mako slurp grim swappy wdisplays wl-clipboard wl-clipboard-x11
+      mako slurp grim swappy waybar' wdisplays wl-clipboard wl-clipboard-x11
       pinentry' firefox-wayland epiphany x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
