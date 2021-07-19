@@ -16,8 +16,13 @@
       export XDG_SESSION_TYPE=wayland
       export XDG_CURRENT_DESKTOP=sway
     '';
+
     xdg.portal.enable = true;
     xdg.portal.gtkUsePortal = true;
+
     services.pipewire.enable = true;
+    services.greetd.enable = true;
+    services.greetd.settings.default_session.command =
+      "${lib.makeBinPath [pkgs.greetd.tuigreet]}/tuigreet --time --cmd sway";
   };
 }
