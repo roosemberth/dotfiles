@@ -108,6 +108,30 @@ in {
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Hellendaal";
 
+  # Output profiles
+  roos.gConfigFn = hmCfg: {
+    config.systemd.user.services.kanshi = let
+      cfgFile = pkgs.writeText "kanshi.conf" ''
+        profile home {
+          output eDP-1 disable
+          output "Lenovo Group Limited LEN P44w-10 0x00000101" enable
+        }
+        profile nomad {
+          output eDP-1 enable scale 1.5
+        }
+      '';
+    in lib.mkIf hmCfg.sessions.sway.enable {
+      Unit.Description = "Kanshi screen output profile daemon";
+      Unit.PartOf = [ "graphical-session.target" ];
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = "${pkgs.kanshi}/bin/kanshi -c ${cfgFile}";
+        Restart = "always";
+        RestartSec = "3";
+      };
+    };
+  };
+
   security.wrappers.wshowkeys.source = "${pkgs.wshowkeys}/bin/wshowkeys";
   security.sudo.extraConfig = ''
     roosemberth ALL=(postgres) NOPASSWD: /run/current-system/sw/bin/psql
