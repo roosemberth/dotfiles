@@ -8,6 +8,10 @@
   imports = [ "${modulesPath}/virtualisation/qemu-vm.nix" ];
 
   config = {
+    programs.sway.extraSessionCommands = ''
+      export WLR_RENDERER_ALLOW_SOFTWARE=1
+    '';
+
     # Fails assertion because of missing btrfs filesystems
     services.btrfs.autoScrub.enable = mkVMOverride false;
 
