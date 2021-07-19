@@ -26,6 +26,18 @@
         --add-flags "--config ${cfgFile} --style ${styleFile}"
     '';
   };
+
+  swaylock' = with pkgs; stdenv.mkDerivation {
+    name = "swaylock-wrapped";
+    version = swaylock-effects.version;
+    nativeBuildInputs = [ makeWrapper ];
+
+    buildCommand = ''
+      makeWrapper ${swaylock-effects}/bin/swaylock "$out/bin/swaylock" \
+        --add-flags "--screenshots --clock --effect-blur 7x5" \
+        --add-flags "--effect-vignette 0.5:0.5 --fade-in 0.25"
+    '';
+  };
 in {
   options.sessions.sway.enable = mkEnableOption "Sway-based wayland session";
 
@@ -45,7 +57,7 @@ in {
       _JAVA_AWT_WM_NONREPARENTING = 1;
     };
     home.packages = with pkgs; [
-      slurp grim swappy waybar' dmenu alacritty swaylock swayidle
+      slurp grim swappy waybar' dmenu alacritty swaylock' swayidle
       mako wdisplays wl-clipboard wl-clipboard-x11
       pinentry' firefox-wayland epiphany x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
