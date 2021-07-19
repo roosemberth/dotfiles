@@ -1,9 +1,13 @@
 { config, pkgs, lib, ... }: with lib;
 let
   steam' = (pkgs.steam.override {
-    nativeOnly = true;
-  }).overrideAttrs(old: {
-    meta.broken = false;
+    extraPkgs = p: with p; [];
+  }).overrideAttrs (o: {
+    postFixup = o.postFixup or "" + ''
+      for f in $(find $out/bin/ $out/libexec/ -type f -executable); do
+        wrapProgram "$f" --set SDL_VIDEODRIVER x11
+      done
+    '';
   });
 in
 {
