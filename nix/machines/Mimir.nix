@@ -158,23 +158,21 @@ in {
       jack.enable = true;
       alsa.enable = true;
       media-session.enable = true;
-      media-session.config.bluez-monitor.rules = [
-        { # Matches all bluetooth cards
-          matches = [ { "device.name" = "~bluez_card.*"; } ];
-          actions."update-props" = {
-            "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-            # mSBC is not expected to work on all headset + adapter combinations.
-            "bluez5.msbc-support" = true;
-          };
-        }
-        {
-          actions."node.pause-on-idle" = false;
-          matches = [
-            { "node.name" = "~bluez_input.*"; }
-            { "node.name" = "~bluez_output.*"; }
-          ];
-        }
-      ];
+      media-session.config.bluez-monitor.rules = [{
+        # Matches all bluetooth cards
+        matches = [ { "device.name" = "~bluez_card.*"; } ];
+        actions."update-props" = {
+          "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+          # mSBC is not expected to work on all headset + adapter combinations.
+          "bluez5.msbc-support" = true;
+        };
+      } {
+        matches = [
+          { "node.name" = "~bluez_input.*"; }
+          { "node.name" = "~bluez_output.*"; }
+        ];
+        actions."node.pause-on-idle" = false;
+      }];
       media-session.config.alsa-monitor.rules = [{
         matches = [{
           "node.description" =
