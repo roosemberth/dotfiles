@@ -175,6 +175,28 @@ in {
           ];
         }
       ];
+      media-session.config.alsa-monitor.rules = [{
+        matches = [{
+          "node.description" =
+            "Cannon Point-LP High Definition Audio Controller Speaker + Headphones";
+        }];
+        actions."update-props"."node.description" = "Laptop DSP";
+        actions."update-props"."node.nick" = "Laptop audio";
+        # Workaround odd bug on the session-manager where output will start in bad state.
+        actions."update-props"."api.acp.autoport" = true;
+      }{
+        matches = [{
+          "node.description" =
+            "Cannon Point-LP High Definition Audio Controller Digital Microphone";
+        }];
+        actions."update-props"."node.description" = "Laptop Mic";
+        actions."update-props"."node.nick" = "Laptop mic";
+      }{
+        matches = [{
+          "node.description" = "~Cannon Point-LP High Definition Audio.*";
+        }];
+        actions."update-props"."node.pause-on-idle" = true;
+      }];
     };
 
     postgresql = {
