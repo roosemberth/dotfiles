@@ -125,4 +125,14 @@ in {
       sha256 = "RVMeS2qEjTYK6r7IwMeFSqfRpKR8di2eQXhewfhTnYI=";
     };
   });
+  waybar = assert final.lib.versionAtLeast "0.9.7" prev.waybar.version;
+    prev.waybar.overrideAttrs (o: {
+    patches = o.patches or [] ++ [
+      (builtins.fetchurl {
+        # Pulseaudio controls active sink
+        url = "https://github.com/Alexays/Waybar/pull/1169/commits/86a43b904214613b2470db65746367b7721bd929.patch";
+        sha256 = "0lrwblkblglrrf1nw2h674w143jh67dzv39ynk509axijzlmyzhx";
+      })
+    ];
+  });
 }
