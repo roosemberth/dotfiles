@@ -138,6 +138,7 @@ in {
   '';
 
   services = {
+    flatpak.enable = true;
     gvfs.enable = true;
     logind.extraConfig = ''
       HandlePowerKey=ignore
