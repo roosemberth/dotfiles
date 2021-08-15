@@ -2,7 +2,7 @@
 let
   mkVm = hostname: configuration: (flakes.nixpkgs.lib.nixosSystem {
     system = pkgs.system;
-    modules = [({ ... }: {
+    modules = [({ config, lib, ... }: {
       _module.args.hmlib = flakes.home-manager.lib.hm;
       imports = [
         ./tests/base.nix
@@ -14,7 +14,7 @@ let
       nix.registry.nixpkgs.flake = flakes.nixpkgs;
       services.sshd.enable = true;
       networking.firewall.enable = false;
-      home-manager.sharedModules = (import ../home-manager {}).allModules;
+      home-manager.sharedModules = (import ../home-manager { inherit config lib; }).allModules;
     })];
   }).config.system.build.vm;
 in {
