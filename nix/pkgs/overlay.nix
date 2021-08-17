@@ -48,8 +48,11 @@ in {
   wireplumber = assert (builtins.hasAttr "wireplumber" final.pkgs);
   with final; stdenv.mkDerivation {
     name = "wireplumber";
-    version = "0.3.x_210418_1";
-    nativeBuildInputs = with pkgs; [ meson ninja pkg-config lua5_3 ];
+    version = "0.4.1";
+    nativeBuildInputs = with pkgs; [
+      meson ninja pkg-config lua5_4 doxygen
+      (python3.withPackages(p: with p; [lxml]))
+    ];
     mesonFlags = [
       "-Dsystem-lua=true"
       "-Ddoc=disabled" # `hotdoc` not packaged in nixpkgs as of writing
@@ -58,7 +61,7 @@ in {
     propagatedBuildInputs = with pkgs; [ glib ];
     src = fetchGit {
       url = "https://gitlab.freedesktop.org/pipewire/wireplumber";
-      rev = "44c96b6c4924fe0e1d15a43fdf7a19f728a0f3d2";
+      rev = "b741b2c8c876585eabd6f4d62d62af5b46c0afd0";
     };
   };
 
