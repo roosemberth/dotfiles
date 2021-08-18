@@ -144,11 +144,25 @@ in {
       HandlePowerKey=ignore
       RuntimeDirectorySize=95%
     '';
-    nginx.enable = true;
-    # Default redirect to HTTPs (e.g. socat rec.la testing).
-    nginx.virtualHosts.localhost = {
-      default = true;
-      extraConfig = "return 301 https://$host$request_uri;";
+    nginx = {
+      enable = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
+      # Default redirect to HTTPs (e.g. socat rec.la testing).
+      virtualHosts.localhost = {
+        default = true;
+        extraConfig = "return 301 https://$host$request_uri;";
+      };
+      # Reverse proxy for dev stuff
+      virtualHosts.".rec.la" = {
+        onlySSL = true;
+        sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
+        sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
+        locations."/" = {
+          proxyPass = "http://localhost:5000";
+          proxyWebsockets = true;
+        };
+      };
     };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
