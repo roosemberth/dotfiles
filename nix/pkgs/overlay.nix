@@ -138,4 +138,17 @@ in {
       })
     ];
   });
+  recla-certs = with final; stdenv.mkDerivation {
+    name = "recla-certs";
+    # Upstream version is not properly maintained and multiple diverging versions are found.
+    version = "21081801";
+    src = pkgs.fetchFromGitHub {
+      owner = "pryv";
+      repo = "rec-la";
+      rev = "1ae178733092c08802b20f6f989b8f0af01f1626";
+      hash = "sha256-irKOHNpU0sNEr+A154GjT9tX+PkRQL7309em+FxOPZg=";
+    };
+    phases = [ "buildPhase" ];
+    buildPhase = ''cp -r "$src/src/" $out'';
+  };
 }
