@@ -87,7 +87,7 @@
       "car": "",
       "default": ["", ""]
     },
-    "on-click": "pavucontrol"
+    "on-click": "pkill pavucontrol || pavucontrol"
   },
   "idle_inhibitor": {
     "format": "{icon}",
