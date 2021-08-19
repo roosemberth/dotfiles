@@ -151,4 +151,16 @@ in {
     phases = [ "buildPhase" ];
     buildPhase = ''cp -r "$src/src/" $out'';
   };
+  patchmatrix = with final; stdenv.mkDerivation rec {
+    name = "patchmatrix";
+    version = "0.26.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "OpenMusicKontrollers";
+      repo = "patchmatrix";
+      rev = version;
+      hash = "sha256-rR3y5rGzmib//caPmhthvMelAdHRvV0lMRfvcj9kcCg=";
+    };
+    buildInputs = [ libjack2 glew x11 ];
+    nativeBuildInputs = [ meson ninja pkgconfig lv2 cmake ];
+  };
 }
