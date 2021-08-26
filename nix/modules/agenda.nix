@@ -14,7 +14,7 @@ in {
           accName: secretCfg: lib.recursiveUpdate secretCfg {
           alot.sendMailCommand = "msmtp --account=${accName} -t";
           passwordCommand =
-            "${pkgs.gnome3.libsecret}/bin/secret-tool lookup mbsync ${accName}";
+            "${pkgs.pass}/bin/pass show mbsync/${accName}";
         });
         maildirBasePath = ".local/var/mail";
       };
