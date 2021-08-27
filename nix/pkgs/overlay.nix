@@ -163,4 +163,5 @@ in {
     buildInputs = [ libjack2 glew x11 ];
     nativeBuildInputs = [ meson ninja pkgconfig lv2 cmake ];
   };
+  libxtrx-all = final.callPackage ./xtrx-sdr {};
 }
