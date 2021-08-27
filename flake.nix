@@ -9,20 +9,12 @@
     defFlakeSystem = baseCfg: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ ... }: {
-        _module.args.hmlib = home-manager.lib.hm;
-        imports = let
-          hmHarness = { config, lib, ... }: {
-            imports = [ home-manager.nixosModules.home-manager ];
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.sharedModules =
-              (import ./nix/home-manager { inherit config lib; }).allModules;
-            nixpkgs.overlays = [ self.overlay ];
-          };
-        in [
+        imports = [
           baseCfg
-          hmHarness
+          (import ./nix/bootstrap-home-manager.nix
+            { home-manager-flake = home-manager; })
         ];
+        nixpkgs.overlays = [ self.overlay ];
         # Let 'nixos-version --json' know the Git revision of this flake.
         system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
         nix.registry.p.flake = nixpkgs;
