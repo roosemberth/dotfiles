@@ -1,5 +1,5 @@
-{ nixpkgs ? import <nixpkgs> {} }:
-with nixpkgs;
+{ pkgs }:
+with pkgs;
 let
   liblms7002m = callPackage ./liblms7002m.nix {};
 

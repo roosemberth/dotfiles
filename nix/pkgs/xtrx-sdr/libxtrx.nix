@@ -1,4 +1,13 @@
-{ callPackage, fetchFromGitHub, fetchurl, pkgs, qmake, qtbase, stdenv }:
+{ callPackage
+, fetchFromGitHub
+, fetchurl
+, pkgs
+, qmake
+, qtbase
+, soapysdr
+, stdenv
+, wrapQtAppsHook
+}:
 let
   libxtrxdsp = callPackage ./libxtrxdsp.nix {};
   libxtrxll = callPackage ./libxtrxll.nix {};
@@ -7,7 +16,7 @@ let
   qcustomplot2 = stdenv.mkDerivation {
     name = "qcustomplot";
     version = "2.0.1";
-    nativeBuildInputs = with pkgs; [ qmake pkgconfig ];
+    nativeBuildInputs = with pkgs; [ qmake pkgconfig wrapQtAppsHook ];
     outputs = [ "out" "dev" ];
 
     cmakeFlags = "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON";
@@ -44,7 +53,8 @@ stdenv.mkDerivation {
     libxtrxll
     qtbase
     qcustomplot2
-    pkgs.soapysdr
+    wrapQtAppsHook
+    soapysdr
   ];
 
   # Temporary disable
