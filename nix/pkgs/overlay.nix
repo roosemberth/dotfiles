@@ -164,4 +164,34 @@ in {
     nativeBuildInputs = [ meson ninja pkgconfig lv2 cmake ];
   };
   xtrx = final.callPackage ./xtrx-sdr {};
+
+  soapysdr-with-plugins = prev.soapysdr-with-plugins.override {
+    extraPackages = with final; [
+      limesuite
+      soapyairspy
+      soapyaudio
+      soapybladerf
+      soapyhackrf
+      soapyremote
+      soapyrtlsdr
+      soapyuhd
+      xtrx.libxtrx
+    ];
+  };
+
+  gnuradio-with-soapy = with final; let
+    soapy = soapysdr-with-plugins;
+    extraSoapyPkgs = [ xtrx.libxtrx ];
+    modulesVersion = v: with final.lib;
+      versions.major v + "." + versions.minor v;
+    soapyModulesPath = "lib/SoapySDR/modules" + (modulesVersion soapy.version);
+    soapyPkgsSearchPath = lib.makeSearchPath soapyModulesPath extraSoapyPkgs;
+  in gnuradio.override {
+    extraMakeWrapperArgs = [
+      "--prefix" "SOAPY_SDR_PLUGIN_PATH" ":" "${soapyPkgsSearchPath}"
+    ];
+    extraPythonPackages = with gnuradio.unwrapped.python.pkgs; [
+      soapysdr
+    ];
+  };
 }
