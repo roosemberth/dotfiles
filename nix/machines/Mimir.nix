@@ -6,6 +6,7 @@ let
     {
       networking.networkmanager.dns = "systemd-resolved";
       networking.search = with secrets.network.zksDNS; [ search "int.${search}" ];
+      networking.firewall.allowedUDPPorts = [ 5355 ]; # LLMNR responses
       services.resolved = {
         enable = true;
         llmnr = "true";
