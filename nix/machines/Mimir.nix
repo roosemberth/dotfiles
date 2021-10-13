@@ -231,6 +231,7 @@ in {
        EVDEV_ABS_01=::20
     '';
     udev.extraRules = ''
+      SUBSYSTEM=="net",ACTION=="add",ENV{ID_NET_NAME_MAC}=="wlx84c5a62adf55",NAME:="wlan"
       # Rename built-in interface with proprietary connector
       SUBSYSTEM=="net",ACTION=="add",KERNEL=="enp0s31f6",NAME="useless"
       # Rename interface created by the librem5
