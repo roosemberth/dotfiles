@@ -182,4 +182,6 @@ in {
       soapysdr
     ];
   };
+
+  youtube-dl = final.yt-dlp.override { withAlias = true; };
 }
