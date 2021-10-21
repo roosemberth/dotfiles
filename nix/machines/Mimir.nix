@@ -235,7 +235,7 @@ in {
       # Rename built-in interface with proprietary connector
       SUBSYSTEM=="net",ACTION=="add",KERNEL=="enp0s31f6",NAME="useless"
       # Rename interface created by the librem5
-      SUBSYSTEM=="net",ACTION=="add",ENV{ID_NET_NAME_MAC}=="enxfa5a4de2741b",NAME:="l5"
+      SUBSYSTEM=="net",ACTION=="add",ENV{ID_VENDOR_ENC}=="Purism\x2c\x20SPC",ENV{ID_MODEL_ENC}=="Librem\x205",NAME:="l5"
     '';
     upower.enable = true;
   };
