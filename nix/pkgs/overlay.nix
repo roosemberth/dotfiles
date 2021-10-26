@@ -128,16 +128,24 @@ in {
   });
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
-    # Upstream version is not properly maintained and multiple diverging versions are found.
-    version = "21081801";
-    src = pkgs.fetchFromGitHub {
-      owner = "pryv";
-      repo = "rec-la";
-      rev = "1ae178733092c08802b20f6f989b8f0af01f1626";
-      hash = "sha256-irKOHNpU0sNEr+A154GjT9tX+PkRQL7309em+FxOPZg=";
-    };
+    version = "21102601";
+    srcs = [
+      (pkgs.fetchurl {
+        url = "https://www.rec.la/rec.la-bundle.crt";
+        hash = "sha256-WailkAEupAqEI1Osgygbx3LlgVDEwq4eQSvWb/YT/5U=";
+      })
+      (pkgs.fetchurl {
+        url = "https://www.rec.la/rec.la-key.pem";
+        hash = "sha256-biwuc3HQBxXYzYKOwMYhHNWrP5z7ytmZY1Bgk5TolxI=";
+      })
+    ];
     phases = [ "buildPhase" ];
-    buildPhase = ''cp -r "$src/src/" $out'';
+    buildPhase = ''
+      mkdir "$out"
+      for _src in $srcs; do
+        cp "$_src" "$out/$(basename "$(stripHash "$_src")")"
+      done
+    '';
   };
   patchmatrix = with final; stdenv.mkDerivation rec {
     name = "patchmatrix";
