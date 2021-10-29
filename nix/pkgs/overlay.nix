@@ -94,16 +94,6 @@ in {
   nvim-roos-core = nvim.core;
   mopidy-roos = final.callPackage ./mopidy {};
   greenzz-server = final.callPackage ./greenzz-server {};
-  kanshi = assert final.lib.versionAtLeast "1.1.0" prev.kanshi.version;
-    prev.kanshi.overrideAttrs (o: rec {
-    version = "1.2.0";
-    src = final.fetchFromGitHub {
-      owner = "emersion";
-      repo = "kanshi";
-      rev = "v${version}";
-      sha256 = "RVMeS2qEjTYK6r7IwMeFSqfRpKR8di2eQXhewfhTnYI=";
-    };
-  });
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
     version = "21102601";
