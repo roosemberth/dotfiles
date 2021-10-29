@@ -41,7 +41,10 @@
           { system = sys; overlays = [ self.overlay ]; }));
   in {
     nixosConfigurations = {
-      Mimir = defFlakeSystem {} ./nix/machines/Mimir.nix;
+      Mimir = defFlakeSystem {
+        nixpkgs = nixpkgs-unstable;
+        home-manager = hm-unstable;
+      } ./nix/machines/Mimir.nix;
       Mimir-vm = defFlakeSystem {} ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
