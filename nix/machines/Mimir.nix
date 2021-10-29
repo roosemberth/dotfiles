@@ -128,6 +128,8 @@ in {
     };
   };
 
+  security.wrappers.wshowkeys.owner = "root";
+  security.wrappers.wshowkeys.group = "input";
   security.wrappers.wshowkeys.source = "${pkgs.wshowkeys}/bin/wshowkeys";
   security.sudo.extraConfig = ''
     roosemberth ALL=(postgres) NOPASSWD: /run/current-system/sw/bin/psql
