@@ -152,6 +152,16 @@ in {
         extraConfig = "return 301 https://$host$request_uri;";
       };
       # Reverse proxy for dev stuff
+      virtualHosts."iris.rec.la" = {
+        onlySSL = true;
+        sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
+        sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
+        basicAuthFile = "/srv/iris.htpasswd";
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:6680";
+          proxyWebsockets = true;
+        };
+      };
       virtualHosts.".rec.la" = {
         onlySSL = true;
         sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
