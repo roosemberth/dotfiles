@@ -34,10 +34,10 @@
         nix.registry.nixpkgs.flake = nixpkgs;
       })];
     };
-    forAllSystems = fn:
-      nixpkgs-unstable.lib.genAttrs
+    forAllSystems = { nixpkgs ? nixpkgs-unstable }: fn:
+      nixpkgs.lib.genAttrs
         flake-utils.lib.defaultSystems
-        (sys: fn (import nixpkgs-unstable
+        (sys: fn (import nixpkgs
           { system = sys; overlays = [ self.overlay ]; }));
   in {
     nixosConfigurations = {
@@ -55,7 +55,7 @@
         imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
-    apps = with nixpkgs-unstable.lib; (forAllSystems (pkgs: let
+    apps = with nixpkgs-unstable.lib; (forAllSystems {} (pkgs: let
       toApp = name: drv: let host = removePrefix "vms/" name; in
         { type = "app"; program = "${drv}/bin/run-${host}-vm"; };
       isVm = name: _: hasPrefix "vms/" name;
@@ -64,7 +64,7 @@
 
     overlay = import ./nix/pkgs/overlay.nix;
 
-    packages = (forAllSystems (pkgs: flake-utils.lib.flattenTree {
+    packages = (forAllSystems {} (pkgs: flake-utils.lib.flattenTree {
       vms = pkgs.lib.recurseIntoAttrs
       (import ./nix/machines/vms.nix {
         inherit pkgs;
