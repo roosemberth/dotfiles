@@ -38,4 +38,10 @@ in {
     home-manager.users.roos.systemd.user.startServices = true;
     home-manager.users.roos.programs.test-service.enable = true;
   };
+  powerflow-test-vm = mkVm "powerflow-test-vm" {
+    imports = [ ./containers/powerflow.nix ];
+    networking.nat.enable = true;
+    networking.nat.externalInterface = "eth0";
+    virtualisation.memorySize = 1024;
+  };
 }
