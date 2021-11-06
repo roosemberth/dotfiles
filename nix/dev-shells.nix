@@ -50,4 +50,10 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
+  js = with pkgs; stdenv.mkDerivation {
+    name = "javascript-dev-env";
+    nativeBuildInputs = [ nodejs yarn ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 }

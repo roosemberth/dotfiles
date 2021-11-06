@@ -13,9 +13,6 @@ in {
         cmake
         ctags
         gnumake
-        # Node
-        nodejs
-        yarn
         # Python
         python3Packages.black
         # Embedded
