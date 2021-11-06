@@ -7,8 +7,6 @@ in {
     roos.sConfig = {
       services.lorri.enable = true;
       home.packages = with pkgs; [
-        # Python
-        python3Packages.black
         # Other
         httpie
         wdiff

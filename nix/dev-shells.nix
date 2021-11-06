@@ -68,4 +68,29 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
+  py = with pkgs; stdenv.mkDerivation {
+    name = "python3-dev-env";
+    nativeBuildInputs = [
+      (python3.withPackages (p: with p;[
+        alembic
+        beautifulsoup4
+        flask
+        ipdb
+        ipython
+        jinja2
+        mypy
+        pip
+        pwntools
+        pytest
+        requests
+        sqlalchemy
+        tox
+        virtualenv
+        yaml
+      ]))
+      python3Packages.black
+    ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 }
