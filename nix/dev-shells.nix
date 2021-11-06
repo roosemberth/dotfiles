@@ -62,4 +62,10 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
+  embedded = with pkgs; stdenv.mkDerivation {
+    name = "embedded-systems-dev-env";
+    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake platformio ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 }

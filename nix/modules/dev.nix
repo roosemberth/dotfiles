@@ -9,8 +9,6 @@ in {
       home.packages = with pkgs; [
         # Python
         python3Packages.black
-        # Embedded
-        platformio
         # Other
         httpie
         wdiff
