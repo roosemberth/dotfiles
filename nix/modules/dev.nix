@@ -15,7 +15,6 @@ in {
         jq
         yq
         virt-viewer
-        flutter
         claws
         # lorri
         direnv
