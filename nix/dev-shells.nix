@@ -30,4 +30,24 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
+  hs = with pkgs; stdenv.mkDerivation {
+    name = "haskell-dev-env";
+    nativeBuildInputs = [
+      (ghc.withHoogle (p: with p; [
+        QuickCheck
+        aeson
+        generic-arbitrary
+        optparse-applicative
+        parsec
+        protolude
+        quickcheck-instances
+        yaml
+      ]))
+      haskellPackages.fast-tags
+      haskell-language-server
+      stack
+    ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 }

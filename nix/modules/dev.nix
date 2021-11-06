@@ -13,20 +13,6 @@ in {
         cmake
         ctags
         gnumake
-        # Haskell
-        (ghc.withHoogle (p: with p; [
-          QuickCheck
-          aeson
-          generic-arbitrary
-          optparse-applicative
-          parsec
-          protolude
-          quickcheck-instances
-          yaml
-        ]))
-        haskellPackages.fast-tags
-        haskell-language-server
-        stack
         # Node
         nodejs
         yarn
