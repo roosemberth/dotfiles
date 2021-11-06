@@ -56,4 +56,10 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
+  c = with pkgs; stdenv.mkDerivation {
+    name = "c-cpp-dev-env";
+    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 }

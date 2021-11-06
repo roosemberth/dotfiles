@@ -7,12 +7,6 @@ in {
     roos.sConfig = {
       services.lorri.enable = true;
       home.packages = with pkgs; [
-        # C/C++
-        clang
-        clang-tools
-        cmake
-        ctags
-        gnumake
         # Python
         python3Packages.black
         # Embedded
