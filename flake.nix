@@ -79,5 +79,7 @@
     templates.generic.path = ./nix/flake-templates/generic;
     templates.generic.description = "Generic template for my projects.";
     defaultTemplate = self.templates.generic;
+    devShells = forAllSystems { nixpkgs = nixpkgs-stable; }
+      (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
   };
 }
