@@ -1,25 +1,13 @@
 { pkgs }: {
-  relm4 = with pkgs; stdenv.mkDerivation {
-    name = "relm4-env";
-    nativeBuildInputs = [
-      rustc
-      cargo
-      clippy
-      rustfmt
-      rls
-      rustup
-
-      pkgconfig
-      gcc
-      glib
-      cairo
-      pango
-      graphene
-      gdk-pixbuf
-      gtk4
-      xdg-desktop-portal
-      wrapGAppsHook
-    ];
+  c = with pkgs; stdenv.mkDerivation {
+    name = "c-cpp-dev-env";
+    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
+  embedded = with pkgs; stdenv.mkDerivation {
+    name = "embedded-systems-dev-env";
+    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake platformio ];
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
@@ -56,18 +44,6 @@
     preferLocalBuild = true;
     allowSubstitutes = false;
   };
-  c = with pkgs; stdenv.mkDerivation {
-    name = "c-cpp-dev-env";
-    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake ];
-    preferLocalBuild = true;
-    allowSubstitutes = false;
-  };
-  embedded = with pkgs; stdenv.mkDerivation {
-    name = "embedded-systems-dev-env";
-    nativeBuildInputs = [ clang clang-tools cmake ctags gnumake platformio ];
-    preferLocalBuild = true;
-    allowSubstitutes = false;
-  };
   py = with pkgs; stdenv.mkDerivation {
     name = "python3-dev-env";
     nativeBuildInputs = [
@@ -89,6 +65,30 @@
         yaml
       ]))
       python3Packages.black
+    ];
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
+  relm4 = with pkgs; stdenv.mkDerivation {
+    name = "relm4-env";
+    nativeBuildInputs = [
+      rustc
+      cargo
+      clippy
+      rustfmt
+      rls
+      rustup
+
+      pkgconfig
+      gcc
+      glib
+      cairo
+      pango
+      graphene
+      gdk-pixbuf
+      gtk4
+      xdg-desktop-portal
+      wrapGAppsHook
     ];
     preferLocalBuild = true;
     allowSubstitutes = false;
