@@ -89,9 +89,7 @@ in {
       chmod +x "$out/bin/remap-pa-client"
     '';
   };
-  nvim-roos = nvim.full;
-  nvim-roos-bare = nvim.essential;
-  nvim-roos-core = nvim.core;
+  nvim-roos = nvim;
   mopidy-roos = final.callPackage ./mopidy {};
   greenzz-server = final.callPackage ./greenzz-server {};
   recla-certs = with final; stdenv.mkDerivation {
