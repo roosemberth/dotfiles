@@ -51,17 +51,6 @@
     };
     meta.homepage = "https://github.com/vim-scripts/Arduino-syntax-file/";
   };
-  deb = vimUtils.buildVimPluginFrom2Nix {
-    pname = "deb";
-    version = "2010-10-18";
-    src = fetchFromGitHub {
-      owner = "vim-scripts";
-      repo = "deb.vim";
-      rev = "21b952e30ce261688efe1df324837a64ed28c68c";
-      hash = "sha256-6cOSF04+yWw0dTN9ybeRXl7KEc+Gx57IcG045dRXKLI=";
-    };
-    meta.homepage = "https://github.com/vim-scripts/deb.vim/";
-  };
   mynix-tools = let
     # Should stabilize once nix has been upgraded.
     nix' = assert !lib.versionAtLeast nix.version "2.4"; nixUnstable;
@@ -104,7 +93,6 @@
       ale
       arduino-syntax-file
       dart-vim-plugin
-      deb
       deorise-nvim
       plantuml-syntax
       vim-clang-format
