@@ -160,6 +160,9 @@ in {
         locations."/" = {
           proxyPass = "http://127.0.0.1:6680";
           proxyWebsockets = true;
+          extraConfig = ''
+            proxy_buffering off;
+          '';
         };
       };
       virtualHosts.".rec.la" = {
@@ -169,6 +172,9 @@ in {
         locations."/" = {
           proxyPass = "http://localhost:5000";
           proxyWebsockets = true;
+          extraConfig = ''
+            proxy_buffering off;
+          '';
         };
       };
     };
