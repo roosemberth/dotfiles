@@ -31,7 +31,7 @@ in {
     ./unfree.nix
     ./user-profiles/roosemberth.nix
     ./users.nix
-    ./wayland-session.nix
+    ./sway-session.nix
     ./wireguard.nix
     ./wireguard-new.nix
   ];
