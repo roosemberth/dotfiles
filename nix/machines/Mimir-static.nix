@@ -85,6 +85,45 @@ in
     };
   };
 
+  services.pipewire.media-session.config.bluez-monitor.rules = [{
+    # Matches all bluetooth cards
+    matches = [ { "device.name" = "~bluez_card.*"; } ];
+    actions."update-props" = {
+      "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+      # mSBC is not expected to work on all headset + adapter combinations.
+      "bluez5.msbc-support" = true;
+    };
+  } {
+    matches = [
+      { "node.name" = "~bluez_input.*"; }
+      { "node.name" = "~bluez_output.*"; }
+    ];
+    actions."node.pause-on-idle" = false;
+  }];
+
+  services.pipewire.media-session.config.alsa-monitor.rules = [{
+    matches = [{
+      "node.description" =
+        "Cannon Point-LP High Definition Audio Controller Speaker + Headphones";
+    }];
+    actions."update-props"."node.description" = "Laptop DSP";
+    actions."update-props"."node.nick" = "Laptop audio";
+    # Workaround odd bug on the session-manager where output will start in bad state.
+    actions."update-props"."api.acp.autoport" = true;
+  } {
+    matches = [{
+      "node.description" =
+        "Cannon Point-LP High Definition Audio Controller Digital Microphone";
+    }];
+    actions."update-props"."node.description" = "Laptop Mic";
+    actions."update-props"."node.nick" = "Laptop mic";
+  } {
+    matches = [{
+      "node.description" = "~Cannon Point-LP High Definition Audio.*";
+    }];
+    actions."update-props"."node.pause-on-idle" = true;
+  }];
+
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   services.btrfs.autoScrub.enable = true;
