@@ -18,6 +18,7 @@ exec swayidle -w idlehint 300 \
 exec systemctl --user set-environment DISPLAY="$DISPLAY" WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
 exec systemctl --user start graphical-session-pre.target
 exec systemctl --user start graphical-session.target
+exec systemctl --user start sway-session.target
 
 input * tap enabled
 input * xkb_layout "us"

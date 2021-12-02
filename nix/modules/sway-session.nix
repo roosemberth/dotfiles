@@ -7,7 +7,15 @@
       pass = pkgs.pass.override { waylandSupport = true; };
     };
 
-    roos.gConfig.config.sessions.sway.enable = true;
+    roos.gConfig.config = {
+      sessions.sway.enable = true;
+      # Allocate sway-session target so other automation can depend on it.
+      systemd.user.targets."sway-session" = {
+        Target = {};
+        Unit.PartOf = [ "graphical-session.target" ];
+        # This target is started by sway
+      };
+    };
 
     programs.sway.enable = true;
     programs.sway.extraPackages = [];  # Managed by sway-session.nix

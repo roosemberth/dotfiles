@@ -118,7 +118,7 @@ in {
       '';
     in lib.mkIf hmCfg.sessions.sway.enable {
       Unit.Description = "Kanshi screen output profile daemon";
-      Unit.PartOf = [ "graphical-session.target" ];
+      Unit.PartOf = [ "sway-session.target" ];
       Install.WantedBy = [ "graphical-session.target" ];
       Service = {
         ExecStart = "${pkgs.kanshi}/bin/kanshi -c ${cfgFile}";
