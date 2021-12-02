@@ -142,6 +142,9 @@ in {
       HandlePowerKey=ignore
       RuntimeDirectorySize=95%
     '';
+    # Despite being in the xserver namespace, this does not enable any of X11.
+    xserver.desktopManager.gnome.enable = true;
+    xserver.displayManager.gdm.enable = true;
     nginx = {
       enable = true;
       recommendedProxySettings = true;
