@@ -152,7 +152,16 @@ in {
       # Default redirect to HTTPs (e.g. socat rec.la testing).
       virtualHosts.localhost = {
         default = true;
-        extraConfig = "return 301 https://$host$request_uri;";
+        extraConfig = ''
+          location /.well-known/acme-challenge/ {
+            root /srv/acme;
+            allow all;
+          }
+
+          location / {
+            return 301 https://$host$request_uri;
+          }
+        '';
       };
       # Reverse proxy for dev stuff
       virtualHosts."iris.rec.la" = {
