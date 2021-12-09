@@ -1,8 +1,11 @@
 {
   inputs.nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-21.05";
+  inputs.nixpkgs-porcupine.url = "github:NixOS/nixpkgs/nixos-21.11";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
   inputs.hm-stable.url = "github:nix-community/home-manager/release-21.05";
   inputs.hm-stable.inputs.nixpkgs.follows = "nixpkgs-stable";
+  inputs.hm-porcupine.url = "github:nix-community/home-manager/release-21.11";
+  inputs.hm-porcupine.inputs.nixpkgs.follows = "nixpkgs-porcupine";
   inputs.hm-unstable.url = "github:nix-community/home-manager";
   inputs.hm-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
@@ -10,8 +13,10 @@
   outputs = flakes@{
     self,
     nixpkgs-unstable,
+    nixpkgs-porcupine,
     nixpkgs-stable,
     hm-stable,
+    hm-porcupine,
     hm-unstable,
     flake-utils,
   }:
