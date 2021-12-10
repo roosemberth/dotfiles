@@ -54,6 +54,10 @@
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
       Minerva = defFlakeSystem {} ./nix/machines/Minerva.nix;
+      Heimdaalr = defFlakeSystem {
+        nixpkgs = nixpkgs-porcupine;
+        home-manager = hm-porcupine;
+      } ./nix/machines/Heimdaalr.nix;
       batman = defFlakeSystem {} {
         _module.args.nixosSystem = nixpkgs-stable.lib.nixosSystem;
         _module.args.home-manager = hm-stable.nixosModules.home-manager;
