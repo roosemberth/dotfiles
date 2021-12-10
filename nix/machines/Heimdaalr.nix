@@ -3,12 +3,19 @@
     networking.firewall.allowedUDPPorts = [53];
     services.bind = {
       enable = true;
+      extraConfig = ''
+        include "/keyring/dns/dns-orbstheorem.ch.keys.conf";
+      '';
       zones = [{
         name = "orbstheorem.ch";
         master = true;
         file = secrets.network.bind-zones."orbstheorem.ch";
+        extraConfig = "allow-update { key rfc2136key.orbstheorem.ch.; };";
       }];
     };
+    systemd.tmpfiles.rules = [
+      "f /keyring/dns/dns-orbstheorem.ch.keys.conf 0400 named root -"
+    ];
   };
 in {
   imports = [
