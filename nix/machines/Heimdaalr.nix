@@ -45,6 +45,8 @@
   };
   nginxConfig = { secrets, ... }: {
     networking.firewall.allowedTCPPorts = [80 443];
+    networking.nat.enable = true;
+    networking.nat.externalInterface = "ens3";
     services.nginx = {
       enable = true;
       recommendedGzipSettings = true;
