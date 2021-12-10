@@ -59,7 +59,7 @@ in {
     iptables -A INPUT -s 10.231.136.7/32 -j LOG \
       --log-prefix "dropped restricted connection" --log-level 6
     iptables -A INPUT -s 10.231.136.7/32 -j DROP
-    iptables -A FORWARD -s 10.231.136.7/32 -d 10.13.255.5/32 -j ACCEPT
+    iptables -A FORWARD -s 10.231.136.7/32 -d 10.13.255.101/32 -j ACCEPT
     iptables -A FORWARD -s 10.231.136.7/32 -o ${exitIface} -j ACCEPT
     iptables -A FORWARD -s 10.231.136.7/32 -j LOG \
       --log-prefix "dropped restricted fwd connection" --log-level 6

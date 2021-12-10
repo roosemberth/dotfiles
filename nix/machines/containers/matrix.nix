@@ -79,7 +79,7 @@
       -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
     iptables -A INPUT -s 10.231.136.4/32 -j DROP
     # Allow access to the database
-    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.255.5/32 -j ACCEPT
+    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.255.101/32 -j ACCEPT
     # Allow replies from the metrics port
     iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.0.0/16 \
       -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
