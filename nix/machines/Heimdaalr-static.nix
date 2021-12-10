@@ -52,7 +52,7 @@ in {
     "/home"    = mainSubvol "home"    ["autodefrag"];
     "/keyring" = mainSubvol "keyring" ["autodefrag"];
 
-    "/var/.snaphosts"     = snapshotSubvol "var"     ["autodefrag"];
+    "/var/.snapshots"     = snapshotSubvol "var"     ["autodefrag"];
     "/home/.snapshots"    = snapshotSubvol "home"    [];
     "/keyring/.snapshots" = snapshotSubvol "keyring" [];
 
@@ -66,4 +66,5 @@ in {
   }];
 
   swapDevices = [ ];
+  swapDevices = [];
 }
