@@ -4,12 +4,15 @@ let
   cidrToHost = address:
     builtins.replaceStrings ["/24" "/120"] ["/32" "/128"] address;
   mkWireguardPeer = host: ep: with secrets; with network; {
-    endpoint = "${ep.addr}:${toString ep.port}";
+    endpoint = if ep == null then null else "${ep.addr}:${toString ep.port}";
     allowedIPs = with zkx.${host}; map cidrToHost [host4 host6] ++ ipv4 ++ ipv6;
     persistentKeepalive = 30;
     publicKey = (forHost host).keys.wireguard.public;
   };
-  bastions = mapAttrs mkWireguardPeer secrets.network.zkxBastions;
+  networkPeers =
+    mapAttrs
+      (h: c: mkWireguardPeer h (c.ep or null))
+      secrets.network.zkx;
   allNetworkIPs = flatten (
     mapAttrsToList
       (_: p: with p; [host4 host6] ++ ipv4 ++ ipv6)
@@ -41,9 +44,9 @@ in {
 
   config = let
     hostname = config.networking.hostName;
-    endpoints = secrets.network.zkxBastions;
-    listenPort = endpoints.${hostname}.port or 61573;
-    gwServerAssert = assertMsg (hasAttr cfg.gwServer endpoints)
+    nodes = secrets.network.zkx;
+    listenPort = nodes.${hostname}.ep.port or 61573;
+    gwServerAssert = assertMsg (hasAttr cfg.gwServer nodes)
                        "The specified bastion is unknown.";
   in mkIf cfg.enable {
     networking.firewall.allowedUDPPorts = [ listenPort ];
@@ -52,8 +55,8 @@ in {
       inherit listenPort;
       ips = with secrets.network.zkx.${hostname}; [host4 host6];
       privateKey = (secrets.forHost hostname).keys.wireguard.private;
-      peers = if cfg.gwServer == null then attrValues bastions
-        else assert gwServerAssert; [(bastions.${cfg.gwServer} // {
+      peers = if cfg.gwServer == null then attrValues networkPeers
+        else assert gwServerAssert; [(networkPeers.${cfg.gwServer} // {
           allowedIPs = allNetworkIPs;
         })];
       allowedIPsAsRoutes = false;
