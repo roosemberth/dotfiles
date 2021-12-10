@@ -65,6 +65,21 @@ in {
     prefixLength = 24;
   }];
 
-  swapDevices = [ ];
+  services.snapper.configs = let
+    mkCfg = path: {
+      subvolume = path;
+      extraConfig = ''
+        ALLOW_GROUPS="wheel"
+        EMPTY_PRE_POST_CLEANUP="yes"
+        SYNC_ACL="yes"
+        TIMELINE_CLEANUP="yes"
+        TIMELINE_CREATE="yes"
+      '';
+    };
+  in {
+    "home"    = mkCfg "/home";
+    "keyring" = mkCfg "/keyring";
+    "var"     = mkCfg "/var";
+  };
   swapDevices = [];
 }
