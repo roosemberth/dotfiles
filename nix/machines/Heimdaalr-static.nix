@@ -46,13 +46,15 @@ in {
   in {
     "/boot".device = "/dev/disk/by-uuid/${uuids.boot}";
 
-    "/"     = mainSubvol "rootfs" [];
-    "/var"  = mainSubvol "var"    ["autodefrag"];
-    "/nix"  = mainSubvol "nix"    ["autodefrag" "noatime" "nodatacow"];
-    "/home" = mainSubvol "home"   ["autodefrag"];
+    "/"        = mainSubvol "rootfs"  [];
+    "/var"     = mainSubvol "var"     ["autodefrag"];
+    "/nix"     = mainSubvol "nix"     ["autodefrag" "noatime" "nodatacow"];
+    "/home"    = mainSubvol "home"    ["autodefrag"];
+    "/keyring" = mainSubvol "keyring" ["autodefrag"];
 
-    "/var/.snaphosts"  = snapshotSubvol "var" ["autodefrag"];
-    "/home/.snapshots" = snapshotSubvol "home" [];
+    "/var/.snaphosts"     = snapshotSubvol "var"     ["autodefrag"];
+    "/home/.snapshots"    = snapshotSubvol "home"    [];
+    "/keyring/.snapshots" = snapshotSubvol "keyring" [];
 
     "/mnt/root-btrfs" = fromSubvol "/" ["nodatacow" "noatime" "noexec"];
   };
