@@ -31,32 +31,6 @@ in {
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelModules = [ "kvm-intel" ];
 
-  containers.temp-pg.config.services.postgresql = {
-    enable = true;
-    package = pkgs.postgresql_14;
-  };
-  environment.systemPackages = let
-    newpg = config.containers.temp-pg.config.services.postgresql;
-    upgrade-pg-cluster = pkgs.writeScriptBin "upgrade-pg-cluster" ''
-      set -x
-      export OLDDATA="${config.services.postgresql.dataDir}"
-      export NEWDATA="${newpg.dataDir}"
-      export OLDBIN="${config.services.postgresql.package}/bin"
-      export NEWBIN="${newpg.package}/bin"
-
-      install -d -m 0700 -o postgres -g postgres "$NEWDATA"
-      cd "$NEWDATA"
-      sudo -u postgres $NEWBIN/initdb -D "$NEWDATA"
-
-      systemctl stop postgresql    # old one
-
-      sudo -u postgres $NEWBIN/pg_upgrade \
-        --old-datadir "$OLDDATA" --new-datadir "$NEWDATA" \
-        --old-bindir $OLDBIN --new-bindir $NEWBIN \
-        "$@"
-    '';
-  in [ upgrade-pg-cluster ];
-
   fonts.fonts = with pkgs; [
     hack-font
     noto-fonts
