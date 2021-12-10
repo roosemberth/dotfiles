@@ -54,7 +54,7 @@
     ];
   };
   nginxConfig = { secrets, ... }: {
-    networking.firewall.allowedTCPPorts = [80 443];
+    networking.firewall.allowedTCPPorts = [80 443 8448];
     networking.nat.enable = true;
     networking.nat.externalInterface = "ens3";
     services.nginx = {
@@ -75,6 +75,14 @@
           default = true;
           onlySSL = false;
           forceSSL = true;
+          listen = [
+            { addr = "[::]"; port = 80; ssl = false; }
+            { addr = "[::]"; port = 443; ssl = true; }
+            { addr = "[::]"; port = 8448; ssl = true; }
+            { addr = "0.0.0.0"; port = 80; ssl = false; }
+            { addr = "0.0.0.0"; port = 443; ssl = true; }
+            { addr = "0.0.0.0"; port = 8448; ssl = true; }
+          ];
           root = "/var/www/orbstheorem.ch";
           locations."/".extraConfig = ''
             error_page 404 = /404.html;
