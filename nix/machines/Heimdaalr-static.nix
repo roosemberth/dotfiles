@@ -74,6 +74,18 @@ in {
     prefixLength = 128;
   }];
 
+  # Piggy-back into the network-interfaces-systemd implementation to fix
+  # missing implementation of routes.
+  systemd.network.networks."40-ens3".routes = [{
+    routeConfig.Destination = "2a04:52c0:101::1";
+  }{
+    routeConfig.Destination = "0.0.0.0/0";
+    routeConfig.Gateway = "5.255.96.1";
+  }{
+    routeConfig.Destination = "::/0";
+    routeConfig.Gateway = "2a04:52c0:101::1";
+  }];
+
   services.snapper.configs = let
     mkCfg = path: {
       subvolume = path;
