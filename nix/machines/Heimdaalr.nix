@@ -1,7 +1,20 @@
-{ config, pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }: let
+  bindConfig = { secrets, ... }: {
+    networking.firewall.allowedUDPPorts = [53];
+    services.bind = {
+      enable = true;
+      zones = [{
+        name = "orbstheorem.ch";
+        master = true;
+        file = secrets.network.bind-zones."orbstheorem.ch";
+      }];
+    };
+  };
+in {
   imports = [
     ../modules
     ./Heimdaalr-static.nix
+    bindConfig
   ];
 
   boot.cleanTmpDir = true;
