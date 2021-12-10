@@ -228,7 +228,7 @@ in {
     upower.enable = true;
   };
 
-  system.stateVersion = "19.09";
+  system.stateVersion = "21.11";
   system.autoUpgrade.enable = true;
 
   time.timeZone = "Europe/Zurich";
