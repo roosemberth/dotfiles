@@ -54,7 +54,7 @@ in {
   roos.nginx-fileshare.directory = "/srv/shared";
   roos.user-profiles.reduced = ["roosemberth"];
   roos.wireguard.enable = true;
-  roos.wireguard.gwServer = "Hellendaal";
+  roos.wireguard.gwServer = "Heimdaalr";
 
   security.pam.enableSSHAgentAuth = true;
   services = {
