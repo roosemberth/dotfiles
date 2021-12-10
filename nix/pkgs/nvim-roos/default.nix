@@ -51,14 +51,11 @@
     };
     meta.homepage = "https://github.com/vim-scripts/Arduino-syntax-file/";
   };
-  mynix-tools = let
-    # Should stabilize once nix has been upgraded.
-    nix' = assert !lib.versionAtLeast nix.version "2.4"; nixUnstable;
-  in vimUtils.buildVimPluginFrom2Nix {
+  mynix-tools = vimUtils.buildVimPluginFrom2Nix {
     pname = "nix-edit";
     version = "0.0";
     src = ./mynix-tools;
-    propagatedBuildInputs = [ nix' ];
+    propagatedBuildInputs = [ nix ];
   };
 
   essentialPlugins = with vimPlugins; {
