@@ -3,8 +3,8 @@ let
   cfg = config.roos.wireguard;
   cidrToHost = address:
     builtins.replaceStrings ["/24" "/120"] ["/32" "/128"] address;
-  mkWireguardPeer = host: endpoint: with secrets; with network; {
-    inherit endpoint;
+  mkWireguardPeer = host: ep: with secrets; with network; {
+    endpoint = "${ep.addr}:${toString ep.port}";
     allowedIPs = with zkx.${host}; map cidrToHost [host4 host6] ++ ipv4 ++ ipv6;
     persistentKeepalive = 30;
     publicKey = (forHost host).keys.wireguard.public;
@@ -42,8 +42,7 @@ in {
   config = let
     hostname = config.networking.hostName;
     endpoints = secrets.network.zkxBastions;
-    listenPort = if !hasAttr hostname endpoints then 61573
-      else head (tail (strings.splitString ":" endpoints.${hostname}));
+    listenPort = endpoints.${hostname}.port or 61573;
     gwServerAssert = assertMsg (hasAttr cfg.gwServer endpoints)
                        "The specified bastion is unknown.";
   in mkIf cfg.enable {
