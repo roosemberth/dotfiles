@@ -60,9 +60,18 @@ in {
   };
 
   networking.defaultGateway.address = "5.255.96.1";
+  networking.defaultGateway6.address = "2a04:52c0:101::1";
   networking.interfaces.ens3.ipv4.addresses = [{
     address = "5.255.96.101";
     prefixLength = 24;
+  }];
+  networking.interfaces.ens3.ipv6.addresses = [{
+    address = "2a04:52c0:101:2a7::101";
+    prefixLength = 64;
+  }];
+  networking.interfaces.ens3.ipv6.routes = [{
+    address = "2a04:52c0:101::1";
+    prefixLength = 128;
   }];
 
   services.snapper.configs = let
