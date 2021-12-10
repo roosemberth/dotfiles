@@ -101,7 +101,7 @@ in {
   # };
   roos.sway.enable = true;
   roos.wireguard.enable = true;
-  roos.wireguard.gwServer = "Hellendaal";
+  roos.wireguard.gwServer = "Heimdaalr";
 
   # Output profiles
   roos.gConfigFn = hmCfg: {
