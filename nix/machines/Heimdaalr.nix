@@ -16,15 +16,25 @@
         extraConfig = "allow-update { key rfc2136key.orbstheorem.ch.; };";
       }];
     };
-    systemd.services.bind.preStart = let
-      srcfile = secrets.network.bind-zones."orbstheorem.ch";
-      cfgfile = pkgs.writeText "Replace orbstheorem.ch zone file.tmpfiles" ''
-        d /run/named/zones 0700 named root 0
-        C ${zone."orbstheorem.ch"} 0400 named root - ${srcfile}
-      '';
-    in ''
-      ${pkgs.systemd}/bin/systemd-tmpfiles --create --remove "${cfgfile}"
-    '';
+    systemd.services."bind-zone-orbstheorem.ch" = {
+      description = "Copy zonefile for orbstheorem.ch from the nix-store.";
+      requiredBy = ["bind.service"];
+      partOf = ["bind.service"];
+      before = ["bind.service"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = let
+          srcfile = secrets.network.bind-zones."orbstheorem.ch";
+          installCmd = "${pkgs.coreutils}/bin/install";
+        in pkgs.writeShellScript "copy-zonefile-for-bind" ''
+          ${pkgs.coreutils}/bin/rm -fr /run/named/zones
+          ${installCmd} -o named -g root -m 0755 -d /run/named/zones
+          ${installCmd} -o named -g root -m 0400 -T ${srcfile} ${zone."orbstheorem.ch"}
+        '';
+      };
+    };
+    systemd.services.bind.partOf = ["bind-zone-orbstheorem.ch.service"];
     systemd.tmpfiles.rules = [
       "f /keyring/dns/dns-orbstheorem.ch.keys.conf 0400 named root -"
     ];
