@@ -33,7 +33,8 @@
     security.acme.acceptTerms = true;
     security.acme.email = secrets.network.acme.email;
     security.acme.certs."orbstheorem.ch" = {
-      domain = "orbstheorem.ch";
+      extraDomainNames = ["*.orbstheorem.ch"];
+      group = "nginx";
       dnsProvider = "rfc2136";
       credentialsFile = "/keyring/acme/orbstheorem.ch.secret";
       dnsPropagationCheck = false;
@@ -42,12 +43,103 @@
       "f /keyring/acme/orbstheorem.ch.secret 0400 acme root -"
     ];
   };
+  nginxConfig = { secrets, ... }: {
+    networking.firewall.allowedTCPPorts = [80 443];
+    services.nginx = {
+      enable = true;
+      recommendedGzipSettings = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
+      clientMaxBodySize = "25G";
+
+      virtualHosts = with lib; let
+        sslOpts = c: {
+          onlySSL = c.onlySSL or true;
+          sslCertificate = "/var/lib/acme/orbstheorem.ch/cert.pem";
+          sslCertificateKey = "/var/lib/acme/orbstheorem.ch/key.pem";
+        };
+      in mapAttrs (_: c: c // sslOpts c) {
+        "orbstheorem.ch" = {
+          default = true;
+          onlySSL = false;
+          forceSSL = true;
+          root = "/var/www/orbstheorem.ch";
+          locations."/".extraConfig = ''
+            error_page 404 = /404.html;
+            index      404.html;
+          '';
+          locations."~ ^/(_matrix|.well-known/matrix/)" = {
+            proxyPass = "http://minerva.intranet.orbstheorem.ch:8448";
+          };
+        };
+
+        "monitoring.orbstheorem.ch" = {
+          extraConfig = ''
+            auth_basic "PPQ 821x blue";
+            auth_basic_user_file /keyring/nginx/monitoring.htpasswd;
+          '';
+          locations."/".proxyPass = "http://minerva.intranet.orbstheorem.ch:9090";
+        };
+
+        "heig.orbstheorem.ch".locations."/".proxyPass =
+          "http://mimir.r.orbstheorem.ch:2270";
+
+        "greenzz.orbstheorem.ch" = {
+          locations."/".proxyPass = "http://minerva.intranet.orbstheorem.ch:43000";
+          locations."/grafana/".proxyPass =
+            "http://minerva.intranet.orbstheorem.ch:43001";
+          locations."/public/pro/".proxyPass =
+            "http://minerva.intranet.orbstheorem.ch:43003";
+        };
+
+        "powerflow.orbstheorem.ch".locations."/".proxyPass =
+          "http://minerva.intranet.orbstheorem.ch:45100";
+
+        "minerva.orbstheorem.ch".locations."/".proxyPass =
+          "http://minerva.intranet.orbstheorem.ch";
+
+        "files.orbstheorem.ch" = {
+          root = "/var/www/files.orbstheorem.ch";
+          extraConfig = ''
+            add_header X-Frame-Options DENY;
+            add_header Strict-Transport-Security max-age=2678400;  # 1 month
+          '';
+
+          locations."/".extraConfig = ''
+            autoindex off;
+            root /var/www/files/orbstheorem.ch/landing;
+          '';
+          locations."/public/".extraConfig = "autoindex on;";
+          locations."~ ^/(.+?)/(.*)?$".extraConfig = ''
+            autoindex on;
+            alias users/$1/files/$2;
+            auth_basic "Speak friend and come in";
+            auth_basic_user_file /var/www/files.orbstheorem.ch/users/$1/htpasswd;
+          '';
+        };
+
+        "~(?<subdomain>[^\\.]*).mimir.orbstheorem.ch".locations."/" = {
+          proxyWebsockets = true;
+          extraConfig = ''
+            proxy_set_header  X-Real-IP         $remote_addr;
+            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+            proxy_set_header  Host              "$subdomain.rec.la";
+            proxy_set_header  X-Forwarded-Proto https;
+            proxy_pass        https://mimir.r.orbstheorem.ch:443;
+          '';
+        };
+      };
+    } // secrets.opaque-nginx."orbstheorem.ch";
+    systemd.services.nginx.after = ["acme-finished-orbstheorem.ch.target"];
+    systemd.services.nginx.requires = ["acme-finished-orbstheorem.ch.target"];
+  };
 in {
   imports = [
     ../modules
     ./Heimdaalr-static.nix
     acmeConfig
     bindConfig
+    nginxConfig
   ];
 
   boot.cleanTmpDir = true;
