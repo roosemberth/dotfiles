@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }: let
   bindConfig = { secrets, ... }: let
-    zone."orbstheorem.ch" = "/run/bind/orbstheorem.ch.zone";
+    zone."orbstheorem.ch" = "/run/named/zones/orbstheorem.ch.zone";
   in {
     networking.firewall.allowedUDPPorts = [53];
     services.bind = {
@@ -19,7 +19,7 @@
     systemd.services.bind.preStart = let
       srcfile = secrets.network.bind-zones."orbstheorem.ch";
       cfgfile = pkgs.writeText "Replace orbstheorem.ch zone file.tmpfiles" ''
-        d /run/bind 0700 named root 0
+        d /run/named/zones 0700 named root 0
         C ${zone."orbstheorem.ch"} 0400 named root - ${srcfile}
       '';
     in ''
