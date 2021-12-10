@@ -155,6 +155,7 @@ in {
 
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
+  roos.wireguard.enable = true;
 
   security.pam.enableSSHAgentAuth = true;
   services = {
