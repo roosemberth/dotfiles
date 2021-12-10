@@ -29,7 +29,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     gitAndTools.git-annex
-    nvim-roos-bare
+    nvim-roos.essential
   ];
 
   hardware.cpu.intel.updateMicrocode = true;
