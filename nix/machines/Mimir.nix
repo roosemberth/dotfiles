@@ -67,8 +67,7 @@ in {
       keep-outputs = true
       keep-derivations = true
     '';
-    daemonNiceLevel = 19;
-    daemonIONiceLevel = 7;
+    daemonIOSchedPriority = 7;
     package = pkgs.nixUnstable;
     trustedUsers = [ "roosemberth" ];
     # Is this a good idea?
