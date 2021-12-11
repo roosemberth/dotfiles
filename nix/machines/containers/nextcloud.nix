@@ -6,12 +6,20 @@ in {
     bindMounts.nextcloud.hostPath = "${hostDataDirBase}/nextcloud";
     bindMounts.nextcloud.mountPoint = "/var/lib/nextcloud";
     bindMounts.nextcloud.isReadOnly = false;
-    config.services = {
-      nextcloud = {
+    config = {
+      networking.firewall.allowedTCPPorts = [ 80 ];
+      networking.interfaces.eth0.ipv4.routes = [
+        { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
+      ];
+      networking.nameservers = [ "1.1.1.1" ];
+      networking.useHostResolvConf = false;
+      nix.package = pkgs.nixUnstable;
+      nix.extraOptions = "experimental-features = nix-command flakes";
+      services.nextcloud = {
         enable = true;
         home = "/var/lib/nextcloud";
         https = true;
-        hostName = "files.orbstheorem.ch";
+        hostName = "nextcloud.orbstheorem.ch";
         maxUploadSize = "50G";
         enableImagemagick = true;
         autoUpdateApps.enable = true;
@@ -21,11 +29,11 @@ in {
         config.dbpass = secrets.nextcloud.dbpass;
         config.dbtype = "pgsql";
         config.dbport = "5432";
-        config.dbhost = "10.231.136.1";
+        config.dbhost = "minerva.intranet.orbstheorem.ch";
         config.defaultPhoneRegion = "CH";
         config.overwriteProtocol = "http";
       };
-      prometheus.exporters.nextcloud = {
+      services.prometheus.exporters.nextcloud = {
         # FIXME
         enable = false; # true;
         url = "http://localhost";
@@ -55,6 +63,9 @@ in {
   networking.firewall.extraCommands = let
     exitIface = config.networking.nat.externalInterface;
   in ''
+    # Allow a database connection.
+    iptables -A INPUT -s 10.231.136.7/32 -d 10.13.255.13 \
+      -p tcp -m tcp --dport 5432 -j ACCEPT
     # Restrict access to hypervisor network
     iptables -A INPUT -s 10.231.136.7/32 -j LOG \
       --log-prefix "dropped restricted connection" --log-level 6
