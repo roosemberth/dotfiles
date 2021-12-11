@@ -31,7 +31,7 @@ in {
         config.dbport = "5432";
         config.dbhost = "minerva.intranet.orbstheorem.ch";
         config.defaultPhoneRegion = "CH";
-        config.overwriteProtocol = "http";
+        config.overwriteProtocol = "https";
       };
       services.prometheus.exporters.nextcloud = {
         # FIXME
