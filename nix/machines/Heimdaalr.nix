@@ -118,6 +118,9 @@
         "minerva.orbstheorem.ch".locations."/".proxyPass =
           "http://minerva.intranet.orbstheorem.ch";
 
+        "nextcloud.orbstheorem.ch".locations."/".proxyPass =
+          "http://minerva.intranet.orbstheorem.ch:42080";
+
         "files.orbstheorem.ch" = {
           root = "/var/www/files.orbstheorem.ch";
           extraConfig = ''
