@@ -43,7 +43,7 @@
     security.acme.acceptTerms = true;
     security.acme.email = secrets.network.acme.email;
     security.acme.certs."orbstheorem.ch" = {
-      extraDomainNames = ["*.orbstheorem.ch"];
+      extraDomainNames = ["*.orbstheorem.ch" "*.mimir.orbstheorem.ch"];
       group = "nginx";
       dnsProvider = "rfc2136";
       credentialsFile = "/keyring/acme/orbstheorem.ch.secret";
