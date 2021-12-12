@@ -141,6 +141,9 @@
           '';
         };
 
+        "amt.mimir.orbstheorem.ch".locations."/".proxyPass =
+          "http://mimir.r.orbstheorem.ch:48080";
+
         "~(?<subdomain>[^\\.]*).mimir.orbstheorem.ch".locations."/" = {
           proxyWebsockets = true;
           extraConfig = ''
