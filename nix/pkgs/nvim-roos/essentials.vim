@@ -57,7 +57,7 @@ nmap ga <Plug>(EasyAlign)
 " Fugitive
 nnoremap <leader>s :Git<CR>
 nnoremap <leader>d :Gdiff<CR>
-nnoremap <leader>w :Gwrite<CR>
+nnoremap <leader>W :Gwrite<CR>
 nnoremap <leader>c :Git commit -S -v -s 
 nnoremap <leader><C-t> :vs term://%:h:r//tig<CR>i
 au FileType fugitive nnoremap <buffer> <leader>l :execute '
