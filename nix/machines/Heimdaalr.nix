@@ -141,13 +141,8 @@
           '';
         };
 
-        "amt.mimir.orbstheorem.ch" = {
-          locations."/".proxyPass = "http://mimir.r.orbstheorem.ch:48080";
-          locations."/uploads".extraConfig = ''
-            autoindex off;
-            root /var/www/amt.mimir.orbstheorem.ch;
-          '';
-        };
+        "amt.mimir.orbstheorem.ch".locations."/".proxyPass =
+          "http://mimir.r.orbstheorem.ch:48080";
 
         "~(?<subdomain>[^\\.]*).mimir.orbstheorem.ch".locations."/" = {
           proxyWebsockets = true;
