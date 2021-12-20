@@ -13,8 +13,6 @@ in {
     ./Minerva-static.nix
     ./containers/databases.nix
     ./containers/named.nix
-    ./containers/greenzz.nix
-    ./containers/greenzz-prod.nix
     ./containers/nextcloud.nix
     ./containers/matrix.nix
     ./containers/monitoring.nix
