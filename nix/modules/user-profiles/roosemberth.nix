@@ -21,6 +21,7 @@ in
         "input"
         "libvirtd"
         "networkmanager"
+        "tss"
         "video"
         "wheel"
         "wireshark"
