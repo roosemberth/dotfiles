@@ -126,6 +126,7 @@ in
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
+  security.tpm2.enable = true;
   services.btrfs.autoScrub.enable = true;
   services.fwupd.enable = true;
   services.snapper.configs = let
