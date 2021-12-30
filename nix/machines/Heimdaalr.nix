@@ -63,6 +63,8 @@
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       clientMaxBodySize = "25G";
+      eventsConfig = "worker_connections 4096;";
+      appendConfig = "worker_rlimit_nofile 4096;";
 
       virtualHosts = with lib; let
         sslOpts = c: {
