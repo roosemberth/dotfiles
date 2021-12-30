@@ -12,6 +12,8 @@ in {
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
+      nix.package = pkgs.nixUnstable;
+      nix.extraOptions = "experimental-features = nix-command flakes";
       services.postgresql = {
         enable = true;
         enableTCPIP = true;
