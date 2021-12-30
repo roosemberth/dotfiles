@@ -24,9 +24,10 @@ in {
         enableImagemagick = true;
         autoUpdateApps.enable = true;
         config.adminuser = secrets.nextcloud.adminuser;
-        config.adminpass = secrets.nextcloud.adminpass;
+        config.adminpassFile =
+          "${pkgs.writeText "nap" secrets.nextcloud.adminpass}";
         config.dbuser = secrets.nextcloud.dbuser;
-        config.dbpass = secrets.nextcloud.dbpass;
+        config.dbpassFile = "${pkgs.writeText "ndp" secrets.nextcloud.dbpass}";
         config.dbtype = "pgsql";
         config.dbport = "5432";
         config.dbhost = "minerva.intranet.orbstheorem.ch";
