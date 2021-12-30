@@ -56,7 +56,10 @@
       Mimir-vm = defFlakeSystem {} ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = defFlakeSystem {} ./nix/machines/Minerva.nix;
+      Minerva = defFlakeSystem {
+        nixpkgs = nixpkgs-porcupine;
+        home-manager = hm-porcupine;
+      } ./nix/machines/Minerva.nix;
       Heimdaalr = defFlakeSystem {
         nixpkgs = nixpkgs-porcupine;
         home-manager = hm-porcupine;
