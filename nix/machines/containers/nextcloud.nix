@@ -62,6 +62,8 @@ in {
     # Allow a database connection.
     iptables -A INPUT -s 10.231.136.7/32 -d 10.13.255.13 \
       -p tcp -m tcp --dport 5432 -j ACCEPT
+    iptables -A INPUT -s 10.231.136.7/32 -p tcp -m tcp --dport 53 -j ACCEPT
+    iptables -A INPUT -s 10.231.136.7/32 -p udp -m udp --dport 53 -j ACCEPT
     # Restrict access to hypervisor network
     iptables -A INPUT -s 10.231.136.7/32 -j LOG \
       --log-prefix "dropped restricted connection" --log-level 6

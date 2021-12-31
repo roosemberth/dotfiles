@@ -64,6 +64,10 @@ in {
     ip46tables -w -N in-from-orion
     ip46tables -w -N fwd-from-orion
 
+    # Allow DNS
+    ip46tables -w -A in-from-orion -p tcp -m tcp --dport 53 -j ACCEPT
+    ip46tables -w -A in-from-orion -p udp -m udp --dport 53 -j ACCEPT
+
     # Public internet.
     ip46tables -A fwd-from-orion -o ${exitIface} -j ACCEPT
     iptables -A fwd-from-orion -d ${cidrRevProxy} -j ACCEPT
