@@ -1,5 +1,6 @@
-{ config, pkgs, secrets, ... }:
-{
+{ config, lib, pkgs, secrets, ... }: let
+  removeCIDR = with lib; str: head (splitString "/" str);
+in {
   containers.named = {
     autoStart = true;
     config.services.bind = {
@@ -18,12 +19,11 @@
         "2a01:4f8:161:3441::1"                  # ns3.de      Frankfurt
         "2a00:f826:8:2::195"                    # ns31.de     Frankfurt
       ];
+      listenOn = map removeCIDR [ secrets.network.zkx.Minerva.host4 ];
+      listenOnIpv6 = map removeCIDR [ secrets.network.zkx.Minerva.host6 ];
       zones = secrets.network.allDnsZones;
     };
-    forwardPorts = [
-      {hostPort = 53; protocol = "tcp";}
-      {hostPort = 53; protocol = "udp";}
-    ];
+    ephemeral = false; # TODO: isolate cache as a spool directory...
   };
 
   networking.search = with secrets.network.zksDNS; [ search ];
