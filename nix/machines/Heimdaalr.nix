@@ -158,6 +158,12 @@
     systemd.services.nginx.after = ["acme-finished-orbstheorem.ch.target"];
     systemd.services.nginx.requires = ["acme-finished-orbstheorem.ch.target"];
   };
+  monitoringConfig = { secrets, ... }: {
+    services.prometheus.exporters.node.enable = true;
+    services.prometheus.exporters.node.listenAddress = let
+      removeCIDR = with lib; str: head (splitString "/" str);
+    in removeCIDR secrets.network.zkx.Heimdaalr.host4;
+  };
 in {
   imports = [
     ../modules
@@ -165,6 +171,7 @@ in {
     acmeConfig
     bindConfig
     nginxConfig
+    monitoringConfig
   ];
 
   boot.cleanTmpDir = true;
