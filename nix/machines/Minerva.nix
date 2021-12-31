@@ -12,6 +12,7 @@ in {
     ../modules
     ./Minerva-static.nix
     ./containers/databases.nix
+    ./containers/home-automation.nix
     ./containers/named.nix
     ./containers/nextcloud.nix
     ./containers/matrix.nix
