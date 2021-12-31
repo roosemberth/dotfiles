@@ -45,45 +45,10 @@ in {
     ];
   };
 
-  networking.firewall.extraCommands = let
-    exitIface = config.networking.nat.externalInterface;
-    cidrContainer = "10.231.136.8/32";
-    cidrRevProxy = "10.13.255.101/32";
-  in ''
-    # Disengage, flush are delete helper chains. TODO: IPv6
-    iptables -w -D INPUT -s ${cidrContainer} \
-      -j in-from-orion 2> /dev/null || true
-    ip46tables -w -F in-from-orion 2> /dev/null || true
-    ip46tables -w -X in-from-orion 2> /dev/null || true
-    iptables -w -D FORWARD -s ${cidrContainer} \
-      -j fwd-from-orion 2> /dev/null || true
-    ip46tables -w -F fwd-from-orion 2> /dev/null || true
-    ip46tables -w -X fwd-from-orion 2> /dev/null || true
-
-    # Create helper chains.
-    ip46tables -w -N in-from-orion
-    ip46tables -w -N fwd-from-orion
-
-    # Allow DNS
-    ip46tables -w -A in-from-orion -p tcp -m tcp --dport 53 -j ACCEPT
-    ip46tables -w -A in-from-orion -p udp -m udp --dport 53 -j ACCEPT
-
-    # Public internet.
-    ip46tables -A fwd-from-orion -o ${exitIface} -j ACCEPT
-    iptables -A fwd-from-orion -d ${cidrRevProxy} -j ACCEPT
-
-    # Log policy failures.
-    ip46tables -A in-from-orion -j LOG \
-      --log-prefix "Drop connection from Orion" --log-level 6
-    ip46tables -A in-from-orion -j DROP
-    ip46tables -A fwd-from-orion -j LOG \
-      --log-prefix "Drop forward from Orion" --log-level 6
-    ip46tables -A fwd-from-orion -j DROP
-
-    # Engage helper chains. TODO: IPv6
-    iptables -w -I INPUT -s ${cidrContainer} -j in-from-orion
-    iptables -w -I FORWARD -s ${cidrContainer} -j fwd-from-orion
-  '';
+  roos.container-host.firewall.orion = {
+    in-rules = [ "-p udp -m udp --dport 53 -j ACCEPT" ];
+    ipv4.fwd-rules = [ "-d 10.13.255.101/32 -j ACCEPT" ];
+  };
 
   systemd.services.orion-paths = {
     description = "Prepare paths used by home automation services.";
