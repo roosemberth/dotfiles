@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, ... }: let
+{ config, pkgs, secrets, containerHostConfig, ... }: let
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.nextcloud = {
@@ -11,7 +11,7 @@ in {
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = [ "1.1.1.1" ];
+      networking.nameservers = containerHostConfig.nameservers;
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
@@ -56,11 +56,6 @@ in {
     ];
   };
 
-  networking.bridges.containers.interfaces = [];
-  networking.interfaces.containers.ipv4.addresses = [
-    { address = "10.231.136.1"; prefixLength = 24; }
-  ];
-  networking.nat.internalInterfaces = ["containers"];
   networking.firewall.extraCommands = let
     exitIface = config.networking.nat.externalInterface;
   in ''

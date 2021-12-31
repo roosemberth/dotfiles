@@ -48,6 +48,10 @@ in {
   networking.nat.externalInterface = "enp0s31f6";
 
   roos.dotfilesPath = ../..;
+  roos.container-host = {
+    enable = true;
+    nameservers = [ "1.1.1.1" ];
+  };
   roos.nginx-fileshare.enable = true;
   roos.nginx-fileshare.directory = "/srv/shared";
   roos.user-profiles.reduced = ["roosemberth"];

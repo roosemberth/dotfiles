@@ -23,6 +23,7 @@ in {
     ({ secrets, ... }: { home-manager.extraSpecialArgs.secrets = secrets; })
     ./agenda.nix
     ./base.nix
+    ./container-host.nix
     ./dev.nix
     ./keyring.nix
     ./media.nix

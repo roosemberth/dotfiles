@@ -50,11 +50,6 @@
     ];
   };
 
-  networking.bridges.containers.interfaces = [];
-  networking.interfaces.containers.ipv4.addresses = [
-    { address = "10.231.136.1"; prefixLength = 24; }
-  ];
-  networking.nat.internalInterfaces = ["containers"];
   networking.firewall.extraCommands = let
     exitIface = config.networking.nat.externalInterface;
   in ''
