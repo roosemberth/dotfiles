@@ -1,23 +1,18 @@
 {
-  inputs.nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-21.05";
   inputs.nixpkgs-porcupine.url = "github:NixOS/nixpkgs/nixos-21.11";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
-  inputs.hm-stable.url = "github:nix-community/home-manager/release-21.05";
-  inputs.hm-stable.inputs.nixpkgs.follows = "nixpkgs-stable";
   inputs.hm-porcupine.url = "github:nix-community/home-manager/release-21.11";
   inputs.hm-porcupine.inputs.nixpkgs.follows = "nixpkgs-porcupine";
   inputs.hm-unstable.url = "github:nix-community/home-manager";
   inputs.hm-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.deploy-rs.url = "github:serokell/deploy-rs";
-  inputs.deploy-rs.inputs.nixpkgs.follows = "nixpkgs-stable";
+  inputs.deploy-rs.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
   outputs = flakes@{
     self,
     nixpkgs-unstable,
     nixpkgs-porcupine,
-    nixpkgs-stable,
-    hm-stable,
     hm-porcupine,
     hm-unstable,
     flake-utils,
@@ -25,8 +20,8 @@
   }:
   let
     defFlakeSystem = {
-      nixpkgs ? nixpkgs-stable,
-      home-manager ? hm-stable,
+      nixpkgs ? nixpkgs-porcupine,
+      home-manager ? hm-porcupine,
     }: baseCfg: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ ... }: {
@@ -56,17 +51,11 @@
       Mimir-vm = defFlakeSystem {} ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = defFlakeSystem {
-        nixpkgs = nixpkgs-porcupine;
-        home-manager = hm-porcupine;
-      } ./nix/machines/Minerva.nix;
-      Heimdaalr = defFlakeSystem {
-        nixpkgs = nixpkgs-porcupine;
-        home-manager = hm-porcupine;
-      } ./nix/machines/Heimdaalr.nix;
+      Minerva = defFlakeSystem {} ./nix/machines/Minerva.nix;
+      Heimdaalr = defFlakeSystem {} ./nix/machines/Heimdaalr.nix;
       batman = defFlakeSystem {} {
-        _module.args.nixosSystem = nixpkgs-stable.lib.nixosSystem;
-        _module.args.home-manager = hm-stable.nixosModules.home-manager;
+        _module.args.nixosSystem = nixpkgs-porcupine.lib.nixosSystem;
+        _module.args.home-manager = hm-porcupine.nixosModules.home-manager;
         imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
@@ -94,7 +83,7 @@
     templates.generic.path = ./nix/flake-templates/generic;
     templates.generic.description = "Generic template for my projects.";
     defaultTemplate = self.templates.generic;
-    devShells = forAllSystems { nixpkgs = nixpkgs-stable; }
+    devShells = forAllSystems { nixpkgs = nixpkgs-porcupine; }
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
   };
 }
