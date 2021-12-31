@@ -1,12 +1,30 @@
 { config, pkgs, lib, ... }:
 let
-  # Hack since secrets are not available to the machine top-level definition...
-  networkDnsConfig =
-    { secrets, ... }:
-    {
-      networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
-      networking.search = with secrets.network.zksDNS; [ search ];
+  networkConfig = { secrets, ... }: let
+    hostBridgeV4Addrs = [{ address = "10.231.136.1"; prefixLength = 24; }];
+  in {
+    networking = {
+      # Ask the named container to resolve DNS for us.
+      nameservers = with secrets.network.zksDNS; v6 ++ v4;
+      search = with secrets.network.zksDNS; [ search ];
     };
+    services.resolved = {
+      dnssec = "false";  # Our upstream DNS server does not provide DNSSEC.
+      llmnr = "false";
+      extraConfig = ''
+        # Allow queries from containers.
+        ${lib.concatMapStringsSep "\n"
+            (v: "DNSStubListenerExtra=${v.address}") hostBridgeV4Addrs}
+      '';
+    };
+    roos.container-host = {
+      enable = true;
+      iface.ipv4.addresses = hostBridgeV4Addrs;
+      # Cache DNS for containers.
+      # This implies containers can resolve protected networks.
+      nameservers = map (v: v.address) hostBridgeV4Addrs;
+    };
+  };
 in {
   imports = [
     ../modules
@@ -18,7 +36,7 @@ in {
     ./containers/matrix.nix
     ./containers/monitoring.nix
     ./containers/powerflow.nix
-    networkDnsConfig
+    networkConfig
   ];
 
   boot.cleanTmpDir = true;
@@ -48,10 +66,6 @@ in {
   networking.nat.externalInterface = "enp0s31f6";
 
   roos.dotfilesPath = ../..;
-  roos.container-host = {
-    enable = true;
-    nameservers = [ "1.1.1.1" ];
-  };
   roos.nginx-fileshare.enable = true;
   roos.nginx-fileshare.directory = "/srv/shared";
   roos.user-profiles.reduced = ["roosemberth"];
@@ -66,8 +80,6 @@ in {
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     prometheus.exporters.node.enable = true;
-    resolved.dnssec = "false";  # The named container DNS does not provide DNSSEC.
-    resolved.llmnr = "false";
     tlp.enable = true;
     tlp.settings.CPU_SCALING_GOVERNOR_ON_AC = "performance";
     upower.enable = true;
