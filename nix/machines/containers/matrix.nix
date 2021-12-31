@@ -9,7 +9,8 @@
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = containerHostConfig.nameservers;
+      # The host network cannot handle the DNS traffic from Matrix...
+      networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
@@ -75,6 +76,8 @@
       # Replies from metrics port
       "-d 10.13.0.0/16 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
       "-d 10.231.136.0/24 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
+      # Use zkx DNS resolver
+      "-d 10.13.0.0/16 -p udp -m udp --dport 53 -j ACCEPT"
     ];
   };
 }

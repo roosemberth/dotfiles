@@ -8,7 +8,11 @@ in {
       cacheNetworks =
         ["127.0.0.0/8" "::1/128"]
         ++ secrets.network.trustedNetworks.ipv4
-        ++ secrets.network.trustedNetworks.ipv6;
+        ++ secrets.network.trustedNetworks.ipv6
+        ++ [
+          "10.231.136.4" # Exceptionally resolve for the matrix container...
+          # The amount of queries made by matrix breaks systemd-resolved...
+        ];
       forwarders = [  # OpenNIC Servers
         "2a01:7e01::f03c:91ff:febc:322"         # ns2.he.de   Frankfurt
         "2a01:4f9:c010:6093::3485"              # ns2.fi      Helsinki
