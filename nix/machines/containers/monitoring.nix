@@ -50,14 +50,11 @@
     ];
   };
 
-  networking.firewall.extraCommands = let
-    exitIface = config.networking.nat.externalInterface;
-  in ''
-    # Restrict access to hypervisor network
-    iptables -A INPUT   -s 10.231.136.6/32 -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.6/32 -j ACCEPT
-    # Need to reach hosts in the same network plane: enable hairpin
-    iptables -t nat -A POSTROUTING -s 10.231.136.0/24 \
-      -d 10.231.136.0/24 -j MASQUERADE
-  '';
+  roos.container-host.firewall.monitoring = {
+    in-rules = [
+      "-p udp -m udp --dport 53 -j ACCEPT"
+      "-j ACCEPT"  # Monitoring can access the host.
+    ];
+    ipv4.fwd-rules = [ "-j ACCEPT" ];
+  };
 }

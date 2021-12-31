@@ -62,29 +62,19 @@
     ];
   };
 
-  networking.firewall.extraCommands = let
-    exitIface = config.networking.nat.externalInterface;
-  in ''
-    # Restrict access to hypervisor network
-    iptables -A INPUT -s 10.231.136.4/32 -d 10.13.255.13/32 \
-      -p tcp -m tcp --dport 5432 -j ACCEPT
-    iptables -A INPUT -s 10.231.136.4/32 -p tcp -m tcp --dport 53 -j ACCEPT
-    iptables -A INPUT -s 10.231.136.4/32 -p udp -m udp --dport 53 -j ACCEPT
-    iptables -A INPUT -s 10.231.136.4/32 -j LOG \
-      --log-prefix "dropped restricted connection" --log-level 6
-    iptables -A INPUT -s 10.231.136.4/32 \
-      -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
-    iptables -A INPUT -s 10.231.136.4/32 -j DROP
-    # Allow access to the database
-    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.255.101/32 -j ACCEPT
-    # Allow replies from the metrics port
-    iptables -A FORWARD -s 10.231.136.4/32 -d 10.13.0.0/16 \
-      -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.4/32 -d 10.231.136.0/24 \
-      -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.4/32 -o ${exitIface} -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.4/32 -j LOG \
-      --log-prefix "dropped restricted fwd connection" --log-level 6
-    iptables -A FORWARD -s 10.231.136.4/32 -j DROP
-  '';
+  roos.container-host.firewall.matrix = {
+    in-rules = [
+      # DNS
+      "-p udp -m udp --dport 53 -j ACCEPT"
+      # Database
+      "-p tcp -m tcp --dport 5432 -j ACCEPT"
+    ];
+    ipv4.fwd-rules = [
+      # Replies to the reverse proxy
+      "-d 10.13.255.101/32 -m state --state RELATED,ESTABLISHED -j ACCEPT"
+      # Replies from metrics port
+      "-d 10.13.0.0/16 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
+      "-d 10.231.136.0/24 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
+    ];
+  };
 }
