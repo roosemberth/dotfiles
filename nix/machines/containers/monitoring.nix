@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }:
+{ config, pkgs, lib, secrets, containerHostConfig, ... }:
 {
   containers.monitoring = {
     autoStart = true;
@@ -10,7 +10,7 @@
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
+      networking.nameservers = containerHostConfig.nameservers;
       networking.search = with secrets.network.zksDNS; [ search ];
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
