@@ -1,0 +1,12 @@
+# vim:ft=yaml
+groups:
+- name: alerting
+  rules:
+    - alert: NodeDown
+      expr: up{job="node"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Node {{ $labels.instance }} down"
+        description: "Node {{ $labels.instance }} has been unreachable for 5m."

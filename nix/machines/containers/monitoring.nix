@@ -6,7 +6,7 @@
     bindMounts.prometheus.mountPoint = "/var/lib/prometheus2";
     bindMounts.prometheus.isReadOnly = false;
     config = {
-      networking.firewall.allowedTCPPorts = [ 9090 ];
+      networking.firewall.allowedTCPPorts = [ 9090 9093 ];
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
@@ -21,6 +21,7 @@
         webExternalUrl = "https://monitoring.orbstheorem.ch/";
         ruleFiles = [
           ./prometheus/synapse-v2.rules  # Rules for matrix-synapse
+          ./prometheus/alerts.rules
         ];
         scrapeConfigs = [{
           job_name = "synapse";
@@ -42,6 +43,25 @@
             "minerva.intranet.orbstheorem.ch:9187"
           ];}];
         }];
+        alertmanagers = [{ static_configs = [{ targets = [ "localhost:9093" ]; }]; }];
+        alertmanager.enable = true;
+        alertmanager.configuration = {
+          route = {
+            receiver = "default-receiver";
+            group_wait = "1m";
+            repeat_interval = "12h";
+            group_by = [ "severity" ];
+            routes = [
+              { receiver = "critical-receiver"; match.severity = "critical"; }
+            ];
+          };
+          receivers = [
+            { name = "default-receiver"; }
+            { name = "critical-receiver"; }
+          ];
+        };
+        alertmanager.webExternalUrl = "https://alerts.orbstheorem.ch/";
+      };
       };
     };
     ephemeral = true;
@@ -51,6 +71,7 @@
     privateNetwork = true;
     forwardPorts = [
       { hostPort = 9090; protocol = "tcp"; }
+      { hostPort = 9093; protocol = "tcp"; }
     ];
   };
 
