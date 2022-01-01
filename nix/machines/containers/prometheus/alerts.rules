@@ -10,3 +10,11 @@ groups:
       annotations:
         summary: "Node {{ $labels.instance }} down"
         description: "Node {{ $labels.instance }} has been unreachable for 5m."
+    - alert: Missing metrics data
+      expr: up{job!="node"} == 0
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: >-
+          Failed to retrieve {{ $labels.job }} metrics from {{ $labels.instance }}
