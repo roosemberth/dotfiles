@@ -76,6 +76,24 @@ in {
       pygobject3 pycairo xdg gtk3 gobject-introspection
     ];
   };
+
+  matrix-alertmanager-receiver = with final; buildGoModule rec {
+    pname = "matrix-alertmanager-receiver";
+    version = "0.1.2";
+    src = fetchgit {
+      url = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
+      rev = "refs/tags/${version}";
+      sha256 = "sha256-F6Cn0lmASAjWGEBCmyLdfz4r06fDTEfZQcynfA/RRtI=";
+    };
+    vendorSha256 = "sha256-7tRCX9FzOsLXCTWWjLp3hr1kegt1dxsbCKfC7tICreo=";
+    meta = with lib; {
+      description = "Forwards prometheus alerts to Matrix rooms";
+      homepage = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.all;
+    };
+  };
+
   remap-pa-client = with final; python3.pkgs.buildPythonApplication {
     pname = "remap-pa-client";
     version = "0.0";
