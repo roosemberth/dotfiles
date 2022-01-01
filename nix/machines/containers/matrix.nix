@@ -49,6 +49,7 @@
           tls_private_key_path
           database_type
           database_args
+          registration_shared_secret
           ;
       };
     };
