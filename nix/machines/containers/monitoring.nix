@@ -19,6 +19,12 @@
       execute-command = send-monitoring-sms-alert;
     }
   ]);
+  matrix-amconfig = (pkgs.formats.toml {}).generate "matrix-amconfig.toml" {
+    inherit (secrets.monitoring.alert-routes.matrix) TargetRoomID MXID MXToken;
+    Homeserver = "https://orbstheorem.ch";
+    HTTPPort = 9096;
+    HTTPAddress = "[::1]";
+  };
 in {
   containers.monitoring = {
     autoStart = true;
@@ -63,7 +69,7 @@ in {
             "minerva.intranet.orbstheorem.ch:9187"
           ];}];
         }];
-        alertmanagers = [{ static_configs = [{ targets = [ "localhost:9093" ]; }]; }];
+        alertmanagers = [{ static_configs = [{ targets = [ "[::1]:9093" ]; }]; }];
         alertmanager.enable = true;
         alertmanager.configuration = {
           route = {
@@ -76,9 +82,10 @@ in {
             ];
           };
           receivers = [
-            { name = "default-receiver"; }
-            {
-              name = "sms"; webhook_configs = [{
+            { name = "default-receiver";
+              webhook_configs = [{ url = "http://localhost:9096/alert"; }];
+            }
+            { name = "sms"; webhook_configs = [{
                 send_resolved = false;
                 url = "http://localhost:9095/hooks/monitoring-sms-notification";
               }];
@@ -96,6 +103,18 @@ in {
         serviceConfig.ExecStart = let
           webhook = "${pkgs.webhook}/bin/webhook";
         in "${webhook} -verbose -ip 127.0.0.1 -port 9095 -hooks ${hooksF}";
+        serviceConfig.Restart = "always";
+        serviceConfig.RestartSec = 3;
+      };
+
+      systemd.services."matrix-alertmanager-receiver" = {
+        description = "webhooks server relaying alertmanager actions to matrix";
+        requiredBy = ["alertmanager.service"];
+        partOf = ["alertmanager.service"];
+        before = ["alertmanager.service"];
+        serviceConfig.ExecStart = let
+          pkg = pkgs.matrix-alertmanager-receiver;
+        in "${pkg}/bin/matrix-alertmanager-receiver -config ${matrix-amconfig}";
         serviceConfig.Restart = "always";
         serviceConfig.RestartSec = 3;
       };
