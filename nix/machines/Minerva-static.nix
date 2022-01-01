@@ -47,31 +47,31 @@ in
 
   fileSystems =
   let
-    bindActiveSubvolume = extraOpts: subvolName:
-      bindBtrfsSubvol
-        (extraOpts ++ ["user_subvol_rm_allowed"])
-        "/subvolumes/active/${subvolName}";
-    bindSnapshotSubvolume = extraOpts: subvolName:
-      bindBtrfsSubvol
-        (extraOpts ++ ["autodefrag" "defaults"])
-        "/subvolumes/snapshots/${subvolName}";
-    bindBtrfsSubvol = extraOpts: subvolPath: {
+    mainSubvol = subvol: opts:
+      fromSubvol
+        "/subvolumes/active/${subvol}"
+        (opts ++ ["user_subvol_rm_allowed"]);
+    snapshotSubvol = subvol: opts:
+      fromSubvol
+        "/subvolumes/snapshots/${subvol}"
+        (opts ++ ["autodefrag" "defaults"]);
+    fromSubvol = subvol: opts: {
       fsType = "btrfs";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=${subvolPath}" "compress=zstd"] ++ extraOpts;
+      options = ["subvol=${subvol}" "compress=zstd"] ++ opts;
     };
   in {
-    "/boot" = {
-      fsType = "vfat";
-      device = "/dev/disk/by-uuid/${uuids.bootPart}";
-    };
-    "/" = bindActiveSubvolume [] "rootfs";
-    "/var" = bindActiveSubvolume ["autodefrag"] "var";
-    "/var/.snapshots" = bindSnapshotSubvolume [] "var";
-    "/nix" = bindActiveSubvolume ["autodefrag" "noatime" "nodatacow"] "nix";
-    "/home" = bindActiveSubvolume ["autodefrag"] "home";
-    "/home/.snapshots" = bindSnapshotSubvolume [] "home";
-    "/mnt/root-btrfs" = bindBtrfsSubvol ["nodatacow" "noatime" "noexec"] "/";
+    "/boot".device = "/dev/disk/by-uuid/${uuids.bootPart}";
+
+    "/"                = mainSubvol "rootfs" [];
+    "/var"             = mainSubvol "var"    ["autodefrag"];
+    "/nix"             = mainSubvol "nix"    ["autodefrag" "noatime" "nodatacow"];
+    "/home"            = mainSubvol "home"   ["autodefrag"];
+
+    "/var/.snapshots"  = snapshotSubvol "var"  [];
+    "/home/.snapshots" = snapshotSubvol "home" [];
+
+    "/mnt/root-btrfs"  = fromSubvol "/" ["nodatacow" "noatime" "noexec"];
   };
 
   services.btrfs.autoScrub.enable = true;
