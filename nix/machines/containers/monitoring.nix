@@ -96,6 +96,8 @@ in {
         serviceConfig.ExecStart = let
           webhook = "${pkgs.webhook}/bin/webhook";
         in "${webhook} -verbose -ip 127.0.0.1 -port 9095 -hooks ${hooksF}";
+        serviceConfig.Restart = "always";
+        serviceConfig.RestartSec = 3;
       };
     };
     ephemeral = true;
