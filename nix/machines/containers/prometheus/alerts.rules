@@ -2,7 +2,7 @@
 groups:
 - name: alerting
   rules:
-    - alert: NodeDown
+    - alert: Node is unreachable
       expr: up{job="node"} == 0
       for: 5m
       labels:
