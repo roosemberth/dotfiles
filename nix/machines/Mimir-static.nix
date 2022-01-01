@@ -129,30 +129,32 @@ in
   security.tpm2.enable = true;
   services.btrfs.autoScrub.enable = true;
   services.fwupd.enable = true;
-  services.snapper.configs = let
-    extraConfig = ''
-      TIMELINE_CREATE="yes"
-      TIMELINE_CLEANUP="yes"
-      EMPTY_PRE_POST_CLEANUP="yes"
-      SYNC_ACL="yes"
-    '';
 
-    mkCfg = path: {
-      subvolume = path;
-      inherit extraConfig;
+  roos.btrbk.enable = true;
+  roos.btrbk.config = {
+    snapshot_preserve = "10h 7d 4w 6m";
+    target_preserve = "7d 4w 6m";
+    target_preserve_min = "no";
+
+    timestamp_format = "long";
+
+    volumes."/mnt/root-btrfs/subvolumes" = {
+      group = "system";
+      subvolumes = [ "active/rootfs" "active/home" ];
+      snapshot_dir = "snapshots";
     };
 
-    userCfg = user: path: {
-      subvolume = path;
-      extraConfig = extraConfig + ''
-        ALLOW_USERS="${user}"
-      '';
+    volumes."/home/roosemberth" = {
+      group = "user-roosemberth";
+      subvolumes.".".snapshot_name = "homedir";
+      subvolumes.".local/var" = {};
+      snapshot_dir = ".snapshots";
     };
-  in {
-    "home" = mkCfg "/home";
-    "roos-home" = userCfg "roosemberth" "/home/roosemberth";
-    "roos-var" = userCfg "roosemberth" "/home/roosemberth/.local/var";
-    "roos-ws" = userCfg "roosemberth" "/home/roosemberth/ws";
-    "roos-ws-platforms" = userCfg "roosemberth" "/home/roosemberth/ws/2-Platforms";
+
+    volumes."/home/roosemberth/ws" = {
+      group = "user-roosemberth";
+      subvolumes = [ "." "2-Platforms" ];
+      snapshot_dir = ".snapshots";
+    };
   };
 }
