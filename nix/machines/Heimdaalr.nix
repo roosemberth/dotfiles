@@ -103,6 +103,14 @@
           locations."/".proxyPass = "http://minerva.intranet.orbstheorem.ch:9090";
         };
 
+        "alerts.orbstheorem.ch" = {
+          extraConfig = ''
+            auth_basic "PPQ 821x blue";
+            auth_basic_user_file /keyring/nginx/monitoring.htpasswd;
+          '';
+          locations."/".proxyPass = "http://minerva.intranet.orbstheorem.ch:9093";
+        };
+
         "heig.orbstheorem.ch".locations."/".proxyPass =
           "http://mimir.r.orbstheorem.ch:2270";
 
