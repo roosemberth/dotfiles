@@ -1,5 +1,25 @@
-{ config, pkgs, lib, secrets, containerHostConfig, ... }:
-{
+{ config, pkgs, lib, secrets, containerHostConfig, ... }: let
+  send-monitoring-sms-alert = with secrets.monitoring.alert-routes.twilio;
+    pkgs.writeShellScript "send-monitoring-sms-alert" ''
+      MSG="$(${pkgs.jq}/bin/jq -r '.alerts[]|.annotations.description' "$BODY")"
+      if [ -z "$MSG" ]; then
+        echo "Failed to decode notification..." >&2
+        ${pkgs.jq}/bin/jq . "$BODY" >&2
+        MSG="The monitoring system generated an alarm."
+      fi
+      exec ${pkgs.httpie}/bin/https --ignore-stdin --check-status \
+        --pretty=format -a '${auth}' --form '${url}' \
+        MessagingServiceSid='${mss}' To='${dest}' Body="$MSG"
+    '';
+  hooksF = pkgs.writeText "alertmanager.yml" (builtins.toJSON [
+    { id = "monitoring-sms-notification";
+      http-methods = ["POST"];
+      pass-file-to-command =
+        [{ source = "entire-payload"; envname = "BODY"; }];
+      execute-command = send-monitoring-sms-alert;
+    }
+  ]);
+in {
   containers.monitoring = {
     autoStart = true;
     bindMounts.prometheus.hostPath = "/mnt/cabinet/minerva-data/prometheus2";
@@ -52,16 +72,30 @@
             repeat_interval = "12h";
             group_by = [ "severity" ];
             routes = [
-              { receiver = "critical-receiver"; match.severity = "critical"; }
+              { receiver = "sms"; match.severity = "critical"; }
             ];
           };
           receivers = [
             { name = "default-receiver"; }
-            { name = "critical-receiver"; }
+            {
+              name = "sms"; webhook_configs = [{
+                send_resolved = false;
+                url = "http://localhost:9095/hooks/monitoring-sms-notification";
+              }];
+            }
           ];
         };
         alertmanager.webExternalUrl = "https://alerts.orbstheorem.ch/";
       };
+
+      systemd.services."alertmanager-webhookd" = {
+        description = "webhooks server for alertmanager actions";
+        requiredBy = ["alertmanager.service"];
+        partOf = ["alertmanager.service"];
+        before = ["alertmanager.service"];
+        serviceConfig.ExecStart = let
+          webhook = "${pkgs.webhook}/bin/webhook";
+        in "${webhook} -verbose -ip 127.0.0.1 -port 9095 -hooks ${hooksF}";
       };
     };
     ephemeral = true;
