@@ -30,7 +30,11 @@ let
       iptables -w -t nat -X minerva-nat-post 2>/dev/null || true
       iptables -w -t nat -N minerva-nat-post
       # Assent connections from the monitoring into Yggdrasil.
-      iptables -w -t nat -I minerva-nat-post -s 10.231.136.6 -d 10.13.0.0/16 -j MASQUERADE
+      iptables -w -t nat -I minerva-nat-post \
+        -s 10.231.136.6 -d 10.13.0.0/16 -j MASQUERADE
+      # Hairpin so inter-container responses match expected source address.
+      iptables -w -t nat -I minerva-nat-post \
+        -s 10.231.136.0/24 -d 10.231.136.0/24 -j MASQUERADE
       iptables -w -t nat -I POSTROUTING -j minerva-nat-post
     '';
   };
