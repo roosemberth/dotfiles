@@ -74,7 +74,6 @@
       # Replies to the reverse proxy
       "-d 10.13.255.101/32 -m state --state RELATED,ESTABLISHED -j ACCEPT"
       # Replies from metrics port
-      "-d 10.13.0.0/16 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
       "-d 10.231.136.0/24 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
       # Use zkx DNS resolver
       "-d 10.13.0.0/16 -p udp -m udp --dport 53 -j ACCEPT"
