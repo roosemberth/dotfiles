@@ -146,17 +146,17 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = pkgs.stdenv.mkDerivation {
+      default = pkgs.symlinkJoin {
         name = "btrbk-with-config";
+        paths = [ pkgs.btrbk ];
         nativeBuildInputs = [ pkgs.makeWrapper ];
-        buildCommand = let pkg = pkgs.btrbk; in ''
-          for bin in ${pkg}/bin/*; do
-            makeWrapper $bin $out/bin/"$(basename $bin)" \
+        postBuild = ''
+          for bin in ${pkgs.btrbk}/bin/*; do
+            rm $out/bin/"$(basename "$bin")"
+            makeWrapper $bin $out/bin/"$(basename "$bin")" \
               --add-flags "--config ${cfg.configFile}"
           done
         '';
-        preferLocalBuild = true;
-        allowSubstitutes = false;
       };
       defaultText = literalDocBook ''
         A package wrapping all btrbk binaries and adding the --config param.
