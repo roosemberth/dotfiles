@@ -24,6 +24,15 @@ let
       # This implies containers can resolve protected networks.
       nameservers = map (v: v.address) hostBridgeV4Addrs;
     };
+    networking.firewall.extraCommands = ''
+      iptables -w -t nat -D POSTROUTING -j minerva-nat-post 2>/dev/null || true
+      iptables -w -t nat -F minerva-nat-post 2>/dev/null || true
+      iptables -w -t nat -X minerva-nat-post 2>/dev/null || true
+      iptables -w -t nat -N minerva-nat-post
+      # Assent connections from the monitoring into Yggdrasil.
+      iptables -w -t nat -I minerva-nat-post -s 10.231.136.6 -d 10.13.0.0/16 -j MASQUERADE
+      iptables -w -t nat -I POSTROUTING -j minerva-nat-post
+    '';
   };
 in {
   imports = [
