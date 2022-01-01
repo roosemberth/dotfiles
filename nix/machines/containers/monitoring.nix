@@ -27,16 +27,20 @@
           metrics_path = "/_synapse/metrics";
           # For some reason, the "official" synapse Grafana chart requires 15s?
           scrape_interval = "15s";
-          static_configs = [{ targets = [ "minerva.int:9092" ];}];
+          static_configs = [{ targets = [
+            "minerva.intranet.orbstheorem.ch:9092"
+          ];}];
         } {
           job_name = "node";
           static_configs = [{ targets = [
-            "localhost:9100"
-            "minerva.int:9100"
+            "minerva.intranet.orbstheorem.ch:9100"
+            "heimdaalr.intranet.orbstheorem.ch:9100"
           ];}];
         } {
           job_name = "postgres";
-          static_configs = [{ targets = [ "minerva.int:9187" ];}];
+          static_configs = [{ targets = [
+            "minerva.intranet.orbstheorem.ch:9187"
+          ];}];
         }];
       };
     };
