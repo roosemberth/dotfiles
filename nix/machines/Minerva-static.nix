@@ -95,7 +95,7 @@ in
     "var" = mkCfg "/var";
   };
 
-  services.udev.extraRules = with lib; let
+  services.udev.packages = with lib; let
     exprOpts = defOp: { name, ... }: {
       options.name = mkOption { type = types.str; default = name; };
       options.value = mkOption { type = types.str; };
@@ -156,11 +156,16 @@ in
         match."KERNEL"           = "sd[a-z]";
         match."ENV{QNAP_BAY_ID}" = n;
         make."SYMLINK"           = { operator = "+="; value = "qnap-bay${n}"; };
+        make."ENV{NAS_DISK_IDX}" = n;
       };
     }) (attrValues devpathToBay);
-  in ''
-    # Rules to rename QNAP drive bays
-    ${concatMapStringsSep "\n" renderRule usbSetEnvRules}
-    ${concatMapStringsSep "\n" renderRule renameBlocksRules}
-  '';
+  in lib.toList (pkgs.writeTextFile {
+      name = "nas-udev-rules";
+      destination = "/etc/udev/rules.d/140-match-nas-bays.rules";
+      text = ''
+        # Rules to rename QNAP drive bays
+        ${concatMapStringsSep "\n" renderRule usbSetEnvRules}
+        ${concatMapStringsSep "\n" renderRule renameBlocksRules}
+      '';
+    });
 }
