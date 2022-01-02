@@ -26,6 +26,9 @@ in recursiveUpdate ({
       in lib.genAttrs keys (key: path + "/${key}");
       wireguard = wireguardSecrets hostname;
     };
+    pubkeys = {
+      sshFor = purpose: readSecretPath "machines/${hostname}/ssh-keys/${purpose}.pub";
+    };
   }) (attrByPath [hostname] {} opaque.secrets.hosts);
 
   network = import ./secrets/network.nix {};
