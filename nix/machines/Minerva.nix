@@ -48,14 +48,19 @@ let
       fi
 
       TARGET_UNLOCKED_DEVICE="/dev/mapper/nas-$N_BAY"
+      DEVICE_PATH="/dev/qnap-bay$N_BAY"
 
       if [ -e "$TARGET_UNLOCKED_DEVICE" ]; then
         exit; # The drive corresponding to this bay is already unlocked.
       fi
 
+      if [ ! -e "$DEVICE_PATH" ]; then
+        exit; # The drive we are being notified for is not there.
+      fi
+
       echo "I received notice that NAS drive in $N_BAY is available."
 
-      LOCKED_VOLUMES="$(${pkgs.util-linux}/bin/lsblk -fJp "/dev/qnap-bay$N_BAY" \
+      LOCKED_VOLUMES="$(${pkgs.util-linux}/bin/lsblk -fJp "$DEVICE_PATH" \
         | ${pkgs.jq}/bin/jq -r '
             .blockdevices[]
           | .children[]
@@ -78,6 +83,23 @@ let
           --key-file /root/cabinet-keyfile || continue
         # Decription suceeded
         echo "I successfully unlocked $device as $TARGET_UNLOCKED_DEVICE."
+
+        echo "Checking whether we can mount $TARGET_UNLOCKED_DEVICE already."
+        if ${pkgs.btrfs-progs}/bin/btrfs \
+              filesystem show "$TARGET_UNLOCKED_DEVICE" 2>&1 \
+            | grep -q 'Some devices missing'; then
+          echo "$TARGET_UNLOCKED_DEVICE cannot be mounted: Some devices missing."
+        else
+          if ${pkgs.util-linux}/bin/findmnt /mnt/cabinet >/dev/null; then
+            echo "$TARGET_UNLOCKED_DEVICE already mounted. Race condition?"
+            exit
+          fi
+          echo "Attempting to mount $TARGET_UNLOCKED_DEVICE."
+          if ${pkgs.util-linux}/bin/mount \
+            "$TARGET_UNLOCKED_DEVICE" -t btrfs /mnt/cabinet; then
+            echo "Succesfully mounted $TARGET_UNLOCKED_DEVICE."
+          fi
+        fi
         exit
       done
 
