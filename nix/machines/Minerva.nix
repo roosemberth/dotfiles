@@ -38,6 +38,70 @@ let
       iptables -w -t nat -I POSTROUTING -j minerva-nat-post
     '';
   };
+  nasConfig = let
+    probe-nas-disk = pkgs.writeShellScript "probe-nas-disk" ''
+      N_BAY="$1"
+
+      if [ -z "$N_BAY" ]; then
+        echo "Missing required argument: Number of the NAS bay to probe."
+        exit
+      fi
+
+      TARGET_UNLOCKED_DEVICE="/dev/mapper/nas-$N_BAY"
+
+      if [ -e "$TARGET_UNLOCKED_DEVICE" ]; then
+        exit; # The drive corresponding to this bay is already unlocked.
+      fi
+
+      echo "I received notice that NAS drive in $N_BAY is available."
+
+      LOCKED_VOLUMES="$(${pkgs.util-linux}/bin/lsblk -fJp "/dev/qnap-bay$N_BAY" \
+        | ${pkgs.jq}/bin/jq -r '
+            .blockdevices[]
+          | .children[]
+          | select(.fstype=="crypto_LUKS" and .children==null)
+          | .name
+        ')"
+
+      if [ -z "$LOCKED_VOLUMES" ]; then
+        echo "The disk in bay $N_BAY doesn't seem to contain any encrypted volumes."
+        exit
+      fi
+
+      echo "I found the following encrypted volumes in disk in bay $N_BAY:" \
+           "$(echo "$LOCKED_VOLUMES" | ${pkgs.coreutils}/bin/tr -d '\n')." \
+           "I will try them until succesfully unlocking one."
+
+      for device in $LOCKED_VOLUMES; do
+        ${pkgs.cryptsetup}/bin/cryptsetup -q \
+          luksOpen "$device" "$(basename "$TARGET_UNLOCKED_DEVICE")" \
+          --key-file /root/cabinet-keyfile || continue
+        # Decription suceeded
+        echo "I successfully unlocked $device as $TARGET_UNLOCKED_DEVICE."
+        exit
+      done
+
+      echo "I could not unlock any of the encrypted volumes of disk in bay $N_BAY."
+      exit
+    '';
+  in {
+    services.udev.packages = lib.toList (pkgs.writeTextFile {
+      name = "nas-udev-rules";
+      destination = "/etc/udev/rules.d/150-probe-nas-disks.rules";
+      text = let
+        unitName = "probe-disk-on-nas-bay@%E{NAS_DISK_IDX}";
+        cmd = "${pkgs.systemd}/bin/systemctl --no-block start ${unitName}";
+      in ''
+        ENV{NAS_DISK_IDX}=="[1-9]" RUN+="${cmd}"
+      '';
+    });
+
+    systemd.services."probe-disk-on-nas-bay@" = {
+      description = "Reacts to state changes of a disk in the given NAS bay.";
+      serviceConfig.ExecStartPre = "${pkgs.systemd}/bin/udevadm settle";
+      serviceConfig.ExecStart = "${probe-nas-disk} %i";
+    };
+  };
 in {
   imports = [
     ../modules
@@ -50,6 +114,7 @@ in {
     ./containers/monitoring.nix
     ./containers/powerflow.nix
     networkConfig
+    nasConfig
   ];
 
   boot.cleanTmpDir = true;
