@@ -135,6 +135,8 @@ in
     snapshot_preserve = "10h 7d 4w 6m";
     target_preserve = "7d 4w 6m";
     target_preserve_min = "no";
+    ssh_identity = (secrets.forHost hostname).privateKeyPath.sshFor "backups";
+    ssh_user = config.roos.backups.remoteUser;
 
     timestamp_format = "long";
 
@@ -146,6 +148,7 @@ in
 
     volumes."/home/roosemberth" = {
       group = "user-roosemberth";
+      targets = config.roos.backups.btrbkTargets;
       subvolumes.".".snapshot_name = "homedir";
       subvolumes.".local/var" = {};
       snapshot_dir = ".snapshots";
