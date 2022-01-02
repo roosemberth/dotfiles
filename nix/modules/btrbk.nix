@@ -38,6 +38,16 @@
       type = nullOr str;
       default = null;
     };
+    options.ssh_identity = mkOption {
+      description = "Path to the private key to use when connecting via SSH.";
+      type = nullOr path;
+      default = null;
+    };
+    options.ssh_user = mkOption {
+      description = "Remote username for connecting via SSH.";
+      type = nullOr str;
+      default = null;
+    };
     # List is incomplete to be expanded as needed...
   };
 
