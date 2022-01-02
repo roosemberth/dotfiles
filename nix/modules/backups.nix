@@ -104,6 +104,12 @@ in {
       description = "Username used to transfer backups out of this host.";
       default = mkUsername host;
     };
+
+    btrbkTargets = mkOption {
+      description = "List of btrbk target strings for this host, for convenience.";
+      default = mapAttrsToList (h: t: "ssh://${h}/${t.basedir}") cfg.targets;
+      readOnly = true;
+    };
   };
 
   config = with lib; mkIf (cfg.registration != {}) {
