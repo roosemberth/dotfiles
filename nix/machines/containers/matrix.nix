@@ -1,7 +1,9 @@
-{ config, pkgs, secrets, containerHostConfig, ... }: {
+{ config, pkgs, secrets, containerHostConfig, ... }: let 
+  hostDataDirBase = "/mnt/cabinet/minerva-data";
+in {
   containers.matrix = {
     autoStart = true;
-    bindMounts.synapse-data.hostPath = "/mnt/cabinet/minerva-data/matrix-synapse";
+    bindMounts.synapse-data.hostPath = "${hostDataDirBase}/matrix-synapse";
     bindMounts.synapse-data.mountPoint = "/var/lib/matrix-synapse";
     bindMounts.synapse-data.isReadOnly = false;
     config = {
@@ -64,6 +66,8 @@
     ];
   };
 
+  systemd.services."container@matrix".unitConfig.ConditionPathIsDirectory =
+    [ "${hostDataDirBase}/matrix-synapse" ];
   roos.container-host.firewall.matrix = {
     in-rules = [
       # DNS

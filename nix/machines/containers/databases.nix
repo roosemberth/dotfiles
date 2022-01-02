@@ -1,14 +1,15 @@
 { config, pkgs, secrets, ... }: let
   removeCIDR = ip: builtins.head (builtins.split "/" ip);
+  hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.databases = {
     autoStart = true;
     bindMounts.psql-data.mountPoint = "/var/lib/postgresql";
     bindMounts.psql-data.isReadOnly = false;
-    bindMounts.influxdb.hostPath = "/mnt/cabinet/minerva-data/influxdb";
+    bindMounts.influxdb.hostPath = "${hostDataDirBase}/influxdb";
     bindMounts.influxdb.mountPoint = "/var/db/influxdb";
     bindMounts.influxdb.isReadOnly = false;
-    bindMounts.grafana.hostPath = "/mnt/cabinet/minerva-data/grafana";
+    bindMounts.grafana.hostPath = "${hostDataDirBase}/grafana";
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
@@ -53,6 +54,12 @@ in {
 
   networking.firewall.allowedTCPPorts = [ 39425 ];
 
+  systemd.services."container@databases".unitConfig.ConditionPathIsDirectory = [
+    "/var/lib/postgresql"
+    "${hostDataDirBase}/orion"
+    "${hostDataDirBase}/influxdb"
+    "${hostDataDirBase}/grafana"
+  ];
   systemd.services.postgresql-paths = {
     description = "Prepare paths used by PostgreSQL.";
     requiredBy = [ "container@databases.service" ];
@@ -70,5 +77,6 @@ in {
       ExecStart = let tool = "${pkgs.ensure-nodatacow-btrfs-subvolume}";
       in "${tool}/bin/ensure-nodatacow-btrfs-subvolume";
     };
+    unitConfig.ConditionPathIsDirectory = [ "/var/lib/postgresql" ];
   };
 }

@@ -50,6 +50,8 @@ in {
     ipv4.fwd-rules = [ "-d 10.13.255.101/32 -j ACCEPT" ];
   };
 
+  systemd.services."container@orion".unitConfig.ConditionPathIsDirectory =
+    [ "${hostDataDirBase}/orion" ];
   systemd.services.orion-paths = {
     description = "Prepare paths used by home automation services.";
     requiredBy = [ "container@orion.service" ];
@@ -67,5 +69,6 @@ in {
       ExecStart = let tool = "${pkgs.ensure-nodatacow-btrfs-subvolume}";
       in "${tool}/bin/ensure-nodatacow-btrfs-subvolume";
     };
+    unitConfig.ConditionPathIsDirectory = [ "${hostDataDirBase}/orion" ];
   };
 }

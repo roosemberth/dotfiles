@@ -69,6 +69,8 @@ in {
     ];
   };
 
+  systemd.services."container@nextcloud".unitConfig.ConditionPathIsDirectory =
+    [ "${hostDataDirBase}/nextcloud" ];
   systemd.services.nextcloud-paths = {
     description = "Prepare paths used by nextcloud.";
     requiredBy = [ "container@nextcloud.service" ];

@@ -25,10 +25,11 @@
     HTTPPort = 9096;
     HTTPAddress = "[::1]";
   };
+  hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.monitoring = {
     autoStart = true;
-    bindMounts.prometheus.hostPath = "/mnt/cabinet/minerva-data/prometheus2";
+    bindMounts.prometheus.hostPath = "${hostDataDirBase}/prometheus2";
     bindMounts.prometheus.mountPoint = "/var/lib/prometheus2";
     bindMounts.prometheus.isReadOnly = false;
     config = {
@@ -137,4 +138,7 @@ in {
     ];
     ipv4.fwd-rules = [ "-j ACCEPT" ];
   };
+
+  systemd.services."container@monitoring".unitConfig.ConditionPathIsDirectory =
+    [ "${hostDataDirBase}/prometheus2" ];
 }
