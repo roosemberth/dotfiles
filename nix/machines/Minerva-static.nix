@@ -94,4 +94,73 @@ in
     "home" = mkCfg "/home";
     "var" = mkCfg "/var";
   };
+
+  services.udev.extraRules = with lib; let
+    exprOpts = defOp: { name, ... }: {
+      options.name = mkOption { type = types.str; default = name; };
+      options.value = mkOption { type = types.str; };
+      options.operator = mkOption {
+        type = types.enum [ "==" "!=" "=" "+=" "-=" ":=" ];
+        default = defOp;
+      };
+    };
+
+    ruleOpts = { config, ... }: {
+      options.match = mkOption {
+        description = "Attrset with expressions to match an event.";
+        default = {};
+        type = with types; let
+          asValue = (s: { value = s; });
+        in attrsOf (coercedTo str asValue (submodule (exprOpts "==")));
+      };
+      options.make = mkOption {
+        description = "Attrset with expressions to apply an action.";
+        default = {};
+        type = with types; let
+          asValue = s: { value = s; };
+        in attrsOf (coercedTo str asValue (submodule (exprOpts "=")));
+      };
+      options.ruleStr = mkOption {
+        default = concatMapStringsSep ", "
+          (v: "${v.name}${v.operator}\"${v.value}\"")
+          (attrValues config.match ++ attrValues config.make);
+      };
+    };
+
+    renderRule =
+      cfg: (evalModules { modules = [ ruleOpts cfg ]; }).config.ruleStr;
+
+    devpathToBay = {
+      "*.3.4" = "1";
+      "*.3.3" = "2";
+      "*.3.2" = "3";
+      "*.3.1" = "4";
+      "*.4.4" = "5";
+      "*.4.3" = "6";
+      "*.4.2" = "7";
+      "*.4.1" = "8";
+    };
+
+    usbSetEnvRules = attrValues (mapAttrs (devpath: bay: {
+      config = {
+        match."SUBSYSTEMS"      = "usb";
+        match."ATTRS{product}"  = "QNAP";
+        match."KERNELS"         = "${devpath}";
+        make."ENV{QNAP_BAY_ID}" = bay;
+      };
+    }) devpathToBay);
+
+    renameBlocksRules = map (n: {
+      config = {
+        match."SUBSYSTEM"        = "block";
+        match."KERNEL"           = "sd[a-z]";
+        match."ENV{QNAP_BAY_ID}" = n;
+        make."SYMLINK"           = { operator = "+="; value = "qnap-bay${n}"; };
+      };
+    }) (attrValues devpathToBay);
+  in ''
+    # Rules to rename QNAP drive bays
+    ${concatMapStringsSep "\n" renderRule usbSetEnvRules}
+    ${concatMapStringsSep "\n" renderRule renameBlocksRules}
+  '';
 }
