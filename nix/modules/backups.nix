@@ -53,6 +53,9 @@
 
 in let  # Scope isolation of data
   registry = {
+    Minerva.clients = [ "Mimir" ];
+    Minerva.backupsRoot = "/mnt/cabinet/backups";
+    Mimir = {};
   };
 in {
   options.roos.backups = with lib; {
