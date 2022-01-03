@@ -85,5 +85,18 @@
     defaultTemplate = self.templates.generic;
     devShells = forAllSystems { nixpkgs = nixpkgs-porcupine; }
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
+
+    deploy = with self.nixosConfigurations; {
+      magicRollback = true;
+      autoRollback = true;
+      sshUser = "roosemberth";
+      user = "root";
+
+      nodes.Minerva = {
+        hostname = "Minerva";
+        profiles.system.path =
+          deploy-rs.lib.x86_64-linux.activate.nixos Minerva;
+      };
+    };
   };
 }
