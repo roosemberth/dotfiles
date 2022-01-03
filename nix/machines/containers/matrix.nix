@@ -12,7 +12,7 @@ in {
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
       # The host network cannot handle the DNS traffic from Matrix...
-      networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
+      networking.nameservers = with secrets.network.zksDNS; v4;
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
