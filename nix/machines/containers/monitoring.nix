@@ -123,7 +123,7 @@ in {
     ephemeral = true;
     # Port forwarding only works on ipv4...
     localAddress = "10.231.136.6/24";
-    hostBridge = "containers";
+    hostBridge = "orion";
     privateNetwork = true;
     forwardPorts = [
       { hostPort = 9090; protocol = "tcp"; }

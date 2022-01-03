@@ -3,27 +3,47 @@ let
   networkConfig = { secrets, ... }: let
     hostBridgeV4Addrs = [{ address = "10.231.136.1"; prefixLength = 24; }];
   in {
+    # Disable autoconf of the physical adapter. See bellow.
+    boot.kernel.sysctl."net.ipv6.conf.enp0s31f6.disable_ipv6" = 1;
     networking = {
+      hostName = "Minerva";
+      useNetworkd = true;
+      useDHCP = false;
+
+      # Make a bridge and join the physical adapter to share the network segment.
+      bridges.orion.interfaces = [ "enp0s31f6" ];
+      interfaces.orion.useDHCP = true;
+      interfaces.orion.tempAddress = "disabled";
+
+      nat.enable = true;
+      nat.externalInterface = "orion";  # Use the bridge to access the world.
+
       # Ask the named container to resolve DNS for us.
       nameservers = with secrets.network.zksDNS; v6 ++ v4;
       search = with secrets.network.zksDNS; [ search ];
     };
+
     services.resolved = {
-      dnssec = "false";  # Our upstream DNS server does not provide DNSSEC.
-      llmnr = "false";
+      dnssec = "false";  # The named container is not configured to do DNSSEC.
+      llmnr = "true";  # orion is a trusted network.
       extraConfig = ''
         # Allow queries from containers.
         ${lib.concatMapStringsSep "\n"
             (v: "DNSStubListenerExtra=${v.address}") hostBridgeV4Addrs}
       '';
     };
+
     roos.container-host = {
       enable = true;
+      # Have the containers join the network segment of the physical adapter.
+      # This allows them to have IPv6 for free.
+      iface.name = "orion";
       iface.ipv4.addresses = hostBridgeV4Addrs;
       # Cache DNS for containers.
       # This implies containers can resolve protected networks.
       nameservers = map (v: v.address) hostBridgeV4Addrs;
     };
+
     networking.firewall.extraCommands = ''
       iptables -w -t nat -D POSTROUTING -j minerva-nat-post 2>/dev/null || true
       iptables -w -t nat -F minerva-nat-post 2>/dev/null || true
@@ -153,17 +173,6 @@ in {
   nix.extraOptions = "experimental-features = nix-command flakes";
   nix.package = pkgs.nixUnstable;
   nix.trustedUsers = [ "roosemberth" ];
-
-  networking.firewall.allowedTCPPorts = [ 53 ];
-  networking.firewall.allowedUDPPorts = [ 53 ];
-  networking.hostName = "Minerva";
-  networking.useNetworkd = true;
-  networking.useDHCP = false;
-  networking.interfaces.enp0s31f6.useDHCP = true;
-  networking.interfaces.enp0s31f6.tempAddress = "disabled";
-  networking.nat.enable = true;
-  networking.nat.internalInterfaces = ["ve-+"];
-  networking.nat.externalInterface = "enp0s31f6";
 
   roos.dotfilesPath = ../..;
   roos.nginx-fileshare.enable = true;
