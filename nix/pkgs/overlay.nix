@@ -107,7 +107,11 @@ in {
       chmod +x "$out/bin/remap-pa-client"
     '';
   };
-  nvim-roos = nvim;
+
+  nvim-roos-core = nvim.core;
+  nvim-roos-essential = nvim.essential;
+  nvim-roos-full = nvim.full;
+
   mopidy-roos = final.callPackage ./mopidy {};
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";

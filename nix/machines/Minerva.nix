@@ -165,7 +165,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     gitAndTools.git-annex
-    nvim-roos.essential
+    nvim-roos-essential
   ];
 
   hardware.cpu.intel.updateMicrocode = true;
