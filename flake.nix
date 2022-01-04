@@ -8,6 +8,8 @@
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.deploy-rs.url = "github:serokell/deploy-rs";
   inputs.deploy-rs.inputs.nixpkgs.follows = "nixpkgs-unstable";
+  inputs.sops-nix.url = "github:Mic92/sops-nix";
+  inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
   outputs = flakes@{
     self,
@@ -17,6 +19,7 @@
     hm-unstable,
     flake-utils,
     deploy-rs,
+    sops-nix,
   }:
   let
     defFlakeSystem = {

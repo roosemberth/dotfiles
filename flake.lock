@@ -132,7 +132,28 @@
         "hm-porcupine": "hm-porcupine",
         "hm-unstable": "hm-unstable",
         "nixpkgs-porcupine": "nixpkgs-porcupine",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "sops-nix": "sops-nix"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1640804118,
+        "narHash": "sha256-4qHIQbiFmb+qXKt0nOY09XO/KdSMTrlHdhRK7St4zzU=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "1514ac9fd54363a24c513de43dd0b963e2d17cb7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
       }
     },
     "utils": {
