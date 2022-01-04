@@ -96,6 +96,11 @@
       sshUser = "roosemberth";
       user = "root";
 
+      nodes.Heimdaalr = {
+        hostname = "Heimdaalr";
+        profiles.system.path =
+          deploy-rs.lib.x86_64-linux.activate.nixos Heimdaalr;
+      };
       nodes.Minerva = {
         hostname = "Minerva";
         profiles.system.path =
