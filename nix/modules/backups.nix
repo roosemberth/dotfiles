@@ -23,6 +23,10 @@
       in assert assertMsg (tRoot != null) msg; "${tRoot}/${host}";
       readOnly = true;
     };
+    options.remoteAddr = mkOption {
+      description = "Address used to connect to this host.";
+      default = host;
+    };
   };
 
   regEntryOpts = with lib; {
@@ -110,7 +114,8 @@ in {
 
     btrbkTargets = mkOption {
       description = "List of btrbk target strings for this host, for convenience.";
-      default = mapAttrsToList (h: t: "ssh://${h}/${t.basedir}") cfg.targets;
+      default =
+        mapAttrsToList (_: t: "ssh://${t.remoteAddr}/${t.basedir}") cfg.targets;
       readOnly = true;
     };
   };
