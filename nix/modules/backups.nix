@@ -1,4 +1,4 @@
-{ config, lib, options, secrets, ... }: let
+{ config, lib, pkgs, options, secrets, ... }: let
   cfg = config.roos.backups;
   host = config.networking.hostName;
   mkUsername = client:
@@ -121,14 +121,41 @@ in {
   };
 
   config = with lib; mkIf (cfg.registration != {}) {
+    security.sudo.extraRules = [{
+      users = map mkUsername (attrNames cfg.registration.clients);
+      commands = [
+        { command = "/run/current-system/sw/bin/btrfs"; options = [ "NOPASSWD" ]; }
+        { command = "/run/current-system/sw/bin/mkdir"; options = [ "NOPASSWD" ]; }
+        { command = "/run/current-system/sw/bin/readlink"; options = [ "NOPASSWD" ]; }
+      ];
+    }];
     # Create users for clients
-    users.users = mkMerge (mapAttrsToList (client: clientCfg: {
+    users.users = mkMerge (mapAttrsToList (client: clientCfg: let
+      targetDir = "${cfg.registration.backupsRoot}/${client}";
+      btrbkCfg = config.roos.btrbk;
+    in {
       "${mkUsername client}" = {
-        home = "${cfg.registration.backupsRoot}/${client}";
+        home = targetDir;
         group = "backup-receivers";
         createHome = true;
         isSystemUser = true;
-        openssh.authorizedKeys.keys = toList clientCfg.publicKey;
+        shell = "${pkgs.bash}/bin/bash";
+        openssh.authorizedKeys.keys = with pkgs; let
+          ioniceClass = {
+            "idle" = 3;
+            "best-effort" = 2;
+            "realtime" = 1;
+          }.${config.roos.btrbk.ioSchedulingClass};
+
+          ioniceCmd = "${util-linux}/bin/ionice -t -c ${toString ioniceClass}";
+          niceCmd = let
+            nice = config.roos.btrbk.niceness;
+          in optionalString (nice >= 1) "${coreutils}/bin/nice -n ${toString nice}";
+          btrbkCmd = "${btrbk}/share/btrbk/scripts/ssh_filter_btrbk.sh "
+            + "--sudo --source --target --delete --info "
+            + "--restrict-path ${targetDir}";
+          cmd = "${ioniceCmd} ${niceCmd} ${btrbkCmd}";
+        in toList ''command="${cmd}" ${clientCfg.publicKey}'';
       };
     }) cfg.registration.clients);
   };
