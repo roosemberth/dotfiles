@@ -101,6 +101,11 @@
         profiles.system.path =
           deploy-rs.lib.x86_64-linux.activate.nixos Heimdaalr;
       };
+      nodes.Mimir = {
+        hostname = "Mimir";
+        profiles.system.path =
+          deploy-rs.lib.x86_64-linux.activate.nixos Mimir;
+      };
       nodes.Minerva = {
         hostname = "Minerva";
         profiles.system.path =
