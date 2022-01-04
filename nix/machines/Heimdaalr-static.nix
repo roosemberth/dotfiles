@@ -22,12 +22,15 @@ in {
       enable = true;
       port = 22;
       authorizedKeys = secrets.adminPubKeys;
-      hostKeys = [hostSecrets.keys.ssh-initramfs.ed25519];
+      hostKeys = [ "/run/secrets/ssh-host/initramfs/ed25519" ];
     };
   };
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.version = 2;
+
+  sops.defaultSopsFile = ../.././secrets/per-host/Heimdaalr.yaml;
+  sops.secrets."ssh-host/initramfs/ed25519" = {};
 
   fileSystems = let
     mainSubvol = subvol: opts:
