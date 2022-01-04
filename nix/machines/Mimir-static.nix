@@ -138,6 +138,7 @@ in
     snapshot_preserve = "10h 7d 4w 6m";
     target_preserve = "7d 4w 6m";
     target_preserve_min = "no";
+    backend = "btrfs-progs-sudo";
     ssh_identity = "/run/secrets/ssh-client/backups-key";
     ssh_user = config.roos.backups.remoteUser;
 

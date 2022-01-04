@@ -48,6 +48,14 @@
       type = nullOr str;
       default = null;
     };
+
+    # System options
+    options.backend = mkOption {
+      description = "Remote username for connecting via SSH.";
+      type = nullOr (enum ["btrfs-progs" "btrfs-progs-btrbk" "btrfs-progs-sudo"]);
+      default = null;
+    };
+
     # List is incomplete to be expanded as needed...
   };
 
