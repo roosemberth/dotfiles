@@ -130,12 +130,15 @@ in
   services.btrfs.autoScrub.enable = true;
   services.fwupd.enable = true;
 
+  sops.defaultSopsFile = ../.././secrets/per-host/Mimir.yaml;
+  sops.secrets."ssh-client/backups-key" = {};
+
   roos.btrbk.enable = true;
   roos.btrbk.config = {
     snapshot_preserve = "10h 7d 4w 6m";
     target_preserve = "7d 4w 6m";
     target_preserve_min = "no";
-    ssh_identity = (secrets.forHost hostname).privateKeyPath.sshFor "backups";
+    ssh_identity = "/run/secrets/ssh-client/backups-key";
     ssh_user = config.roos.backups.remoteUser;
 
     timestamp_format = "long";
