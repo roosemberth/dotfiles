@@ -17,8 +17,10 @@ in
       network.enable = true;
       network.ssh.enable = true;
       network.ssh.authorizedKeys = secrets.adminPubKeys;
-      network.ssh.hostKeys =
-        map (n: "/etc/secrets/initrd/ssh_host_${n}") ["ed25519" "ecdsa"];
+      network.ssh.hostKeys = [
+        "/run/secrets/ssh-host/initramfs/ecdsa"
+        "/run/secrets/ssh-host/initramfs/ed25519"
+      ];
       # network.udhcpc.command = "udhcpc6";
       network.postCommands = ''
         ip a add 10.0.18.20/24 dev enp0s31f6 || true
@@ -36,11 +38,10 @@ in
       gfxmodeEfi = "1280x1024x32,1024x768x32,auto";
     };
   };
-  # See https://github.com/NixOS/nixpkgs/pull/91744 to restore this to hostKeys.
-  #environment.etc."secrets/initrd/ssh_host_ed25519".source =
-  #  (secrets.forHost hostname).keys.ssh-initramfs.ed25519;
-  #environment.etc."secrets/initrd/ssh_host_ecdsa".source =
-  #  (secrets.forHost hostname).keys.ssh-initramfs.ecdsa;
+
+  sops.defaultSopsFile = ../.././secrets/per-host/Minerva.yaml;
+  sops.secrets."ssh-host/initramfs/ed25519" = {};
+  sops.secrets."ssh-host/initramfs/ecdsa" = {};
 
   hardware.enableRedistributableFirmware = true;
   swapDevices = [ ];

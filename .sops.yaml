@@ -1,0 +1,10 @@
+keys:
+  - &roos_pgp 78D91871D059663B61177532CAAAECE5C2242BB7
+  - &minerva_age age1jhqupkrhatm9l9ws3y58e70nskctn8z5dgc325kwtku2xgvka4rsptvtyx
+creation_rules:
+  - path_regex: secrets/per-host/Minerva.*\.yaml$
+    key_groups:
+    - age:
+      - *minerva_age
+      pgp:
+      - *roos_pgp

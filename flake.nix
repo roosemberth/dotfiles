@@ -32,6 +32,7 @@
           baseCfg
           (import ./nix/bootstrap-home-manager.nix
             { home-manager-flake = home-manager; })
+          sops-nix.nixosModules.sops
         ];
         nixpkgs.overlays = [ self.overlay ];
         # Let 'nixos-version --json' know the Git revision of this flake.
