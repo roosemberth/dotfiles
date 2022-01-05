@@ -201,6 +201,7 @@ in {
   services = {
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    netdata.enable = true;
     resolved.llmnr = "false";
   };
   system.stateVersion = "21.11";
