@@ -25,7 +25,7 @@
     };
     options.remoteAddr = mkOption {
       description = "Address used to connect to this host.";
-      default = host;
+      default = name;
     };
   };
 
