@@ -160,6 +160,7 @@ in
 
     volumes."/home/roosemberth/ws" = {
       group = "user-roosemberth";
+      targets = config.roos.backups.btrbkTargets;
       subvolumes = [ "." "2-Platforms" ];
       snapshot_dir = ".snapshots";
     };
