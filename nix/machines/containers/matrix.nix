@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, containerHostConfig, ... }: let 
+{ config, pkgs, secrets, ... }: let 
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.matrix = {

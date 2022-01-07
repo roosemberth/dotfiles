@@ -115,13 +115,7 @@
 
 in {
   options.roos.container-host = with lib; {
-    enable = mkEnableOption ''
-      Consolidate this machine as a container host.
-
-      A `containerHostConfig` argument is added to the module call scope.
-      Containers can use this to better integrate their configuration with
-      the host.
-    '';
+    enable = mkEnableOption "Consolidate this machine as a container host.";
 
     nameservers = mkOption {
       description = "Nameservers to be used by containers.";
@@ -165,9 +159,6 @@ in {
 
   imports = let
     impl = with lib; mkMerge [{
-      _module.args.containerHostConfig = {
-        inherit (cfg) nameservers;
-      };
       networking = mkIf (cfg.iface.name != null) {
         bridges."${cfg.iface.name}".interfaces = [];
         interfaces."${cfg.iface.name}" = {

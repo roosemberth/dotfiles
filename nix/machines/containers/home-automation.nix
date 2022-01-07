@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, containerHostConfig, ... }: {
+{ config, pkgs, secrets, ... }: {
   containers.orion = {
     autoStart = true;
     bindMounts.ha-orion.hostPath =
@@ -11,7 +11,7 @@
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = containerHostConfig.nameservers;
+      networking.nameservers = config.roos.container-host.nameservers;
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";

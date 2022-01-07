@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, containerHostConfig, ... }: let
+{ config, pkgs, lib, secrets, ... }: let
   send-monitoring-sms-alert = with secrets.monitoring.alert-routes.twilio;
     pkgs.writeShellScript "send-monitoring-sms-alert" ''
       MSG="$(${pkgs.jq}/bin/jq -r '.alerts[]|.annotations.description' "$BODY")"
@@ -37,7 +37,7 @@ in {
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = containerHostConfig.nameservers;
+      networking.nameservers = config.roos.container-host.nameservers;
       networking.search = with secrets.network.zksDNS; [ search ];
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
