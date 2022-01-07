@@ -63,7 +63,6 @@ in
 
       xdg = {
         mime.enable = true;
-        mimeApps.enable = true;
         userDirs = {
           enable = true;
           download = "/tmp";
