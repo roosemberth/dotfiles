@@ -136,6 +136,7 @@ in
   roos.btrbk.enable = true;
   roos.btrbk.config = {
     snapshot_preserve = "10h 7d 4w 6m";
+    snapshot_preserve_min = "1h";
     target_preserve = "7d 4w 6m";
     target_preserve_min = "no";
     backend = "btrfs-progs-sudo";
