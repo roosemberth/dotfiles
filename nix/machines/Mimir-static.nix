@@ -156,6 +156,12 @@ in
       targets = config.roos.backups.btrbkTargets;
       subvolumes.".".snapshot_name = "homedir";
       subvolumes.".local/var" = {};
+      subvolumes."nocow" = {
+        snapshot_preserve = "1d";
+        snapshot_preserve_min = "latest";
+        target_preserve = "1d";
+        target_preserve_min = "latest";
+      };
       snapshot_dir = ".snapshots";
     };
 
