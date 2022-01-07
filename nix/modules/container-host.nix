@@ -1,4 +1,4 @@
-{ config, lib, options, ... }: let
+{ config, lib, pkgs, options, ... }: let
   nixosIfaceOpts =
     options.networking.interfaces.type.functor.wrapped.getSubOptions [];
   removeCIDR = with lib; str: head (splitString "/" str);
@@ -105,6 +105,14 @@
     ;
   };
 
+  guestMountOpts = { name, ... }: with lib; {
+    options.hostPath = mkOption {
+      description = "Path to this guest mount in the host.";
+      default = "${cfg.hostDataDir}/${name}";
+      readOnly = true;
+    };
+  };
+
 in {
   options.roos.container-host = with lib; {
     enable = mkEnableOption ''
@@ -119,6 +127,19 @@ in {
       description = "Nameservers to be used by containers.";
       type = with types; listOf str;
       default = [ "1.1.1.1" ];
+    };
+
+    hostDataDir = mkOption {
+      description = "Directory where to store data from containers.";
+      type = types.str;
+    };
+
+    guestMounts = mkOption {
+      description = "Mount volumes used by containers.";
+      default = {};
+      type = with types; let
+        asAttrset = arg: if isList arg then genAttrs arg (_: {}) else arg;
+      in coercedTo (listOf str) asAttrset (attrsOf (submodule guestMountOpts));
     };
 
     iface.name = mkOption {
@@ -143,17 +164,17 @@ in {
   };
 
   imports = let
-    impl = {
+    impl = with lib; mkMerge [{
       _module.args.containerHostConfig = {
         inherit (cfg) nameservers;
       };
-      networking = lib.mkIf (cfg.iface.name != null) {
+      networking = mkIf (cfg.iface.name != null) {
         bridges."${cfg.iface.name}".interfaces = [];
         interfaces."${cfg.iface.name}" = {
           inherit (cfg.iface) ipv4 ipv6;
         };
         nat.internalInterfaces = [ cfg.iface.name ];
-        firewall.extraCommands = with lib; let
+        firewall.extraCommands = let
           rules = mapAttrs nameAndFwCfgToRules cfg.firewall;
         in optionalString (cfg.firewall != {}) ''
           # Disengage, flush are delete helper chains.
@@ -172,6 +193,37 @@ in {
           ${concatStringsSep "\n" (concatMap (a: a.install) (attrValues rules))}
         '';
       };
-    };
+    } (mkIf (cfg.guestMounts != {}) {
+      systemd.services."container-host-volumes" = let
+        subvolumes =
+          mapAttrsToList (_: c: c.hostPath) cfg.guestMounts
+          ++ [ "${cfg.hostDataDir}/snapshots" ];
+      in {
+        serviceConfig.ExecStart = pkgs.writeShellScript "container-paths" (
+          concatMapStringsSep "\n" (p: ''
+            if ! [ -e "${p}" ]; then
+              mkdir -p "$(dirname "${p}")"
+              ${pkgs.btrfs-progs}/bin/btrfs subvolume create "${p}"
+            fi
+          '') subvolumes);
+        serviceConfig.RemainAfterExit = true;
+        wantedBy = [ "default.target" ];
+      };
+
+      roos.btrbk.config.volumes."${cfg.hostDataDir}" = let
+        stripPrefix = path: lib.removePrefix "${cfg.hostDataDir}/" path;
+      in {
+        subvolumes = mapAttrsToList (_: c: stripPrefix c.hostPath) cfg.guestMounts;
+        snapshot_dir = "snapshots";
+      };
+
+    }) (mkIf (cfg.guestMounts != {}) {
+      systemd.services = mapAttrs' (n: v: lib.nameValuePair "container@${n}" {
+        requires = [ "container-host-volumes.service" ];
+        after = [ "container-host-volumes.service" ];
+      }) config.containers;
+
+    })
+  ];
   in [({ ... }: lib.mkIf cfg.enable impl)];
 }

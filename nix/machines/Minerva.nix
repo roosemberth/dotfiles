@@ -144,6 +144,14 @@ let
       serviceConfig.ExecStart = "${probe-nas-disk} %i";
     };
   };
+  containerHostConfig = {
+    roos.container-host.hostDataDir = "/mnt/cabinet/minerva-data";
+
+    systemd.services."container-host-volumes" = {
+      requires = [ "mnt-cabinet.mount" ];
+      after = [ "mnt-cabinet.mount" ];
+    };
+  };
 in {
   imports = [
     ../modules
@@ -157,6 +165,7 @@ in {
     ./containers/powerflow.nix
     networkConfig
     nasConfig
+    containerHostConfig
   ];
 
   boot.cleanTmpDir = true;

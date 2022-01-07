@@ -1,11 +1,10 @@
-{ config, pkgs, secrets, containerHostConfig, ... }: let
-  hostDataDirBase = "/mnt/cabinet/minerva-data";
-in {
+{ config, pkgs, secrets, containerHostConfig, ... }: {
   containers.orion = {
     autoStart = true;
-    bindMounts.orion.hostPath = "${hostDataDirBase}/orion";
-    bindMounts.orion.mountPoint = "/persisted";
-    bindMounts.orion.isReadOnly = false;
+    bindMounts.ha-orion.hostPath =
+      config.roos.container-host.guestMounts.ha-orion.hostPath;
+    bindMounts.ha-orion.mountPoint = "/persisted";
+    bindMounts.ha-orion.isReadOnly = false;
     config = {
       time.timeZone = config.time.timeZone;  # Inherit timezone config.
       networking.firewall.allowedTCPPorts = [ 8123 ];
@@ -49,26 +48,5 @@ in {
     in-rules = [ "-p udp -m udp --dport 53 -j ACCEPT" ];
     ipv4.fwd-rules = [ "-d 10.13.255.101/32 -j ACCEPT" ];
   };
-
-  systemd.services."container@orion".unitConfig.ConditionPathIsDirectory =
-    [ "${hostDataDirBase}/orion" ];
-  systemd.services.orion-paths = {
-    description = "Prepare paths used by home automation services.";
-    requiredBy = [ "container@orion.service" ];
-    before = [ "container@orion.service" ];
-    path = with pkgs; [
-      btrfs-progs
-      e2fsprogs
-      gawk
-      utillinux
-    ];
-    environment.TARGET = "${hostDataDirBase}/orion";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = let tool = "${pkgs.ensure-nodatacow-btrfs-subvolume}";
-      in "${tool}/bin/ensure-nodatacow-btrfs-subvolume";
-    };
-    unitConfig.ConditionPathIsDirectory = [ "${hostDataDirBase}/orion" ];
-  };
+  roos.container-host.guestMounts.ha-orion = {};
 }
