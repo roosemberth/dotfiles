@@ -77,23 +77,17 @@ in
 
   services.btrfs.autoScrub.enable = true;
   services.fwupd.enable = true;
-  services.snapper.configs =
-  let
-    extraConfig = ''
-      ALLOW_GROUPS="wheel"
-      EMPTY_PRE_POST_CLEANUP="yes"
-      SYNC_ACL="yes"
-      TIMELINE_CLEANUP="yes"
-      TIMELINE_CREATE="yes"
-    '';
 
-    mkCfg = path: {
-      inherit extraConfig;
-      subvolume = path;
+  roos.btrbk.enable = true;
+  roos.btrbk.config = {
+    snapshot_preserve = "10h 7d 4w 6m";
+    snapshot_preserve_min = "1h";
+    timestamp_format = "long";
+
+    volumes."/mnt/root-btrfs/subvolumes" = {
+      subvolumes = [ "active/rootfs" "active/home" "active/var" ];
+      snapshot_dir = "snapshots";
     };
-  in {
-    "home" = mkCfg "/home";
-    "var" = mkCfg "/var";
   };
 
   services.udev.packages = with lib; let
