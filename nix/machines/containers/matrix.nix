@@ -1,10 +1,13 @@
-{ config, pkgs, secrets, ... }: {
+{ config, pkgs, lib, secrets, ... }: let
+  fsec = config.sops.secrets;
+in {
   containers.matrix = {
     autoStart = true;
     bindMounts.matrix-synapse.hostPath =
       config.roos.container-host.guestMounts.matrix-synapse.hostPath;
     bindMounts.matrix-synapse.mountPoint = "/var/lib/matrix-synapse";
     bindMounts.matrix-synapse.isReadOnly = false;
+    bindMounts."/run/secrets/services/matrix" = {};
     config = {
       networking.firewall.allowedTCPPorts = [ 8448 9092 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -42,12 +45,12 @@
         max_upload_size = "100M";
         url_preview_enabled = true;
         report_stats = true;
+        tls_dh_params_path = fsec."services/matrix/tls_private_key".path;
+        tls_certificate_path = fsec."services/matrix/tls_certificate".path;
+        tls_private_key_path = fsec."services/matrix/tls_private_key".path;
         inherit (secrets.matrix)
           turn_uris
           turn_shared_secret
-          tls_dh_params_path
-          tls_certificate_path
-          tls_private_key_path
           database_type
           database_args
           registration_shared_secret
@@ -82,4 +85,25 @@
     ];
   };
   roos.container-host.guestMounts.matrix-synapse = {};
+
+  sops.secrets = let
+    secretCfg = {
+      restartUnits = [ "container@matrix.service" ];
+      # We cannot set the required owner and group since the target values don't
+      # exist in the host configuration, thus failing the activation script.
+    };
+  in {
+    "services/matrix/tls_dh_params" = secretCfg;
+    "services/matrix/tls_certificate" = secretCfg;
+    "services/matrix/tls_private_key" = secretCfg;
+  };
+
+  system.activationScripts.secretsForMatrix = let
+    o = toString config.containers.matrix.config.users.users.matrix-synapse.uid;
+    g = toString config.containers.matrix.config.users.groups.matrix-synapse.gid;
+  in lib.stringAfter ["setupSecrets"] ''
+    chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
+    chown ${o}:${g} "${fsec."services/matrix/tls_certificate".path}"
+    chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
+  '';
 }
