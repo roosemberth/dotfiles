@@ -202,18 +202,18 @@ in {
       };
 
       roos.btrbk.config.volumes."${cfg.hostDataDir}" = let
-        stripPrefix = path: lib.removePrefix "${cfg.hostDataDir}/" path;
+        stripPrefix = path: removePrefix "${cfg.hostDataDir}/" path;
       in {
         subvolumes = mapAttrsToList (_: c: stripPrefix c.hostPath) cfg.guestMounts;
         snapshot_dir = "snapshots";
+        snapshot_preserve = mkDefault "6h 7d 4w 6m";
+        snapshot_preserve_min = mkDefault "1h";
       };
-
     }) (mkIf (cfg.guestMounts != {}) {
-      systemd.services = mapAttrs' (n: v: lib.nameValuePair "container@${n}" {
+      systemd.services = mapAttrs' (n: v: nameValuePair "container@${n}" {
         requires = [ "container-host-volumes.service" ];
         after = [ "container-host-volumes.service" ];
       }) config.containers;
-
     })
   ];
   in [({ ... }: lib.mkIf cfg.enable impl)];
