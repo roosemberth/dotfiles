@@ -29,9 +29,6 @@ in recursiveUpdate ({
     pubkeys = {
       sshFor = purpose: readSecretPath "machines/${hostname}/ssh-keys/${purpose}.pub";
     };
-    privateKeyPath = {
-      sshFor = purpose: ./secrets + "/machines/${hostname}/ssh-keys/${purpose}";
-    };
   }) (attrByPath [hostname] {} opaque.secrets.hosts);
 
   network = import ./secrets/network.nix {};

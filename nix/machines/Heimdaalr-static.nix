@@ -1,6 +1,5 @@
 { config, lib, pkgs, modulesPath, secrets, ... }: let
   hostname = config.networking.hostName;
-  hostSecrets = secrets.forHost hostname;
   uuids = {
     boot = "2e4511ee-18a2-45d6-b085-c60bd23d6f50";
     luks = "f847edc7-886d-46d5-9579-a8b7c81db556";
