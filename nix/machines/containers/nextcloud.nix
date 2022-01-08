@@ -1,9 +1,8 @@
-{ config, pkgs, secrets, ... }: let
-  hostDataDirBase = "/mnt/cabinet/minerva-data";
-in {
+{ config, pkgs, secrets, ... }: {
   containers.nextcloud = {
     autoStart = true;
-    bindMounts.nextcloud.hostPath = "${hostDataDirBase}/nextcloud";
+    bindMounts.nextcloud.hostPath =
+      config.roos.container-host.guestMounts.nextcloud.hostPath;
     bindMounts.nextcloud.mountPoint = "/var/lib/nextcloud";
     bindMounts.nextcloud.isReadOnly = false;
     config = {
@@ -68,25 +67,5 @@ in {
       "-d 10.13.255.101/32 -m state --state RELATED,ESTABLISHED -j ACCEPT"
     ];
   };
-
-  systemd.services."container@nextcloud".unitConfig.ConditionPathIsDirectory =
-    [ "${hostDataDirBase}/nextcloud" ];
-  systemd.services.nextcloud-paths = {
-    description = "Prepare paths used by nextcloud.";
-    requiredBy = [ "container@nextcloud.service" ];
-    before = [ "container@nextcloud.service" ];
-    path = with pkgs; [
-      btrfs-progs
-      e2fsprogs
-      gawk
-      utillinux
-    ];
-    environment.TARGET = "/var/lib/nextcloud";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = let tool = "${pkgs.ensure-nodatacow-btrfs-subvolume}";
-      in "${tool}/bin/ensure-nodatacow-btrfs-subvolume";
-    };
-  };
+  roos.container-host.guestMounts.nextcloud = {};
 }

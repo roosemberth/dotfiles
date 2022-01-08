@@ -25,13 +25,13 @@
     HTTPPort = 9096;
     HTTPAddress = "[::1]";
   };
-  hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.monitoring = {
     autoStart = true;
-    bindMounts.prometheus.hostPath = "${hostDataDirBase}/prometheus2";
-    bindMounts.prometheus.mountPoint = "/var/lib/prometheus2";
-    bindMounts.prometheus.isReadOnly = false;
+    bindMounts.monitoring-prometheus.hostPath =
+      config.roos.container-host.guestMounts.monitoring-prometheus.hostPath;
+    bindMounts.monitoring-prometheus.mountPoint = "/var/lib/prometheus2";
+    bindMounts.monitoring-prometheus.isReadOnly = false;
     config = {
       networking.firewall.allowedTCPPorts = [ 9090 9093 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -138,7 +138,5 @@ in {
     ];
     ipv4.fwd-rules = [ "-j ACCEPT" ];
   };
-
-  systemd.services."container@monitoring".unitConfig.ConditionPathIsDirectory =
-    [ "${hostDataDirBase}/prometheus2" ];
+  roos.container-host.guestMounts.monitoring-prometheus = {};
 }

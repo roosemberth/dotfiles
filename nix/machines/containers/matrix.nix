@@ -1,11 +1,10 @@
-{ config, pkgs, secrets, ... }: let 
-  hostDataDirBase = "/mnt/cabinet/minerva-data";
-in {
+{ config, pkgs, secrets, ... }: {
   containers.matrix = {
     autoStart = true;
-    bindMounts.synapse-data.hostPath = "${hostDataDirBase}/matrix-synapse";
-    bindMounts.synapse-data.mountPoint = "/var/lib/matrix-synapse";
-    bindMounts.synapse-data.isReadOnly = false;
+    bindMounts.matrix-synapse.hostPath =
+      config.roos.container-host.guestMounts.matrix-synapse.hostPath;
+    bindMounts.matrix-synapse.mountPoint = "/var/lib/matrix-synapse";
+    bindMounts.matrix-synapse.isReadOnly = false;
     config = {
       networking.firewall.allowedTCPPorts = [ 8448 9092 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -66,8 +65,6 @@ in {
     ];
   };
 
-  systemd.services."container@matrix".unitConfig.ConditionPathIsDirectory =
-    [ "${hostDataDirBase}/matrix-synapse" ];
   roos.container-host.firewall.matrix = {
     in-rules = [
       # DNS
@@ -84,4 +81,5 @@ in {
       "-d 10.13.0.0/16 -p udp -m udp --dport 53 -j ACCEPT"
     ];
   };
+  roos.container-host.guestMounts.matrix-synapse = {};
 }
