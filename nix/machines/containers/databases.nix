@@ -56,7 +56,6 @@ in {
 
   systemd.services."container@databases".unitConfig.ConditionPathIsDirectory = [
     "/var/lib/postgresql"
-    "${hostDataDirBase}/orion"
     "${hostDataDirBase}/influxdb"
     "${hostDataDirBase}/grafana"
   ];
