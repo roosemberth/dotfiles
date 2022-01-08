@@ -157,64 +157,65 @@ in {
     };
   };
 
-  imports = let
-    impl = with lib; mkMerge [{
-      networking = mkIf (cfg.iface.name != null) {
-        bridges."${cfg.iface.name}".interfaces = [];
-        interfaces."${cfg.iface.name}" = {
-          inherit (cfg.iface) ipv4 ipv6;
-        };
-        nat.internalInterfaces = [ cfg.iface.name ];
-        firewall.extraCommands = let
-          rules = mapAttrs nameAndFwCfgToRules cfg.firewall;
-        in optionalString (cfg.firewall != {}) ''
-          # Disengage, flush are delete helper chains.
-          ${concatStringsSep "\n" (concatMap (a: a.unload) (attrValues rules))}
-
-          # Create helper chains for each container.
-          ${concatStringsSep "\n" (concatMap (a: a.create) (attrValues rules))}
-
-          # Container chains customizations
-          ${concatStringsSep "\n" (concatMap (a: a.policies) (attrValues rules))}
-
-          # Log policy failures.
-          ${concatStringsSep "\n" (concatMap (a: a.onFailure) (attrValues rules))}
-
-          # Engage helper chains.
-          ${concatStringsSep "\n" (concatMap (a: a.install) (attrValues rules))}
-        '';
+  config = with lib; mkMerge [{
+    networking = mkIf (cfg.iface.name != null) {
+      bridges."${cfg.iface.name}".interfaces = [];
+      interfaces."${cfg.iface.name}" = {
+        inherit (cfg.iface) ipv4 ipv6;
       };
-    } (mkIf (cfg.guestMounts != {}) {
-      systemd.services."container-host-volumes" = let
-        subvolumes =
-          mapAttrsToList (_: c: c.hostPath) cfg.guestMounts
-          ++ [ "${cfg.hostDataDir}/snapshots" ];
-      in {
-        serviceConfig.ExecStart = pkgs.writeShellScript "container-paths" (
-          concatMapStringsSep "\n" (p: ''
-            if ! [ -e "${p}" ]; then
-              mkdir -p "$(dirname "${p}")"
-              ${pkgs.btrfs-progs}/bin/btrfs subvolume create "${p}"
-            fi
-          '') subvolumes);
-        serviceConfig.RemainAfterExit = true;
-        wantedBy = [ "default.target" ];
-      };
+      nat.internalInterfaces = [ cfg.iface.name ];
 
-      roos.btrbk.config.volumes."${cfg.hostDataDir}" = let
-        stripPrefix = path: removePrefix "${cfg.hostDataDir}/" path;
-      in {
-        subvolumes = mapAttrsToList (_: c: stripPrefix c.hostPath) cfg.guestMounts;
-        snapshot_dir = "snapshots";
-        snapshot_preserve = mkDefault "6h 7d 4w 6m";
-        snapshot_preserve_min = mkDefault "1h";
-      };
-    }) (mkIf (cfg.guestMounts != {}) {
-      systemd.services = mapAttrs' (n: v: nameValuePair "container@${n}" {
-        requires = [ "container-host-volumes.service" ];
-        after = [ "container-host-volumes.service" ];
-      }) config.containers;
-    })
-  ];
-  in [({ ... }: lib.mkIf cfg.enable impl)];
+      firewall.extraCommands = let
+        rules = mapAttrs nameAndFwCfgToRules cfg.firewall;
+      in optionalString (cfg.firewall != {}) ''
+        # Disengage, flush are delete helper chains.
+        ${concatStringsSep "\n" (concatMap (a: a.unload) (attrValues rules))}
+
+        # Create helper chains for each container.
+        ${concatStringsSep "\n" (concatMap (a: a.create) (attrValues rules))}
+
+        # Container chains customizations
+        ${concatStringsSep "\n" (concatMap (a: a.policies) (attrValues rules))}
+
+        # Log policy failures.
+        ${concatStringsSep "\n" (concatMap (a: a.onFailure) (attrValues rules))}
+
+        # Engage helper chains.
+        ${concatStringsSep "\n" (concatMap (a: a.install) (attrValues rules))}
+      '';
+    };
+  }
+
+  (mkIf (cfg.guestMounts != {}) {
+    systemd.services."container-host-volumes" = let
+      hostPaths = mapAttrsToList (_: c: c.hostPath) cfg.guestMounts;
+    in {
+      serviceConfig.ExecStart = pkgs.writeShellScript "prepare-container-paths" (
+        concatMapStringsSep "\n" (p: ''
+          if ! [ -e "${p}" ]; then
+            mkdir -p "$(dirname "${p}")"
+            ${pkgs.btrfs-progs}/bin/btrfs subvolume create "${p}"
+          fi
+        '') ([ "${cfg.hostDataDir}/snapshots" ] ++ hostPaths)
+      );
+      serviceConfig.RemainAfterExit = true;
+      wantedBy = [ "default.target" ];
+    };
+
+    roos.btrbk.config.volumes."${cfg.hostDataDir}" = let
+      toRelative = path: removePrefix "${cfg.hostDataDir}/" path;
+    in {
+      subvolumes = mapAttrsToList (_: c: toRelative c.hostPath) cfg.guestMounts;
+      snapshot_dir = "snapshots";
+      snapshot_preserve = mkDefault "6h 7d 4w 6m";
+      snapshot_preserve_min = mkDefault "1h";
+    };
+  })
+
+  (mkIf (cfg.guestMounts != {}) {
+    systemd.services = mapAttrs' (n: v: nameValuePair "container@${n}" {
+      requires = [ "container-host-volumes.service" ];
+      after = [ "container-host-volumes.service" ];
+    }) config.containers;
+  })];
 }
