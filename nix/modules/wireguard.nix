@@ -54,7 +54,7 @@ in {
     networking.wireguard.interfaces.${cfg.interface} = {
       inherit listenPort;
       ips = with secrets.network.zkx.${hostname}; [host4 host6];
-      privateKey = (secrets.forHost hostname).keys.wireguard.private;
+      privateKeyFile = config.sops.secrets."wireguard/private".path;
       peers = if cfg.gwServer == null then attrValues networkPeers
         else assert gwServerAssert; [(networkPeers.${cfg.gwServer} // {
           allowedIPs = allNetworkIPs;
@@ -65,5 +65,6 @@ in {
     security.sudo.extraConfig = ''
       %wheel ALL=(root) NOPASSWD: /run/current-system/sw/bin/wg
     '';
+    sops.secrets."wireguard/private" = {};
   };
 }

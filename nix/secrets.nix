@@ -4,9 +4,7 @@ with lib; assert (assertMsg _modinjector
 let
   readSecretPath = path: strings.fileContents (toString ./secrets + "/" + path);
   wireguardSecrets = host:
-    { private = readSecretPath "machines/${host}/wireguard-keys/private";
-      public = readSecretPath "machines/${host}/wireguard-keys/public";
-    };
+    { public = readSecretPath "machines/${host}/wireguard-keys/public"; };
   admins = import ./secrets/users/admins.nix { inherit lib; };
   opaque = import ./secrets/opaque.nix { inherit lib; };
 
