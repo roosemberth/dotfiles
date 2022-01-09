@@ -11,7 +11,7 @@
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
-  outputs = flakes@{
+  outputs = inputs@{
     self,
     nixpkgs-unstable,
     nixpkgs-porcupine,
@@ -22,25 +22,14 @@
     sops-nix,
   }:
   let
-    defFlakeSystem = {
+    mkFlakeSystem = flakes@{
+      system ? "x86_64-linux",
       nixpkgs ? nixpkgs-porcupine,
       home-manager ? hm-porcupine,
-    }: baseCfg: nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [({ ... }: {
-        imports = [
-          baseCfg
-          (import ./nix/bootstrap-home-manager.nix
-            { home-manager-flake = home-manager; })
-          sops-nix.nixosModules.sops
-        ];
-        nixpkgs.overlays = [ self.overlay ];
-        # Let 'nixos-version --json' know the Git revision of this flake.
-        system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        nix.registry.p.flake = nixpkgs;
-        nix.registry.nixpkgs.flake = nixpkgs;
-      })];
-    };
+      ...
+    }: cfg: import ./nix/eval-flake-system.nix
+      (inputs // { inherit system nixpkgs home-manager; }) cfg;
+
     forAllSystems = { nixpkgs ? nixpkgs-unstable }: fn:
       nixpkgs.lib.genAttrs
         flake-utils.lib.defaultSystems
@@ -48,21 +37,22 @@
           { system = sys; overlays = [ self.overlay ]; }));
   in {
     nixosConfigurations = {
-      Mimir = defFlakeSystem {
+      Mimir = mkFlakeSystem {
         nixpkgs = nixpkgs-unstable;
         home-manager = hm-unstable;
       } ./nix/machines/Mimir.nix;
-      Mimir-vm = defFlakeSystem {} ({ modulesPath, ... }: {
+      Mimir-vm = mkFlakeSystem {} ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = defFlakeSystem {} ./nix/machines/Minerva.nix;
-      Heimdaalr = defFlakeSystem {} ./nix/machines/Heimdaalr.nix;
-      batman = defFlakeSystem {} {
+      Minerva = mkFlakeSystem {} ./nix/machines/Minerva.nix;
+      Heimdaalr = mkFlakeSystem {} ./nix/machines/Heimdaalr.nix;
+      batman = mkFlakeSystem {} {
         _module.args.nixosSystem = nixpkgs-porcupine.lib.nixosSystem;
         _module.args.home-manager = hm-porcupine.nixosModules.home-manager;
         imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
+
     apps = with nixpkgs-unstable.lib; (forAllSystems {} (pkgs: let
       toApp = name: drv: let host = removePrefix "vms/" name; in
         { type = "app"; program = "${drv}/bin/run-${host}-vm"; };
@@ -73,19 +63,19 @@
     overlay = import ./nix/pkgs/overlay.nix;
 
     packages = (forAllSystems {} (pkgs: flake-utils.lib.flattenTree {
-      vms = pkgs.lib.recurseIntoAttrs
-      (import ./nix/machines/vms.nix {
+      vms = pkgs.lib.recurseIntoAttrs (import ./nix/machines/vms.nix {
         inherit pkgs;
-        flakes = flakes // {
+        flakes = inputs // {
           nixpkgs = nixpkgs-unstable;
           home-manager = hm-unstable;
         };
       });
-      } // (with nixpkgs-unstable.lib; getAttrs
+    } // (with nixpkgs-unstable.lib; getAttrs
               (attrNames (self.overlay {} {})) pkgs)));
 
     templates.generic.path = ./nix/flake-templates/generic;
     templates.generic.description = "Generic template for my projects.";
+
     defaultTemplate = self.templates.generic;
     devShells = forAllSystems { nixpkgs = nixpkgs-porcupine; }
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });

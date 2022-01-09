@@ -1,27 +1,17 @@
 { pkgs, flakes, ... }:
 let
-  mkVmNoHm = hostname: baseConfig: (flakes.nixpkgs.lib.nixosSystem {
-    system = pkgs.system;
-    modules = [({ config, lib, ... }: {
-      imports = [
-        ./tests/base.nix
-        baseConfig
-      ];
-      networking.hostName = hostname;
-      services.sshd.enable = true;
-      networking.firewall.enable = false;
-    })];
-  }).config.system.build.vm;
-
-  mkVm = hostname: baseConfig: mkVmNoHm hostname {
+  flakes' = flakes // { system = pkgs.system; };
+  mkVm = hostname: cfg: (import ../eval-flake-system.nix flakes' {
     imports = [
-      ../modules
-      baseConfig
-      (import ../bootstrap-home-manager.nix
-        { home-manager-flake = flakes.home-manager; })
+      ./tests/base.nix
+      cfg
+      {
+        networking.hostName = hostname;
+        services.sshd.enable = true;
+        networking.firewall.enable = false;
+      }
     ];
-    nix.registry.nixpkgs.flake = flakes.nixpkgs;
-  };
+  }).config.system.build.vm;
 in {
   foo = mkVm "foo" {
     systemd.services.enable-roos-linger = {
