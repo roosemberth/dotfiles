@@ -198,6 +198,7 @@ in {
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     prometheus.exporters.node.enable = true;
+    prometheus.exporters.node.enabledCollectors = [ "systemd" ];
     tlp.enable = true;
     tlp.settings.CPU_SCALING_GOVERNOR_ON_AC = "performance";
     upower.enable = true;
