@@ -45,6 +45,15 @@ in {
 
       services.prometheus = {
         enable = true;
+        exporters.smokeping = {
+          enable = true;
+          hosts = [
+            "Heimdaalr.orbstheorem.ch"
+            secrets.network.zkx.Heimdaalr.ep.addr
+            "ipv6.google.com"
+            "ipv4.google.com"
+          ];
+        };
         webExternalUrl = "https://monitoring.orbstheorem.ch/";
         ruleFiles = [
           ./prometheus/synapse-v2.rules  # Rules for matrix-synapse
@@ -69,6 +78,13 @@ in {
           static_configs = [{ targets = [
             "minerva.intranet.orbstheorem.ch:9187"
           ];}];
+        } {
+          job_name = "smokeping";
+          honor_labels = true;
+          static_configs = let
+            port = config.services.prometheus.exporters.smokeping.port;
+          in [{ targets = [ "localhost:${toString port}" ];
+      }];
         }];
         alertmanagers = [{ static_configs = [{ targets = [ "[::1]:9093" ]; }]; }];
         alertmanager.enable = true;
