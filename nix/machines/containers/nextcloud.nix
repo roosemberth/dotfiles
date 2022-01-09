@@ -1,10 +1,13 @@
-{ config, pkgs, secrets, ... }: {
+{ config, lib, pkgs, secrets, ... }: let
+  fsec = config.sops.secrets;
+in {
   containers.nextcloud = {
     autoStart = true;
     bindMounts.nextcloud.hostPath =
       config.roos.container-host.guestMounts.nextcloud.hostPath;
     bindMounts.nextcloud.mountPoint = "/var/lib/nextcloud";
     bindMounts.nextcloud.isReadOnly = false;
+    bindMounts."/run/secrets/services/nextcloud" = {};
     config = {
       networking.firewall.allowedTCPPorts = [ 80 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -23,10 +26,9 @@
         enableImagemagick = true;
         autoUpdateApps.enable = true;
         config.adminuser = secrets.nextcloud.adminuser;
-        config.adminpassFile =
-          "${pkgs.writeText "nap" secrets.nextcloud.adminpass}";
+        config.adminpassFile = fsec."services/nextcloud/adminpass".path;
         config.dbuser = secrets.nextcloud.dbuser;
-        config.dbpassFile = "${pkgs.writeText "ndp" secrets.nextcloud.dbpass}";
+        config.dbpassFile = fsec."services/nextcloud/dbpass".path;
         config.dbtype = "pgsql";
         config.dbport = "5432";
         config.dbhost = "minerva.intranet.orbstheorem.ch";
@@ -39,9 +41,7 @@
         url = "http://localhost";
         port = 26224;
         username = secrets.nextcloud.exporteruser;
-        passwordFile = pkgs.writeText
-          secrets.nextcloud.exporterpassfilename
-          secrets.nextcloud.exporterpass;
+        passwordFile = fsec."services/nextcloud/exporterpass".path;
       };
     };
     ephemeral = true;
@@ -68,4 +68,25 @@
     ];
   };
   roos.container-host.guestMounts.nextcloud = {};
+
+  sops.secrets = let
+    secretCfg = {
+      restartUnits = [ "container@nextcloud.service" ];
+      # We cannot set the required owner and group since the target values don't
+      # exist in the host configuration, thus failing the activation script.
+    };
+  in {
+    "services/nextcloud/adminpass" = secretCfg;
+    "services/nextcloud/dbpass" = secretCfg;
+    "services/nextcloud/exporterpass" = secretCfg;
+  };
+
+  system.activationScripts.secretsForNextcloud = let
+    o = toString config.containers.nextcloud.config.users.users.nextcloud.uid;
+    g = toString config.containers.nextcloud.config.users.groups.nextcloud.gid;
+  in lib.stringAfter ["setupSecrets"] ''
+    chown ${o}:${g} "${fsec."services/nextcloud/adminpass".path}"
+    chown ${o}:${g} "${fsec."services/nextcloud/dbpass".path}"
+    chown ${o}:${g} "${fsec."services/nextcloud/exporterpass".path}"
+  '';
 }
