@@ -65,6 +65,7 @@ in {
     security.sudo.extraConfig = ''
       %wheel ALL=(root) NOPASSWD: /run/current-system/sw/bin/wg
     '';
-    sops.secrets."wireguard/private" = {};
+    sops.secrets."wireguard/private".restartUnits =
+      [ "wireguard-Bifrost.service" ];
   };
 }
