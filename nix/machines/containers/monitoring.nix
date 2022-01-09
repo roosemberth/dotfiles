@@ -1,4 +1,5 @@
 { config, pkgs, lib, secrets, ... }: let
+  fsec = config.sops.secrets;
   send-monitoring-sms-alert = with secrets.monitoring.alert-routes.twilio;
     pkgs.writeShellScript "send-monitoring-sms-alert" ''
       MSG="$(${pkgs.jq}/bin/jq -r '.alerts[]|.annotations.description' "$BODY")"
@@ -32,6 +33,7 @@ in {
       config.roos.container-host.guestMounts.monitoring-prometheus.hostPath;
     bindMounts.monitoring-prometheus.mountPoint = "/var/lib/prometheus2";
     bindMounts.monitoring-prometheus.isReadOnly = false;
+    bindMounts."/run/secrets/services/monitoring" = {};
     config = {
       networking.firewall.allowedTCPPorts = [ 9090 9093 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -53,6 +55,12 @@ in {
             "ipv6.google.com"
             "ipv4.google.com"
           ];
+        };
+        exporters.nextcloud = {
+          enable = true;
+          url = "https://nextcloud.orbstheorem.ch";
+          username = secrets.monitoring.exporter.nextcloud_user;
+          passwordFile = fsec."services/monitoring/exporter/nextcloud_pass".path;
         };
         webExternalUrl = "https://monitoring.orbstheorem.ch/";
         ruleFiles = [
@@ -79,12 +87,16 @@ in {
             "minerva.intranet.orbstheorem.ch:9187"
           ];}];
         } {
+          job_name = "nextcloud";
+          static_configs = let
+            port = config.services.prometheus.exporters.nextcloud.port;
+          in [{ targets = [ "localhost:${toString port}" ]; }];
+        } {
           job_name = "smokeping";
           honor_labels = true;
           static_configs = let
             port = config.services.prometheus.exporters.smokeping.port;
-          in [{ targets = [ "localhost:${toString port}" ];
-      }];
+          in [{ targets = [ "localhost:${toString port}" ]; }];
         }];
         alertmanagers = [{ static_configs = [{ targets = [ "[::1]:9093" ]; }]; }];
         alertmanager.enable = true;
@@ -135,6 +147,9 @@ in {
         serviceConfig.Restart = "always";
         serviceConfig.RestartSec = 3;
       };
+      # Need fixed ids to set secret permissions on host activation script
+      users.users.nextcloud-exporter.uid = 998;
+      users.groups.nextcloud-exporter.gid = 998;
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...
@@ -155,4 +170,17 @@ in {
     ipv4.fwd-rules = [ "-j ACCEPT" ];
   };
   roos.container-host.guestMounts.monitoring-prometheus = {};
+
+  # We cannot set the required owner and group since the target values don't
+  # exist in the host configuration, thus failing the activation script.
+  sops.secrets."services/monitoring/exporter/nextcloud_pass".restartUnits =
+    [ "container@monitoring.service" ];
+
+  system.activationScripts.secretsForMonitoring = let
+    cfg = config.containers.monitoring.config;
+    o = toString cfg.users.users.nextcloud-exporter.uid;
+    g = toString cfg.users.groups.nextcloud-exporter.gid;
+  in lib.stringAfter ["setupSecrets"] ''
+    chown ${o}:${g} "${fsec."services/monitoring/exporter/nextcloud_pass".path}"
+  '';
 }

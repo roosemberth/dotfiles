@@ -35,14 +35,6 @@ in {
         config.defaultPhoneRegion = "CH";
         config.overwriteProtocol = "https";
       };
-      services.prometheus.exporters.nextcloud = {
-        # FIXME
-        enable = false; # true;
-        url = "http://localhost";
-        port = 26224;
-        username = secrets.nextcloud.exporteruser;
-        passwordFile = fsec."services/nextcloud/exporterpass".path;
-      };
       users.users.nextcloud.uid = 999;
       users.groups.nextcloud.gid = 999;
     };
@@ -80,7 +72,6 @@ in {
   in {
     "services/nextcloud/adminpass" = secretCfg;
     "services/nextcloud/dbpass" = secretCfg;
-    "services/nextcloud/exporterpass" = secretCfg;
   };
 
   system.activationScripts.secretsForNextcloud = let
@@ -89,6 +80,5 @@ in {
   in lib.stringAfter ["setupSecrets"] ''
     chown ${o}:${g} "${fsec."services/nextcloud/adminpass".path}"
     chown ${o}:${g} "${fsec."services/nextcloud/dbpass".path}"
-    chown ${o}:${g} "${fsec."services/nextcloud/exporterpass".path}"
   '';
 }
