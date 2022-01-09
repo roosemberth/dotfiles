@@ -43,6 +43,8 @@ in {
         username = secrets.nextcloud.exporteruser;
         passwordFile = fsec."services/nextcloud/exporterpass".path;
       };
+      users.users.nextcloud.uid = 999;
+      users.groups.nextcloud.gid = 999;
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...
