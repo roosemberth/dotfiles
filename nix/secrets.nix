@@ -16,17 +16,9 @@ in recursiveUpdate ({
   adminPubKeys = admins.authorizedPublicKeys;
 
   forHost = hostname: recursiveUpdate ({
-    keys = {
-      ssh-initramfs = let
-        path = ./secrets + "/machines/${hostname}/ssh-initramfs-keys/";
-        isPrivateKey = name: type: type == "regular" && ! strings.hasSuffix ".pub" name;
-        keys = attrNames (filterAttrs isPrivateKey (builtins.readDir path));
-      in lib.genAttrs keys (key: path + "/${key}");
-      wireguard = wireguardSecrets hostname;
-    };
-    pubkeys = {
-      sshFor = purpose: readSecretPath "machines/${hostname}/ssh-keys/${purpose}.pub";
-    };
+    keys.wireguard = wireguardSecrets hostname;
+    pubkeys.sshFor =
+      purpose: readSecretPath "machines/${hostname}/ssh-keys/${purpose}.pub";
   }) (attrByPath [hostname] {} opaque.secrets.hosts);
 
   network = import ./secrets/network.nix {};
