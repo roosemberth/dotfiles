@@ -9,7 +9,7 @@
   clientOpts = { name, ... }: with lib; {
     options.publicKey = mkOption {
       description = "SSH public key used by this client to push backups.";
-      default = (secrets.forHost name).pubkeys.sshFor "backups";
+      default = (secrets.forHost name).pubkeys.backups;
       type = types.unspecified;
     };
   };

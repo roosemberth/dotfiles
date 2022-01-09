@@ -7,7 +7,7 @@ let
     endpoint = if ep == null then null else "${ep.addr}:${toString ep.port}";
     allowedIPs = with zkx.${host}; map cidrToHost [host4 host6] ++ ipv4 ++ ipv6;
     persistentKeepalive = 30;
-    publicKey = (forHost host).keys.wireguard.public;
+    publicKey = (forHost host).pubkeys.wireguard;
   };
   networkPeers =
     mapAttrs
