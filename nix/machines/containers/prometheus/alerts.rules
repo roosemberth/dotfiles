@@ -18,3 +18,9 @@ groups:
       annotations:
         summary: >-
           Failed to retrieve {{ $labels.job }} metrics from {{ $labels.instance }}
+    - alert: Nextcloud unavailable
+      expr: nextcloud_up{job="nextcloud"} == 0
+      for: 15s
+      annotations:
+        summary: >-
+          The nextcloud exporter job reported the instance is not considered up.
