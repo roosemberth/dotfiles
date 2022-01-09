@@ -102,7 +102,7 @@ in {
     o = toString config.containers.matrix.config.users.users.matrix-synapse.uid;
     g = toString config.containers.matrix.config.users.groups.matrix-synapse.gid;
   in lib.stringAfter ["setupSecrets"] ''
-    chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
+    chown ${o}:${g} "${fsec."services/matrix/tls_dh_params".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_certificate".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
   '';
