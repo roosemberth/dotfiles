@@ -28,7 +28,6 @@ in {
   boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.version = 2;
 
-  sops.defaultSopsFile = ../.././secrets/per-host/Heimdaalr.yaml;
   sops.secrets."ssh-host/initramfs/ed25519" = {};
 
   fileSystems = let

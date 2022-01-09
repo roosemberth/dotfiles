@@ -130,7 +130,6 @@ in
   services.btrfs.autoScrub.enable = true;
   services.fwupd.enable = true;
 
-  sops.defaultSopsFile = ../.././secrets/per-host/Mimir.yaml;
   sops.secrets."ssh-client/backups-key" = {};
 
   roos.btrbk.enable = true;

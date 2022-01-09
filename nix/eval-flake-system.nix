@@ -7,7 +7,12 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
 
     ./modules
 
-    sops-nix.nixosModules.sops
+    # Bootstrap sops
+    ({ config, ... }: {
+      imports = [ sops-nix.nixosModules.sops ];
+      sops.defaultSopsFile =
+        ../secrets/per-host + "/${config.networking.hostName}.yaml";
+    })
 
     # Bootstrap home-manager
     ({ config, ... }: {

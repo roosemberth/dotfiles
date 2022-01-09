@@ -39,7 +39,6 @@ in
     };
   };
 
-  sops.defaultSopsFile = ../.././secrets/per-host/Minerva.yaml;
   sops.secrets."ssh-host/initramfs/ed25519" = {};
   sops.secrets."ssh-host/initramfs/ecdsa" = {};
 
