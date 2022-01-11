@@ -157,7 +157,7 @@ in {
     };
   };
 
-  config = with lib; mkMerge [{
+  config = with lib; mkIf cfg.enable (mkMerge [{
     networking = mkIf (cfg.iface.name != null) {
       bridges."${cfg.iface.name}".interfaces = [];
       interfaces."${cfg.iface.name}" = {
@@ -217,5 +217,5 @@ in {
       requires = [ "container-host-volumes.service" ];
       after = [ "container-host-volumes.service" ];
     }) config.containers;
-  })];
+  })]);
 }
