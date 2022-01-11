@@ -7,6 +7,9 @@
       enable = true;
       extraConfig = ''
         include "/keyring/dns/dns-orbstheorem.ch.keys.conf";
+        statistics-channels {
+          inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+        };
       '';
       zones = [{
         name = "orbstheorem.ch";
@@ -16,6 +19,8 @@
         extraConfig = "allow-update { key rfc2136key.orbstheorem.ch.; };";
       }];
     };
+    services.prometheus.exporters.bind.enable = true;
+    services.prometheus.exporters.bind.bindGroups = [ "server" "view" "tasks" ];
     systemd.services."bind-zone-orbstheorem.ch" = {
       description = "Copy zonefile for orbstheorem.ch from the nix-store.";
       requiredBy = ["bind.service"];

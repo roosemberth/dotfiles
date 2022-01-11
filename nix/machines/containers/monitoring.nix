@@ -101,7 +101,10 @@ in {
           job_name = "bind";
           static_configs = let
             port = toString config.services.prometheus.exporters.bind.port;
-          in [{ targets = [ "minerva.intranet.orbstheorem.ch:${port}" ];}];
+          in [{ targets = [
+            "minerva.intranet.orbstheorem.ch:${port}"
+            "heimdaalr.intranet.orbstheorem.ch:${port}"
+          ];}];
         }];
         alertmanagers = [{ static_configs = [{ targets = [ "[::1]:9093" ]; }]; }];
         alertmanager.enable = true;
