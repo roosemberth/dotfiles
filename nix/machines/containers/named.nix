@@ -13,6 +13,11 @@ in {
           "10.231.136.4" # Exceptionally resolve for the matrix container...
           # The amount of queries made by matrix breaks systemd-resolved...
         ];
+      extraConfig = ''
+        statistics-channels {
+          inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+        };
+      '';
       forwarders = [  # OpenNIC Servers
         "2a01:7e01::f03c:91ff:febc:322"         # ns2.he.de   Frankfurt
         "2a01:4f9:c010:6093::3485"              # ns2.fi      Helsinki
@@ -27,6 +32,9 @@ in {
       listenOnIpv6 = map removeCIDR [ secrets.network.zkx.Minerva.host6 ];
       zones = secrets.network.allDnsZones;
     };
+    config.services.prometheus.exporters.bind.enable = true;
+    config.services.prometheus.exporters.bind.bindGroups =
+      [ "server" "view" "tasks" ];
     ephemeral = false; # TODO: isolate cache as a spool directory...
   };
 
