@@ -24,3 +24,9 @@ groups:
       annotations:
         summary: >-
           The nextcloud exporter job reported the instance is not considered up.
+    - alert: Nameserver unavailable
+      expr: bind_up == 0
+      for: 15s
+      annotations:
+        summary: >-
+          The bind exporter reported {{ $labels.instance }} nameserver is not up.
