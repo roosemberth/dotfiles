@@ -3,6 +3,8 @@
 in {
   containers.named = {
     autoStart = true;
+    config.nixpkgs.overlays =
+      [(_:_: { inherit (pkgs) prometheus-bind-exporter; })];
     config.services.bind = {
       enable = true;
       cacheNetworks =
