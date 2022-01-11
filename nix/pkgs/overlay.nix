@@ -115,11 +115,11 @@ in {
   mopidy-roos = final.callPackage ./mopidy {};
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
-    version = "21102601";
+    version = "22011001";
     srcs = [
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-WailkAEupAqEI1Osgygbx3LlgVDEwq4eQSvWb/YT/5U=";
+        hash = "sha256-BON3IVjZ5xD3OJGBLDfhe1gnyb/hTXp5A/m8NuBtBLw=";
       })
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-key.pem";
