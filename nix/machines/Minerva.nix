@@ -159,6 +159,8 @@ in {
     ./containers/databases.nix
     ./containers/home-automation.nix
     ./containers/named.nix
+    ./containers/greenzz.nix
+    ./containers/greenzz-prod.nix
     ./containers/nextcloud.nix
     ./containers/matrix.nix
     ./containers/monitoring.nix
