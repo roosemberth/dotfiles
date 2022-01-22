@@ -1,6 +1,7 @@
 { stdenv
 , fetchurl
 , fetchFromGitLab
+, lib
 , buildMaven
 , maven
 , makeWrapper
@@ -18,6 +19,7 @@ let
     name = "maven-repository";
     buildInputs = [ maven ];
     src = "${project}/src/server";
+    patches = ./0001-Upgrade-log4j-version-due-to-CVE-2021-44228-CVE-2021.patch;
     buildPhase = ''
       mvn package -Dmaven.repo.local=$out -Dmaven.test.skip=true
     '';
@@ -32,7 +34,7 @@ let
     dontFixup = true;  # don't do any fixup
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-r6gMdC0cKN/O289FN68SkrbTjTkQcAjKrud0Ie/OSKw=";
+    outputHash = "sha256-FX0YRZwT4okmVperUCObGGGhxV2DiUe6b+SojBryzqs=";
   };
 in stdenv.mkDerivation rec {
   version = "210608.02";
@@ -40,6 +42,7 @@ in stdenv.mkDerivation rec {
   pname = "greenzz-server";
 
   src = "${project}/src/server";
+  patches = ./0001-Upgrade-log4j-version-due-to-CVE-2021-44228-CVE-2021.patch;
 
   buildInputs = [ maven makeWrapper ];
 
