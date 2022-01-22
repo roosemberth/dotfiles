@@ -107,8 +107,6 @@ in {
     in-rules = [
       # DNS
       "-p udp -m udp --dport 53 -j ACCEPT"
-      # Database
-      "-p tcp -m tcp --dport 5432 -j ACCEPT"
     ];
     ipv4.fwd-rules = [
       # Replies to the reverse proxy
