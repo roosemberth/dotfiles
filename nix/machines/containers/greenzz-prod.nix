@@ -4,16 +4,20 @@
 in {
   containers.greenzz-prod = {
     autoStart = true;
-    bindMounts.psql-data.hostPath = "${hostDataBase}/greenzz-prod-psql";
+    bindMounts.psql-data.hostPath =
+      config.roos.container-host.guestMounts.greenzz-prod-psql.hostPath;
     bindMounts.psql-data.mountPoint = "/var/lib/postgresql";
     bindMounts.psql-data.isReadOnly = false;
-    bindMounts.influxdb.hostPath = "${hostDataBase}/greenzz-prod-influxdb";
+    bindMounts.influxdb.hostPath =
+      config.roos.container-host.guestMounts.greenzz-prod-influxdb.hostPath;
     bindMounts.influxdb.mountPoint = "/var/db/influxdb";
     bindMounts.influxdb.isReadOnly = false;
-    bindMounts.greenzz-server.hostPath = "${hostDataBase}/greenzz-prod-server";
+    bindMounts.greenzz-server.hostPath =
+      config.roos.container-host.guestMounts.greenzz-prod-server.hostPath;
     bindMounts.greenzz-server.mountPoint = "/var/lib/greenzz-server";
     bindMounts.greenzz-server.isReadOnly = false;
-    bindMounts.grafana.hostPath = "/mnt/cabinet/minerva-data/greenzz-prod-grafana";
+    bindMounts.grafana.hostPath =
+      config.roos.container-host.guestMounts.greenzz-prod-grafana.hostPath;
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
@@ -21,7 +25,7 @@ in {
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
-      networking.nameservers = [ "1.1.1.1" ];
+      networking.nameservers = config.roos.container-host.nameservers;
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
@@ -84,12 +88,13 @@ in {
       users.users.greenzz-server.uid = 43001;
       users.users.greenzz-server.description = "Greenzz server user";
       users.users.greenzz-server.isSystemUser = true;
+      users.users.greenzz-server.group = "greenzz-server";
       users.groups.greenzz-server.gid = 43001;
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...
     localAddress = "10.231.136.5/24";
-    hostBridge = "containers";
+    hostBridge = "orion";
     privateNetwork = true;
     forwardPorts = [
       { hostPort = 43000; protocol = "tcp"; }
@@ -98,41 +103,21 @@ in {
     ];
   };
 
-  networking.bridges.containers.interfaces = [];
-  networking.interfaces.containers.ipv4.addresses = [
-    { address = "10.231.136.1"; prefixLength = 24; }
-  ];
-  networking.nat.internalInterfaces = ["containers"];
-  networking.firewall.extraCommands = let
-    exitIface = config.networking.nat.externalInterface;
-  in ''
-    # Restrict access to hypervisor network
-    iptables -A INPUT -s 10.231.136.5/32 -j LOG \
-      --log-prefix "dropped restricted connection" --log-level 6
-    iptables -A INPUT -s 10.231.136.5/32 -j DROP
-    iptables -A FORWARD -s 10.231.136.5/32 -d 10.13.255.101/32 -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.5/32 -o ${exitIface} -j ACCEPT
-    iptables -A FORWARD -s 10.231.136.5/32 -j LOG \
-      --log-prefix "dropped restricted fwd connection" --log-level 6
-    iptables -A FORWARD -s 10.231.136.5/32 -j DROP
-  '';
-
-  systemd.services.greenzz-prod-psql-paths = {
-    description = "Prepare paths used by PostgreSQL.";
-    requiredBy = [ "container@greenzz-prod.service" ];
-    before = [ "container@greenzz-prod.service" ];
-    path = with pkgs; [
-      btrfs-progs
-      e2fsprogs
-      gawk
-      utillinux
+  roos.container-host.firewall.greenzz-prod = {
+    in-rules = [
+      # DNS
+      "-p udp -m udp --dport 53 -j ACCEPT"
+      # Database
+      "-p tcp -m tcp --dport 5432 -j ACCEPT"
     ];
-    environment.TARGET = "/mnt/cabinet/minerva-data/greenzz-prod-psql";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = let tool = "${pkgs.ensure-nodatacow-btrfs-subvolume}";
-      in "${tool}/bin/ensure-nodatacow-btrfs-subvolume";
-    };
+    ipv4.fwd-rules = [
+      # Replies to the reverse proxy
+      "-d 10.13.255.101/32 -m state --state RELATED,ESTABLISHED -j ACCEPT"
+    ];
   };
+
+  roos.container-host.guestMounts.greenzz-prod-psql = {};
+  roos.container-host.guestMounts.greenzz-prod-influxdb = {};
+  roos.container-host.guestMounts.greenzz-prod-server = {};
+  roos.container-host.guestMounts.greenzz-prod-grafana = {};
 }
