@@ -113,6 +113,7 @@ in {
   nvim-roos-full = nvim.full;
 
   mopidy-roos = final.callPackage ./mopidy {};
+  greenzz-server = final.callPackage ./greenzz-server {};
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
     version = "22011001";
