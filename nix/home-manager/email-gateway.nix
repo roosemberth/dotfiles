@@ -5,7 +5,7 @@ let
   emailAccounts = secrets.users.${username}.emailAccounts or {};
   passFromKeyring = name: "${pkgs.pass-keyrings}/bin/lookup-keyring "
     + "${cfg.password-source.keyring-name} ${name}";
-  passFromLibSecret = name: "${pkgs.gnome3.libsecret}/bin/secret-tool lookup "
+  passFromLibSecret = name: "${pkgs.libsecret}/bin/secret-tool lookup "
     + "${cfg.password-source.libsecret-set} ${name}";
   passFn = if cfg.password-source.keyring-name != null
            then passFromKeyring else passFromLibSecret;

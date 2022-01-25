@@ -25,7 +25,7 @@ in {
         in [
         gnupg mailcap pass-otp w3m xdg_utils
         taskwarrior timewarrior python3Packages.bugwarrior
-        gnome-keyring gcr gnome3.libsecret
+        gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
