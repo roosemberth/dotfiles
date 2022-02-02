@@ -145,7 +145,7 @@
         };
 
         "files.orbstheorem.ch" = {
-          root = "/var/www/files.orbstheorem.ch";
+          root = "/var/www/files/orbstheorem.ch";
           extraConfig = ''
             add_header X-Frame-Options DENY;
             add_header Strict-Transport-Security max-age=2678400;  # 1 month
@@ -158,9 +158,9 @@
           locations."/public/".extraConfig = "autoindex on;";
           locations."~ ^/(.+?)/(.*)?$".extraConfig = ''
             autoindex on;
-            alias users/$1/files/$2;
+            alias /var/www/files/orbstheorem.ch/users/$1/files/$2;
             auth_basic "Speak friend and come in";
-            auth_basic_user_file /var/www/files.orbstheorem.ch/users/$1/htpasswd;
+            auth_basic_user_file /var/www/files/orbstheorem.ch/users/$1/htpasswd;
           '';
         };
 
