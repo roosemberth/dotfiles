@@ -202,6 +202,8 @@ in {
   boot.cleanTmpDir = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
 
+  environment.systemPackages = [ pkgs.nvim-roos-essential ];
+
   networking.hostName = "Heimdaalr";
   networking.useNetworkd = true;
   networking.useDHCP = false;
