@@ -59,9 +59,6 @@ in {
   networking.networkmanager.enable = true;
 
   nix = {
-    binaryCaches = [
-      "https://cache.nixos.org"
-    ];
     extraOptions = ''
       experimental-features = nix-command flakes
       keep-outputs = true
@@ -69,7 +66,8 @@ in {
     '';
     daemonIOSchedPriority = 7;
     package = pkgs.nixUnstable;
-    trustedUsers = [ "roosemberth" ];
+    settings.trusted-users = [ "roosemberth" ];
+    settings.substituters = [ "https://cache.nixos.org" ];
     # Is this a good idea?
     registry.df.flake.outPath = "/home/roosemberth/ws/1-Repositories/dotfiles";
   };
