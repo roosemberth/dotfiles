@@ -144,7 +144,7 @@ in {
     };
   };
 
-  full = neovim.override {
+  full-coc-lsp = neovim.override {
     vimAlias = true;
     extraPython3Packages = p: with p; [ tasklib ];
     configure = {

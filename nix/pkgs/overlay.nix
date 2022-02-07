@@ -110,7 +110,8 @@ in {
 
   nvim-roos-core = nvim.core;
   nvim-roos-essential = nvim.essential;
-  nvim-roos-full = nvim.full;
+  nvim-roos-full-coc-lsp = nvim.full-coc-lsp;
+  nvim-roos-full = nvim.full-coc-lsp;
 
   mopidy-roos = final.callPackage ./mopidy {};
   greenzz-server = final.callPackage ./greenzz-server {};
