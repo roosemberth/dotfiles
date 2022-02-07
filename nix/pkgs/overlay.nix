@@ -111,6 +111,7 @@ in {
   nvim-roos-core = nvim.core;
   nvim-roos-essential = nvim.essential;
   nvim-roos-full-coc-lsp = nvim.full-coc-lsp;
+  nvim-roos-full-native-lsp = nvim.full-native-lsp;
   nvim-roos-full = nvim.full-coc-lsp;
 
   mopidy-roos = final.callPackage ./mopidy {};

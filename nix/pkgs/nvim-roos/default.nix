@@ -113,6 +113,16 @@
     ];
   };
 
+  nativeLspLanguageSupportPlugins = with vimPlugins; {
+    start = [
+      Improved-AnsiEsc
+      arduino-syntax-file
+      plantuml-syntax
+      mynix-tools
+      nvim-lspconfig
+    ];
+  };
+
   composeConfig = files: let
     entries = map builtins.readFile files;
   in lib.concatStringsSep "\n" (lib.filter (x: x != "") entries);
@@ -162,6 +172,28 @@ in {
       '';
       packages.essentials = essentialPlugins;
       packages.languageSupport = languageSupportPlugins;
+    };
+  };
+
+  full-native-lsp = neovim.override {
+    vimAlias = true;
+    extraPython3Packages = p: with p; [ tasklib ];
+    configure = {
+      customRC = composeConfig [
+        ./core.vim
+        ./essentials.vim
+      ] + ''
+        luafile ${./lspconfig.lua}
+      ''+ mkPlugSection ''
+        Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
+        try " Do not load taskwiki if tasklib module is not installed.
+        py3 import tasklib
+        Plug '${vimPlugins.taskwiki.rtp}', { 'on': 'VimwikiIndex' }
+        catch
+        endtry
+      '';
+      packages.essentials = essentialPlugins;
+      packages.languageSupport = nativeLspLanguageSupportPlugins;
     };
   };
 }
