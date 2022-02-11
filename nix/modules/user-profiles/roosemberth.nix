@@ -60,10 +60,32 @@ in
 
     roos.gConfig = {
       home.packages = (with pkgs; [
+        bat
         brightnessctl
+        chromium
+        element-desktop
+        fortune
+        glances
         gnome3.adwaita-icon-theme
+        gnome3.eog
+        gnome3.nautilus
+        gnome3.pomodoro
         gtk3  # gtk-launch
+        khal
+        libreoffice
+        links2
+        lsof
+        mosh
+        mumble
+        networkmanagerapplet
+        pandoc
+        socat
         tdesktop
+        tree
+        unzip
+        visidata
+        xkcdpass
+        zip
       ]);
     };
 
