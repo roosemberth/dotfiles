@@ -30,6 +30,9 @@ in {
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelPackages =  # Override kernel to 5.15 until it becomes stable.
+    assert !pkgs.lib.versionOlder "5.15" pkgs.linuxPackages.kernel.version;
+      pkgs.linuxPackages_5_15;
 
   fonts.fonts = with pkgs; [
     hack-font
