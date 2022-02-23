@@ -1,4 +1,4 @@
-{ system, nixpkgs, home-manager, sops-nix, self, ... }:
+system: inputs@{ nixpkgs, home-manager, sops-nix, self, ... }:
 systemConfiguration: nixpkgs.lib.nixosSystem {
   inherit system;
 
@@ -32,8 +32,19 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
       nixpkgs.overlays = lib.optional (self ? overlay) self.overlay;
       # Let 'nixos-version --json' know the Git revision of this flake.
       system.configurationRevision = lib.mkIf (self ? rev) self.rev;
-      nix.registry.p.flake = nixpkgs;
-      nix.registry.nixpkgs.flake = nixpkgs;
+
+      # Propagate all flake inputs into the registry.
+      nix.registry = lib.mapAttrs (_: flake: { inherit flake; }) (inputs // {
+        # Alias nixpkgs to 'p'.
+        p = inputs.nixpkgs;
+      });
+
+      environment.etc = nixpkgs.lib.mapAttrs' (name: flake: {
+        name = "nix/system-evaluation-inputs/${name}";
+        value.source = flake.outPath;
+      }) inputs;
+
+      nix.nixPath = [ "/etc/nix/system-evaluation-inputs" ];
     })
   ];
 }

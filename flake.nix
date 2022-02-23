@@ -22,13 +22,12 @@
     sops-nix,
   }:
   let
-    mkFlakeSystem = flakes@{
+    mkFlakeSystem = {
       system ? "x86_64-linux",
       nixpkgs ? nixpkgs-porcupine,
       home-manager ? hm-porcupine,
-      ...
-    }: cfg: import ./nix/eval-flake-system.nix
-      (inputs // { inherit system nixpkgs home-manager; }) cfg;
+    }: cfg: import ./nix/eval-flake-system.nix system
+      (inputs // { inherit nixpkgs home-manager; }) cfg;
 
     forAllSystems = { nixpkgs ? nixpkgs-unstable }: fn:
       nixpkgs.lib.genAttrs
