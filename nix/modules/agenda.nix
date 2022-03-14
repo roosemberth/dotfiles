@@ -22,8 +22,9 @@ in {
         let gnome-keyring = # Install gnome-keyring without suid-wrapper
               assert lib.versionAtLeast "40.0" gnome3.gnome-keyring.version;
               gnome3.gnome-keyring.overrideAttrs(_:{postFixup="";});
+            pass' = pass.withExtensions (p: with p; [ pass-otp ]);
         in [
-        gnupg mailcap pass-otp w3m xdg_utils
+        gnupg mailcap pass' w3m xdg_utils
         taskwarrior timewarrior python3Packages.bugwarrior
         gnome-keyring gcr pkgs.libsecret
       ];
