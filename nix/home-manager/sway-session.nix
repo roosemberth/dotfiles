@@ -58,8 +58,8 @@ in {
     };
     home.packages = with pkgs; [
       slurp grim swappy waybar' dmenu alacritty swaylock' swayidle
-      mako wdisplays wl-clipboard wl-clipboard-x11
-      pinentry' firefox-wayland epiphany x11_ssh_askpass
+      mako wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
+      pinentry' x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
     ];

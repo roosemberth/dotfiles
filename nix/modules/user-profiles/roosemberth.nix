@@ -47,6 +47,8 @@ in
       home.packages = (with pkgs; [
         bluezFull
         git-crypt
+        git-annex
+        git-annex-utils
         nix-index
         nmap
         ranger
@@ -62,7 +64,9 @@ in
       home.packages = (with pkgs; [
         bat
         brightnessctl
-        chromium
+        ungoogled-chromium
+        firefox-wayland
+        epiphany
         element-desktop
         fortune
         glances
