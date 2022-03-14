@@ -75,7 +75,7 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      cacert curl hdparm htop iotop wget exfat nfsUtils
+      cacert curl hdparm htop iotop wget exfat nfs-utils
       fzf
     ];
 
