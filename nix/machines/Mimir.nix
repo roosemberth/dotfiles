@@ -45,6 +45,8 @@ in {
     terminus_font_ttf
   ];
 
+  environment.systemPackages = with pkgs; [ acpi ];
+
   hardware = {
     bluetooth.enable = true;
     bluetooth.package = pkgs.bluezFull;
