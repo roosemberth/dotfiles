@@ -85,6 +85,9 @@ in
     };
   };
 
+  # TODO: Migrate to wireplumber
+  services.pipewire.wireplumber.enable = false;
+  services.pipewire.media-session.enable = true;
   services.pipewire.media-session.config.bluez-monitor.rules = [{
     # Matches all bluetooth cards
     matches = [ { "device.name" = "~bluez_card.*"; } ];
