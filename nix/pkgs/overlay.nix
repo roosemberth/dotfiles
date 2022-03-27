@@ -33,25 +33,6 @@ in {
     };
     makeFlags = [ "PREFIX=$(out)" ];
   };
-  wireplumber = assert (builtins.hasAttr "wireplumber" final.pkgs);
-  with final; stdenv.mkDerivation {
-    name = "wireplumber";
-    version = "0.4.1";
-    nativeBuildInputs = with pkgs; [
-      meson ninja pkg-config lua5_4 doxygen
-      (python3.withPackages(p: with p; [lxml]))
-    ];
-    mesonFlags = [
-      "-Dsystem-lua=true"
-      "-Ddoc=disabled" # `hotdoc` not packaged in nixpkgs as of writing
-    ];
-    buildInputs = with pkgs; [ gobject-introspection pipewire systemd ];
-    propagatedBuildInputs = with pkgs; [ glib ];
-    src = fetchGit {
-      url = "https://gitlab.freedesktop.org/pipewire/wireplumber";
-      rev = "b741b2c8c876585eabd6f4d62d62af5b46c0afd0";
-    };
-  };
 
   jack-mixer = with final; python3.pkgs.buildPythonApplication {
     name = "jack-mixer";
