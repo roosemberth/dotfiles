@@ -12,6 +12,7 @@ in {
     ./vim-roos.nix
     ./sway-session.nix
     ./swaync.nix
+    ./roos-sway-config.nix
     dotfilesHarness
   ];
 }
