@@ -56,17 +56,18 @@ in {
       SDL_VIDEODRIVER = "wayland";
       _JAVA_AWT_WM_NONREPARENTING = 1;
     };
+
     home.packages = with pkgs; [
       slurp grim swappy waybar' dmenu alacritty swaylock' swayidle
-      mako wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
+      wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
       pinentry' x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
     ];
-    xdg.configFile."mako/config".source =
-      dotfileUtils.fetchDotfile "etc/mako/config";
     xdg.configFile."sway/config".source =
       dotfileUtils.fetchDotfile "etc/sway/config";
+
+    programs.swaync.enable = true;
 
     systemd.user.services.ssh-agent = {
       Unit.Description = "SSH Agent";
