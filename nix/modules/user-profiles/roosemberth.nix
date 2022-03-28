@@ -64,7 +64,6 @@ in
       home.packages = (with pkgs; [
         bat
         brightnessctl
-        ungoogled-chromium
         firefox-wayland
         epiphany
         element-desktop
