@@ -58,7 +58,7 @@ in {
     };
 
     home.packages = with pkgs; [
-      slurp grim swappy waybar' dmenu alacritty swaylock' swayidle
+      slurp grim swappy waybar' dmenu foot swaylock' swayidle
       wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
       pinentry' x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client

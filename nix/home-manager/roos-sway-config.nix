@@ -13,7 +13,7 @@ in {
       bars = [];
 
       modifier = "Mod4";
-      terminal = "alacritty";
+      terminal = "${pkgs.foot}/bin/foot";
 
       keybindings = {
         # Session
@@ -95,11 +95,10 @@ in {
 
         # Scratchpad
         "${mod}+q"              = "exec tmux detach-client -s flyway";
-        "${mod}+q+Shift"        = "exec ${term} --class Scratchpad-flyway -e tmux new -As flyway";
+        "${mod}+q+Shift"        = "exec ${term} -a Scratchpad-flyway -- tmux new -As flyway";
         "${mod}+Return+Control" = ''
           exec OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER ${term} \
-            -o window.dimensions.columns=120 -o window.dimensions.lines=10 \
-            --class launcher -e zsh
+            -W 120x10 -a launcher -e zsh
         '';
       };
 
