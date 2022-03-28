@@ -188,6 +188,9 @@
     services.prometheus.exporters.node.listenAddress = let
       removeCIDR = with lib; str: head (splitString "/" str);
     in removeCIDR secrets.network.zkx.Heimdaalr.host4;
+    # Prometheus binds to a wireguard address...
+    systemd.services."prometheus-node-exporter".after =
+      ["wireguard-Bifrost.service"];
   };
 in {
   imports = [
