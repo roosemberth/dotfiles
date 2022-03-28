@@ -98,7 +98,7 @@ in {
           input_timeout = 0.3;
           "search.exclude_tags" = "deleted";
           tabwidth = 2;
-          terminal_cmd = "alacritty -e";
+          terminal_cmd = "foot";
           thread_indent_replies = 2;
           user_agent = "notmuch";
         };
