@@ -163,6 +163,7 @@ in {
       startup = [
         { command = "systemctl --user set-environment DISPLAY=$DISPLAY"; }
         { command = "systemctl --user set-environment WAYLAND_DISPLAY=$WAYLAND_DISPLAY"; }
+        { command = "systemctl --user set-environment SWAYSOCK=$SWAYSOCK"; }
         { command = "systemctl --user start graphical-session-pre.target"; }
         { command = "systemctl --user start graphical-session.target"; }
         { command = "systemctl --user start sway-session.target"; }
