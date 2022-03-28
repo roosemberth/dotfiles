@@ -11,6 +11,7 @@ in {
     ./email-gateway.nix
     ./vim-roos.nix
     ./sway-session.nix
+    ./swaync.nix
     dotfilesHarness
   ];
 }
