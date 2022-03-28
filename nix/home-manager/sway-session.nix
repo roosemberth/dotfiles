@@ -46,8 +46,18 @@ in {
     gtk.gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
 
     qt.enable = true;
-    qt.platformTheme = "gtk";
+    qt.platformTheme = "gnome";
     qt.style.name = "adwaita-dark";
+    qt.style.package = pkgs.adwaita-qt;
+
+    dconf = {
+      enable = true;
+      settings = {
+        "org/gnome/desktop/interface".color-scheme = "prefer-dark";
+        "org/gnome/desktop/peripherals/touchpad".tap-to-click = true;
+        "org/gnome/desktop/peripherals/touchpad".two-finger-scrolling = true;
+      };
+    };
 
     home.sessionVariables = {
       MOZ_ENABLE_WAYLAND = 1;
