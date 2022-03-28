@@ -64,10 +64,10 @@ in {
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
     ];
-    xdg.configFile."sway/config".source =
-      dotfileUtils.fetchDotfile "etc/sway/config";
 
     programs.swaync.enable = true;
+    programs.sway.roos-cfg.enable = true;
+    wayland.windowManager.sway.enable = true;
 
     systemd.user.services.ssh-agent = {
       Unit.Description = "SSH Agent";
