@@ -80,12 +80,24 @@ in {
         Environment = [ "SSH_ASKPASS=${pkgs.x11_ssh_askpass}/libexec/ssh-askpass" ];
       };
     };
+
     systemd.user.services.polkit = {
       Unit.Description = "Polkit graphical client";
       Unit.PartOf = [ "graphical-session.target" ];
       Install.WantedBy = [ "graphical-session.target" ];
       Service = {
         ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+        Restart = "always";
+        RestartSec = "3";
+      };
+    };
+
+    systemd.user.services.waybar = {
+      Unit.Description = "A wayland taskbar";
+      Unit.PartOf = [ "graphical-session.target" ];
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = "${waybar'}/bin/waybar";
         Restart = "always";
         RestartSec = "3";
       };
