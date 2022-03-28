@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }: with lib;
+{ config, pkgs, lib, secrets, hmlib, ... }: with lib;
 let
   util = import ./util.nix { inherit config pkgs lib; };
 in {
@@ -110,6 +110,13 @@ in {
       programs.notmuch.hooks.postNew = "afew --tag --new";
       programs.notmuch.hooks.preNew = "mbsync --all";
       programs.notmuch.new.tags = [ "new" ];
+      home.activation."symlink-notmuch-config" =
+        assert !builtins.hasAttr "${userCfg.xdg.configHome}/notmuch/notmuchrc"
+        userCfg.home.file; hmlib.dag.entryAfter [ "linkGeneration" ] ''
+          [ -f "${userCfg.xdg.configHome}/notmuch/default/config" ] && \
+            ln -sf ${userCfg.xdg.configHome}/notmuch/default/config \
+              ${userCfg.xdg.configHome}/notmuch/notmuchrc
+        '';
 
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
