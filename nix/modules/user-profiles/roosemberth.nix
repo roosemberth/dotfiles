@@ -54,9 +54,7 @@ in
         ranger
         silver-searcher
         tig
-        weechat
         xxd
-        gomuks
       ]);
     };
 
