@@ -58,12 +58,14 @@ in {
     };
 
     home.packages = with pkgs; [
-      slurp grim swappy waybar' dmenu foot swaylock' swayidle
+      slurp grim swappy waybar' dmenu libnotify swaylock' swayidle
       wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
       pinentry' x11_ssh_askpass
       adwaita-qt pulseaudio wireplumber remap-pa-client
       wayvnc
     ];
+
+    programs.foot.enable = true;
 
     programs.swaync.enable = true;
     programs.sway.roos-cfg.enable = true;
