@@ -49,11 +49,12 @@
     security.acme.email = secrets.network.acme.email;
     security.acme.certs."orbstheorem.ch" = {
       extraDomainNames = ["*.orbstheorem.ch" "*.mimir.orbstheorem.ch"];
-      group = "nginx";
+      group = "certs-orbstheore";
       dnsProvider = "rfc2136";
       credentialsFile = "/keyring/acme/orbstheorem.ch.secret";
       dnsPropagationCheck = false;
     };
+    users.groups.certs-orbstheore = {};
     systemd.tmpfiles.rules = [
       "f /keyring/acme/orbstheorem.ch.secret 0400 acme root -"
     ];
@@ -179,6 +180,9 @@
         };
       };
     } // secrets.opaque-nginx."orbstheorem.ch";
+    # Allow access orbstheorem.ch certs
+    systemd.services.nginx.serviceConfig.SupplementaryGroups =
+      [ "certs-orbstheore" ];
     systemd.services.nginx.after = ["acme-finished-orbstheorem.ch.target"];
     systemd.services.nginx.requires = ["acme-finished-orbstheorem.ch.target"];
   };
