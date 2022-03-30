@@ -227,6 +227,7 @@ in {
   services = {
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    openssh.extraConfig = "PermitTunnel yes";
     netdata.enable = true;
     resolved.llmnr = "false";
   };
