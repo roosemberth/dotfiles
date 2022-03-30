@@ -196,6 +196,67 @@
     systemd.services."prometheus-node-exporter".after =
       ["wireguard-Bifrost.service"];
   };
+  turnConfig = { lib, secrets, ... }: {
+    # Turn traffic
+    networking.firewall.allowedUDPPorts = [ 3478 5349 ];
+    networking.firewall.allowedTCPPorts = [ 3478 5349 ];
+    # UDP Relay
+    networking.firewall.allowedUDPPortRanges = [ { from = 60000; to = 65535; } ];
+
+    services.coturn = {
+      enable = true;
+      realm = "turn.orbstheorem.ch";
+      use-auth-secret = true;
+      static-auth-secret-file = "/run/secrets/coturn/static-auth-secret";
+      listening-ips = [ "2a04:52c0:101:2a7::101" "5.255.96.101" ];
+
+      cert = "/var/lib/acme/orbstheorem.ch/cert.pem";
+      pkey = "/var/lib/acme/orbstheorem.ch/key.pem";
+
+      min-port = 60000;
+      max-port = 65535;
+      no-tcp-relay = true;
+
+      extraConfig = ''
+        # Deny private network peers
+        denied-peer-ip=10.0.0.0-10.255.255.255
+        denied-peer-ip=192.168.0.0-192.168.255.255
+        denied-peer-ip=172.16.0.0-172.31.255.255
+        # TODO: Should we also deny v6 private network?
+
+        # recommended additional local peers to block, to mitigate external
+        # access to internal services.
+        # https://www.rtcsec.com/article/slack-webrtc-turn-compromise-and-bug-bounty/#how-to-fix-an-open-turn-relay-to-address-this-vulnerability
+        no-multicast-peers
+        denied-peer-ip=0.0.0.0-0.255.255.255
+        denied-peer-ip=100.64.0.0-100.127.255.255
+        denied-peer-ip=127.0.0.0-127.255.255.255
+        denied-peer-ip=169.254.0.0-169.254.255.255
+        denied-peer-ip=192.0.0.0-192.0.0.255
+        denied-peer-ip=192.0.2.0-192.0.2.255
+        denied-peer-ip=192.88.99.0-192.88.99.255
+        denied-peer-ip=198.18.0.0-198.19.255.255
+        denied-peer-ip=198.51.100.0-198.51.100.255
+        denied-peer-ip=203.0.113.0-203.0.113.255
+        denied-peer-ip=240.0.0.0-255.255.255.255
+
+        no-stun
+
+        # 4 streams per video call, so 12 streams = 3 simultaneous relayed calls
+        # per user.
+        user-quota=12
+      '';
+    };
+    systemd.services.coturn.after = ["acme-finished-orbstheorem.ch.target"];
+    systemd.services.coturn.requires = ["acme-finished-orbstheorem.ch.target"];
+    systemd.services.coturn.serviceConfig.SupplementaryGroups =
+      [ "certs-orbstheore" ];
+
+    sops.secrets."coturn/static-auth-secret" = {
+      owner = config.users.users.turnserver.name;
+      group = config.users.groups.turnserver.name;
+    };
+  };
 in {
   imports = [
     ../modules
@@ -204,6 +265,7 @@ in {
     bindConfig
     nginxConfig
     monitoringConfig
+    turnConfig
   ];
 
   boot.cleanTmpDir = true;
