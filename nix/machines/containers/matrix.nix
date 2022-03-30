@@ -18,6 +18,16 @@ in {
       networking.useHostResolvConf = false;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
+
+      # Inherit host nix package set
+      nix.nixPath = [ "/etc/nix/system-evaluation-inputs" ];
+      nix.registry = {
+        inherit (config.nix.registry) nixpkgs p;
+      };
+      environment.etc = {
+        inherit (config.environment.etc) "nix/system-evaluation-inputs/nixpkgs";
+      };
+
       services.matrix-synapse = {
         enable = true;
         server_name = "orbstheorem.ch";
