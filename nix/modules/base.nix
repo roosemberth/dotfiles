@@ -28,6 +28,7 @@ in
         openssl
         tmux
         zsh-completions
+        lsof
       ]);
 
       home.sessionPath = [ "\$HOME/.local/bin" ];
