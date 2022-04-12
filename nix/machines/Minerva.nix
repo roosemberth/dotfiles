@@ -205,6 +205,10 @@ in {
     upower.enable = true;
   };
 
+  # Imperative NixOS containers are affected by this.
+  systemd.services."container@".serviceConfig.TimeoutStartSec =
+    lib.mkForce "20min";
+
   system.stateVersion = "20.09";
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;

@@ -234,6 +234,10 @@ in {
   system.stateVersion = "21.11";
   system.autoUpgrade.enable = true;
 
+  # Imperative NixOS containers are affected by this.
+  systemd.services."container@".serviceConfig.TimeoutStartSec =
+    lib.mkForce "20min";
+
   time.timeZone = "Europe/Zurich";
 
   users = {
