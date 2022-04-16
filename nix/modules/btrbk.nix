@@ -213,6 +213,7 @@ in {
     environment.systemPackages = [ cfg.package ];
     systemd.services.btrbk-snapshot = {
       description = "Create periodic snapshots using btrbk";
+      path = [ pkgs.sudo ];
       serviceConfig.ExecStart =
         "${cfg.package}/bin/btrbk snapshot -c ${cfg.configFile} -v -S";
     };
