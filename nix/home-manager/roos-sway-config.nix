@@ -43,6 +43,9 @@ in {
             --script-opts=try_ytdl_first=yes \
             --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
         '';
+        "${mod}+XF86AudioMute" = ''
+          exec ${pkgs.remap-pa-client}/bin/remap-pa-client
+        '';
 
         # Layout management
         "${mod}+a+Shift" = "focus parent";

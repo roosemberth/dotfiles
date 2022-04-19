@@ -71,8 +71,7 @@ in {
       slurp grim swappy waybar' dmenu libnotify swaylock' swayidle
       wdisplays wl-clipboard wl-clipboard-x11 mpc_cli pavucontrol
       pinentry' x11_ssh_askpass
-      adwaita-qt pulseaudio wireplumber remap-pa-client
-      wayvnc
+      adwaita-qt pulseaudio wireplumber wayvnc
     ];
 
     programs.foot.enable = true;
