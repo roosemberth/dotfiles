@@ -169,7 +169,6 @@
           "http://mimir.r.orbstheorem.ch:48080";
 
         "mlg.orbstheorem.ch" = {
-          basicAuthFile = "/keyring/nginx/mlg.htpasswd";
           locations."/".proxyPass = "http://minerva.intranet.orbstheorem.ch:8888";
           locations."/".proxyWebsockets = true;
         };
