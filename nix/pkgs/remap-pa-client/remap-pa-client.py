@@ -25,14 +25,13 @@ def tmp_file_pair():
         os.rmdir(tmpdir)
 
 
-def ask_choice_alacritty_fzf(choices: Iterable[str]) -> str:
+def ask_choice_foot_fzf(choices: Iterable[str]) -> str:
     with tmp_file_pair() as (f1, f2):
         Path(f1).write_text("\n".join(choices))
         cmd = [
-            "alacritty",
-            "--class",
+            "foot",
+            "-a",
             "launcher",
-            "-e",
             "sh",
             "-c",
             "cat " + f1 + " | fzf --reverse > " + f2,
@@ -66,7 +65,7 @@ def displaySwitcherAndRedirect(pa: Pulse, pid: int) -> str:
         target_client_id = filtered[0].index
     else:
         clients_lines = [str(clt.index) + " " + clt.name for clt in clients]
-        target_client = ask_choice_alacritty_fzf(clients_lines)
+        target_client = ask_choice_foot_fzf(clients_lines)
         if not target_client:
             return "Could not find client to move and user failed to choose one."
         target_client_id = int(target_client.split(" ")[0])
@@ -74,7 +73,7 @@ def displaySwitcherAndRedirect(pa: Pulse, pid: int) -> str:
     sinks_lines = [str(s.index) + " " + s.description for s in pa.sink_list()]
     sinks_lines.reverse()  # Empirically more useful...
 
-    target_sink = ask_choice_alacritty_fzf(sinks_lines)
+    target_sink = ask_choice_foot_fzf(sinks_lines)
 
     if not target_sink:
         return "The user did not choose any sink."

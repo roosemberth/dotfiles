@@ -81,7 +81,7 @@ in {
     src = ./remap-pa-client/remap-pa-client.py;
     dontUnpack = true;
     format = "other";
-    propagatedBuildInputs = [ python3.pkgs.pulsectl jq alacritty fzf sway ];
+    propagatedBuildInputs = [ python3.pkgs.pulsectl jq foot fzf sway ];
     installPhase = ''
       mkdir -p "$out/bin"
       cp $src "$out/bin/remap-pa-client"
