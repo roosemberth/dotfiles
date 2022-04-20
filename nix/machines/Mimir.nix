@@ -53,10 +53,8 @@ in {
     cpu.intel.updateMicrocode = true;
 
     opengl.enable = true;
-    opengl.extraPackages = with pkgs; [
-      vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver
-      amdvlk rocm-opencl-icd
-    ];
+    opengl.extraPackages = with pkgs;
+      [ vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver ];
 
     pulseaudio.enable = false;
   };
