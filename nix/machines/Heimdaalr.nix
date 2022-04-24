@@ -140,6 +140,11 @@
         "nextcloud.orbstheorem.ch".locations."/".proxyPass =
           "http://minerva.intranet.orbstheorem.ch:42080";
 
+        "collabora.orbstheorem.ch".locations."/" = {
+          proxyPass = "http://minerva.intranet.orbstheorem.ch:42085";
+          proxyWebsockets = true;
+        };
+
         "home.orbstheorem.ch".locations."/" = {
           proxyPass = "http://minerva.intranet.orbstheorem.ch:48080";
           proxyWebsockets = true;
