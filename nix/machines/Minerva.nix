@@ -164,6 +164,7 @@ in {
     ./containers/matrix.nix
     ./containers/monitoring.nix
     ./containers/powerflow.nix
+    ./containers/collabora.nix
     networkConfig
     nasConfig
     containerHostConfig
