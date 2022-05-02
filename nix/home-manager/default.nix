@@ -7,6 +7,7 @@ let
   };
 in {
   allModules = [
+    ./actions.nix
     ./test-module.nix
     ./email-gateway.nix
     ./vim-roos.nix
