@@ -15,5 +15,12 @@ in {
         RestartSec = "3";
       };
     };
+
+    roos.actions."notifs:open" =
+      "${pkgs.swaynotificationcenter}/bin/swaync-client --open-panel";
+    roos.actions."notifs:close" =
+      "${pkgs.swaynotificationcenter}/bin/swaync-client --close-panel";
+    roos.actions."notifs:toggle" =
+      "${pkgs.swaynotificationcenter}/bin/swaync-client --toggle-dnd";
   };
 }

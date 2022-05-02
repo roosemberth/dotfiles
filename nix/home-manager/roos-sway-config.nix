@@ -8,6 +8,7 @@ in {
     term = cfg.config.terminal;
     lockcmd = "swaylock -c 00000050";
     selectWs = "swaymsg -t get_workspaces | jq 'map(.name)|.[]' | dmenu";
+    actions = config.roos.actions;
   in mkIf config.programs.sway.roos-cfg.enable {
     config = {
       bars = [];
@@ -103,6 +104,9 @@ in {
           exec OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER ${term} \
             -W 120x10 -a launcher -e zsh
         '';
+
+        ## Manage notifications
+        "XF86Tools" = "exec ${actions."notifs:open".cmd}; mode notification-center";
       };
 
       input."*" = {
@@ -119,6 +123,14 @@ in {
         "${cfg.config.right}" = "resize grow width 10 px";
         "Escape"              = "mode default";
         "Return"              = "mode default";
+      };
+
+      modes."notification-center" = let
+        exit = "exec ${actions."notifs:close".cmd}; mode default";
+      in {
+        "t"                   = "exec ${actions."notifs:toggle".cmd}";
+        "Escape"              = exit;
+        "Return"              = exit;
       };
 
       output."eDP-1".scale = "1";
