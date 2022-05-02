@@ -192,6 +192,7 @@ in {
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Heimdaalr";
 
+  programs.mosh.enable = true;
   security.pam.enableSSHAgentAuth = true;
   services = {
     logind.lidSwitch = "ignore";
