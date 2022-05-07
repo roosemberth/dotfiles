@@ -34,6 +34,42 @@ in {
     makeFlags = [ "PREFIX=$(out)" ];
   };
 
+  dbus-action = with final; python3.pkgs.buildPythonApplication rec {
+    pname = "dbus-action";
+    version = "1.5";
+    disabled = python3Packages.pythonOlder "3.6";
+
+    src = fetchFromGitHub {
+      owner = "bulletmark";
+      repo = "dbus-action";
+      rev = "${version}";
+      hash = "sha256-8emQhPmqRnIuvKYaNEO1pQ0or21DBxk7WUpmkMTYcPc=";
+    };
+    dontUnpack = true;
+    format = "other";
+
+    propagatedBuildInputs = with python3.pkgs; [
+      dbus-python pygobject3 ruamel-yaml
+    ];
+    nativeBuildInputs = [ wrapGAppsNoGuiHook gobject-introspection ];
+
+    dontWrapGApps = true;
+    preFixup = ''makeWrapperArgs+=("''${gappsWrapperArgs[@]}")'';
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/dbus-action "$out/bin/dbus-action"
+      chmod +x "$out/bin/dbus-action"
+    '';
+
+    meta = with lib; {
+      description = "Watch D-Bus to action configured commands on specific events";
+      homepage = "https://github.com/bulletmark/dbus-action";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.linux;
+    };
+  };
+
   jack-mixer = with final; python3.pkgs.buildPythonApplication {
     name = "jack-mixer";
     version = "release-16";
