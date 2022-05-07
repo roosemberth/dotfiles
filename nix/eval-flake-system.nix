@@ -1,4 +1,4 @@
-system: inputs@{ nixpkgs, home-manager, sops-nix, self, ... }:
+system: inputs@{ nixpkgs, hm, sops-nix, self, ... }:
 systemConfiguration: nixpkgs.lib.nixosSystem {
   inherit system;
 
@@ -16,8 +16,8 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
 
     # Bootstrap home-manager
     ({ config, ... }: {
-      _module.args.hmlib = home-manager.lib.hm;
-      imports = [ home-manager.nixosModules.home-manager ];
+      _module.args.hmlib = hm.lib.hm;
+      imports = [ hm.nixosModules.home-manager ];
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.sharedModules =

@@ -1,6 +1,6 @@
-{ pkgs, flakes, ... }:
+{ pkgs, dist, ... }:
 let
-  mkVm = hostname: cfg: (import ../eval-flake-system.nix pkgs.system flakes {
+  mkVm = hostname: cfg: (import ../eval-flake-system.nix pkgs.system dist {
     imports = [
       ./tests/base.nix
       cfg
