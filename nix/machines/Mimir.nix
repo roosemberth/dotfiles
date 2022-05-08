@@ -71,7 +71,9 @@ in {
       keep-outputs = true
       keep-derivations = true
     '';
+    daemonIOSchedClass = "idle";
     daemonIOSchedPriority = 7;
+    daemonCPUSchedPolicy = "idle";
     package = pkgs.nixUnstable;
     settings.trusted-users = [ "roosemberth" ];
     settings.substituters = [ "https://cache.nixos.org" ];
