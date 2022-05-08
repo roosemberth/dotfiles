@@ -73,7 +73,6 @@ in
         gnome3.pomodoro
         gtk3  # gtk-launch
         khal
-        libreoffice
         links2
         lsof
         mosh
