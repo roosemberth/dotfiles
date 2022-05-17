@@ -153,7 +153,7 @@ in {
           in optionalString (nice >= 1) "${coreutils}/bin/nice -n ${toString nice}";
           btrbkCmd = "${btrbk}/share/btrbk/scripts/ssh_filter_btrbk.sh "
             + "--sudo --log --source --target --delete --info "
-            + "--restrict-path ${targetDir}";
+            + "--restrict-path '${targetDir}'";
           cmd = "${ioniceCmd} ${niceCmd} ${btrbkCmd}";
         in toList ''command="${cmd}" ${clientCfg.publicKey}'';
       };
