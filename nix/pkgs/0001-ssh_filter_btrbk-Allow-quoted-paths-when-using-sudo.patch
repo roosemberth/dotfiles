@@ -1,0 +1,46 @@
+From ee36420952404a657342d6ee5202fe5e73ea6a66 Mon Sep 17 00:00:00 2001
+From: Roosembert Palacios <roosemberth@posteo.ch>
+Date: Wed, 18 May 2022 01:28:28 +0200
+Subject: [PATCH] ssh_filter_btrbk: Allow quoted paths when using sudo
+
+When running a command through sudo (or doas) the specified paths may
+(rightly so!) be quoted.
+
+Signed-off-by: Roosembert Palacios <roosemberth@posteo.ch>
+---
+ ssh_filter_btrbk.sh | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/ssh_filter_btrbk.sh b/ssh_filter_btrbk.sh
+index c742aa5..5ef557a 100755
+--- a/ssh_filter_btrbk.sh
++++ b/ssh_filter_btrbk.sh
+@@ -59,6 +59,10 @@ reject_filtered_cmd()
+ 	# match any absolute file/directory (matching file_match)
+ 	path_match="/${file_match}"
+     fi
++    # Path may be quoted when passing through sudo
++    if [[ -n "$sudo_prefix" ]]; then
++        path_match="(${path_match}|'${path_match}')"
++    fi
+ 
+     if [[ -n "$allow_compress" ]]; then
+         decompress_match="(${compress_list}) -d -c( -[pT][0-9]+)?"
+@@ -164,8 +168,13 @@ done
+ # NOTE: subvolume queries are NOT affected by "--restrict-path":
+ # btrbk also calls show/list on the mount point of the subvolume
+ allow_exact_cmd "${sudo_prefix}btrfs subvolume (show|list)( ${option_match})* ${file_match}";
+-allow_cmd "${sudo_prefix}readlink"                    # resolve symlink
+ allow_exact_cmd "${sudo_prefix}test -d ${file_match}" # check directory (only for compat=busybox)
++if [[ -n "${sudo_prefix}" ]]; then  # Path may be quoted when passing through sudo
++  allow_exact_cmd "${sudo_prefix}btrfs subvolume (show|list)( ${option_match})* '${file_match}'";
++  allow_exact_cmd "${sudo_prefix}test -d '${file_match}'" # check directory (only for compat=busybox)
++fi
++
++allow_cmd "${sudo_prefix}readlink"                    # resolve symlink
+ allow_exact_cmd "cat /proc/self/mountinfo"            # resolve mountpoints
+ allow_exact_cmd "cat /proc/self/mounts"               # legacy, for btrbk < 0.27.0
+ 
+-- 
+2.36.0
+

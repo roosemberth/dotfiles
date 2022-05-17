@@ -228,4 +228,9 @@ in {
         };
       };
   in final.callPackage pkg {};
+  btrbk = prev.btrbk.overrideAttrs(o: {
+    patches = o.patches or [] ++ [
+      ./0001-ssh_filter_btrbk-Allow-quoted-paths-when-using-sudo.patch
+    ];
+  });
 }
