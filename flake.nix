@@ -4,6 +4,8 @@
     porcupine-nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     porcupine-hm.url = "github:nix-community/home-manager/release-21.11";
     porcupine-hm.inputs.nixpkgs.follows = "porcupine-nixpkgs";
+    porcupine-sops-nix.url = "github:Mic92/sops-nix";
+    porcupine-sops-nix.inputs.nixpkgs.follows = "porcupine-nixpkgs";
 
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs";
@@ -24,6 +26,7 @@
       inherit (inputs) self flake-utils;
       nixpkgs = porcupine-nixpkgs;
       hm = porcupine-hm;
+      sops-nix = porcupine-sops-nix;
     };
     unstable = with inputs; {
       inherit (inputs) self flake-utils;

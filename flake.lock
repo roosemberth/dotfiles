@@ -47,6 +47,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-21_11_2": {
+      "locked": {
+        "lastModified": 1652559422,
+        "narHash": "sha256-jPVTNImBTUIFdtur+d4IVot6eXmsvtOcBm0TzxmhWPk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "8b3398bc7587ebb79f93dfeea1b8c574d3c6dba1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "release-21.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "porcupine-hm": {
       "inputs": {
         "nixpkgs": [
@@ -84,11 +100,33 @@
         "type": "github"
       }
     },
+    "porcupine-sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "porcupine-nixpkgs"
+        ],
+        "nixpkgs-21_11": "nixpkgs-21_11"
+      },
+      "locked": {
+        "lastModified": 1652596508,
+        "narHash": "sha256-hwqENSMkOm+OwE1t459I3ZJmZmf+X7242QGskyftnaQ=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "9681f04fa3b6af5b7eff6b086e46aee2cc2bdde2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "porcupine-hm": "porcupine-hm",
         "porcupine-nixpkgs": "porcupine-nixpkgs",
+        "porcupine-sops-nix": "porcupine-sops-nix",
         "unstable-deploy-rs": "unstable-deploy-rs",
         "unstable-hm": "unstable-hm",
         "unstable-nixpkgs": "unstable-nixpkgs",
@@ -157,7 +195,7 @@
         "nixpkgs": [
           "unstable-nixpkgs"
         ],
-        "nixpkgs-21_11": "nixpkgs-21_11"
+        "nixpkgs-21_11": "nixpkgs-21_11_2"
       },
       "locked": {
         "lastModified": 1652596508,
