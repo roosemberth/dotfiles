@@ -101,7 +101,7 @@ in {
   roos.media.enable = true;
   roos.nginx-fileshare.enable = true;
   roos.nginx-fileshare.directory = "/srv/shared";
-  roos.steam.enable = true;
+  #roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
   # roos.gConfig = {
   #   services.kdeconnect.enable = true;

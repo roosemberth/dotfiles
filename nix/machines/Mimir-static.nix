@@ -3,8 +3,8 @@
 let
   hostname = config.networking.hostName;
   uuids = {
-    bootPart = "1f9a0153-ea97-49bc-a2a7-b679e46679ae";
-    systemDevice = "2452fc3b-7c05-4024-9d08-3be509a645cd";
+    bootPart = "e9f1777b-c68f-4b5d-bcf0-db9e0d8b1199";
+    systemDevice = "8e4808d8-0b50-4f98-b796-9c09d9d39a94";
   };
 in
 {
@@ -13,7 +13,7 @@ in
     initrd = {
       availableKernelModules = [ "xhci_pci" "nvme" "sd_mod" ];
       kernelModules = ["dm_crypt" "cbc" "kvm-intel" "e1000e"];
-      luks.devices."${hostname}".device = "/dev/disk/by-uuid/${uuids.systemDevice}";
+      luks.devices."${hostname}".device = "/dev/disk/by-partuuid/${uuids.systemDevice}";
       supportedFilesystems = [ "btrfs" "ext4" ];
     };
     kernelModules = ["acpi_call"];
@@ -31,16 +31,16 @@ in
 
   hardware.enableRedistributableFirmware = true;
 
-  swapDevices = [
-    { device = "/mnt/root-btrfs/subvolumes/swap/swapfile1"; }
-  ];
+  #swapDevices = [
+  #  { device = "/mnt/root-btrfs/subvolumes/swap/swapfile1"; }
+  #];
 
   fileSystems = {
     "/" = {
       fsType = "btrfs";
       mountPoint = "/";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/active/rootfs" "compress=zlib" "user_subvol_rm_allowed"];
+      options = ["subvol=/subvolumes/tmp/rootfs" "compress=zlib" "user_subvol_rm_allowed"];
     };
     "/boot" = {
       fsType = "vfat";
@@ -51,37 +51,19 @@ in
       fsType = "btrfs";
       mountPoint = "/var";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/active/var" "compress=zlib" "user_subvol_rm_allowed"];
+      options = ["subvol=/subvolumes/tmp/var" "compress=zlib" "user_subvol_rm_allowed"];
     };
     "/nix" = {
       fsType = "btrfs";
       mountPoint = "/nix";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/active/nix" "compress=zlib" "defaults" "noatime" "autodefrag" "nodatacow"];
+      options = ["subvol=/subvolumes/persisted/@nix" "compress=zlib" "defaults" "noatime" "autodefrag" "nodatacow"];
     };
     "/home" = {
       fsType = "btrfs";
       mountPoint = "/home";
       device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/active/home" "compress=zlib" "autodefrag" "user_subvol_rm_allowed"];
-    };
-    "/.snapshots" = {
-      fsType = "btrfs";
-      mountPoint = "/.snapshots";
-      device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/rootfs" "defaults" "user_subvol_rm_allowed"];
-    };
-    "/home/.snapshots" = {
-      fsType = "btrfs";
-      mountPoint = "/home/.snapshots";
-      device = "/dev/mapper/" + hostname;
-      options = ["subvol=/subvolumes/snapshots/home" "defaults" "user_subvol_rm_allowed"];
-    };
-    "/mnt/root-btrfs" = {
-      fsType = "btrfs";
-      mountPoint = "/mnt/root-btrfs";
-      device = "/dev/mapper/" + hostname;
-      options = ["nodatacow" "noatime" "noexec" "user_subvol_rm_allowed"];
+      options = ["subvol=/subvolumes/tmp/home" "compress=zlib" "autodefrag" "user_subvol_rm_allowed"];
     };
   };
 
@@ -134,44 +116,4 @@ in
   services.fwupd.enable = true;
 
   sops.secrets."ssh-client/backups-key" = {};
-
-  roos.btrbk.enable = true;
-  roos.btrbk.config = {
-    snapshot_preserve = "10h 7d 4w 6m";
-    snapshot_preserve_min = "1h";
-    target_preserve = "7d 4w 6m";
-    target_preserve_min = "no";
-    backend = "btrfs-progs-sudo";
-    ssh_identity = "/run/secrets/ssh-client/backups-key";
-    ssh_user = config.roos.backups.remoteUser;
-
-    timestamp_format = "long";
-
-    volumes."/mnt/root-btrfs/subvolumes" = {
-      group = "system";
-      subvolumes = [ "active/rootfs" "active/home" ];
-      snapshot_dir = "snapshots";
-    };
-
-    volumes."/home/roosemberth" = {
-      group = "user-roosemberth";
-      targets = config.roos.backups.btrbkTargets;
-      subvolumes.".".snapshot_name = "homedir";
-      subvolumes.".local/var" = {};
-      subvolumes."nocow" = {
-        snapshot_preserve = "1d";
-        snapshot_preserve_min = "latest";
-        target_preserve = "1d";
-        target_preserve_min = "latest";
-      };
-      snapshot_dir = ".snapshots";
-    };
-
-    volumes."/home/roosemberth/ws" = {
-      group = "user-roosemberth";
-      targets = config.roos.backups.btrbkTargets;
-      subvolumes = [ "." "2-Platforms" ];
-      snapshot_dir = ".snapshots";
-    };
-  };
 }
