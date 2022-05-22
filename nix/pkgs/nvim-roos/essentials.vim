@@ -58,7 +58,7 @@ nmap ga <Plug>(EasyAlign)
 nnoremap <leader>s :Git<CR>
 nnoremap <leader>d :Gdiff<CR>
 nnoremap <leader>W :Gwrite<CR>
-nnoremap <leader>c :Git commit -S -v -s 
+nnoremap <leader>c :Git commit -v -s -S<Space>
 nnoremap <leader><C-t> :vs term://%:h:r//tig<CR>i
 au FileType fugitive nnoremap <buffer> <leader>l :execute '
   \:! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD' <CR>
