@@ -122,7 +122,7 @@ in
   roos.user-mounts-generator = {
     enable = true;
     mounts."/home/roosemberth" = {
-      layout_tree = "/mnt/root-btrfs/subvolumes/per-user/@roosemberth";
+      layout_tree = "/mnt/root-btrfs/subvolumes/per-dataset/@roosemberth";
       tree_prefix = "/mnt/root-btrfs";
       device_path = "/dev/mapper/" + hostname;
       extra_opts = [ "user_subvol_rm_allowed" "compress=zlib" "relatime" ];
@@ -143,7 +143,7 @@ in
           chown roosemberth:users "$mnt"
           mnt="'' + "\${mnt%/*}" + ''"
         done
-      done <<< $(mount | grep /subvolumes/per-user/@roosemberth | awk '{print $3}')
+      done <<< $(mount | grep /subvolumes/per-dataset/@roosemberth | awk '{print $3}')
     ''));
   };
 
