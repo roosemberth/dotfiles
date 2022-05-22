@@ -1,21 +1,22 @@
 # user-mounts-generator
 
-Generates a set of systemd mount units based on a layout tree of btrfs
+Generates a set of systemd '.mount' units based on _layout trees_ of btrfs
 subvolumes.
 
-The subvolumes in the layout tree will be mounted at the specified subpath
-under the "destination path" of the tree.
+Each of the subvolumes in a _layout tree_ will be mounted at the
+corresponding subpath under the "destination path" of the tree.
 
 ## Layout tree
 
-A layout tree is a directory tree containing btrfs subvolumes at it leaves.
-The only btrfs subvolume can be at the leaves and their names MUST start
+A _layout tree_ is a directory tree containing btrfs subvolumes at its leaves.
+Only btrfs subvolumes can be at the leaves and their names MUST start
 with '@'.
-Moreover, only leave names are allowed to start with '@'.
+Moreover, only the leaves can have their name start with '@'.
 
 The directory structure indicates where to mount each of the subvolumes:
-Each subvolume will be mounted under their path relative to the layour tree
-root, with the '@' removed.
+Each subvolume will be mounted under the "destination path" at a location
+which corresponds to the location of the subvolume within the layout tree,
+with the '@' removed.
 
 Example layout tree:
 
@@ -53,10 +54,10 @@ is necessary to generate the correct mount option.
 `USER_MOUNTS_GENERATOR_CONFIG` environment variable.
 
 The configuration file specifies where to find the layout trees and
-their destination.
+the "destination path" of each of them.
 
-The configuration allows to specify extra mount options
-to be applied to all mount units in each tree.
+Additional mount options may be specified in the configuration file,
+these options will be added to all mount units generated for this tree.
 
 Example configuration file:
 
@@ -69,7 +70,7 @@ Example configuration file:
     - user_subvol_rm_allowed
 ```
 
-Mind that the mount options will not be in anyway checked, but simply passed
+Mind that the mount options will not be verified in anyway, but simply passed
 down to the mount unit.
 
 Given the following layout tree, this will generate the following mount unit:
@@ -82,8 +83,7 @@ Given the following layout tree, this will generate the following mount unit:
 ```ini
 [Unit]
 Before=local-fs.target
-Documentation=See user-mounts-generator.
-After=blockdev@dev-mapper-Mimir
+After=blockdev@dev-mapper-Mimir.target
 
 [Mount]
 What=/dev/mapper/Mimir
@@ -97,9 +97,8 @@ WantedBy=multi-user.target
 
 ```ini
 [Unit]
-Documentation=See user-mounts-generator.
 Before=local-fs.target
-After=blockdev@dev-mapper-Mimir
+After=blockdev@dev-mapper-Mimir.target
 
 [Mount]
 Where=/home/roosemberth/ws/5-VMs
