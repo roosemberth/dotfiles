@@ -63,7 +63,10 @@ in
       programs.ssh = {
         enable = true;
         compression = true;
-        extraConfig = "Include ${userCfg.xdg.dataHome}/ssh/config";
+        userKnownHostsFile = "${userCfg.xdg.dataHome}/ssh/known_hosts";
+        extraConfig = ''
+          Include ${userCfg.xdg.dataHome}/ssh/config
+        '';
       };
     };
 
