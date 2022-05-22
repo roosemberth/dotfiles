@@ -198,6 +198,9 @@ in {
     };
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
+    openssh.hostKeys = [
+      { path = "/var/lib/secrets/ssh_host_ed25519_key"; type = "ed25519"; }
+    ];
     hardware.bolt.enable = true;
 
     pipewire = {

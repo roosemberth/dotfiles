@@ -1,7 +1,7 @@
 keys:
   - &roos_pgp 78D91871D059663B61177532CAAAECE5C2242BB7
   - &heimdaalr_age age1lkfvelzn9ga0m9n9uxnlfthsm4alphvky0yr7ywssq0q5un22qas2ekj0m
-  - &mimir_age age1jws5nye7azvuxf5pj3hcx2eylvzmjr8tp3994avxle7ller6w44qgpzkqh
+  - &mimir_age age1rdfutq0l07kn3sgq84yu9f07nn6aeuk0h8mcyq5tshgtz8ycv95qtr8rm4
   - &minerva_age age1jhqupkrhatm9l9ws3y58e70nskctn8z5dgc325kwtku2xgvka4rsptvtyx
 creation_rules:
   - path_regex: secrets/per-host/Minerva.*\.yaml$
