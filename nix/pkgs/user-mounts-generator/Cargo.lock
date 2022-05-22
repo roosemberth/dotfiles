@@ -52,6 +52,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "layout-trees-generator"
+version = "0.1.0"
+dependencies = [
+ "nix",
+ "serde",
+ "serde_yaml",
+ "simpleini",
+ "symlink",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -192,17 +203,6 @@ name = "unicode-ident"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d22af068fba1eb5edcb4aea19d382b2a3deb4c8f9d475c589b6ada9e0fd493ee"
-
-[[package]]
-name = "user-mounts-generator"
-version = "0.1.0"
-dependencies = [
- "nix",
- "serde",
- "serde_yaml",
- "simpleini",
- "symlink",
-]
 
 [[package]]
 name = "yaml-rust"

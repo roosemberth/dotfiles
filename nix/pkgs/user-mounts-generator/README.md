@@ -1,4 +1,4 @@
-# user-mounts-generator
+# layout-tree-generator
 
 Generates a set of systemd '.mount' units based on _layout trees_ of btrfs
 subvolumes.
@@ -49,9 +49,9 @@ is necessary to generate the correct mount option.
 
 ## Configuration file
 
-`user-mounts-generator` will look for its configuration file in
-`/etc/user-mounts.yaml` or the file indicated in the
-`USER_MOUNTS_GENERATOR_CONFIG` environment variable.
+`layout-tree-generator` will look for its configuration file in
+`/etc/layout-trees.yaml` or the file indicated in the
+`LAYOUT_TREES_GENERATOR_CONFIG` environment variable.
 
 The configuration file specifies where to find the layout trees and
 the "destination path" of each of them.

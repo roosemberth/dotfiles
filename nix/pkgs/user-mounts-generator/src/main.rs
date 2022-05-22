@@ -7,8 +7,8 @@ use std::os::unix::io::AsRawFd;
 use std::path::Path;
 use std::process::Command;
 
-const CFG_PATH_ENVVAR: &str = "USER_MOUNTS_GENERATOR_CONFIG";
-const DEF_CFG_PATH: &str = "/etc/user-mounts.yaml";
+const CFG_PATH_ENVVAR: &str = "LAYOUT_TREES_GENERATOR_CONFIG";
+const DEF_CFG_PATH: &str = "/etc/layout-trees.yaml";
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 struct TreeSpec {
