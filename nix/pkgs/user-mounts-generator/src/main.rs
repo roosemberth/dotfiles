@@ -75,9 +75,8 @@ fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std:
     opts.extend_from_slice(&ts.extra_opts);
 
     let mut unit_section = IniSection::new("Unit");
-    unit_section.set("Documentation", "See user-mounts-generator.");
     unit_section.set("Before", "local-fs.target");
-    unit_section.set("After", format!("blockdev@{}", path_to_escaped(what_)?));
+    unit_section.set("After", format!("blockdev@{}.target", path_to_escaped(what_)?));
 
     let mut mount_section = IniSection::new("Mount");
     mount_section.set("What", what_.to_str().unwrap());
