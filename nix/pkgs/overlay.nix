@@ -233,4 +233,23 @@ in {
     #  ./0001-ssh_filter_btrbk-Allow-quoted-paths-when-using-sudo.patch
     #];
   });
+  user-mounts-generator = with final; rustPlatform.buildRustPackage {
+    pname = "user-mounts-generator";
+    version = "0.1.0";
+    src = ./user-mounts-generator;
+    cargoLock.lockFile = ./user-mounts-generator/Cargo.lock;
+
+    meta = with lib; {
+      description = ''
+        Generates a set of systemd mount units based on a layout tree of btrfs
+        subvolumes.
+
+        The subvolumes in the layout tree will be mounted at the specified
+        subpath under the "destination path" of the tree.
+      '';
+      homepage = "https://github.com/BurntSushi/ripgrep";
+      license = licenses.unlicense;
+      maintainers = [ maintainers.tailhook ];
+    };
+  };
 }
