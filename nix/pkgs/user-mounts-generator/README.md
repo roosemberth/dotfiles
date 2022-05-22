@@ -80,17 +80,33 @@ Given the following layout tree, this will generate the following mount unit:
 ```
 
 ```ini
+[Unit]
+Before=local-fs.target
+Documentation=See user-mounts-generator.
+After=blockdev@dev-mapper-Mimir
+
 [Mount]
 What=/dev/mapper/Mimir
-Where=/home/roosemberth/ws
 Type=btrfs
-Options=user_subvol_rm_allowed,subvol=/subvolumes/per-user/@roosemberth/@ws
+Options=subvol=/subvolumes/per-user/@roosemberth/@ws,user_subvol_rm_allowed,compress=zlib,relatime
+Where=/home/roosemberth/ws
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ```ini
+[Unit]
+Documentation=See user-mounts-generator.
+Before=local-fs.target
+After=blockdev@dev-mapper-Mimir
+
 [Mount]
-What=/dev/mapper/Mimir
 Where=/home/roosemberth/ws/5-VMs
+Options=subvol=/subvolumes/per-user/@roosemberth/ws/@5-VMs,user_subvol_rm_allowed,compress=zlib,relatime
+What=/dev/mapper/Mimir
 Type=btrfs
-Options=user_subvol_rm_allowed,subvol=/subvolumes/per-user/@roosemberth/ws/@5-VMs
+
+[Install]
+WantedBy=multi-user.target
 ```

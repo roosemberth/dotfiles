@@ -44,6 +44,18 @@ fn subvols_from_layout_tree(path: &Path) -> Result<Vec<Box<Path>>, std::io::Erro
     })
 }
 
+fn path_to_escaped(path: &Path) -> Result<String, std::io::Error> {
+    String::from_utf8(
+        Command::new("systemd-escape")
+            .arg("-p")
+            .arg(path)
+            .output()?
+            .stdout,
+    )
+    .map(|s| s.trim().to_owned())
+    .map_err(|e| Error::new(ErrorKind::Other, e))
+}
+
 fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std::io::Error> {
     let name = subvol
         .file_name()
@@ -54,6 +66,7 @@ fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std:
         .unwrap();
     let adjusted = subvol.parent().unwrap().join(name);
     let subpath = adjusted.strip_prefix(&ts.layout_tree).unwrap();
+    let what_ = Path::new(&ts.device_path);
     let where_ = Path::new(&ts.destination).join(subpath);
     let subvol_in_dev = Path::new("/").join(subvol.strip_prefix(&ts.tree_prefix).unwrap());
 
@@ -61,27 +74,26 @@ fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std:
     opts.push(format!("subvol={}", subvol_in_dev.to_str().unwrap()));
     opts.extend_from_slice(&ts.extra_opts);
 
-    let unit_name = String::from_utf8(
-        Command::new("systemd-escape")
-            .arg("-p")
-            .arg(where_.clone())
-            .output()?
-            .stdout,
-    )
-    .map_err(|e| Error::new(ErrorKind::Other, e))?
-    .trim()
-    .to_owned();
+    let mut unit_section = IniSection::new("Unit");
+    unit_section.set("Documentation", "See user-mounts-generator.");
+    unit_section.set("Before", "local-fs.target");
+    unit_section.set("After", format!("blockdev@{}", path_to_escaped(what_)?));
 
-    let mut section = IniSection::new("Mount");
-    section.set("What", &ts.device_path);
-    section.set("Where", where_.to_str().unwrap());
-    section.set("Type", "btrfs");
-    section.set("Options", opts.join(","));
+    let mut mount_section = IniSection::new("Mount");
+    mount_section.set("What", what_.to_str().unwrap());
+    mount_section.set("Where", where_.to_str().unwrap());
+    mount_section.set("Type", "btrfs");
+    mount_section.set("Options", opts.join(","));
+
+    let mut install_section = IniSection::new("Install");
+    install_section.set("WantedBy", "multi-user.target");
 
     let mut ini = Ini::new();
-    ini.add_section(section);
+    ini.add_section(unit_section);
+    ini.add_section(mount_section);
+    ini.add_section(install_section);
 
-    let unit_path = units_dir.join(format!("{}.mount", unit_name));
+    let unit_path = units_dir.join(format!("{}.mount", path_to_escaped(&where_)?));
     ini.to_file(&unit_path).map_err(|e| {
         Error::new(
             ErrorKind::Other,
@@ -91,6 +103,7 @@ fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std:
 }
 
 fn write_units(units_dir: &str, ts: &TreeSpec) -> Result<(), std::io::Error> {
+    println!("Scanning layout tree {}.", &ts.layout_tree);
     subvols_from_layout_tree(Path::new(&ts.layout_tree))?
         .iter()
         .try_for_each(move |sv| write_unit(&ts, Path::new(units_dir), sv))
