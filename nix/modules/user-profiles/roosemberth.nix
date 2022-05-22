@@ -33,7 +33,6 @@ in
 
     roos.rConfig = {
       home.packages = (with pkgs; [
-        git
         gnupg
         moreutils
         nix-zsh-completions
@@ -41,6 +40,25 @@ in
         openssl
         zsh-completions
       ]);
+      programs.git = {
+        enable = true;
+        package = lib.mkDefault pkgs.gitMinimal;
+        userEmail = "roosemberth@posteo.ch";
+        userName = "Roosembert Palacios";
+        # TODO: GPG signing options should go here.
+        lfs.enable = true;
+        extraConfig = {
+          core.editor = "nvim";
+          core.pager = "bat";
+          commit.verbose = true;
+          format.signOff = true;
+          pull.ff = "only";
+          tag.gpgSign = true;
+          url."https://github.com/".insteadOf = [ "gh:" "github:" ];
+          url."https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
+          alias.c = "commit -s -v";
+        };
+      };
     };
 
     roos.sConfig = {
@@ -48,6 +66,7 @@ in
         bluezFull
         git-crypt
         git-annex
+        git-open
         git-annex-utils
         nix-index
         nmap
@@ -56,6 +75,11 @@ in
         tig
         xxd
       ]);
+      programs.git.package = pkgs.gitFull;
+      programs.gpg = {
+        enable = true;
+        homedir = "${userCfg.xdg.dataHome}/gnupg";
+      };
     };
 
     roos.gConfig = {

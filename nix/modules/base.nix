@@ -21,7 +21,6 @@ in
       };
 
       home.packages = (with pkgs; [
-        git
         moreutils
         nix-zsh-completions
         openssh
