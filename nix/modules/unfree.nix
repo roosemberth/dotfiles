@@ -5,6 +5,7 @@ let
   allowedList = []
     ++ optionals config.roos.media.enable ["libspotify" "pyspotify"]
     ++ optionals config.roos.steam.enable ["steam-original" "steam" "steam-runtime"]
+    ++ ["ninja-cookie"]
     ;
 in {
   config.nixpkgs.config.allowUnfreePredicate =

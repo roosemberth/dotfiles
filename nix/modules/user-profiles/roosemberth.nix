@@ -94,7 +94,6 @@ in
         brightnessctl
         element-desktop
         epiphany
-        firefox-wayland
         fortune
         glances
         gnome3.adwaita-icon-theme
@@ -120,6 +119,50 @@ in
         xkcdpass
         zip
       ]);
+
+      programs.firefox = {
+        enable = true;
+        extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+          # Cookie quick manager
+          # Dark background and light text?
+          # fragments
+          # UnloadTabs
+          # Stop Auto Reload
+          # Media Panel
+          # BibItNow!
+          # Enhancer for YouTube
+          # Firefox Screenshots
+          cookies-txt
+          dark-mode-website-switcher
+          darkreader
+          df-youtube
+          form-history-control
+          localcdn
+          multi-account-containers
+          ninja-cookie
+          search-by-image
+          sidebery
+          temporary-containers
+          terms-of-service-didnt-read
+          translate-web-pages
+          ublock-origin
+
+          french-dictionary
+        ];
+        profiles."default" = {
+          id = 6672527918;
+          settings = {};
+          isDefault = true;
+        };
+        profiles."moon" = {
+          id = 2791099725;
+          settings = {};
+        };
+        profiles."games" = {
+          id = 7614099694;
+          settings = {};
+        };
+      };
     };
 
     security.sudo.extraConfig = ''
