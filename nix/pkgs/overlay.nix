@@ -239,6 +239,8 @@ in {
     src = ./user-mounts-generator;
     cargoLock.lockFile = ./user-mounts-generator/Cargo.lock;
 
+    nativeBuildInputs = [ makeWrapper ];
+
     meta = with lib; {
       description = ''
         Generates a set of systemd mount units based on a layout tree of btrfs
@@ -251,5 +253,10 @@ in {
       license = licenses.unlicense;
       maintainers = [ maintainers.tailhook ];
     };
+
+    postInstall = ''
+      wrapProgram $out/bin/user-mounts-generator \
+        --prefix PATH : ${lib.makeBinPath [ pkgs.systemd ]}
+    '';
   };
 }
