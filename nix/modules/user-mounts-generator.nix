@@ -64,6 +64,6 @@ in {
   config = mkIf cfg.enable {
     environment.etc."user-mounts.yaml".text = cfg.configLines;
     systemd.generators.user-mounts-generator =
-      "${pkgs.user-mounts-generator}/bin/user-mounts-generator";
+      "${pkgs.layout-trees-generator}/bin/user-mounts-generator";
   };
 }

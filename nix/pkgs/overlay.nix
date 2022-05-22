@@ -233,11 +233,11 @@ in {
     #  ./0001-ssh_filter_btrbk-Allow-quoted-paths-when-using-sudo.patch
     #];
   });
-  user-mounts-generator = with final; rustPlatform.buildRustPackage {
-    pname = "user-mounts-generator";
+  layout-trees-generator = with final; rustPlatform.buildRustPackage {
+    pname = "layout-trees-generator";
     version = "0.1.0";
-    src = ./user-mounts-generator;
-    cargoLock.lockFile = ./user-mounts-generator/Cargo.lock;
+    src = ./layout-trees;
+    cargoLock.lockFile = ./layout-trees/Cargo.lock;
 
     nativeBuildInputs = [ makeWrapper ];
 
@@ -255,7 +255,7 @@ in {
     };
 
     postInstall = ''
-      wrapProgram $out/bin/user-mounts-generator \
+      wrapProgram $out/bin/layout-trees-generator \
         --prefix PATH : ${lib.makeBinPath [ pkgs.systemd ]}
     '';
   };
