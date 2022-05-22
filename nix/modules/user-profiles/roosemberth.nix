@@ -33,9 +33,11 @@ in
 
     roos.rConfigFn = userCfg: {
       home.packages = (with pkgs; [
+        file
         moreutils
         nix-zsh-completions
         openssl
+        pv
         zsh-completions
       ]);
       programs.git = {
@@ -90,9 +92,9 @@ in
       home.packages = (with pkgs; [
         bat
         brightnessctl
-        firefox-wayland
-        epiphany
         element-desktop
+        epiphany
+        firefox-wayland
         fortune
         glances
         gnome3.adwaita-icon-theme
@@ -105,13 +107,16 @@ in
         lsof
         mosh
         mumble
+        ncmpcpp
         networkmanagerapplet
         pandoc
+        screen-message
         socat
         tdesktop
         tree
         unzip
         visidata
+        wtype
         xkcdpass
         zip
       ]);
