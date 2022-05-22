@@ -23,7 +23,6 @@ in
       home.packages = (with pkgs; [
         moreutils
         nix-zsh-completions
-        openssh
         openssl
         tmux
         zsh-completions

@@ -31,12 +31,11 @@ in
 
     roos.baseConfig.enable = true;
 
-    roos.rConfig = {
+    roos.rConfigFn = userCfg: {
       home.packages = (with pkgs; [
         gnupg
         moreutils
         nix-zsh-completions
-        openssh
         openssl
         zsh-completions
       ]);
@@ -58,6 +57,11 @@ in
           url."https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
           alias.c = "commit -s -v";
         };
+      };
+      programs.ssh = {
+        enable = true;
+        compression = true;
+        extraConfig = "Include ${userCfg.xdg.dataHome}/ssh/config";
       };
     };
 
