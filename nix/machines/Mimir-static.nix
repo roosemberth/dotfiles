@@ -129,6 +129,24 @@ in
     };
   };
 
+  systemd.services.fix-generated-mounts-permissions = {
+    description = "Fix directory permissions of directories created for"
+      + " mount points of units created by user-mounts-generator.";
+    path = with pkgs; [ gawk util-linux  ];
+    wantedBy = [ "multi-user.target" ];
+    after = [ "local-fs.target" ];
+    serviceConfig.ExecStart = builtins.toString
+      (pkgs.writeShellScript "fix-user-mount-point-perms" (''
+      while read mnt; do
+        while echo $mnt | grep -q "^/home/roosemberth"; do
+          echo "Setting owner of $mnt to user roosemberth"
+          chown roosemberth:users "$mnt"
+          mnt="'' + "\${mnt%/*}" + ''"
+        done
+      done <<< $(mount | grep /subvolumes/per-user/@roosemberth | awk '{print $3}')
+    ''));
+  };
+
   # TODO: Migrate to wireplumber
   services.pipewire.wireplumber.enable = false;
   services.pipewire.media-session.enable = true;
