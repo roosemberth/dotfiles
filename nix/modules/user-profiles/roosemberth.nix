@@ -88,11 +88,21 @@ in
       };
     };
 
-    roos.gConfig = {
-      home.packages = (with pkgs; [
+    roos.gConfigFn = userCfg: {
+      home.packages = with pkgs; let
+        element-desktop' = pkgs.symlinkJoin {
+          name = "element-desktop-with-data-path";
+          paths = [ element-desktop ];
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+          postBuild = ''
+            wrapProgram "$out/bin/element-desktop" \
+              --add-flags '--profile-dir ${userCfg.xdg.dataHome}/Element'
+          '';
+        };
+      in [
         bat
         brightnessctl
-        element-desktop
+        element-desktop'
         epiphany
         fortune
         glances
@@ -118,7 +128,7 @@ in
         wtype
         xkcdpass
         zip
-      ]);
+      ];
 
       programs.firefox = {
         enable = true;
