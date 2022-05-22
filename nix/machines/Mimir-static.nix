@@ -25,6 +25,7 @@ in
           for v in $(ls -v1 templates); do  # Generate ephemeral volumes
             btrfs subvolume snapshot "templates/$v" "$EPH_VERSION/$v"
           done
+          rm active
           ln -sf "$EPH_VERSION" active
 
           for v in $(ls -v1 | grep -v templates); do
