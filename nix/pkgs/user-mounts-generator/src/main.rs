@@ -85,21 +85,23 @@ fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std:
     mount_section.set("Type", "btrfs");
     mount_section.set("Options", opts.join(","));
 
-    let mut install_section = IniSection::new("Install");
-    install_section.set("WantedBy", "multi-user.target");
-
     let mut ini = Ini::new();
     ini.add_section(unit_section);
     ini.add_section(mount_section);
-    ini.add_section(install_section);
 
-    let unit_path = units_dir.join(format!("{}.mount", path_to_escaped(&where_)?));
+    let unit_name = format!("{}.mount", path_to_escaped(&where_)?);
+    let unit_path = units_dir.join(unit_name.clone());
     ini.to_file(&unit_path).map_err(|e| {
         Error::new(
             ErrorKind::Other,
             format!("Could not write {}: {}", unit_path.to_str().unwrap(), e),
         )
-    })
+    })?;
+    let install_dir = units_dir.join("local-fs.target.wants");
+    fs::create_dir_all(&install_dir)?;
+    symlink::symlink_file(format!("../{}", unit_name), install_dir.join(unit_name))?;
+
+    Ok(())
 }
 
 fn write_units(units_dir: &str, ts: &TreeSpec) -> Result<(), std::io::Error> {
