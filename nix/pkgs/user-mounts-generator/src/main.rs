@@ -3,6 +3,7 @@ use simpleini::{Ini, IniSection};
 use std::env;
 use std::fs;
 use std::io::{Error, ErrorKind};
+use std::os::unix::io::AsRawFd;
 use std::path::Path;
 use std::process::Command;
 
@@ -110,7 +111,25 @@ fn do_work(units_dir: &str) -> Result<(), std::io::Error> {
         .try_for_each(|ts| write_units(units_dir, ts))
 }
 
+fn setup_logging() -> Result<(), nix::Error> {
+    if let Ok(kmsg) = fs::File::options().append(true).open("/dev/kmsg") {
+        println!("Logging to /dev/kmsg.");
+        let kmsg_fd = kmsg.as_raw_fd();
+        nix::unistd::dup2(kmsg_fd, std::io::stdout().as_raw_fd())?;
+        nix::unistd::dup2(kmsg_fd, std::io::stderr().as_raw_fd())?;
+        println!("{} is now logging to kmsg.", env::args().next().unwrap());
+    }
+    Ok(())
+}
+
 fn main() -> Result<(), std::io::Error> {
+    setup_logging().map_err(|e| {
+        Error::new(
+            ErrorKind::Other,
+            format!("Could not setup logging to kmsg: {}", e),
+        )
+    })?;
+
     match &env::args().collect::<Vec<String>>()[1..] {
         [s] if s == "--help" => show_help(),
         [a, _b, _c] => do_work(a),
