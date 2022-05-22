@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use simpleini::{Ini, IniSection};
 use std::env;
 use std::fs;
 use std::io::{Error, ErrorKind};
 use std::path::Path;
+use std::process::Command;
 
 const CFG_PATH_ENVVAR: &str = "USER_MOUNTS_GENERATOR_CONFIG";
 const DEF_CFG_PATH: &str = "/etc/user-mounts.yaml";
@@ -41,12 +43,56 @@ fn subvols_from_layout_tree(path: &Path) -> Result<Vec<Box<Path>>, std::io::Erro
     })
 }
 
-fn write_units(units_dir: &str, ts: &TreeSpec) -> Result<(), std::io::Error> {
-    let subvols = subvols_from_layout_tree(Path::new(&ts.layout_tree))?;
-    panic!(
-        "Should be writing units from {:#?} to {:#?} but this is not implemented",
-        subvols, units_dir
+fn write_unit(ts: &TreeSpec, units_dir: &Path, subvol: &Path) -> Result<(), std::io::Error> {
+    let name = subvol
+        .file_name()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .strip_prefix("@")
+        .unwrap();
+    let adjusted = subvol.parent().unwrap().join(name);
+    let subpath = adjusted.strip_prefix(&ts.layout_tree).unwrap();
+    let where_ = Path::new(&ts.destination).join(subpath);
+    let subvol_in_dev = Path::new("/").join(subvol.strip_prefix(&ts.tree_prefix).unwrap());
+
+    let mut opts = Vec::new();
+    opts.push(format!("subvol={}", subvol_in_dev.to_str().unwrap()));
+    opts.extend_from_slice(&ts.extra_opts);
+
+    let unit_name = String::from_utf8(
+        Command::new("systemd-escape")
+            .arg("-p")
+            .arg(where_.clone())
+            .output()?
+            .stdout,
     )
+    .map_err(|e| Error::new(ErrorKind::Other, e))?
+    .trim()
+    .to_owned();
+
+    let mut section = IniSection::new("Mount");
+    section.set("What", &ts.device_path);
+    section.set("Where", where_.to_str().unwrap());
+    section.set("Type", "btrfs");
+    section.set("Options", opts.join(","));
+
+    let mut ini = Ini::new();
+    ini.add_section(section);
+
+    let unit_path = units_dir.join(format!("{}.mount", unit_name));
+    ini.to_file(&unit_path).map_err(|e| {
+        Error::new(
+            ErrorKind::Other,
+            format!("Could not write {}: {}", unit_path.to_str().unwrap(), e),
+        )
+    })
+}
+
+fn write_units(units_dir: &str, ts: &TreeSpec) -> Result<(), std::io::Error> {
+    subvols_from_layout_tree(Path::new(&ts.layout_tree))?
+        .iter()
+        .try_for_each(move |sv| write_unit(&ts, Path::new(units_dir), sv))
 }
 
 fn do_work(units_dir: &str) -> Result<(), std::io::Error> {
