@@ -27,6 +27,11 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
         }).allModules;
     })
 
+    # Bootstrap NUR
+    ({ config, ... }: with nixpkgs.lib; mkIf (hasAttr "nur" inputs) {
+      nixpkgs.overlays = [ inputs.nur.overlay ];
+    })
+
     # Fix flake registry inputs of the target derivation
     ({ lib, ... }: {
       nixpkgs.overlays = lib.optional (self ? overlay) self.overlay;

@@ -130,6 +130,7 @@
         "unstable-deploy-rs": "unstable-deploy-rs",
         "unstable-hm": "unstable-hm",
         "unstable-nixpkgs": "unstable-nixpkgs",
+        "unstable-nur": "unstable-nur",
         "unstable-sops-nix": "unstable-sops-nix"
       }
     },
@@ -187,6 +188,21 @@
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "unstable-nur": {
+      "locked": {
+        "lastModified": 1653243160,
+        "narHash": "sha256-pJecm5xlW5ayjTHuXdoeG6iygMvP7gtt5zxqdjpoI7g=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "160965fe1d1011399b18a70fc635e6cb12222a75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
         "type": "github"
       }
     },
