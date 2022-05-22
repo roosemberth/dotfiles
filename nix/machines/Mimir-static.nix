@@ -119,7 +119,7 @@ in
     };
   };
 
-  roos.user-mounts-generator = {
+  roos.layout-trees = {
     enable = true;
     mounts."/home/roosemberth" = {
       layout_tree = "/mnt/root-btrfs/subvolumes/per-dataset/@roosemberth";
@@ -130,8 +130,8 @@ in
   };
 
   systemd.services.fix-generated-mounts-permissions = {
-    description = "Fix directory permissions of directories created for"
-      + " mount points of units created by user-mounts-generator.";
+    description = "Fix directory permissions of the @roosemberth dataset"
+      + " mounts created by the layout-trees generator.";
     path = with pkgs; [ gawk util-linux  ];
     wantedBy = [ "multi-user.target" ];
     after = [ "local-fs.target" ];

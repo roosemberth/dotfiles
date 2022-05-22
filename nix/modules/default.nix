@@ -35,7 +35,7 @@ in {
     ./user-profiles/roosemberth.nix
     ./users.nix
     ./sway-session.nix
-    ./user-mounts-generator.nix
+    ./layout-trees.nix
     ./wireguard.nix
     ./wireguard-new.nix
   ];
