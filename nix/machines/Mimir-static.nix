@@ -127,6 +127,12 @@ in
       device_path = "/dev/mapper/" + hostname;
       extra_opts = [ "user_subvol_rm_allowed" "compress=zlib" "relatime" ];
     };
+    mounts."/" = {
+      layout_tree = "/mnt/root-btrfs/subvolumes/per-dataset/@mimir-local";
+      tree_prefix = "/mnt/root-btrfs";
+      device_path = "/dev/mapper/" + hostname;
+      extra_opts = [ "compress=zstd" "relatime" ];
+    };
   };
 
   systemd.services.fix-generated-mounts-permissions = {
