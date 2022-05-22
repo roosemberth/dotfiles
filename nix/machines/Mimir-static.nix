@@ -90,6 +90,7 @@ in
       mountPoint = "/mnt/root-btrfs";
       device = "/dev/mapper/" + hostname;
       options = ["nodatacow" "noatime" "noexec" "user_subvol_rm_allowed"];
+      neededForBoot = true; # Generated user mount units require to know the layout.
     };
 
     # Ephemeral volumes
@@ -114,6 +115,16 @@ in
       mountPoint = "/var";
       device = "/dev/mapper/" + hostname;
       options = ["subvol=/subvolumes/ephemeral/active/var" "compress=zlib"];
+    };
+  };
+
+  roos.user-mounts-generator = {
+    enable = true;
+    mounts."/home/roosemberth" = {
+      layout_tree = "/mnt/root-btrfs/subvolumes/per-user/@roosemberth";
+      tree_prefix = "/mnt/root-btrfs";
+      device_path = "/dev/mapper/" + hostname;
+      extra_opts = [ "user_subvol_rm_allowed" "compress=zlib" "relatime" ];
     };
   };
 
