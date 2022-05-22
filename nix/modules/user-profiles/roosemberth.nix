@@ -33,7 +33,6 @@ in
 
     roos.rConfigFn = userCfg: {
       home.packages = (with pkgs; [
-        gnupg
         moreutils
         nix-zsh-completions
         openssl
@@ -44,7 +43,8 @@ in
         package = lib.mkDefault pkgs.gitMinimal;
         userEmail = "roosemberth@posteo.ch";
         userName = "Roosembert Palacios";
-        # TODO: GPG signing options should go here.
+        signing.key = "C2242BB7";
+        signing.signByDefault = true;
         lfs.enable = true;
         extraConfig = {
           core.editor = "nvim";
@@ -65,7 +65,7 @@ in
       };
     };
 
-    roos.sConfig = {
+    roos.sConfigFn = userCfg: {
       home.packages = (with pkgs; [
         bluezFull
         git-crypt
