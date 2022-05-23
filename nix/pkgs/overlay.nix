@@ -233,11 +233,16 @@ in {
     #  ./0001-ssh_filter_btrbk-Allow-quoted-paths-when-using-sudo.patch
     #];
   });
-  layout-trees-generator = with final; rustPlatform.buildRustPackage {
+  layout-trees-generator = with final; rustPlatform.buildRustPackage rec {
     pname = "layout-trees-generator";
     version = "0.1.0";
-    src = ./layout-trees;
-    cargoLock.lockFile = ./layout-trees/Cargo.lock;
+    src = fetchFromGitLab {
+      owner = "roosemberth";
+      repo = "layout-trees";
+      rev = version;
+      hash = "sha256-/SBcYFNPIDxVqIGiDXr03ETQoQp/DJ6Jkha3GuhFRdY=";
+    };
+    cargoSha256 = "sha256-Emn7MHX1rPgDUuGuxYTEwCNjj0Qyx23pxdlxaZ0Nt/M=";
 
     nativeBuildInputs = [ makeWrapper ];
 
