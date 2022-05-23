@@ -6,17 +6,36 @@ subvolumes.
 Each of the subvolumes in a _layout tree_ will be mounted at the
 corresponding subpath under the "destination path" of the tree.
 
-## Layout tree
+## Motivation
+
+When using an ephemeral root filesystem, sometimes we'd like to keep some
+state around (e.g., user files).
+This state may be sparsed across many directories in different locations around
+the filesystem.
+
+This could be solved using a single 'state' directory and either symlink the
+directories to keep around or have applications use a path inside this 'state'
+directory.
+However, this approach yields a lot of configuration and thus more
+maintenance work.
+Moreover, if the same derivation is booted in a different system, it will
+will yield errors, which are not indicative of a problem, but rather a
+configuration bug where the model of the machine where the configuration is
+being applied and the actual state of the machine have diverged.
+
+This project is an effort to provide a solution by defering the decision of
+what subvoumes may be mounted where at system activation-time:
+By using the state of the filesystem to determine what data should go where,
+both the configuration maintenance efforts and meaningless errors go away.
+
+This information is encoded in 'layout trees', which provide the information
+of what subvolumes should go where, while giving a 'meaningful' look of what
+state is being preserved.
+
+## Layout trees
 
 A _layout tree_ is a directory tree containing btrfs subvolumes at its leaves.
-Only btrfs subvolumes can be at the leaves and their names MUST start
-with '@'.
-Moreover, only the leaves can have their name start with '@'.
-
-The directory structure indicates where to mount each of the subvolumes:
-Each subvolume will be mounted under the "destination path" at a location
-which corresponds to the location of the subvolume within the layout tree,
-with the '@' removed.
+The names of these subvolumes MUST start with '@'.
 
 Example layout tree:
 
@@ -31,9 +50,14 @@ Example layout tree:
 ./ws/@5-VMs
 ```
 
-## Unit generation
+The directory structure indicates where to mount each of the subvolumes:
+All subvolumes in a layout tree will be mounted under some "destination path".
+The location of each subvolume within that path corresponds to their location
+within the layout tree, with the '@' removed.
 
-A `systemd.mount(5)` units will be generated for each leaf.
+## Mount unit generation
+
+A `systemd.mount(5)` unit will be generated for each leaf.
 Each leaf will be mounted at the destination path of the layout tree
 at the subpath specified by its path under the layout tree.
 
@@ -88,7 +112,7 @@ After=blockdev@dev-mapper-Mimir.target
 [Mount]
 What=/dev/mapper/Mimir
 Type=btrfs
-Options=subvol=/subvolumes/per-user/@roosemberth/@ws,user_subvol_rm_allowed,compress=zlib,relatime
+Options=subvol=/subvolumes/per-user/@roosemberth/@ws,user_subvol_rm_allowed
 Where=/home/roosemberth/ws
 
 [Install]
@@ -102,7 +126,7 @@ After=blockdev@dev-mapper-Mimir.target
 
 [Mount]
 Where=/home/roosemberth/ws/5-VMs
-Options=subvol=/subvolumes/per-user/@roosemberth/ws/@5-VMs,user_subvol_rm_allowed,compress=zlib,relatime
+Options=subvol=/subvolumes/per-user/@roosemberth/ws/@5-VMs,user_subvol_rm_allowed
 What=/dev/mapper/Mimir
 Type=btrfs
 
