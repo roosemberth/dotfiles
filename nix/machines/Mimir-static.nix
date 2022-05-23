@@ -135,6 +135,8 @@ in
     };
   };
 
+  environment.etc."machine-id".source = "/var/lib/secrets/machine-id";
+
   systemd.services.fix-generated-mounts-permissions = {
     description = "Fix directory permissions of the @roosemberth dataset"
       + " mounts created by the layout-trees generator.";
