@@ -14,6 +14,9 @@ let g:ale_linters_ignore=
   \ { 'haskell': ['stack-build']
   \ }
 
+" Prevent markdown from being automatically folded... (It's driving me nuts!)
+let g:vim_markdown_folding_disabled = 1
+
 " fix gruvbox's highlight for Ale
 highlight ALEInfo ctermfg=109 cterm=italic
 highlight ALEWarning ctermfg=214 cterm=italic
