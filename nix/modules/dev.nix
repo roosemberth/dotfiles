@@ -14,6 +14,7 @@ in {
         yq
         virt-viewer
         claws
+        usbutils
         # lorri
         direnv
         # Nix
@@ -32,8 +33,8 @@ in {
 
       # Have usb tty devices accesible
       ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
-      # ESP8266 D1-mini
-      ACTION=="add",ATTRS{idProduct}=="1a86",ATTRS{idVendor}=="7523",MODE="0666"
+      # ESP8266/ESP32
+      ACTION=="add",SUBSYSTEM=="usb",ATTR{idProduct}=="7523",ATTR{idVendor}=="1a86",MODE="0666"
     '';
   };
 }
