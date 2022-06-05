@@ -204,9 +204,9 @@ in {
     in ''
       bindsym --locked ${mod}+XF86Display          output eDP-1 toggle
 
-      bindsym --locked ${mod}+Delete               exec mpc toggle
-      bindsym --locked ${mod}+End                  exec mpc prev
-      bindsym --locked ${mod}+Insert               exec mpc next
+      bindsym --locked ${mod}+Delete               exec ${actions."player:play-pause".cmd}
+      bindsym --locked ${mod}+End                  exec ${actions."player:prev".cmd}
+      bindsym --locked ${mod}+Insert               exec ${actions."player:next".cmd}
       bindsym --locked XF86Display                 exec sm -i
       bindsym --locked XF86Display+Shift           exec sm
 

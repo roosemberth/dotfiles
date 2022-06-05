@@ -75,9 +75,10 @@ in {
     ];
 
     programs.foot.enable = true;
-
-    programs.swaync.enable = true;
     programs.sway.roos-cfg.enable = true;
+    programs.swaync.enable = true;
+
+    roos.media.enable = true;
     wayland.windowManager.sway.enable = true;
 
     systemd.user.services.ssh-agent = {

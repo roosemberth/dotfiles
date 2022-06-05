@@ -8,12 +8,13 @@ let
 in {
   allModules = [
     ./actions.nix
-    ./test-module.nix
     ./email-gateway.nix
-    ./vim-roos.nix
+    ./media.nix
+    ./roos-sway-config.nix
     ./sway-session.nix
     ./swaync.nix
-    ./roos-sway-config.nix
+    ./test-module.nix
+    ./vim-roos.nix
     dotfilesHarness
   ];
 }
