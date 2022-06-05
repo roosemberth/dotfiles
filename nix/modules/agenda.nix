@@ -18,15 +18,12 @@ in {
         });
         maildirBasePath = ".local/var/mail";
       };
-      home.packages = with pkgs;
-        let gnome-keyring = # Install gnome-keyring without suid-wrapper
-              assert lib.versionAtLeast "40.0" gnome3.gnome-keyring.version;
-              gnome3.gnome-keyring.overrideAttrs(_:{postFixup="";});
-            pass' = pass.withExtensions (p: with p; [ pass-otp ]);
-        in [
+      home.packages = with pkgs; let
+        pass' = pass.withExtensions (p: with p; [ pass-otp ]);
+      in [
         mailcap pass' w3m xdg_utils
         taskwarrior timewarrior python3Packages.bugwarrior
-        gnome-keyring gcr pkgs.libsecret
+        gnome3.gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
