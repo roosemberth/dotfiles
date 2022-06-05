@@ -86,7 +86,7 @@
     devShells = forAllSystems quokka
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
 
-    deploy = with self.nixosConfigurations; {
+    deploy = with self.nixosConfigurations; with unstable; {
       magicRollback = true;
       autoRollback = true;
       sshUser = "roosemberth";
