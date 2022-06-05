@@ -20,15 +20,12 @@ in {
           inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
         };
       '';
-      forwarders = [  # OpenNIC Servers
-        "2a01:7e01::f03c:91ff:febc:322"         # ns2.he.de   Frankfurt
-        "2a01:4f9:c010:6093::3485"              # ns2.fi      Helsinki
-        "2001:bc8:32d7:308::201"                # ns3.fr      Paris
-        "2a00:f826:8:1::254"                    # ns8.he.de   Frankfurt
-        "2001:470:1f15:b80::53"                 # ns8.fr      Paris
-        "2001:19f0:7402:d:5400:00ff:fe2a:7fb6"  # ns4.eng.gb  London
-        "2a01:4f8:161:3441::1"                  # ns3.de      Frankfurt
-        "2a00:f826:8:2::195"                    # ns31.de     Frankfurt
+      forwarders = [  # OpenNIC Servers (dns.opennic.glue)
+        "2001:41d0:700:1174::"                  # ns1.de      Limburg
+        "2001:4ba0:ffa4:1ce::"                  # ns22.de     Duesseldoft
+        "2a01:4f9:4b:39ea::301"                 # ns4.fi      Helsinki
+        "2a03:f80:30:192:71:166:92:1"           # ns1.esy.gr  Thessaloniki
+        "2a0d:2146:2404::1069"                  # ns1.nl      Eygelshoven
       ];
       listenOn = map removeCIDR [ secrets.network.zkx.Minerva.host4 ];
       listenOnIpv6 = map removeCIDR [ secrets.network.zkx.Minerva.host6 ];
