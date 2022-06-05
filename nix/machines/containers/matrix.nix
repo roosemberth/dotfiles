@@ -35,6 +35,7 @@ in {
         listeners = [{
           port = 8448;
           resources = [{ names = [ "client" "federation" ]; compress = true; }];
+          bind_addresses = [ "0.0.0.0" ];
           tls = false;
           x_forwarded = true;
         } {
