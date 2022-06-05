@@ -24,6 +24,7 @@ in {
         hostName = "nextcloud.orbstheorem.ch";
         maxUploadSize = "50G";
         enableImagemagick = true;
+        package = pkgs.nextcloud23;
         autoUpdateApps.enable = true;
         config.adminuser = secrets.nextcloud.adminuser;
         config.adminpassFile = fsec."services/nextcloud/adminpass".path;
