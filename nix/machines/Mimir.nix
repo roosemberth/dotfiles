@@ -243,6 +243,8 @@ in {
   # Imperative NixOS containers are affected by this.
   systemd.services."container@".serviceConfig.TimeoutStartSec =
     lib.mkForce "20min";
+  # Disable network manager wait-online.
+  systemd.services."NetworkManager-wait-online".wantedBy = lib.mkForce [];
 
   time.timeZone = "Europe/Zurich";
 
