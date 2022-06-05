@@ -15,8 +15,6 @@ in {
         virt-viewer
         claws
         usbutils
-        # lorri
-        direnv
         # Nix
         manix
       ];
