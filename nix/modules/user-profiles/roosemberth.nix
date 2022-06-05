@@ -64,9 +64,7 @@ in
         enable = true;
         compression = true;
         userKnownHostsFile = "${userCfg.xdg.dataHome}/ssh/known_hosts";
-        extraConfig = ''
-          Include ${userCfg.xdg.dataHome}/ssh/config
-        '';
+        includes = [ "${userCfg.xdg.dataHome}/ssh/config" ];
       };
     };
 
