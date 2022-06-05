@@ -12,7 +12,8 @@
 in buildEnv {
   name = "mopidy-with-extensions-${mopidy.version}";
   paths = lib.closePropagation (with mopidyPackages; [
-    mopidy-spotify mopidy-iris mopidy-mpd mopidy-local
+    # mopidy-spotify is broken
+    mopidy-iris mopidy-mpd mopidy-local
   ]);
   pathsToLink = [ "/${python3.sitePackages}" ];
   buildInputs = [ makeWrapper ];
