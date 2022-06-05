@@ -16,7 +16,7 @@ in {
         claws
         usbutils
         # Nix
-        manix
+        manix sops
       ];
 
       xdg.configFile."stylish-haskell/config.yaml".source =
