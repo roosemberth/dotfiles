@@ -179,6 +179,9 @@ in {
         { command = "dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP"; }
         { command = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY"; }
         { command = "dbus-update-activation-environment --systemd SWAYSOCK"; }
+        # Add only to systemd (not dbus), because required by askpass (ssh-agent).
+        # I wish my system to be X11-free.
+        { command = "systemctl --user set-environment DISPLAY=$DISPLAY"; }
         { command = "systemctl --user start graphical-session-pre.target"; }
         { command = "systemctl --user start graphical-session.target"; }
         { command = "systemctl --user start sway-session.target"; }
