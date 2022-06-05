@@ -8,6 +8,7 @@ in {
     bindMounts.matrix-synapse.mountPoint = "/var/lib/matrix-synapse";
     bindMounts.matrix-synapse.isReadOnly = false;
     bindMounts."/run/secrets/services/matrix" = {};
+    bindMounts."/run/secrets/services/matrix_appservice_discord" = {};
     config = {
       networking.firewall.allowedTCPPorts = [ 8448 9092 ];
       networking.interfaces.eth0.ipv4.routes = [
@@ -72,6 +73,40 @@ in {
           database
           registration_shared_secret
           ;
+        app_service_config_files = [
+          fsec."services/matrix_appservice_discord/registration".path
+        ];
+      };
+      systemd.services.link-discord-appservice-registration = {
+        description = "Link discord's appservice registration";
+        requiredBy = [ "matrix-appservice-discord.service" ];
+        before = [ "matrix-appservice-discord.service" ];
+        path = with pkgs; [ acl  ];
+        serviceConfig.ExecStart = builtins.toString
+          (pkgs.writeShellScript "fix-appservice-perms" (''
+            # Workaround the NixOS module...
+            mkdir -p /var/lib/private/matrix-appservice-discord
+            cd /var/lib/private/matrix-appservice-discord
+            cp ${fsec."services/matrix_appservice_discord/registration".path} \
+              discord-registration.yaml
+            chmod 444 discord-registration.yaml
+        ''));
+      };
+      services.matrix-appservice-discord = {
+        enable = true;
+        settings = {
+          bridge.domain = "orbstheorem.ch";
+          bridge.homeserverUrl = "https://orbstheorem.ch";
+          bridge.adminMxid = "@roosemberth:orbstheorem.ch";
+          # Doesn't work and spams logs...
+          bridge.disablePresence = true;
+          auth.usePrivilegedIntents = true;
+          inherit (secrets.matrix_appservice_discord) database;
+          channel.namePattern = ":guild :name";
+        };
+        serviceDependencies = [ "matrix-synapse.service" ];
+        # Read by systemd, so we don't care about permissions.
+        environmentFile = fsec."services/matrix_appservice_discord/env".path;
       };
     };
     ephemeral = true;
@@ -113,6 +148,8 @@ in {
     "services/matrix/tls_dh_params" = secretCfg;
     "services/matrix/tls_certificate" = secretCfg;
     "services/matrix/tls_private_key" = secretCfg;
+    "services/matrix_appservice_discord/env" = secretCfg;
+    "services/matrix_appservice_discord/registration" = secretCfg;
   };
 
   system.activationScripts.secretsForMatrix = let
@@ -122,5 +159,6 @@ in {
     chown ${o}:${g} "${fsec."services/matrix/tls_dh_params".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_certificate".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
+    chown ${o}:${g} "${fsec."services/matrix_appservice_discord/registration".path}"
   '';
 }
