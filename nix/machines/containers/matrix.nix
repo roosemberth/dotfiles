@@ -98,6 +98,7 @@ in {
           bridge.domain = "orbstheorem.ch";
           bridge.homeserverUrl = "https://orbstheorem.ch";
           bridge.adminMxid = "@roosemberth:orbstheorem.ch";
+          bridge.disableJoinLeaveNotifications = true;
           inherit (secrets.matrix_appservice_discord) database;
           channel.namePattern = ":guild :name";
         };
