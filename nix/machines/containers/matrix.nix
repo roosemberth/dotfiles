@@ -41,6 +41,9 @@ in {
           port = 9092;
           type = "metrics";
           resources = [];
+          # IPv6 seems unsupported for metrics-listener
+          # https://github.com/matrix-org/synapse/issues/6644
+          bind_addresses = [ "0.0.0.0" ];
           tls = false;
         }];
         trusted_key_servers = [{
