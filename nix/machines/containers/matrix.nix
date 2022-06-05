@@ -98,8 +98,6 @@ in {
           bridge.domain = "orbstheorem.ch";
           bridge.homeserverUrl = "https://orbstheorem.ch";
           bridge.adminMxid = "@roosemberth:orbstheorem.ch";
-          # Doesn't work and spams logs...
-          bridge.disablePresence = true;
           inherit (secrets.matrix_appservice_discord) database;
           channel.namePattern = ":guild :name";
         };
