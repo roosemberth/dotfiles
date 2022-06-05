@@ -27,9 +27,11 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
         }).allModules;
     })
 
-    # Bootstrap NUR
-    ({ config, ... }: with nixpkgs.lib; mkIf (hasAttr "nur" inputs) {
-      nixpkgs.overlays = [ inputs.nur.overlay ];
+    # Bootstrap optional overlays
+    ({ lib, ... }: with lib; let
+      ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;
+    in {
+      nixpkgs.overlays = ifFound "nur" ++ ifFound "deploy-rs";
     })
 
     # Fix flake registry inputs of the target derivation

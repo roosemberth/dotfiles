@@ -110,6 +110,9 @@ in {
   roos.wireguard.enable = true;
   roos.wireguard.gwServer = "Heimdaalr";
 
+  # Since deploy-rs is not in Nixpkgs, explicitly add it in this host.
+  roos.sConfig.home.packages = [ pkgs.deploy-rs.deploy-rs ];
+
   # Output profiles
   roos.gConfigFn = hmCfg: {
     config.systemd.user.services.kanshi = let
