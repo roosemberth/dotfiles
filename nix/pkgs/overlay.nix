@@ -264,4 +264,27 @@ in {
         --prefix PATH : ${lib.makeBinPath [ pkgs.systemd ]}
     '';
   };
+
+  swaynotificationcenter = prev.swaynotificationcenter.overrideAttrs(o: {
+    patches = o.patches or [] ++ [
+      (final.writeText "1-remove-superfluous-trigger-on-example-config.patch" ''
+        --- a/src/config.json.in
+        +++ b/src/config.json.in
+        @@ -18,12 +18,7 @@
+           "hide-on-clear": false,
+           "hide-on-action": true,
+           "script-fail-notify": true,
+        -  "scripts": {
+        -    "example-script": {
+        -      "exec": "echo 'Do something...'",
+        -      "urgency": "Normal"
+        -    }
+        -  },
+        +  "scripts": {},
+           "notification-visibility": {
+             "example-name": {
+               "state": "muted",
+      '')
+    ];
+  });
 }
