@@ -161,16 +161,16 @@ in
           french-dictionary
         ];
         profiles."default" = {
-          id = 6672527918;
+          id = 0;
           settings = {};
           isDefault = true;
         };
         profiles."moon" = {
-          id = 2791099725;
+          id = 1;
           settings = {};
         };
         profiles."games" = {
-          id = 7614099694;
+          id = 2;
           settings = {};
         };
       };
