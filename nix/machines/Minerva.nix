@@ -210,6 +210,8 @@ in {
   # Imperative NixOS containers are affected by this.
   systemd.services."container@".serviceConfig.TimeoutStartSec =
     lib.mkForce "20min";
+  # wait-online is very annoying and in most cases useless with my config.
+  systemd.network.wait-online.anyInterface = true;
 
   system.stateVersion = "20.09";
   system.autoUpgrade.enable = true;
