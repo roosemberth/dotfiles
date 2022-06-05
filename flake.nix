@@ -1,11 +1,11 @@
 {
   inputs = {
-    # Porcupine
-    porcupine-nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
-    porcupine-hm.url = "github:nix-community/home-manager/release-21.11";
-    porcupine-hm.inputs.nixpkgs.follows = "porcupine-nixpkgs";
-    porcupine-sops-nix.url = "github:Mic92/sops-nix";
-    porcupine-sops-nix.inputs.nixpkgs.follows = "porcupine-nixpkgs";
+    # Quokka
+    quokka-nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    quokka-hm.url = "github:nix-community/home-manager/release-22.05";
+    quokka-hm.inputs.nixpkgs.follows = "quokka-nixpkgs";
+    quokka-sops-nix.url = "github:Mic92/sops-nix";
+    quokka-sops-nix.inputs.nixpkgs.follows = "quokka-nixpkgs";
 
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs";
@@ -24,11 +24,11 @@
 
   outputs = inputs@{ self, flake-utils, ... }: let
     # Distributions
-    porcupine = with inputs; {
+    quokka = with inputs; {
       inherit (inputs) self flake-utils;
-      nixpkgs = porcupine-nixpkgs;
-      hm = porcupine-hm;
-      sops-nix = porcupine-sops-nix;
+      nixpkgs = quokka-nixpkgs;
+      hm = quokka-hm;
+      sops-nix = quokka-sops-nix;
     };
     unstable = with inputs; {
       inherit (inputs) self flake-utils;
@@ -50,14 +50,14 @@
   in {
     nixosConfigurations = {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Mimir-vm = mkSystem porcupine ({ modulesPath, ... }: {
+      Mimir-vm = mkSystem quokka ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = mkSystem porcupine ./nix/machines/Minerva.nix;
-      Heimdaalr = mkSystem porcupine ./nix/machines/Heimdaalr.nix;
-      batman = mkSystem porcupine {
-        _module.args.nixosSystem = porcupine.nixpkgs.lib.nixosSystem;
-        _module.args.home-manager = porcupine.hm.nixosModules.home-manager;
+      Minerva = mkSystem quokka ./nix/machines/Minerva.nix;
+      Heimdaalr = mkSystem quokka ./nix/machines/Heimdaalr.nix;
+      batman = mkSystem quokka {
+        _module.args.nixosSystem = quokka.nixpkgs.lib.nixosSystem;
+        _module.args.home-manager = quokka.hm.nixosModules.home-manager;
         imports = [ ./nix/machines/tests/batman.nix ];
       };
     };
@@ -83,7 +83,7 @@
 
     defaultTemplate = self.templates.generic;
 
-    devShells = forAllSystems porcupine
+    devShells = forAllSystems quokka
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
 
     deploy = with self.nixosConfigurations; {
