@@ -23,6 +23,13 @@ in {
     ../modules
     ./Mimir-static.nix
     networkDnsConfig
+
+    # Cannot use module fprintd.nix because I don't want pam support.
+    ({pkgs, ...}: {
+      services.dbus.packages = [ pkgs.fprintd ];
+      environment.systemPackages = [ pkgs.fprintd ];
+      systemd.packages = [ pkgs.fprintd ];
+    })
   ];
 
   boot.cleanTmpDir = true;
