@@ -58,7 +58,16 @@ in
     };
 
     roos.gConfig = {
-      home.packages = with pkgs; [ mpv youtube-dl ffmpeg-full ];
+      home.packages = with pkgs; [ youtube-dl ffmpeg-full ];
+      programs.mpv = {
+        enable = true;
+        config = {
+          ytdl-format = "bestvideo[height<=?1080]+bestaudio/best";
+          playlist-start = "auto";
+          save-position-on-quit = true;
+        };
+        scripts = with pkgs.mpvScripts; [ youtube-quality ];
+      };
     };
 
     security.rtkit.enable = true;
