@@ -51,6 +51,15 @@ lspconfig.rls.setup {
   },
 }
 
+lspconfig.hls.setup {
+  on_attach = on_generic_lsp_attach,
+  settings = {
+    haskell = {
+      formattingProvider = "brittany",
+    }
+  }
+}
+
 local metals_config = require("metals").bare_config()
 metals_config = {
   settings = {
