@@ -33,6 +33,7 @@
         configDir = "/persisted/hass";
         openFirewall = true;
       };
+      system.stateVersion = "22.05";
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...

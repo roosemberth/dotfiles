@@ -106,6 +106,7 @@ in {
         # Read by systemd, so we don't care about permissions.
         environmentFile = fsec."services/matrix_appservice_discord/env".path;
       };
+      system.stateVersion = "22.05";
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...

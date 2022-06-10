@@ -34,6 +34,7 @@ in {
     config.services.prometheus.exporters.bind.enable = true;
     config.services.prometheus.exporters.bind.bindGroups =
       [ "server" "view" "tasks" ];
+    config.system.stateVersion = "22.05";
     ephemeral = false; # TODO: isolate cache as a spool directory...
   };
 

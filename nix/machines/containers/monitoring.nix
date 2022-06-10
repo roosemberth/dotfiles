@@ -161,6 +161,7 @@ in {
       # Need fixed ids to set secret permissions on host activation script
       users.users.nextcloud-exporter.uid = 998;
       users.groups.nextcloud-exporter.gid = 998;
+      system.stateVersion = "22.05";
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...

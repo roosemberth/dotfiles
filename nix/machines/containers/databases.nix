@@ -43,6 +43,7 @@ in {
         provision.datasources = secrets.zkx.minerva-grafana-sources;
       };
       services.prometheus.exporters.postgres.enable = true;
+      system.stateVersion = "22.05";
     };
     ephemeral = true;
     forwardPorts = [
