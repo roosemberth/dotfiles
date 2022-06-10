@@ -96,7 +96,7 @@
             error_page 404 = /404.html;
             index      404.html;
           '';
-          locations."~ ^/(_matrix|.well-known/matrix/)" = {
+          locations."~ ^/(_matrix|_synapse/client|.well-known/matrix/)" = {
             proxyPass = "http://minerva.intranet.orbstheorem.ch:8448";
           };
         };
