@@ -120,6 +120,8 @@
       plantuml-syntax
       mynix-tools
       nvim-lspconfig
+      nvim-metals
+      plenary-nvim
     ];
   };
 
