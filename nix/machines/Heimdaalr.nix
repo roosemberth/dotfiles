@@ -120,17 +120,6 @@
         "heig.orbstheorem.ch".locations."/".proxyPass =
           "http://mimir.r.orbstheorem.ch:2270";
 
-        "greenzz.orbstheorem.ch" = {
-          locations."/" = {
-            proxyPass = "http://minerva.intranet.orbstheorem.ch:43000";
-            proxyWebsockets = true;
-          };
-          locations."/grafana/".proxyPass =
-            "http://minerva.intranet.orbstheorem.ch:43001";
-          locations."/public/pro/".proxyPass =
-            "http://minerva.intranet.orbstheorem.ch:43003";
-        };
-
         "powerflow.orbstheorem.ch".locations."/".proxyPass =
           "http://minerva.intranet.orbstheorem.ch:45100";
 
