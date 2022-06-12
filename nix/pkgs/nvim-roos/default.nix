@@ -119,6 +119,7 @@
       arduino-syntax-file
       plantuml-syntax
       mynix-tools
+      vim-nix
       nvim-lspconfig
       nvim-metals
       plenary-nvim
