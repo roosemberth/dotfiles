@@ -22,7 +22,7 @@ in {
         pass' = pass.withExtensions (p: with p; [ pass-otp ]);
       in [
         mailcap pass' w3m xdg_utils
-        taskwarrior timewarrior python3Packages.bugwarrior
+        timewarrior python3Packages.bugwarrior
         gnome3.gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
@@ -110,7 +110,22 @@ in {
 
       home.file.".mailcap".source = util.fetchDotfile "etc/mailcap";
 
-      xdg.configFile."task/taskrc".source = util.fetchDotfile "etc/task/taskrc";
+      programs.taskwarrior.enable = true;
+      programs.taskwarrior.config = {
+        dateformat = "Y-M-DTH:N";
+        default.command = "list";
+
+        context.gnu = "project:GNUGen";
+        context.agep = "project:AGEPoly";
+        context.bity = "project:Bity";
+        context.epfl = "project:EPFL";
+
+        color.tag.nohl = "blue";
+
+        report.list.columns = "id,project,tags,priority,start.active,description,due,due.remaining";
+        report.list.labels = "ID,Proj,Tags,Pri,A,Description,Due,";
+      };
+
       # Should make a module someday...
       xdg.configFile."bugwarrior/bugwarriorrc".text =
         secrets.users.roosemberth.bugwarriorrc;
