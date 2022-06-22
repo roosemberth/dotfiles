@@ -114,7 +114,6 @@ in
         gtk3  # gtk-launch
         khal
         links2
-        lsof
         mosh
         mumble
         ncmpcpp
@@ -175,15 +174,6 @@ in
         };
       };
     };
-
-    security.sudo.extraConfig = ''
-      %wheel      ALL=(root) NOPASSWD: /run/current-system/sw/bin/nixos-rebuild
-      %wheel      ALL=(root) NOPASSWD: /run/current-system/sw/bin/lsof -nPi
-      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount -t proc none proc
-      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount /sys sys -o bind
-      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount /dev dev -o rbind
-      roosemberth ALL=(root) NOPASSWD: /run/current-system/sw/bin/mount -t tmpfs none tmp
-    '';
 
     assertions = [{
       assertion = config.security.sudo.enable;

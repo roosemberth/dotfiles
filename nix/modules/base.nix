@@ -26,7 +26,6 @@ in
         openssl
         tmux
         zsh-completions
-        lsof
       ]);
 
       home.sessionPath = [ "\$HOME/.local/bin" ];
@@ -74,8 +73,27 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      cacert curl hdparm htop iotop wget exfat nfs-utils
-      fzf
+      cacert curl hdparm htop atop iotop powertop bpytop wget exfat nfs-utils
+      lsof fzf
+    ];
+
+    security.sudo.extraRules = let
+      nopasswdcmds = [
+        "atop"
+        "bpytop"
+        "htop"
+        "lsof -nPi"
+        "nixos-rebuild"
+        "powertop"
+      ];
+    in [
+      {
+        groups = [ "wheel" ];
+        commands = map (cmd: {
+          command = "/run/current-system/sw/bin/${cmd}";
+          options = [ "NOPASSWD" ];
+        }) nopasswdcmds;
+      }
     ];
 
     programs.bash.enableCompletion = true;
