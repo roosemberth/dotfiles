@@ -47,9 +47,6 @@ in
         configHome = "${homedir}/.local/etc";
         dataHome = "${homedir}/.local/var/lib";
       };
-
-      xdg.configFile."nvim/init.vim".source =
-        util.fetchDotfile "etc/nvim/init.vim";
     };
 
     roos.sConfig = {
