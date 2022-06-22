@@ -75,6 +75,10 @@ in {
     ];
 
     programs.foot.enable = true;
+    programs.foot.settings.main = {
+      font = "monospace:size=8";
+      dpi-aware = true;
+    };
     programs.sway.roos-cfg.enable = true;
     programs.swaync.enable = true;
 
