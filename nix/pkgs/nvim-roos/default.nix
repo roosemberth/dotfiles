@@ -117,12 +117,13 @@
     start = [
       Improved-AnsiEsc
       arduino-syntax-file
-      plantuml-syntax
       mynix-tools
-      vim-nix
       nvim-lspconfig
       nvim-metals
+      plantuml-syntax
       plenary-nvim
+      vim-markdown  # Provides syntax highlighting inside code blocks :D
+      vim-nix
     ];
   };
 
