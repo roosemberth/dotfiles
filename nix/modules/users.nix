@@ -39,7 +39,9 @@ in {
 
     rConfig = mkOption {
       type = options.home-manager.users.type.functor.wrapped;
-      default = {};
+      default = {
+        home.stateVersion = "18.09";
+      };
       description = ''
         Home-manager configuration to be used in user-profiles with reduced
         configuration enabled.
