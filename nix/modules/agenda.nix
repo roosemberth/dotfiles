@@ -22,8 +22,7 @@ in {
         pass' = pass.withExtensions (p: with p; [ pass-otp ]);
       in [
         mailcap pass' w3m xdg_utils
-        timewarrior python3Packages.bugwarrior
-        gnome3.gnome-keyring gcr pkgs.libsecret
+        timewarrior gnome3.gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";
@@ -127,8 +126,6 @@ in {
       };
 
       # Should make a module someday...
-      xdg.configFile."bugwarrior/bugwarriorrc".text =
-        secrets.users.roosemberth.bugwarriorrc;
       xdg.dataFile."task/hooks/on-modify.timewarrior".source =
         util.fetchDotfile "etc/task/on-modify.timewarrior";
     };
