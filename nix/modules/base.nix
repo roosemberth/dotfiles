@@ -70,14 +70,14 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      cacert curl hdparm htop atop iotop powertop bpytop wget exfat nfs-utils
+      cacert curl hdparm htop atop iotop powertop btop wget exfat nfs-utils
       lsof fzf
     ];
 
     security.sudo.extraRules = let
       nopasswdcmds = [
         "atop"
-        "bpytop"
+        "btop"
         "htop"
         "lsof -nPi"
         "nixos-rebuild"
