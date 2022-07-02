@@ -71,7 +71,7 @@ in
 
     environment.systemPackages = with pkgs; [
       cacert curl hdparm htop atop iotop powertop btop wget exfat nfs-utils
-      lsof fzf
+      lsof fzf comma
     ];
 
     security.sudo.extraRules = let
