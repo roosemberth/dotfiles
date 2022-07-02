@@ -9,5 +9,6 @@
         extraProfile = "export SDL_VIDEODRIVER=x11";
       };
     };
+    services.joycond.enable = true;
   };
 }
