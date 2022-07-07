@@ -131,6 +131,10 @@ in {
         profile nomad {
           output eDP-1 enable scale 1.5
         }
+        profile bity {
+          output eDP-1 disable
+          output "Ancor Communications Inc ASUS PB287Q 0x0000CE31" enable scale 1.5
+        }
       '';
     in lib.mkIf hmCfg.sessions.sway.enable {
       Unit.Description = "Kanshi screen output profile daemon";
