@@ -8,7 +8,7 @@
     quokka-sops-nix.inputs.nixpkgs.follows = "quokka-nixpkgs";
 
     # Unstable
-    unstable-nixpkgs.url = "github:NixOS/nixpkgs";
+    unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     unstable-hm.url = "github:nix-community/home-manager";
     unstable-hm.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-deploy-rs.url = "github:serokell/deploy-rs";
