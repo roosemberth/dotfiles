@@ -5,9 +5,15 @@
 
   cfg = config.roos.container-host;
 
-  containerFwOpts = { name, ... }: with lib; {
+  containerFwOpts = { name, config, ... }: with lib; {
     options.allowInternet = mkOption {
       description = "Whether the container can connect to any internet address";
+      default = true;
+      type = types.bool;
+    };
+
+    options.allowLinkLocal = mkOption {
+      description = "Whether to allow IPv6 link-local with the container";
       default = true;
       type = types.bool;
     };
@@ -24,6 +30,20 @@
       type = with types; listOf str;
       example = literalExpression ''[
         "-p udp -m udp --dport 53 -j ACCEPT"
+      ];'';
+    };
+
+    options.ipv6.in-rules = mkOption {
+      description = ''
+        iptables rule specifications for traffic coming from the container into
+        the host on ipv6.
+
+        Filters packages with the container host as destination.
+      '';
+      default = [];
+      type = with types; listOf str;
+      example = literalExpression ''[
+        "-p udp -m udp --dport 5355 -j ACCEPT"
       ];'';
     };
 
@@ -55,6 +75,12 @@
       example = literalExpression ''[ "10.231.136.100" ];'';
       type = with types; nullOr (listOf str);
     };
+
+    config = mkIf config.allowLinkLocal {
+      ipv6.in-rules = [
+        "-d fe80::/10 -j ACCEPT"
+      ];
+    };
   };
 
   nameAndFwCfgToRules = name: fwCfg: with lib; let
@@ -83,6 +109,9 @@
     policies =
       optional fwCfg.allowInternet
         "ip46tables -A ${fwdChain} -o ${externalIface} -j ACCEPT"
+      # IPv6-only in rules
+      ++ forEach fwCfg.ipv6.in-rules
+        (r: "ip6tables -A ${inChain} ${r}")
       # IPv4-only forward rules
       ++ forEach fwCfg.ipv4.fwd-rules
         (r: "iptables -A ${fwdChain} ${r}")
