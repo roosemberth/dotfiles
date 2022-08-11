@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, ... }: let
+{ config, pkgs, lib, secrets, ... }: let
   removeCIDR = ip: builtins.head (builtins.split "/" ip);
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
@@ -15,6 +15,8 @@ in {
     config = {
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
+      systemd.services.systemd-networkd-wait-online = lib.mkForce {};
+
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       services.postgresql = {

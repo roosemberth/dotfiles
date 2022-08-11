@@ -5,8 +5,11 @@ in {
     autoStart = true;
     config.nixpkgs.overlays =
       [(_:_: { inherit (pkgs) prometheus-bind-exporter; })];
+
     config.networking.useHostResolvConf = false;
     config.networking.useNetworkd = true;
+    config.systemd.services.systemd-networkd-wait-online = lib.mkForce {};
+
     config.services.bind = {
       enable = true;
       cacheNetworks =
