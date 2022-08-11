@@ -90,20 +90,20 @@
   in {
     unload = [
     ] ++ forEach fwCfg.ipv4.addrs
-      (a: "iptables -w -D INPUT -s ${a}/32 -j ${inChain} 2>/dev/null || true")
+      (a: "iptables -D INPUT -s ${a}/32 -j ${inChain} 2>/dev/null || true")
     ++ [
-      "ip46tables -w -F ${inChain} 2> /dev/null || true"
-      "ip46tables -w -X ${inChain} 2> /dev/null || true"
+      "ip46tables -F ${inChain} 2> /dev/null || true"
+      "ip46tables -X ${inChain} 2> /dev/null || true"
     ] ++ forEach fwCfg.ipv4.addrs
-      (a: "iptables -w -D FORWARD -s ${a}/32 -j ${fwdChain} 2>/dev/null || true")
+      (a: "iptables -D FORWARD -s ${a}/32 -j ${fwdChain} 2>/dev/null || true")
      ++ [
-      "ip46tables -w -F ${fwdChain} 2> /dev/null || true"
-      "ip46tables -w -X ${fwdChain} 2> /dev/null || true"
+      "ip46tables -F ${fwdChain} 2> /dev/null || true"
+      "ip46tables -X ${fwdChain} 2> /dev/null || true"
     ];
 
     create = [
-      "ip46tables -w -N ${inChain}"
-      "ip46tables -w -N ${fwdChain}"
+      "ip46tables -N ${inChain}"
+      "ip46tables -N ${fwdChain}"
     ];
 
     policies =
@@ -128,9 +128,9 @@
     ];
 
     install = forEach fwCfg.ipv4.addrs
-      (a: "iptables -w -I INPUT -s ${a}/32 -j ${inChain}")
+      (a: "iptables -I INPUT -s ${a}/32 -j ${inChain}")
     ++ forEach fwCfg.ipv4.addrs
-      (a: "iptables -w -I FORWARD -s ${a}/32 -j ${fwdChain}")
+      (a: "iptables -I FORWARD -s ${a}/32 -j ${fwdChain}")
     ;
   };
 
