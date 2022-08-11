@@ -17,6 +17,7 @@ in {
       # The host network cannot handle the DNS traffic from Matrix...
       networking.nameservers = with secrets.network.zksDNS; v4;
       networking.useHostResolvConf = false;
+      networking.useNetworkd = true;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
 

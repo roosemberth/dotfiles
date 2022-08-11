@@ -42,12 +42,12 @@ in {
       networking.nameservers = config.roos.container-host.nameservers;
       networking.search = with secrets.network.zksDNS; [ search ];
       networking.useHostResolvConf = false;
+      networking.useNetworkd = true;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       nixpkgs.config.permittedInsecurePackages = [
         "prometheus-nextcloud-exporter-0.4.0" # CVE-2022-21698 does not affect me
       ];
-
       services.prometheus = {
         enable = true;
         exporters.smokeping = {

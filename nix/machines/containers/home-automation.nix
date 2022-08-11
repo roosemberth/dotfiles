@@ -13,6 +13,7 @@
       ];
       networking.nameservers = config.roos.container-host.nameservers;
       networking.useHostResolvConf = false;
+      networking.useNetworkd = true;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       services.home-assistant = {

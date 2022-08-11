@@ -13,6 +13,8 @@ in {
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
+      networking.useHostResolvConf = false;
+      networking.useNetworkd = true;
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       services.postgresql = {

@@ -5,6 +5,8 @@ in {
     autoStart = true;
     config.nixpkgs.overlays =
       [(_:_: { inherit (pkgs) prometheus-bind-exporter; })];
+    config.networking.useHostResolvConf = false;
+    config.networking.useNetworkd = true;
     config.services.bind = {
       enable = true;
       cacheNetworks =
