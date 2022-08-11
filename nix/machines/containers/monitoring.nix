@@ -40,7 +40,6 @@ in {
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
       networking.nameservers = config.roos.container-host.nameservers;
-      networking.search = with secrets.network.zksDNS; [ search ];
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
       nix.package = pkgs.nixUnstable;

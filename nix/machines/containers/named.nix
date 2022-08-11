@@ -40,7 +40,5 @@ in {
     config.system.stateVersion = "22.05";
     ephemeral = false; # TODO: isolate cache as a spool directory...
   };
-
-  networking.search = with secrets.network.zksDNS; [ search ];
   networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
 }
