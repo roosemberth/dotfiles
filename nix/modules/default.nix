@@ -38,5 +38,6 @@ in {
     ./layout-trees.nix
     ./wireguard.nix
     ./wireguard-new.nix
+    ./lib.nix
   ];
 }

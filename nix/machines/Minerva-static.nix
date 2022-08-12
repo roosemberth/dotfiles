@@ -90,40 +90,6 @@ in
   };
 
   services.udev.packages = with lib; let
-    exprOpts = defOp: { name, ... }: {
-      options.name = mkOption { type = types.str; default = name; };
-      options.value = mkOption { type = types.str; };
-      options.operator = mkOption {
-        type = types.enum [ "==" "!=" "=" "+=" "-=" ":=" ];
-        default = defOp;
-      };
-    };
-
-    ruleOpts = { config, ... }: {
-      options.match = mkOption {
-        description = "Attrset with expressions to match an event.";
-        default = {};
-        type = with types; let
-          asValue = (s: { value = s; });
-        in attrsOf (coercedTo str asValue (submodule (exprOpts "==")));
-      };
-      options.make = mkOption {
-        description = "Attrset with expressions to apply an action.";
-        default = {};
-        type = with types; let
-          asValue = s: { value = s; };
-        in attrsOf (coercedTo str asValue (submodule (exprOpts "=")));
-      };
-      options.ruleStr = mkOption {
-        default = concatMapStringsSep ", "
-          (v: "${v.name}${v.operator}\"${v.value}\"")
-          (attrValues config.match ++ attrValues config.make);
-      };
-    };
-
-    renderRule =
-      cfg: (evalModules { modules = [ ruleOpts cfg ]; }).config.ruleStr;
-
     devpathToBay = {
       "*.3.4" = "1";
       "*.3.3" = "2";
@@ -158,8 +124,8 @@ in
       destination = "/etc/udev/rules.d/140-match-nas-bays.rules";
       text = ''
         # Rules to rename QNAP drive bays
-        ${concatMapStringsSep "\n" renderRule usbSetEnvRules}
-        ${concatMapStringsSep "\n" renderRule renameBlocksRules}
+        ${concatMapStringsSep "\n" config.lib.udev.renderRule usbSetEnvRules}
+        ${concatMapStringsSep "\n" config.lib.udev.renderRule renameBlocksRules}
       '';
     });
 }
