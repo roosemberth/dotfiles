@@ -1,5 +1,4 @@
 { config, pkgs, lib, secrets, ... }: let
-  removeCIDR = ip: builtins.head (builtins.split "/" ip);
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.databases = {
@@ -13,8 +12,23 @@ in {
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
-      networking.firewall.extraCommands = ''
+      networking.firewall.extraCommands = let
+        # TODO: Make a new chain out of this and use udev to hook it up.
+        getIfaceCidrs = iface: ''
+          ${pkgs.iproute2}/bin/ip --json addr show dev ${iface} \
+            | ${pkgs.jq}/bin/jq -r \
+              '.[]|.addr_info[]|select(.family=="inet6")|"\(.local)/\(.prefixlen)"'
+        '';
+      in ''
+        # LLMNR
         ip6tables -I nixos-fw -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
+
+        # Open LAN access
+        for cidr in $(${getIfaceCidrs "eth0"}); do
+          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 3000 -j ACCEPT
+          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 39425 -j ACCEPT
+          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 5432 -j ACCEPT
+        done
       '';
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
@@ -25,12 +39,13 @@ in {
       services.postgresql = {
         enable = true;
         enableTCPIP = true;
-        authentication = ''
+
+        authentication = let
+          warn = msg: builtins.trace "[1;31mwarning: ${msg}[0m";
+        in warn "The database auth method is globally adressable and insecure." ''
           local all all               trust
-          # Site network
-          host  all all 10.13.0.1/16  md5
-          # ipv4 containers on this host
-          host  all all 10.231.0.0/16 md5
+          # Global IPv6, in the firewall we trust.
+          host  all all ::/0          md5
         '';
         settings.log_connections = true;
       };
@@ -41,11 +56,9 @@ in {
           http.bind-address = ":39425";
         };
       };
-      # This database is only available from minerva.
-      services.grafana = assert config.networking.hostName == "Minerva"; {
+      services.grafana = {
         enable = true;
-        addr = removeCIDR secrets.network.zkx.Minerva.host4;
-        domain = "minerva.int";
+        addr = "::/0";
         provision.enable = true;
         provision.datasources = secrets.zkx.minerva-grafana-sources;
       };
@@ -53,14 +66,7 @@ in {
       system.stateVersion = "22.05";
     };
     ephemeral = true;
-    forwardPorts = [
-      { hostPort = 3000; protocol = "tcp"; }
-      { hostPort = 39425; protocol = "tcp"; }
-      { hostPort = 5432; protocol = "tcp"; }
-    ];
   };
-
-  networking.firewall.allowedTCPPorts = [ 39425 ];
 
   systemd.services."container@databases".unitConfig.ConditionPathIsDirectory = [
     "/var/lib/postgresql"
