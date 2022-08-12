@@ -78,7 +78,7 @@
 
     config = mkIf config.allowLinkLocal {
       ipv6.in-rules = [
-        "-d fe80::/10 -j ACCEPT"
+        # "-d fe80::/64 -j ACCEPT"
       ];
     };
   };
