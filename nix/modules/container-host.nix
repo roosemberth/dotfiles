@@ -197,6 +197,10 @@ in {
       firewall.extraCommands = let
         rules = mapAttrs nameAndFwCfgToRules cfg.firewall;
       in optionalString (cfg.firewall != {}) ''
+        # Authorize LLMNR
+        ip6tables -I nixos-fw -i ${cfg.iface.name} \
+          -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
+
         # Disengage, flush are delete helper chains.
         ${concatStringsSep "\n" (concatMap (a: a.unload) (attrValues rules))}
 
