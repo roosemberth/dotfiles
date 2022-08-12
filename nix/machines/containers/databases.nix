@@ -66,6 +66,8 @@ in {
       system.stateVersion = "22.05";
     };
     ephemeral = true;
+    hostBridge = "orion";
+    privateNetwork = true;
   };
 
   systemd.services."container@databases".unitConfig.ConditionPathIsDirectory = [
