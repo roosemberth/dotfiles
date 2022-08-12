@@ -10,6 +10,9 @@ in {
     bindMounts."/run/secrets/services/nextcloud" = {};
     config = {
       networking.firewall.allowedTCPPorts = [ 80 ];
+      networking.firewall.extraCommands = ''
+        ip6tables -I nixos-fw -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
+      '';
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];

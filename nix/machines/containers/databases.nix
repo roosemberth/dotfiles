@@ -13,6 +13,9 @@ in {
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
+      networking.firewall.extraCommands = ''
+        ip6tables -I nixos-fw -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
+      '';
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
