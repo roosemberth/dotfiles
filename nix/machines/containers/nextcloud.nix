@@ -39,7 +39,7 @@ in {
         config.dbpassFile = fsec."services/nextcloud/dbpass".path;
         config.dbtype = "pgsql";
         config.dbport = "5432";
-        config.dbhost = "minerva.intranet.orbstheorem.ch";
+        config.dbhost = "databases";
         config.defaultPhoneRegion = "CH";
         config.overwriteProtocol = "https";
       };
