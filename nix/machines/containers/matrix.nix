@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }: let
+{ config, pkgs, lib, secrets, roosModules, ... }: let
   fsec = config.sops.secrets;
 in {
   containers.matrix = {
@@ -10,7 +10,8 @@ in {
     bindMounts."/run/secrets/services/matrix" = {};
     bindMounts."/run/secrets/services/matrix_appservice_discord" = {};
     config = {
-      networking.firewall.allowedTCPPorts = [ 8448 9092 ];
+      imports = roosModules;
+      networking.firewall.allowedTCPPorts = [ 8448 ];
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
@@ -34,6 +35,14 @@ in {
       };
       environment.etc = {
         inherit (config.environment.etc) "nix/system-evaluation-inputs/nixpkgs";
+      };
+
+      roos.firewall.networks.lan = {
+        ifaces.eth0 = {};
+        in6-rules = [
+          "-p udp -m udp --dport 5355 -j ACCEPT" # LLMNR
+          "-p tcp -m tcp --dport 9092 -j ACCEPT" # Synapse metrics
+        ];
       };
 
       services.matrix-synapse.enable = true;
@@ -120,24 +129,17 @@ in {
     localAddress = "10.231.136.4/24";
     hostBridge = "orion";
     privateNetwork = true;
-    forwardPorts = [
-      { hostPort = 8448; protocol = "tcp"; }
-      { hostPort = 9092; protocol = "tcp"; }
-    ];
+    forwardPorts = [{ hostPort = 8448; protocol = "tcp"; }];
   };
 
   roos.container-host.firewall.matrix = {
     in-rules = [
       # DNS
       "-p udp -m udp --dport 53 -j ACCEPT"
-      # Database
-      "-p tcp -m tcp --dport 5432 -j ACCEPT"
     ];
     ipv4.fwd-rules = [
       # Replies to the reverse proxy
       "-d 10.13.255.101/32 -m state --state RELATED,ESTABLISHED -j ACCEPT"
-      # Replies from metrics port
-      "-d 10.231.136.0/24 -m state --state RELATED,ESTABLISHED -p tcp --sport 9092 -j ACCEPT"
       # Use zkx DNS resolver
       "-d 10.13.0.0/16 -p udp -m udp --dport 53 -j ACCEPT"
     ];
