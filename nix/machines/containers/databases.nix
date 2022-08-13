@@ -13,30 +13,23 @@ in {
     bindMounts.grafana.isReadOnly = false;
     config = {
       imports = roosModules;
-      networking.firewall.extraCommands = let
-        # TODO: Make a new chain out of this and use udev to hook it up.
-        getIfaceCidrs = iface: ''
-          ${pkgs.iproute2}/bin/ip --json addr show dev ${iface} \
-            | ${pkgs.jq}/bin/jq -r \
-              '.[]|.addr_info[]|select(.family=="inet6")|"\(.local)/\(.prefixlen)"'
-        '';
-      in ''
-        # LLMNR
-        ip6tables -I nixos-fw -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
-
-        # Open LAN access
-        for cidr in $(${getIfaceCidrs "eth0"}); do
-          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 3000 -j ACCEPT
-          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 39425 -j ACCEPT
-          ip6tables -I nixos-fw -s $cidr -p tcp -m tcp --dport 5432 -j ACCEPT
-        done
-      '';
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
       nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
+
+      roos.firewall.networks.lan = {
+        ifaces.eth0 = {};
+        in6-rules = [
+          "-p udp -m udp --dport 5355 -j ACCEPT" # LLMNR
+          "-p tcp -m tcp --dport 3000 -j ACCEPT"
+          "-p tcp -m tcp --dport 39425 -j ACCEPT"
+          "-p tcp -m tcp --dport 5432 -j ACCEPT"
+        ];
+      };
+
       services.postgresql = {
         enable = true;
         enableTCPIP = true;
