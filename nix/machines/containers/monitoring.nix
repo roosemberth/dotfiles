@@ -81,7 +81,7 @@ in {
           # For some reason, the "official" synapse Grafana chart requires 15s?
           scrape_interval = "15s";
           static_configs = [{ targets = [
-            "minerva.intranet.orbstheorem.ch:9092"
+            "matrix:9092"
           ];}];
         } {
           job_name = "node";
@@ -92,7 +92,7 @@ in {
         } {
           job_name = "postgres";
           static_configs = [{ targets = [
-            "minerva.intranet.orbstheorem.ch:9187"
+            "databases:9187"
           ];}];
         } {
           job_name = "nextcloud";
