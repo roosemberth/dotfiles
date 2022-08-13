@@ -14,6 +14,7 @@ let
   # all modules and their definitions should do nothing if unused.
   standaloneModules = [
     ./lib.nix
+    ./firewall.nix
   ];
 in {
   _module.args = {
