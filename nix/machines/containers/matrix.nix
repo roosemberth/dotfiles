@@ -108,6 +108,16 @@ in {
             chmod 444 discord-registration.yaml
         ''));
       };
+      systemd.services.forward-v6-to-v4-for-metrics = {
+        description = "Listen in ipv6 and forward to synapse metrics over ipv4";
+        requiredBy = [ "matrix-synapse.service" ];
+        after = [ "matrix-synapse.service" ];
+        serviceConfig.ExecStart = ''
+          ${pkgs.socat}/bin/socat -v \
+            TCP6-LISTEN:9092,ipv6only,fork \
+            TCP-CONNECT:localhost:9092'';
+        serviceConfig.Type = "exec";
+      };
       services.matrix-appservice-discord = {
         enable = true;
         settings = {
