@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }: let
+{ config, pkgs, lib, secrets, roosModules, ... }: let
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.databases = {
@@ -12,6 +12,7 @@ in {
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
     config = {
+      imports = roosModules;
       networking.firewall.extraCommands = let
         # TODO: Make a new chain out of this and use udev to hook it up.
         getIfaceCidrs = iface: ''

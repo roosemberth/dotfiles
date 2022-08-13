@@ -10,9 +10,15 @@ let
       fi
     '';
   };
+  # FIXME: This should not be necessary, any system should be able to include
+  # all modules and their definitions should do nothing if unused.
+  standaloneModules = [
+    ./lib.nix
+  ];
 in {
   _module.args = {
     secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
+    roosModules = standaloneModules;
   };
 
   # FIXME: Find a way to make this great (dynamic) again.
@@ -38,6 +44,5 @@ in {
     ./layout-trees.nix
     ./wireguard.nix
     ./wireguard-new.nix
-    ./lib.nix
-  ];
+  ] ++ standaloneModules;
 }
