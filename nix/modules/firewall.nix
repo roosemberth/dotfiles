@@ -12,7 +12,7 @@
 
     options.trigger = mkOption {
       default = "fw-reconfigure-net-${net.name}@";
-      description = "Template systemd unit to be triggered upon udev updates.";
+      description = "Name of unit triggered upon changes in an interfaces.";
       internal = true;
       type = types.str;
     };
@@ -20,11 +20,6 @@
     options.ifaces = mkOption {
       description = "interfaces part of this network";
       type = types.attrsOf (types.submodule ({ name, ... }: {
-        options.udevRegistration = mkOption {
-          description = "Whether to add or remove iface upon udev updates.";
-          default = true;
-          type = types.bool;
-        };
         options.name = mkOption {
           default = name;
           internal = true;
@@ -37,7 +32,7 @@
         };
         options.trigger = mkOption {
           default = "${net.trigger}${name}.service";
-          description = "Systemd unit to be triggered upon udev updates.";
+          description = "Systemd unit to be triggered upon interface changes.";
           internal = true;
           type = types.str;
         };
@@ -70,23 +65,20 @@
         ] ++ forEach (attrValues cfg.ifaces)
           (i: "ip6tables -w -N ${i.inChain}")
         ;
-        unload = [
-          "ip6tables -w -F ${cfg.in6-chain} 2> /dev/null || true"
-          "ip6tables -w -X ${cfg.in6-chain} 2> /dev/null || true"
-        ] ++ forEach (attrValues cfg.ifaces)
+        unload = forEach (attrValues cfg.ifaces)
           (i: "ip6tables -w -D INPUT -i ${i.name} -j ${i.inChain} 2> /dev/null || true")
         ++ (flip concatMap) (attrValues cfg.ifaces) (i: [
           "ip6tables -w -F ${i.inChain} 2> /dev/null || true"
           "ip6tables -w -X ${i.inChain} 2> /dev/null || true"
-        ]);
+        ]) ++ [
+          "ip6tables -w -F ${cfg.in6-chain} 2> /dev/null || true"
+          "ip6tables -w -X ${cfg.in6-chain} 2> /dev/null || true"
+        ];
         policies = forEach cfg.in6-rules
           (r: "ip6tables -w -A ${cfg.in6-chain} ${r}")
         ++ forEach (attrValues cfg.ifaces)
           (i: "ip6tables -w -I INPUT -i ${i.name} -j ${i.inChain}")
         ;
-      };
-      ifaceRules = {
-        inChains = "in-dev-${dev}";
       };
     in ''
       # Disengage, flush are delete chains.
@@ -100,29 +92,9 @@
     '';
   };
 
-  realiseUdevPkg = _: cfg: with lib; let
-    udevIfaces = filter (i: i.udevRegistration) (attrValues cfg.ifaces);
-    ifaceHooks = forEach udevIfaces (i: {
-      match."ENV{INTERFACE}" = "${i.name}";
-      match."SUBSYSTEM" = "net";
-      make."RUN" = {
-        operator = "+=";
-        value = "${pkgs.systemd}/bin/systemd-cat ${pkgs.systemd}/bin/systemctl --no-block start ${i.trigger}";
-      };
-    });
-  in pkgs.writeTextFile {
-    name = "fw-net-${cfg.name}-udev-rules";
-    destination = "/etc/udev/rules.d/150-fw-net-${cfg.name}.rules";
-    text = ''
-      # Update firewall rules upon network events
-      ${concatMapStringsSep "\n" config.lib.udev.renderRule ifaceHooks}
-    '';
-  };
-
   realiseNetworkServices = _: cfg: with lib; {
     "${cfg.trigger}" = {
-      description = "Template systemd unit to be triggered upon udev updates.";
-      serviceConfig.ExecStartPre = "${pkgs.systemd}/bin/udevadm settle";
+      description = "Template unit triggered upon changed in an interface.";
       serviceConfig.ExecStart = "${mkProbeNetworkScript cfg} %i";
       serviceConfig.Type = "exec";
     };
@@ -160,14 +132,14 @@
          done)
   '';
 
-  watchIfaceScript = with lib; let
+  mkWatchIfaceScript = net: with lib; let
+    ifaceRegex = concatStringsSep "|" (attrNames net.ifaces);
   in pkgs.writeShellScript "watch-iface-addr-changes" ''
     exec ${pkgs.iproute2}/bin/ip monitor addr \
       | ${pkgs.gawk}/bin/awk -F':' '$2!=""{print $2; fflush()}' \
-      | ${pkgs.gawk}/bin/awk '{print $1; fflush()}' \
-      | ${pkgs.findutils}/bin/xargs -Iiface udevadm trigger \
-          --subsystem-match=net \
-          --action=change /sys/class/net/iface
+      | ${pkgs.gawk}/bin/awk '$1~"${ifaceRegex}"{print $1; fflush()}' \
+      | ${pkgs.findutils}/bin/xargs -Iiface ${pkgs.systemd}/bin/systemd-cat \
+          ${pkgs.systemd}/bin/systemctl --no-block start ${net.trigger}iface
   '';
 
   allIfaces = with lib;
@@ -183,23 +155,26 @@ in {
 
   config = {
     networking = lib.mkMerge (lib.mapAttrsToList realiseNetwork cfg.networks);
-    services.udev.packages = lib.mapAttrsToList realiseUdevPkg cfg.networks;
     systemd.services = lib.mkMerge ([{
-      "monitor-iface-addr-change@" = {
-        description = "Watch for address changes on the specified interface";
-        serviceConfig.ExecStart = "${watchIfaceScript} %i";
-        serviceConfig.Type = "exec";
-      };
-      "firewall" = {
-        wants = lib.forEach allIfaces
-          (i: "monitor-iface-addr-change@${i}.service");
+      "firewall" = with lib; {
         serviceConfig.ExecStartPost =
-          pkgs.writeShellScript "trigger-udev-in-all-ifaces" ''
-            for if in /sys/class/net/*; do
-              udevadm trigger --subsystem-match=net --action=change $if
-            done
+          pkgs.writeShellScript "trigger-fw-update-in-all-networks" ''
+            # Triger an updates on every interface on every network
+            ${concatMapStringsSep "\n" (i: ''
+              ${pkgs.systemd}/bin/systemd-cat \
+                ${pkgs.systemd}/bin/systemctl --no-block start ${i.trigger}
+            '') (concatMap (n: attrValues n.ifaces) (attrValues cfg.networks))}
           '';
       };
-    }] ++ lib.mapAttrsToList realiseNetworkServices cfg.networks);
+    }] ++ lib.mapAttrsToList realiseNetworkServices cfg.networks
+    ++ lib.mapAttrsToList (_: v: {
+      "monitor-net-${v.name}-ifaces" = {
+        description = "Monitor addr changes on interfaces on network ${v.name}";
+        before = [ "firewall.service" ];
+        wantedBy = [ "firewall.service" ];
+        serviceConfig.ExecStart = "${mkWatchIfaceScript v} %i";
+        serviceConfig.Type = "exec";
+      };
+    }) cfg.networks);
   };
 }
