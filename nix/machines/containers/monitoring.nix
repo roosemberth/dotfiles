@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }: let
+{ config, pkgs, lib, secrets, roosModules, ... }: let
   fsec = config.sops.secrets;
   send-monitoring-sms-alert = with secrets.monitoring.alert-routes.twilio;
     pkgs.writeShellScript "send-monitoring-sms-alert" ''
@@ -35,6 +35,7 @@ in {
     bindMounts.monitoring-prometheus.isReadOnly = false;
     bindMounts."/run/secrets/services/monitoring" = {};
     config = {
+      imports = roosModules;
       networking.firewall.allowedTCPPorts = [ 9090 9093 ];
       networking.firewall.extraCommands = ''
         ip6tables -I nixos-fw -s fe80::/64 -p udp -m udp --dport 5355 -j ACCEPT
@@ -53,6 +54,14 @@ in {
       nixpkgs.config.permittedInsecurePackages = [
         "prometheus-nextcloud-exporter-0.4.0" # CVE-2022-21698 does not affect me
       ];
+
+      roos.firewall.networks.lan = {
+        ifaces.eth0 = {};
+        in6-rules = [
+          "-p udp -m udp --dport 5355 -j ACCEPT" # LLMNR
+        ];
+      };
+
       services.prometheus = {
         enable = true;
         exporters.smokeping = {
