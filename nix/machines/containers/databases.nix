@@ -52,7 +52,7 @@ in {
       };
       services.grafana = {
         enable = true;
-        addr = "::/0";
+        addr = "::";
         provision.enable = true;
         provision.datasources = secrets.zkx.minerva-grafana-sources;
       };
