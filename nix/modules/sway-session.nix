@@ -28,7 +28,6 @@
     '';
 
     xdg.portal.enable = true;
-    xdg.portal.gtkUsePortal = true;
 
     services.pipewire.enable = true;
     services.greetd.enable = true;
