@@ -25,13 +25,12 @@ in {
           inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
         };
       '';
-      forwarders = [  # OpenNIC Servers (dns.opennic.glue)
-        "2a03:4000:28:365::1"                   # ns32.de     Wiesbaden
-        "2a00:f826:8:2::195"                    # ns31.de     Frankfurt
-        "2a01:4f9:4b:39ea::301"                 # ns4.fi      Helsinki
-        "2a03:f80:30:192:71:166:92:1"           # ns1.esy.gr  Thessaloniki
-        "2a0d:2146:2404::1069"                  # ns1.nl      Eygelshoven
-        "2001:470:71:6dc::53"                   # ns4.pl      Ozarow Mazowiecki
+      forwarders = [  # Should use OpenNIC Servers (dns.opennic.glue)
+        # Use init7 at the moment...
+        "2001:1620:2777:1::10"
+        "2001:1620:2777:2::20"
+        "77.109.128.2"
+        "213.144.129.20"
       ];
       listenOn = map removeCIDR [ secrets.network.zkx.Minerva.host4 ];
       listenOnIpv6 = map removeCIDR [ secrets.network.zkx.Minerva.host6 ];
