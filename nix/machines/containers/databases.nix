@@ -25,6 +25,7 @@ in {
         in6-rules = [
           "-p udp -m udp --dport 5355 -j ACCEPT" # LLMNR
           "-p tcp -m tcp --dport 3000 -j ACCEPT"
+          "-p tcp -m tcp --dport 9187 -j ACCEPT"
           "-p tcp -m tcp --dport 39425 -j ACCEPT"
           "-p tcp -m tcp --dport 5432 -j ACCEPT"
         ];
