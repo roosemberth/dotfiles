@@ -60,6 +60,8 @@
         _module.args.home-manager = quokka.hm.nixosModules.home-manager;
         imports = [ ./nix/machines/tests/batman.nix ];
       };
+      strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
+        quokka ./nix/machines/strong-ghost.nix;
     };
 
     apps = with lib; (forAllSystems unstable (pkgs: let
