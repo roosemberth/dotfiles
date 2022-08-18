@@ -22,3 +22,7 @@ creation_rules:
       - *mimir_age
       pgp:
       - *roos_pgp
+  - path_regex: secrets/tf\.yaml$
+    key_groups:
+    - pgp:
+      - *roos_pgp
