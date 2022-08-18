@@ -64,6 +64,9 @@ resource "aws_instance" "strong_ghost" {
   security_groups = [aws_security_group.ssh_and_egress.name]
   key_name        = "deploy-strong-ghost"
 
+  # When the VM shuts down the instance is terminated.
+  instance_initiated_shutdown_behavior = "terminate"
+
   root_block_device {
     volume_size           = 30 # GiB
     delete_on_termination = true
