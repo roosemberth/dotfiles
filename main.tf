@@ -21,7 +21,10 @@ module "nixos_image" {
   target_system   = "aarch64-linux"
   target_host     = aws_instance.strong_ghost.public_ip
   build_on_target = true
-  ssh_private_key = data.sops_file.tf.data["ssh-keys.deploy-strong-ghost"]
+  # Wrapped in nonsensitive because I want to see logs...
+  ssh_private_key = nonsensitive(data.sops_file.tf.data["ssh-keys.deploy-strong-ghost"])
+  # Need to force-disable because 'nonsensitive' breaks the default value...
+  ssh_agent = false
 
   nixos_config = "strong-ghost"
   flake        = true
