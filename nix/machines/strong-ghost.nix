@@ -24,8 +24,11 @@ in {
     openssh.enable = true;
     openssh.gatewayPorts = "yes";
     openssh.extraConfig = "PermitTunnel yes";
+    # Provisioned by terraform
+    openssh.hostKeys = [{ path = "/var/keys/ssh_host"; type = "ed25519"; }];
     netdata.enable = true;
   };
+  system.activationScripts.fix-ssh-key-perm = "chmod 600 /var/keys/ssh_host";
   system.stateVersion = "22.05";
 
   users = {
