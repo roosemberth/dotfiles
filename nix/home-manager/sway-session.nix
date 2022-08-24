@@ -44,6 +44,7 @@ in {
   config = mkIf config.sessions.sway.enable {
     gtk.enable = true;
     gtk.gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk.gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
 
     qt.enable = true;
     qt.platformTheme = "gnome";
