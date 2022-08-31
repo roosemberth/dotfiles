@@ -8,6 +8,7 @@
     };
 
     roos.gConfig.config = {
+      home.packages = with pkgs; [ gammastep ];
       sessions.sway.enable = true;
       # Allocate sway-session target so other automation can depend on it.
       systemd.user.targets."sway-session" = {
