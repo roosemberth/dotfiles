@@ -5,7 +5,6 @@ in {
 
   config = mkIf config.roos.dev.enable {
     roos.sConfig = {
-      services.lorri.enable = true;
       home.packages = with pkgs; [
         # Other
         httpie
