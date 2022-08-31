@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }: with lib; let
+{ config, pkgs, lib, secrets, ... }: with lib; let
   util = import ./util.nix { inherit config pkgs lib; };
 in {
   options.roos.dev.enable = mkEnableOption "Install language development packages";
@@ -6,6 +6,7 @@ in {
   config = mkIf config.roos.dev.enable {
     roos.sConfig = {
       home.packages = with pkgs; [
+        awscli2
         # Other
         httpie
         wdiff
@@ -20,6 +21,16 @@ in {
 
       xdg.configFile."stylish-haskell/config.yaml".source =
         util.fetchDotfile "etc/stylish-haskell.yaml";
+
+        home.file.".aws/credentials".text = let
+          awsSecret = s: secrets.users.roosemberth.volatile."aws/mimir/${s}";
+        in generators.toINI {} {
+          default.aws_access_key_id = awsSecret "access_key_id";
+          default.aws_secret_access_key = awsSecret "secret_access_key";
+        };
+        home.file.".aws/config".text = generators.toINI {} {
+          default.region = "eu-west-3";
+        };
     };
 
     services.udev.extraRules = ''
