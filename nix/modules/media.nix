@@ -58,7 +58,7 @@ in
     };
 
     roos.gConfig = {
-      home.packages = with pkgs; [ youtube-dl ffmpeg-full ];
+      home.packages = with pkgs; [ youtube-dl ffmpeg-full spotify ];
       programs.mpv = {
         enable = true;
         config = {
