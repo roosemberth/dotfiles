@@ -16,7 +16,6 @@
     unstable-sops-nix.url = "github:Mic92/sops-nix";
     unstable-sops-nix.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-nur.url = "github:nix-community/NUR";
-    unstable-nur.inputs.nixpkgs.follows = "unstable-nixpkgs";
 
     # Agnostic
     flake-utils.url = "github:numtide/flake-utils";
