@@ -40,15 +40,8 @@ local on_generic_lsp_attach = function(client, bufnr)
   vim.keymap.set('n', '<leader>f', vim.lsp.buf.formatting, bufopts)
 end
 
-lspconfig.rls.setup {
+lspconfig.rust_analyzer.setup {
   on_attach = on_generic_lsp_attach,
-  settings = {
-    rust = {
-      unstable_features = true,
-      build_on_save = false,
-      all_features = true,
-    },
-  },
 }
 
 lspconfig.hls.setup {
