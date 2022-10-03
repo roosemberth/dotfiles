@@ -6,7 +6,7 @@ let
     ++ optionals config.roos.media.enable
       ["libspotify" "pyspotify" "spotify" "spotify-unwrapped"]
     ++ optionals config.roos.steam.enable ["steam-original" "steam" "steam-runtime"]
-    ++ ["ninja-cookie" "mpv-youtube-quality"]
+    ++ ["ninja-cookie" "mpv-youtube-quality" "slack" ]
     ;
 in {
   config.nixpkgs.config.allowUnfreePredicate =

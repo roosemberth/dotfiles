@@ -120,6 +120,7 @@ in
         networkmanagerapplet
         pandoc
         screen-message
+        slack
         socat
         tdesktop
         tree
