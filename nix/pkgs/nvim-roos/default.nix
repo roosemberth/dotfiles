@@ -117,6 +117,7 @@
     start = [
       Improved-AnsiEsc
       arduino-syntax-file
+      fidget-nvim
       mynix-tools
       nvim-dap
       nvim-lspconfig

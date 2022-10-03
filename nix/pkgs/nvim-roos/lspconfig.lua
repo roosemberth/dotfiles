@@ -99,3 +99,10 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   group = nvim_metals_group,
 })
+
+-- LSP Status and progress
+require("fidget").setup {
+  text = {
+    spinner = "dots"
+  }
+}
