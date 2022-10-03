@@ -118,10 +118,12 @@
       Improved-AnsiEsc
       arduino-syntax-file
       mynix-tools
+      nvim-dap
       nvim-lspconfig
       nvim-metals
       plantuml-syntax
       plenary-nvim
+      rust-tools-nvim
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
     ];
