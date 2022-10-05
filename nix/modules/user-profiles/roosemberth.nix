@@ -70,7 +70,7 @@ in
 
     roos.sConfigFn = userCfg: {
       home.packages = (with pkgs; [
-        bluezFull
+        bluez
         git-crypt
         git-annex
         git-open
@@ -107,10 +107,10 @@ in
         epiphany
         fortune
         glances
-        gnome3.adwaita-icon-theme
-        gnome3.eog
-        gnome3.nautilus
-        gnome3.pomodoro
+        gnome.adwaita-icon-theme
+        gnome.eog
+        gnome.nautilus
+        gnome.pomodoro
         gtk3  # gtk-launch
         khal
         links2

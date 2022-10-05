@@ -15,7 +15,7 @@ in
         ".zshenv".text = "";  # empty file to silence zsh-newuser-install.
         # Systemd does not honot $XDG_CONFIG_HOME
         ".config/systemd".source =
-          (pkgs.runCommandNoCCLocal "systemd-user-config-link" {} ''
+          (pkgs.runCommandLocal "systemd-user-config-link" {} ''
             ln -s "${builtins.toString userCfg.xdg.configHome}/systemd" "$out"
           '');
       };
@@ -51,7 +51,7 @@ in
 
     roos.sConfig = {
       home.packages = with pkgs; [
-        posix_man_pages man-pages
+        man-pages-posix man-pages
         python3 python3Packages.ipython glances
       ];
       programs.vim-roos.enable = true;

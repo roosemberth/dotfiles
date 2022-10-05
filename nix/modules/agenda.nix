@@ -21,8 +21,8 @@ in {
       home.packages = with pkgs; let
         pass' = pass.withExtensions (p: with p; [ pass-otp ]);
       in [
-        mailcap pass' w3m xdg_utils
-        timewarrior gnome3.gnome-keyring gcr pkgs.libsecret
+        mailcap pass' w3m xdg-utils
+        timewarrior gnome.gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";

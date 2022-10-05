@@ -58,7 +58,7 @@ in {
 
   hardware = {
     bluetooth.enable = true;
-    bluetooth.package = pkgs.bluezFull;
+    bluetooth.package = pkgs.bluez;
 
     cpu.intel.updateMicrocode = true;
 
