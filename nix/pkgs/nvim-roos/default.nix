@@ -62,10 +62,10 @@
     start = [
       # Visuals
       Mark
+      gruvbox-nvim
       traces-vim
       vim-airline
       vim-css-color
-      vim-gruvbox8
       vim-highlightedyank
       # Integrations
       ack-vim

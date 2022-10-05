@@ -2,7 +2,7 @@
 " Released under CC BY-NC-SA License: https://creativecommons.org/licenses/
 
 " Vim options that require plugins from the 'essentials' package go here.
-colorscheme gruvbox8
+colorscheme gruvbox
 set background=dark
 
 " -----------------------------------------------------------------------------
