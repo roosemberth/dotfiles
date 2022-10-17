@@ -124,6 +124,7 @@
       nvim-metals
       plantuml-syntax
       plenary-nvim
+      pgsql-vim
       rust-tools-nvim
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
