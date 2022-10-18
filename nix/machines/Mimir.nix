@@ -36,9 +36,9 @@ in {
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelModules = [ "kvm-intel" ];
-  boot.kernelPackages =  # Override kernel to 5.15 until it becomes stable.
-    assert pkgs.lib.versionOlder "5.15" pkgs.linuxPackages.kernel.version;
-      pkgs.linuxPackages;
+  boot.kernelPackages =  # Override kernel to latest until a new LTS comes over.
+    assert pkgs.lib.versionOlder pkgs.linuxPackages.kernel.version "5.16";
+      pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [
     "aarch64-linux"
   ];
