@@ -71,6 +71,10 @@ lspconfig.pylsp.setup {
   on_attach = on_generic_lsp_attach,
 }
 
+lspconfig.clangd.setup {
+  on_attach = on_generic_lsp_attach,
+}
+
 local metals_config = require("metals").bare_config()
 metals_config = {
   settings = {
