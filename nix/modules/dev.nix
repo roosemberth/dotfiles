@@ -51,6 +51,14 @@ in {
       ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
       # ESP8266/ESP32
       ACTION=="add",SUBSYSTEM=="usb",ATTR{idProduct}=="7523",ATTR{idVendor}=="1a86",MODE="0666"
+
+      # Librem5
+      SUBSYSTEM!="usb", GOTO="librem5_devkit_rules_end"
+      ATTR{idVendor}=="1fc9", ATTR{idProduct}=="012b", GROUP+="plugdev", TAG+="uaccess"
+      ATTR{idVendor}=="0525", ATTR{idProduct}=="a4a5", GROUP+="plugdev", TAG+="uaccess"
+      ATTR{idVendor}=="0525", ATTR{idProduct}=="b4a4", GROUP+="plugdev", TAG+="uaccess"
+      ATTR{idVendor}=="316d", ATTR{idProduct}=="4c05", GROUP+="plugdev", TAG+="uaccess"
+      LABEL="librem5_devkit_rules_end"
     '';
   };
 }
