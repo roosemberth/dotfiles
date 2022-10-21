@@ -29,17 +29,6 @@
     };
     meta.homepage = "https://github.com/ferrine/md-img-paste.vim";
   };
-  deorise-nvim = vimUtils.buildVimPluginFrom2Nix {
-    pname = "deorise.nvim";
-    version = "2021-01-25";
-    src = fetchFromGitHub {
-      owner = "Shougo";
-      repo = "deorise.nvim";
-      rev = "0d2f2f42ed02acebb3cf88f22ea81ce05804517d";
-      hash = "sha256-lbIkJqPd7go83JIcj7fR4WyPRlO86N/1mbFi2x+jdDI=";
-    };
-    meta.homepage = "https://github.com/Shougo/deorise.nvim";
-  };
   arduino-syntax-file = vimUtils.buildVimPluginFrom2Nix {
     pname = "arduino-syntax-file";
     version = "2015-05-20";
@@ -81,35 +70,6 @@
       quickfix-reflector-vim
       vim-easy-align
       vim-surround
-    ];
-  };
-
-  languageSupportPlugins = with vimPlugins; {
-    start = [
-      Improved-AnsiEsc
-      ale
-      arduino-syntax-file
-      dart-vim-plugin
-      deorise-nvim
-      plantuml-syntax
-      vim-clang-format
-      vim-markdown
-      vim-nix
-      vimtex
-      mynix-tools
-    # Ideally, I would like to load coc & friends on-demand...
-    #];
-    #opt = [
-      coc-clangd
-      coc-clangd
-      coc-java
-      coc-json
-      coc-markdownlint
-      coc-nvim
-      coc-pyright
-      coc-spell-checker
-      coc-tsserver
-      coc-eslint
     ];
   };
 
@@ -160,27 +120,6 @@ in {
         ./essentials.vim
       ] + mkPlugSection "";
       packages.essentials = essentialPlugins;
-    };
-  };
-
-  full-coc-lsp = neovim.override {
-    vimAlias = true;
-    extraPython3Packages = p: with p; [ tasklib ];
-    configure = {
-      customRC = composeConfig [
-        ./core.vim
-        ./essentials.vim
-        ./languageSupport.vim
-      ] + mkPlugSection ''
-        Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
-        try " Do not load taskwiki if tasklib module is not installed.
-        py3 import tasklib
-        Plug '${vimPlugins.taskwiki.rtp}', { 'on': 'VimwikiIndex' }
-        catch
-        endtry
-      '';
-      packages.essentials = essentialPlugins;
-      packages.languageSupport = languageSupportPlugins;
     };
   };
 
