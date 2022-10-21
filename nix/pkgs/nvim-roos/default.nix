@@ -125,7 +125,7 @@ in {
 
   full-native-lsp = neovim.override {
     vimAlias = true;
-    extraPython3Packages = p: with p; [ tasklib ];
+    extraPython3Packages = p: with p; [ tasklib packaging ];
     configure = {
       customRC = composeConfig [
         ./core.vim
