@@ -287,4 +287,25 @@ in {
       '')
     ];
   });
+
+  patterns = with final; stdenv.mkDerivation rec {
+    name = "patterns";
+    version = "0.0.0-221023";
+    src = pkgs.fetchFromGitLab {
+      owner = "exalm";
+      domain = "gitlab.gnome.org";
+      repo = "patterns";
+      rev = "483c87b97c1cdfd3c6135e06e18445b63dc3c9ab";
+      hash = "sha256-wHFm0ZAPFB6zRB9vkrqwebP1umpy3EPk4S7aJl2WCig=";
+    };
+    patchPhase = "sed '/add_install_script/d' -i meson.build";
+    buildInputs = [ gtk4 libadwaita ];
+    nativeBuildInputs = [ meson ninja pkgconfig wrapGAppsHook ];
+    meta = with lib; {
+      description = "GNOME platform demo";
+      homepage = "https://gitlab.gnome.org/exalm/patterns/";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.linux;
+    };
+  };
 }
