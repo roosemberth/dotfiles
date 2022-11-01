@@ -46,7 +46,7 @@
   };
   acmeConfig = { secrets, ... }: {
     security.acme.acceptTerms = true;
-    security.acme.email = secrets.network.acme.email;
+    security.acme.defaults.email = secrets.network.acme.email;
     security.acme.certs."orbstheorem.ch" = {
       extraDomainNames = ["*.orbstheorem.ch" "*.mimir.orbstheorem.ch"];
       group = "certs-orbstheore";
