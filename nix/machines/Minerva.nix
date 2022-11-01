@@ -212,7 +212,7 @@ in {
   # wait-online is very annoying and in most cases useless with my config.
   systemd.network.wait-online.anyInterface = true;
 
-  system.stateVersion = "20.09";
+  system.stateVersion = "22.05";
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;
 
