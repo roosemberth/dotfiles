@@ -1,0 +1,3 @@
+[submodule "software"]
+	path = software
+	url = git@gitlab.com:roosemberth/software.git

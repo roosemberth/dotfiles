@@ -70,7 +70,7 @@
       vmApps = mapAttrs toApp (filterAttrs isVm self.packages."${pkgs.system}");
     in vmApps));
 
-    overlay = import ./nix/pkgs/overlay.nix;
+    overlay = import ./software/overlay.nix;
 
     packages = (forAllSystems unstable (pkgs: flake-utils.lib.flattenTree {
       vms = pkgs.lib.recurseIntoAttrs (import ./nix/machines/vms.nix {
