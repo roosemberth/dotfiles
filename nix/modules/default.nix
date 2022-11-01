@@ -34,7 +34,6 @@ in {
     ./btrbk.nix
     ./container-host.nix
     ./dev.nix
-    ./keyring.nix
     ./media.nix
     ./nginx-fileshare.nix
     ./steam.nix
