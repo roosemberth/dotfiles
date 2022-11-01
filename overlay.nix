@@ -1,9 +1,6 @@
 final: prev: let
   nvim = final.callPackage ./nvim-roos {};
-  xtrx = final.callPackage ./xtrx-sdr {};
 in {
-  inherit (xtrx) libxtrx libxtrxll libxtrxdsp liblms7002m;
-
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
 
@@ -93,36 +90,6 @@ in {
         cp "$_src" "$out/$(basename "$(stripHash "$_src")")"
       done
     '';
-  };
-
-  soapysdr-with-plugins = prev.soapysdr-with-plugins.override {
-    extraPackages = with final; [
-      limesuite
-      soapyairspy
-      soapyaudio
-      soapybladerf
-      soapyhackrf
-      soapyremote
-      soapyrtlsdr
-      soapyuhd
-      xtrx.libxtrx
-    ];
-  };
-
-  gnuradio-with-soapy = with final; let
-    soapy = soapysdr-with-plugins;
-    extraSoapyPkgs = [ xtrx.libxtrx ];
-    modulesVersion = v: with final.lib;
-      versions.major v + "." + versions.minor v;
-    soapyModulesPath = "lib/SoapySDR/modules" + (modulesVersion soapy.version);
-    soapyPkgsSearchPath = lib.makeSearchPath soapyModulesPath extraSoapyPkgs;
-  in gnuradio.override {
-    extraMakeWrapperArgs = [
-      "--prefix" "SOAPY_SDR_PLUGIN_PATH" ":" "${soapyPkgsSearchPath}"
-    ];
-    extraPythonPackages = with gnuradio.unwrapped.python.pkgs; [
-      soapysdr
-    ];
   };
 
   youtube-dl = final.yt-dlp.override { withAlias = true; };
