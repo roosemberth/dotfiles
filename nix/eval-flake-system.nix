@@ -35,16 +35,24 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
     })
 
     # Fix flake registry inputs of the target derivation
-    ({ lib, ... }: {
+    ({ config, options, pkgs, lib, ... }: {
       nixpkgs.overlays = lib.optional (self ? overlay) self.overlay;
       # Let 'nixos-version --json' know the Git revision of this flake.
       system.configurationRevision = lib.mkIf (self ? rev) self.rev;
 
       # Propagate all flake inputs into the registry.
-      nix.registry = lib.mapAttrs (_: flake: { inherit flake; }) (inputs // {
+      nix.registry = (lib.mapAttrs (_: flake: { inherit flake; }) (inputs // {
         # Alias nixpkgs to 'p'.
         p = inputs.nixpkgs;
-      });
+      })) // {
+        tip.to = {
+          owner = "NixOS";
+          repo = "nixpkgs";
+          type = "github";
+        };
+      };
+      nix.settings.flake-registry =
+        lib.mkDefault (inputs.flake-registry + "/flake-registry.json");
 
       environment.etc = nixpkgs.lib.mapAttrs' (name: flake: {
         name = "nix/system-evaluation-inputs/${name}";

@@ -19,18 +19,20 @@
 
     # Agnostic
     flake-utils.url = "github:numtide/flake-utils";
+    flake-registry.url = "github:NixOS/flake-registry";
+    flake-registry.flake = false;
   };
 
   outputs = inputs@{ self, flake-utils, ... }: let
     # Distributions
     quokka = with inputs; {
-      inherit (inputs) self flake-utils;
+      inherit (inputs) self flake-utils flake-registry;
       nixpkgs = quokka-nixpkgs;
       hm = quokka-hm;
       sops-nix = quokka-sops-nix;
     };
     unstable = with inputs; {
-      inherit (inputs) self flake-utils;
+      inherit (inputs) self flake-utils flake-registry;
       nixpkgs = unstable-nixpkgs;
       hm = unstable-hm;
       deploy-rs = unstable-deploy-rs;
