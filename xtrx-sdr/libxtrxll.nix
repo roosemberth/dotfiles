@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   outputs = [ "out" "dev" ];
 
   dontStrip = true;
-  cmakeFlags = "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE=Debug";
+  cmakeFlags = [ "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON" "-DCMAKE_BUILD_TYPE=Debug" ];
   CFLAGS = " -ggdb -Og -O0";
   CXXFLAGS = " -ggdb -Og -O0";
 

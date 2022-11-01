@@ -19,7 +19,7 @@ let
     nativeBuildInputs = with pkgs; [ qmake pkgconfig wrapQtAppsHook ];
     outputs = [ "out" "dev" ];
 
-    cmakeFlags = "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON";
+    cmakeFlags = [ "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON" ];
 
     src = fetchurl {
       url = "https://www.qcustomplot.com/release/2.0.1/QCustomPlot-source.tar.gz";
