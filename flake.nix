@@ -78,11 +78,6 @@
         self.nixosConfigurations;
     in nixosConfigPackages // overlayPackages);
 
-    templates.generic.path = ./nix/flake-templates/generic;
-    templates.generic.description = "Generic template for my projects.";
-
-    defaultTemplate = self.templates.generic;
-
     devShells = forAllSystems quokka
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
 
