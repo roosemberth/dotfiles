@@ -45,41 +45,38 @@
     mkSystem = dist: cfg:
       import ./nix/eval-flake-system.nix "x86_64-linux" dist cfg;
 
+    vms = import ./nix/machines/vms.nix "x86_64-linux" unstable;
+
     forAllSystems = { self, nixpkgs, flake-utils, ... }: fn:
       lib.genAttrs flake-utils.lib.defaultSystems
         (s: fn (import nixpkgs { system = s; overlays = [ self.overlay ]; }));
   in {
-    nixosConfigurations = {
+    nixosConfigurations = vms // {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Mimir-vm = mkSystem quokka ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
       Minerva = mkSystem quokka ./nix/machines/Minerva.nix;
       Heimdaalr = mkSystem quokka ./nix/machines/Heimdaalr.nix;
-      batman = mkSystem quokka {
-        _module.args.nixosSystem = quokka.nixpkgs.lib.nixosSystem;
-        _module.args.home-manager = quokka.hm.nixosModules.home-manager;
-        imports = [ ./nix/machines/tests/batman.nix ];
-      };
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         quokka ./nix/machines/strong-ghost.nix;
     };
 
-    apps = with lib; (forAllSystems unstable (pkgs: let
-      toApp = name: drv: let host = removePrefix "vms/" name; in
-        { type = "app"; program = "${drv}/bin/run-${host}-vm"; };
-      isVm = name: _: hasPrefix "vms/" name;
-      vmApps = mapAttrs toApp (filterAttrs isVm self.packages."${pkgs.system}");
-    in vmApps));
+    apps = with lib; forAllSystems unstable (pkgs: with lib; let
+      toApp = name: drv:
+        { type = "app"; program = "${drv}/bin/run-${name}-vm"; };
+      nixosConfigApps = mapAttrs
+        (name: _: toApp name self.packages."${pkgs.system}"."${name}")
+        self.nixosConfigurations;
+    in nixosConfigApps);
 
     overlay = import ./software/overlay.nix;
 
-    packages = (forAllSystems unstable (pkgs: flake-utils.lib.flattenTree {
-      vms = pkgs.lib.recurseIntoAttrs (import ./nix/machines/vms.nix {
-        inherit pkgs;
-        dist = unstable;
-      });
-    } // (with lib; getAttrs (attrNames (self.overlay {} {})) pkgs)));
+    packages = forAllSystems unstable (pkgs: with lib; let
+      overlayPackages = getAttrs (attrNames (self.overlay {} {})) pkgs;
+      nixosConfigPackages = mapAttrs (_: c: c.config.system.build.vm)
+        self.nixosConfigurations;
+    in nixosConfigPackages // overlayPackages);
 
     templates.generic.path = ./nix/flake-templates/generic;
     templates.generic.description = "Generic template for my projects.";
