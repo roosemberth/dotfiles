@@ -7,23 +7,12 @@ set background=dark
 
 " -----------------------------------------------------------------------------
 " Plugin configuration {{{
-if executable('ag') " Use ag instead of ack if possible
-  let g:ackprg = 'ag --vimgrep'
-endif
-
 let g:tex_flavor = 'latex'
 
 let g:vimwiki_list = [{'path': '~/Documents/0-Runtime/wiki/'}]
 let g:vimwiki_key_mappings = { 'all_maps': 0, 'html': 1, 'mouse': 1 }
 
 let g:airline#extensions#tabline#enabled = 1
-
-function! s:fzf_dirmark()
-  call fzf#run(fzf#wrap(
-    \ { 'source':'cat ~/.local/var/lib/vim-dirmarks.txt'
-    \ , 'sink': "Files"
-    \ }))
-endfunction
 " }}}
 
 " -----------------------------------------------------------------------------
@@ -31,24 +20,15 @@ endfunction
 
 " Exploring files
 au BufEnter fugitive://* nnoremap <buffer> <leader>f :e %:h:r<CR>
-nnoremap <leader>T :Tags<CR>
-nnoremap <leader>S :GFiles?<CR>
-nnoremap <leader>F :Files<CR>
-nnoremap <leader><C-f> :call <SID>fzf_dirmark()<CR>
-nnoremap <leader>B :Buffers<CR>
-nnoremap <leader><C-_> :Lines<CR>
-nnoremap <C-w>f :split +RangerEdit<CR>
+nnoremap <leader>T :Telescope<CR>
+nnoremap <leader>S :Telescope git_status<CR>
+nnoremap <leader>F :Telescope find_files<CR>
+nnoremap <leader>B :Telescope buffers<CR>
+nnoremap <leader><C-_> :Telescope live_grep<CR>
 
 " Ranger
+nnoremap <C-w>f :split +RangerEdit<CR>
 map <leader>rr :RangerEdit<cr>
-map <leader>rv :RangerVSplit<cr>
-map <leader>rs :RangerSplit<cr>
-map <leader>rt :RangerTab<cr>
-map <leader>ri :RangerInsert<cr>
-map <leader>ra :RangerAppend<cr>
-map <leader>rc :set operatorfunc=RangerChangeOperator<cr>g@
-map <leader>rd :RangerCD<cr>
-map <leader>rld :RangerLCD<cr>
 
 " EasyAlign
 vmap ga <Plug>(EasyAlign)
@@ -62,9 +42,6 @@ nnoremap <leader>c :Git commit -v -s -S<Space>
 nnoremap <leader><C-t> :vs term://%:h:r//tig<CR>i
 au FileType fugitive nnoremap <buffer> <leader>l :execute '
   \:! git log --oneline --graph --decorate=short FETCH_HEAD^..HEAD' <CR>
-
-" Search
-nnoremap <leader>* :AckFromSearch<CR>
 
 " Vimwiki
 nnoremap <leader>ww :VimwikiIndex<CR>

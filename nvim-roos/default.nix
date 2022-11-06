@@ -5,6 +5,8 @@
 , vimUtils
 , nix
 , nixUnstable
+, ripgrep
+, manix
 , ...
 }: let
   Mark = vimUtils.buildVimPluginFrom2Nix {
@@ -57,7 +59,6 @@
       vim-css-color
       vim-highlightedyank
       # Integrations
-      ack-vim
       md-img-paste-vim
       ranger-vim
       vim-dispatch
@@ -65,9 +66,11 @@
       vim-gitgutter
       vim-tbone
       # Behaviour
-      fzf-vim
       nvim-autopairs
+      plenary-nvim
       quickfix-reflector-vim
+      telescope-fzf-native-nvim
+      telescope-nvim
       vim-easy-align
       vim-surround
     ];
@@ -82,10 +85,10 @@
       nvim-dap
       nvim-lspconfig
       nvim-metals
-      plantuml-syntax
-      plenary-nvim
       pgsql-vim
+      plantuml-syntax
       rust-tools-nvim
+      telescope-manix
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
       vim-terraform
@@ -125,6 +128,8 @@ in {
 
   full-native-lsp = neovim.override {
     vimAlias = true;
+    extraMakeWrapperArgs = let bins = [ manix ripgrep ]; in
+      "--prefix PATH : '${lib.makeBinPath bins}'";
     extraPython3Packages = p: with p; [ tasklib packaging ];
     configure = {
       customRC = composeConfig [
