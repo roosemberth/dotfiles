@@ -76,7 +76,7 @@
     ];
   };
 
-  nativeLspLanguageSupportPlugins = with vimPlugins; {
+  lspPlugins = with vimPlugins; {
     start = [
       Improved-AnsiEsc
       arduino-syntax-file
@@ -126,7 +126,7 @@ in {
     };
   };
 
-  full-native-lsp = neovim.override {
+  full = neovim.override {
     vimAlias = true;
     extraMakeWrapperArgs = let bins = [ manix ripgrep ]; in
       "--prefix PATH : '${lib.makeBinPath bins}'";
@@ -146,7 +146,7 @@ in {
         endtry
       '';
       packages.essentials = essentialPlugins;
-      packages.languageSupport = nativeLspLanguageSupportPlugins;
+      packages.languageSupport = lspPlugins;
     };
   };
 }

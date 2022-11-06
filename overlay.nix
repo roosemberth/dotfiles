@@ -67,8 +67,7 @@ in {
 
   nvim-roos-core = nvim.core;
   nvim-roos-essential = nvim.essential;
-  nvim-roos-full-native-lsp = nvim.full-native-lsp;
-  nvim-roos-full = nvim.full-native-lsp;
+  nvim-roos-full = nvim.full;
 
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
