@@ -72,6 +72,8 @@
 
     overlay = import ./software/overlay.nix;
 
+    templates = import ./software/templates.nix;
+
     packages = forAllSystems unstable (pkgs: with lib; let
       overlayPackages = getAttrs (attrNames (self.overlay {} {})) pkgs;
       nixosConfigPackages = mapAttrs (_: c: c.config.system.build.vm)
