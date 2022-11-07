@@ -108,6 +108,14 @@ vim.api.nvim_create_autocmd("FileType", {
   group = nvim_metals_group,
 })
 
+vim.g.markdown_fenced_languages = {
+  "ts=typescript"
+}
+
+lspconfig.tsserver.setup {
+  on_attach = on_generic_lsp_attach,
+}
+
 -- LSP Status and progress
 require("fidget").setup {
   text = {
