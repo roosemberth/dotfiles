@@ -17,7 +17,10 @@
     };
   in {
     overlays.default = import ./overlay.nix;
+
     packages = forAllSystems
       (pkgs: (with lib; getAttrs (attrNames (self.overlays.default {} {})) pkgs));
+
+    templates = import ./templates.nix;
   };
 }
