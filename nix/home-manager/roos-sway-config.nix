@@ -141,6 +141,7 @@ in {
       floating.border = 1;
       floating.criteria = [
         { app_id = "launcher"; }
+        { app_id = "aton.*"; }
         { app_id = ".*force_float.*"; }
         { app_id = "^nm-connection-editor$"; }
         { title = "^About Mozilla Firefox$"; }
