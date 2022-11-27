@@ -2,7 +2,17 @@
   options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
   config = mkIf config.roos.sway.enable {
-    fonts.fonts = [ pkgs.font-awesome ];
+    fonts.fonts = with pkgs; [ font-awesome noto-fonts-emoji ];
+
+    i18n.inputMethod = {
+      enabled = "ibus";
+      ibus.engines = with pkgs.ibus-engines; let
+        typing-booster' = typing-booster.override {
+          langs = [ "de-ch" "en-us" "es-sv" "fr-moderne" "it-it" "ru-ru" ];
+        };
+      in [ typing-booster' ];
+    };
+
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass.override { waylandSupport = true; };
     };
