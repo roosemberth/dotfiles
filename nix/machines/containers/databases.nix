@@ -55,7 +55,7 @@ in {
       };
       services.grafana = {
         enable = true;
-        addr = "::";
+        settings.server.http_addr = "::";
         provision.enable = true;
         provision.datasources.path =
           fsec."services/databases/grafana.datasources".path;
