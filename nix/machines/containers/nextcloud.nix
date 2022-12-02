@@ -45,7 +45,7 @@ in {
       };
       users.users.nextcloud.uid = 999;
       users.groups.nextcloud.gid = 999;
-      system.stateVersion = "22.05";
+      system.stateVersion = "22.11";
     };
     ephemeral = true;
     # Port forwarding only works on ipv4...
