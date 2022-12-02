@@ -79,47 +79,48 @@
         "type": "github"
       }
     },
-    "quokka-hm": {
+    "raccoon-hm": {
       "inputs": {
         "nixpkgs": [
-          "quokka-nixpkgs"
-        ]
+          "raccoon-nixpkgs"
+        ],
+        "utils": "utils"
       },
       "locked": {
-        "lastModified": 1667907331,
-        "narHash": "sha256-bHkAwkYlBjkupPUFcQjimNS8gxWSWjOTevEuwdnp5m0=",
+        "lastModified": 1669724862,
+        "narHash": "sha256-GwLonjmyhnTGQRNfKcUCgMSKYj49ZehjjJulaM/yH18=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6639e3a837fc5deb6f99554072789724997bc8e5",
+        "rev": "e891b060e7d11bb8f7dedb86a41d804891a6f5a9",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "release-22.05",
+        "ref": "release-22.11",
         "repo": "home-manager",
         "type": "github"
       }
     },
-    "quokka-nixpkgs": {
+    "raccoon-nixpkgs": {
       "locked": {
-        "lastModified": 1669764884,
-        "narHash": "sha256-1qWR/5+WtqxSedrFbUbM3zPMO7Ec2CGWaxtK4z4DdvY=",
+        "lastModified": 1669834992,
+        "narHash": "sha256-YnhZGHgb4C3Q7DSGisO/stc50jFb9F/MzHeKS4giotg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0244e143dc943bcf661fdaf581f01eb0f5000fcf",
+        "rev": "596a8e828c5dfa504f91918d0fa4152db3ab5502",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.05",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
-    "quokka-sops-nix": {
+    "raccoon-sops-nix": {
       "inputs": {
         "nixpkgs": [
-          "quokka-nixpkgs"
+          "raccoon-nixpkgs"
         ],
         "nixpkgs-22_05": "nixpkgs-22_05"
       },
@@ -141,9 +142,9 @@
       "inputs": {
         "flake-registry": "flake-registry",
         "flake-utils": "flake-utils",
-        "quokka-hm": "quokka-hm",
-        "quokka-nixpkgs": "quokka-nixpkgs",
-        "quokka-sops-nix": "quokka-sops-nix",
+        "raccoon-hm": "raccoon-hm",
+        "raccoon-nixpkgs": "raccoon-nixpkgs",
+        "raccoon-sops-nix": "raccoon-sops-nix",
         "unstable-deploy-rs": "unstable-deploy-rs",
         "unstable-hm": "unstable-hm",
         "unstable-nixpkgs": "unstable-nixpkgs",
@@ -157,7 +158,7 @@
         "nixpkgs": [
           "unstable-nixpkgs"
         ],
-        "utils": "utils"
+        "utils": "utils_2"
       },
       "locked": {
         "lastModified": 1668797197,
@@ -178,7 +179,7 @@
         "nixpkgs": [
           "unstable-nixpkgs"
         ],
-        "utils": "utils_2"
+        "utils": "utils_3"
       },
       "locked": {
         "lastModified": 1669825171,
@@ -196,11 +197,11 @@
     },
     "unstable-nixpkgs": {
       "locked": {
-        "lastModified": 1669542132,
-        "narHash": "sha256-DRlg++NJAwPh8io3ExBJdNW7Djs3plVI5jgYQ+iXAZQ=",
+        "lastModified": 1669791787,
+        "narHash": "sha256-KBfoA2fOI5+wCrm7PR+j7jHqXeTkVRPQ0m5fcKchyuU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a115bb9bd56831941be3776c8a94005867f316a7",
+        "rev": "e76c78d20685a043d23f5f9e0ccd2203997f1fb1",
         "type": "github"
       },
       "original": {
@@ -248,6 +249,21 @@
     },
     "utils": {
       "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "utils_2": {
+      "locked": {
         "lastModified": 1648297722,
         "narHash": "sha256-W+qlPsiZd8F3XkzXOzAoR+mpFqzm3ekQkJNa+PIh1BQ=",
         "owner": "numtide",
@@ -261,7 +277,7 @@
         "type": "github"
       }
     },
-    "utils_2": {
+    "utils_3": {
       "locked": {
         "lastModified": 1667395993,
         "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",

@@ -1,11 +1,11 @@
 {
   inputs = {
-    # Quokka
-    quokka-nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
-    quokka-hm.url = "github:nix-community/home-manager/release-22.05";
-    quokka-hm.inputs.nixpkgs.follows = "quokka-nixpkgs";
-    quokka-sops-nix.url = "github:Mic92/sops-nix";
-    quokka-sops-nix.inputs.nixpkgs.follows = "quokka-nixpkgs";
+    # Raccoon
+    raccoon-nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    raccoon-hm.url = "github:nix-community/home-manager/release-22.11";
+    raccoon-hm.inputs.nixpkgs.follows = "raccoon-nixpkgs";
+    raccoon-sops-nix.url = "github:Mic92/sops-nix";
+    raccoon-sops-nix.inputs.nixpkgs.follows = "raccoon-nixpkgs";
 
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -25,11 +25,11 @@
 
   outputs = inputs@{ self, flake-utils, ... }: let
     # Distributions
-    quokka = with inputs; {
+    raccoon = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
-      nixpkgs = quokka-nixpkgs;
-      hm = quokka-hm;
-      sops-nix = quokka-sops-nix;
+      nixpkgs = raccoon-nixpkgs;
+      hm = raccoon-hm;
+      sops-nix = raccoon-sops-nix;
     };
     unstable = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
@@ -53,13 +53,13 @@
   in {
     nixosConfigurations = vms // {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Mimir-vm = mkSystem quokka ({ modulesPath, ... }: {
+      Mimir-vm = mkSystem raccoon ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = mkSystem quokka ./nix/machines/Minerva.nix;
-      Heimdaalr = mkSystem quokka ./nix/machines/Heimdaalr.nix;
+      Minerva = mkSystem raccoon ./nix/machines/Minerva.nix;
+      Heimdaalr = mkSystem raccoon ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
-        quokka ./nix/machines/strong-ghost.nix;
+        raccoon ./nix/machines/strong-ghost.nix;
     };
 
     apps = with lib; forAllSystems unstable (pkgs: with lib; let
@@ -80,7 +80,7 @@
         self.nixosConfigurations;
     in nixosConfigPackages // overlayPackages);
 
-    devShells = forAllSystems quokka
+    devShells = forAllSystems raccoon
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
 
     deploy = with self.nixosConfigurations; with unstable; {
