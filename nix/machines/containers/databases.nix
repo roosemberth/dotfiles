@@ -1,4 +1,5 @@
 { config, pkgs, lib, secrets, roosModules, ... }: let
+  fsec = config.sops.secrets;
   hostDataDirBase = "/mnt/cabinet/minerva-data";
 in {
   containers.databases = {
@@ -11,6 +12,7 @@ in {
     bindMounts.grafana.hostPath = "${hostDataDirBase}/grafana";
     bindMounts.grafana.mountPoint = "/var/lib/grafana";
     bindMounts.grafana.isReadOnly = false;
+    bindMounts."/run/secrets/services/databases" = {};
     config = {
       imports = roosModules;
       networking.useHostResolvConf = false;
@@ -55,7 +57,8 @@ in {
         enable = true;
         addr = "::";
         provision.enable = true;
-        provision.datasources = secrets.zkx.minerva-grafana-sources;
+        provision.datasources.path =
+          fsec."services/databases/grafana.datasources".path;
       };
       services.prometheus.exporters.postgres.enable = true;
       system.stateVersion = "22.05";
@@ -89,4 +92,16 @@ in {
     };
     unitConfig.ConditionPathIsDirectory = [ "/var/lib/postgresql" ];
   };
+
+  # We cannot set the required owner and group since the target values don't
+  # exist in the host configuration, thus failing the activation script.
+  sops.secrets."services/databases/grafana.datasources".restartUnits =
+    [ "container@databases.service" ];
+
+  system.activationScripts.secretsForNextcloud = let
+    o = toString config.containers.databases.config.users.users.grafana.uid;
+    g = toString config.containers.databases.config.users.groups.grafana.gid;
+  in lib.stringAfter ["setupSecrets"] ''
+    chown ${o} "${fsec."services/databases/grafana.datasources".path}"
+  '';
 }
