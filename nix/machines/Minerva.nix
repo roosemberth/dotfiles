@@ -182,7 +182,7 @@ in {
 
   nix.extraOptions = "experimental-features = nix-command flakes";
   nix.package = pkgs.nixUnstable;
-  nix.trustedUsers = [ "roosemberth" ];
+  nix.settings.trusted-users = [ "roosemberth" ];
 
   roos.dotfilesPath = ../..;
   roos.nginx-fileshare.enable = true;
