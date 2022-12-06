@@ -8,25 +8,34 @@
     };
   };
 
+  coercedExpr = defOp: with types; let
+    asValue = (s: { value = s; });
+    subtype = submodule (exprOpts defOp);
+  in attrsOf (coercedTo str asValue subtype);
+
   ruleOpts = { config, ... }: {
     options.match = mkOption {
       description = "Attrset with expressions to match an event.";
       default = {};
-      type = with types; let
-        asValue = (s: { value = s; });
-      in attrsOf (coercedTo str asValue (submodule (exprOpts "==")));
+      type = coercedExpr "==";
     };
     options.make = mkOption {
       description = "Attrset with expressions to apply an action.";
       default = {};
-      type = with types; let
-        asValue = s: { value = s; };
-      in attrsOf (coercedTo str asValue (submodule (exprOpts "=")));
+      type = coercedExpr "=";
+    };
+    options.add = mkOption {
+      description = "Attrset with expressions to apply an action.";
+      default = {};
+      type = coercedExpr "+=";
     };
     options.ruleStr = mkOption {
-      default = concatMapStringsSep ", "
+      default = concatMapStringsSep ","
         (v: "${v.name}${v.operator}\"${v.value}\"")
-        (attrValues config.match ++ attrValues config.make);
+        (  attrValues config.match
+        ++ attrValues config.make
+        ++ attrValues config.add
+        );
     };
   };
 
