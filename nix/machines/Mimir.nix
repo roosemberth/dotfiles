@@ -241,12 +241,28 @@ in {
        EVDEV_ABS_00=::20
        EVDEV_ABS_01=::20
     '';
-    udev.extraRules = ''
-      SUBSYSTEM=="net",ACTION=="add",ENV{ID_NET_NAME_MAC}=="wlx84c5a62adf55",NAME:="wlan"
-      # Rename built-in interface with proprietary connector
-      SUBSYSTEM=="net",ACTION=="add",KERNEL=="enp0s31f6",NAME="useless"
-      # Rename interface created by the librem5
-      SUBSYSTEM=="net",ACTION=="add",ENV{ID_VENDOR_ENC}=="Purism\x2c\x20SPC",ENV{ID_MODEL_ENC}=="Librem\x205",NAME:="l5"
+    udev.extraRules = let
+      extend = ext: r: lib.recursiveUpdate ext r;
+      netrules =
+        (map (extend { match."ACTION" = "add"; }) [
+          # Rename wireless card
+          { match."ENV{ID_NET_NAME_MAC}" = "wlx84c5a62adf55"; 
+            make."NAME" = { operator = ":="; value = "wlan"; };
+          }
+          # Rename built-in interface with proprietary connector
+          { match."KERNEL" = "enp0s31f6";
+            make."NAME" = { operator = ":="; value = "useless"; };
+          }
+          # Rename interface created by the librem5
+          { match."ENV{ID_VENDOR_ENC}" = "Purism\\x2c\\x20SPC";
+            match."ENV{ID_MODEL_ENC}" = "Librem\\x205";
+            make."NAME" = { operator = ":="; value = "l5"; };
+          }
+        ]);
+    in ''
+      SUBSYSTEM!="net", GOTO="net_rules_end"
+      ${lib.concatMapStringsSep "\n" config.lib.udev.renderRule netrules}
+      LABEL="net_rules_end"
     '';
     upower.enable = true;
   };
