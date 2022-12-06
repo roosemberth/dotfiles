@@ -41,24 +41,39 @@ in {
         };
     };
 
-    services.udev.extraRules = ''
-      # Remarkable tablet upload mode (I.MX6)
-      ACTION=="add",ATTRS{idProduct}=="0063",ATTRS{idVendor}=="15a2",MODE="0666"
-      # Remarkable RNDIS mode
-      ACTION=="add",SUBSYSTEM=="net",SUBSYSTEM=="usb",ATTRS{idProduct}=="4010",ATTRS{idVendor}=="04b3",NAME="reMarkable"
+    services.udev.extraRules = let
+      extend = ext: r: lib.recursiveUpdate ext r;
+      usbrules =
+        (map (extend { match."ACTION" = "add"; add."TAG" = "uaccess"; }) [
+          # Remarkable tablet upload mode (I.MX6)
+          { match."ATTR{idVendor}" = "15a2"; match."ATTR{idProduct}" = "0063"; }
+          # Librem5 & devkits
+          { match."ATTR{idVendor}" = "1fc9"; match."ATTR{idProduct}" = "012b"; }
+          { match."ATTR{idVendor}" = "0525"; match."ATTR{idProduct}" = "a4a5"; }
+          { match."ATTR{idVendor}" = "0525"; match."ATTR{idProduct}" = "b4a4"; }
+          { match."ATTR{idVendor}" = "316d"; match."ATTR{idProduct}" = "4c05"; }
+          # ESP8266/ESP32
+          { match."ATTR{idProduct}" = "7523"; match."ATTR{idVendor}" = "1a86"; }
+        ]);
 
-      # Have usb tty devices accesible
-      ACTION=="add",SUBSYSTEMS=="usb",SUBSYSTEM=="tty",MODE="0666"
-      # ESP8266/ESP32
-      ACTION=="add",SUBSYSTEM=="usb",ATTR{idProduct}=="7523",ATTR{idVendor}=="1a86",MODE="0666"
+      toprules =
+        (map (extend { match."ACTION" = "add"; }) [
+          # Remarkable RNDIS mode
+          { match."SUBSYSTEMS" = "usb"; match."SUBSYSTEM" = "net";
+            match."ATTRS{idProduct}" = "4010"; match."ATTRS{idVendor}" = "04b3"; 
+            make."NAME" = "reMarkable";
+          }
+          # Have usb tty devices accesible
+          { match."SUBSYSTEMS" = "usb"; match."SUBSYSTEM" = "tty";
+            make."MODE"="0666";
+        }
+        ]);
+    in ''
+      ${concatMapStringsSep "\n" config.lib.udev.renderRule toprules}
 
-      # Librem5
-      SUBSYSTEM!="usb", GOTO="librem5_devkit_rules_end"
-      ATTR{idVendor}=="1fc9", ATTR{idProduct}=="012b", GROUP+="plugdev", TAG+="uaccess"
-      ATTR{idVendor}=="0525", ATTR{idProduct}=="a4a5", GROUP+="plugdev", TAG+="uaccess"
-      ATTR{idVendor}=="0525", ATTR{idProduct}=="b4a4", GROUP+="plugdev", TAG+="uaccess"
-      ATTR{idVendor}=="316d", ATTR{idProduct}=="4c05", GROUP+="plugdev", TAG+="uaccess"
-      LABEL="librem5_devkit_rules_end"
+      SUBSYSTEM!="usb", GOTO="usb_rules_end"
+      ${concatMapStringsSep "\n" config.lib.udev.renderRule usbrules}
+      LABEL="usb_rules_end"
     '';
   };
 }
