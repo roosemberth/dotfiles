@@ -10,6 +10,7 @@ in {
     ./actions.nix
     ./email-gateway.nix
     ./media.nix
+    ./shells.nix
     ./roos-sway-config.nix
     ./sway-session.nix
     ./swaync.nix

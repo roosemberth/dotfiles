@@ -30,7 +30,7 @@ in
 
       home.sessionPath = [ "\$HOME/.local/bin" ];
       home.sessionVariables = rec {
-        ZDOTDIR = util.fetchDotfile "etc/zsh/default";
+        ZDOTDIR = "\$HOME/.local/etc/zsh";
         ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
         GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
         GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
@@ -55,6 +55,7 @@ in
         python3 python3Packages.ipython glances
       ];
       programs.vim-roos.enable = true;
+      programs.zsh-roos.enable = true;
 
       xdg = {
         mime.enable = true;
@@ -69,6 +70,7 @@ in
       };
     };
 
+    environment.pathsToLink = [ "/share/zsh" ];
     environment.systemPackages = with pkgs; [
       cacert curl hdparm htop atop iotop powertop btop wget exfat nfs-utils
       lsof fzf comma
