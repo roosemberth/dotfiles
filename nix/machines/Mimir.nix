@@ -115,7 +115,7 @@ in {
   # };
   roos.sway.enable = true;
   roos.wireguard.enable = true;
-  roos.wireguard.gwServer = "Heimdaalr";
+  roos.wireguard.network = "bifrost-via-heimdaalr";
 
   # Since deploy-rs is not in Nixpkgs, explicitly add it in this host.
   roos.sConfig.home.packages = [ pkgs.deploy-rs.deploy-rs ];

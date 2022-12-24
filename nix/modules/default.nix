@@ -20,6 +20,11 @@ in {
   _module.args = {
     secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
     roosModules = standaloneModules;
+    networks.zkx.publicInternalAddresses = {
+      Heimdaalr = [ "10.13.255.101/24" "fd00:726f:6f73:101::/56" ];
+      Mimir = [ "10.13.255.35/24" "fd00:726f:6f73:35::/56" ];
+      Minerva = [ "10.13.255.13/24" "fd00:726f:6f73:13::/56" ];
+    };
   };
 
   # FIXME: Find a way to make this great (dynamic) again.

@@ -189,7 +189,7 @@ in {
   roos.nginx-fileshare.directory = "/srv/shared";
   roos.user-profiles.reduced = ["roosemberth"];
   roos.wireguard.enable = true;
-  roos.wireguard.gwServer = "Heimdaalr";
+  roos.wireguard.network = "bifrost-via-heimdaalr";
 
   programs.mosh.enable = true;
   security.pam.enableSSHAgentAuth = true;
