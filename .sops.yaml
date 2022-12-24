@@ -4,19 +4,19 @@ keys:
   - &mimir_age age1rdfutq0l07kn3sgq84yu9f07nn6aeuk0h8mcyq5tshgtz8ycv95qtr8rm4
   - &minerva_age age1jhqupkrhatm9l9ws3y58e70nskctn8z5dgc325kwtku2xgvka4rsptvtyx
 creation_rules:
-  - path_regex: secrets/per-host/Minerva.*\.yaml$
+  - path_regex: secrets/per-host/Minerva\.yaml$
     key_groups:
     - age:
       - *minerva_age
       pgp:
       - *roos_pgp
-  - path_regex: secrets/per-host/Heimdaalr.*\.yaml$
+  - path_regex: secrets/per-host/Heimdaalr\.yaml$
     key_groups:
     - age:
       - *heimdaalr_age
       pgp:
       - *roos_pgp
-  - path_regex: secrets/per-host/Mimir.*\.yaml$
+  - path_regex: secrets/per-host/Mimir\.yaml$
     key_groups:
     - age:
       - *mimir_age
