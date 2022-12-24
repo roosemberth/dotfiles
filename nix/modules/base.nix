@@ -30,6 +30,7 @@ in
 
       home.sessionPath = [ "\$HOME/.local/bin" ];
       home.sessionVariables = rec {
+        STARSHIP_CONFIG = "${userCfg.xdg.configHome}/starship.toml";
         ZDOTDIR = "\$HOME/.local/etc/zsh";
         ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
         GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";

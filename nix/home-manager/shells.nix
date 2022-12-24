@@ -4,6 +4,36 @@
   };
 
   config = mkIf config.programs.zsh-roos.enable {
+    programs.starship = {
+      enable = true;
+      settings = {
+        format = builtins.concatStringsSep "" [
+          "$username"
+          "$hostname"
+          "$shlvl"
+          "$directory"
+          "$git_branch"
+          "$git_commit"
+          "$git_state"
+          "$git_status"
+          "$nix_shell"
+          "$memory_usage"
+          "$sudo"
+          "$cmd_duration"
+          "$line_break"
+          "$jobs"
+          "$battery"
+          "$status"
+          "$character"
+        ];
+        directory.truncate_to_repo = false;
+        battery.display = [{ threshold = 30; }];
+        memory_usage.disabled = false;
+        status.disabled = false;
+        sudo.disabled = false;
+        shlvl.disabled = false;
+      };
+    };
     programs.zsh = {
       enable = true;
       dotDir = ".local/etc/zsh";  # FIXME: Use `$XDG_DATA_DIR`.
