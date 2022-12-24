@@ -112,7 +112,6 @@ in
         gnome.nautilus
         gnome.pomodoro
         gtk3  # gtk-launch
-        khal
         links2
         mosh
         mumble
