@@ -26,3 +26,11 @@ creation_rules:
     key_groups:
     - pgp:
       - *roos_pgp
+  - path_regex: secrets/per-role/network\.yaml$
+    key_groups:
+    - age:
+      - *heimdaalr_age
+      - *mimir_age
+      - *minerva_age
+      pgp:
+      - *roos_pgp
