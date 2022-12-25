@@ -60,7 +60,7 @@
       "f /keyring/acme/orbstheorem.ch.secret 0400 acme root -"
     ];
   };
-  nginxConfig = { secrets, ... }: {
+  nginxConfig = {
     networking.firewall.allowedTCPPorts = [80 443 8448];
     networking.nat.enable = true;
     networking.nat.externalInterface = "ens3";
@@ -190,7 +190,7 @@
           '';
         };
       };
-    } // secrets.opaque-nginx."orbstheorem.ch";
+    };
     # Allow access orbstheorem.ch certs
     systemd.services.nginx.serviceConfig.SupplementaryGroups =
       [ "certs-orbstheore" ];
