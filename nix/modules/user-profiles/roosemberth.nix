@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, ... }: with lib;
+{ config, pkgs, lib, users, ... }: with lib;
 let
   usersWithProfiles =
     flatten (with config.roos.user-profiles; [ graphical reduced simple ]);
@@ -14,7 +14,7 @@ in
     users.users.roosemberth = {
       uid = 1000;
       description = "Roosemberth Palacios";
-      hashedPassword = secrets.users.roosemberth.hashedPassword;
+      hashedPassword = users.roos.hashedPassword;
       isNormalUser = true;
       extraGroups = [
         "docker"
@@ -26,6 +26,7 @@ in
         "wheel"
         "wireshark"
       ];
+      openssh.authorizedKeys.keys = [ users.roos.ssh-public-key ];
       shell = pkgs.zsh;
     };
 

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, secrets, ... }: let
+{ config, lib, pkgs, modulesPath, users, ... }: let
   hostname = config.networking.hostName;
   uuids = {
     boot = "2e4511ee-18a2-45d6-b085-c60bd23d6f50";
@@ -17,10 +17,10 @@ in {
       ip l set dev ens3 up
       ip r add default via 5.255.96.1
     '';
-    network.ssh = with secrets; {
+    network.ssh = {
       enable = true;
       port = 22;
-      authorizedKeys = secrets.adminPubKeys;
+      authorizedKeys = [ users.roos.ssh-public-key ];
       hostKeys = [ "/run/secrets/ssh-host/initramfs/ed25519" ];
     };
   };

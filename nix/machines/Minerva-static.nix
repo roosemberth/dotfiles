@@ -1,4 +1,4 @@
-{ config, lib, pkgs, secrets, ... }:
+{ config, lib, pkgs, users, ... }:
 let
   hostname = config.networking.hostName;
   uuids = {
@@ -16,7 +16,7 @@ in
 
       network.enable = true;
       network.ssh.enable = true;
-      network.ssh.authorizedKeys = secrets.adminPubKeys;
+      network.ssh.authorizedKeys = [ users.roos.ssh-public-key ];
       network.ssh.hostKeys = [
         "/run/secrets/ssh-host/initramfs/ecdsa"
         "/run/secrets/ssh-host/initramfs/ed25519"

@@ -36,6 +36,10 @@ in {
         Minerva.v6 = "fd00:726f:6f73:13::1/56";
       };
     };
+    users.roos = {
+      ssh-public-key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSKHqDX+M61dKgmFJL1dlJQTvveSkcG99GWb3R2P5Tq argon2d-cbc-spf";
+      hashedPassword = "$gy$j9T$zbhaIklVZtEL60nhD3phG1$enEdsSN2V831HzgdG8tWk.CCyRf2GEABXz7e0YM/4/4";
+    };
   };
 
   # FIXME: Find a way to make this great (dynamic) again.
