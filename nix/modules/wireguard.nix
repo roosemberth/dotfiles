@@ -96,7 +96,8 @@ in {
 
     networking.wireguard.interfaces.${cfg.interface} = {
       inherit (cfg) listenPort;
-      ips = networks.zkx.publicInternalAddresses.${config.networking.hostName};
+      ips = with networks.zkx.publicInternalAddresses.${config.networking.hostName};
+        [ v4 v6 ];
       privateKeyFile = config.sops.secrets."wireguard/private".path;
     };
 
