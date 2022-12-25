@@ -29,16 +29,6 @@ in {
 
       xdg.configFile."stylish-haskell/config.yaml".source =
         util.fetchDotfile "etc/stylish-haskell.yaml";
-
-        home.file.".aws/credentials".text = let
-          awsSecret = s: secrets.users.roosemberth.volatile."aws/mimir/${s}";
-        in generators.toINI {} {
-          default.aws_access_key_id = awsSecret "access_key_id";
-          default.aws_secret_access_key = awsSecret "secret_access_key";
-        };
-        home.file.".aws/config".text = generators.toINI {} {
-          default.region = "eu-west-3";
-        };
     };
 
     services.udev.extraRules = let
