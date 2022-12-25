@@ -33,9 +33,9 @@ in {
         enableImagemagick = true;
         package = pkgs.nextcloud25;
         autoUpdateApps.enable = true;
-        config.adminuser = secrets.nextcloud.adminuser;
+        config.adminuser = "oleander";
         config.adminpassFile = fsec."services/nextcloud/adminpass".path;
-        config.dbuser = secrets.nextcloud.dbuser;
+        config.dbuser = "nextcloud-FRMw7z";
         config.dbpassFile = fsec."services/nextcloud/dbpass".path;
         config.dbtype = "pgsql";
         config.dbport = "5432";
