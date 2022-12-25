@@ -1,8 +1,10 @@
 { config, pkgs, lib, networks, ... }: with lib; let
   cfg = config.roos.wireguard;
 
-  genPeerConfigScript = let 
-    program = ''
+  genPeerConfigScript = pkgs.writers.writeHaskell
+    "config-wg-peers"
+    { libraries = with pkgs.haskellPackages; [ yaml interpolate ]; }
+    ''
       {-# LANGUAGE DeriveAnyClass #-}
       {-# LANGUAGE DeriveGeneric #-}
       {-# LANGUAGE LambdaCase #-}
@@ -56,11 +58,6 @@
           foldMap (putStrLn . setupCmd iface) (networkToPeers network)
         _ -> putStrLn "Arguments: <interface> /path/to/config.yaml" >> exitFailure
     '';
-  in
-    pkgs.writers.writeHaskell
-      "config-wg-peers"
-      { libraries = with pkgs.haskellPackages; [ yaml interpolate ]; }
-      program;
 
 in {
   options.roos.wireguard = {
