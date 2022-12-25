@@ -11,11 +11,6 @@ let
   in map (removeSuffix ".asc") keys;
 in recursiveUpdate (rec {
   adminPubKeys = admins.authorizedPublicKeys;
-
-  forHost = hostname: recursiveUpdate ({
-    pubkeys.backups = network.backupSshPublic."${hostname}";
-  }) (attrByPath [hostname] {} opaque.secrets.hosts);
-
   network = import ./secrets/network.nix {};
   users = import ./secrets/users/users.nix { inherit lib; };
   keyrings = genAttrs keyring-names (name: {

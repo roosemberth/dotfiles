@@ -1,4 +1,4 @@
-{ config, lib, pkgs, options, secrets, ... }: let
+{ config, lib, pkgs, options, ... }: let
   cfg = config.roos.backups;
   host = config.networking.hostName;
   mkUsername = client:
@@ -6,10 +6,14 @@
 
   truncate = n: s: with lib; concatStrings (take n (stringToCharacters s));
 
+  backupKeys = {
+    Mimir = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKpxr5c4gGuZVzmHKJ9UEAHHoAQ6oD67GvzcEmRFRSL7 Key for backups from Mimir";
+  };
+
   clientOpts = { name, ... }: with lib; {
     options.publicKey = mkOption {
       description = "SSH public key used by this client to push backups.";
-      default = (secrets.forHost name).pubkeys.backups;
+      default = backupKeys."${name}";
       type = types.unspecified;
     };
   };
