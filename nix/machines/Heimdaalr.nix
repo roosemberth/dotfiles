@@ -303,6 +303,8 @@ in {
     resolved.llmnr = "false";
   };
   system.stateVersion = "21.11";
+  # wait-online is very annoying and in most cases useless with my config.
+  systemd.network.wait-online.anyInterface = true;
 
   users = {
     mutableUsers = false;
