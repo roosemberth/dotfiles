@@ -200,7 +200,7 @@
   monitoringConfig = { networks, ... }: {
     services.prometheus.exporters.node.enable = true;
     services.prometheus.exporters.node.enabledCollectors = [ "systemd" ];
-    services.prometheus.exporters.node.listenAddress = networks.zkx.dns.v4;
+    services.prometheus.exporters.node.listenAddress = "10.13.255.101";
     # Prometheus binds to a wireguard address...
     systemd.services."prometheus-node-exporter".after =
       ["wireguard-Bifrost.service"];
