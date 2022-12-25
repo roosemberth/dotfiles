@@ -13,10 +13,10 @@ in {
     config.services.bind = {
       enable = true;
       cacheNetworks =
-        ["127.0.0.0/8" "::1/128"]
-        ++ secrets.network.trustedNetworks.ipv4
-        ++ secrets.network.trustedNetworks.ipv6
-        ++ [
+        [ "127.0.0.0/8"
+          "::1/128"
+          "10.13.255.0/24"
+          "fd00:726f:6f73::/48"
           "10.231.136.4" # Exceptionally resolve for the matrix container...
           # The amount of queries made by matrix breaks systemd-resolved...
         ];
@@ -32,10 +32,8 @@ in {
         "77.109.128.2"
         "213.144.129.20"
       ];
-      listenOn = map removeCIDR
-        [ networks.zkx.publicInternalAddresses.Minerva.v4 ];
-      listenOnIpv6 = map removeCIDR
-        [ networks.zkx.publicInternalAddresses.Minerva.v6 ];
+      listenOn = [ networks.zkx.dns.v4 ];
+      listenOnIpv6 = [ networks.zkx.dns.v6 ];
       zones = secrets.network.allDnsZones;
     };
     config.services.prometheus.exporters.bind.enable = true;
@@ -44,5 +42,5 @@ in {
     config.system.stateVersion = "22.05";
     ephemeral = false; # TODO: isolate cache as a spool directory...
   };
-  networking.nameservers = with secrets.network.zksDNS; v6 ++ v4;
+  networking.nameservers = with networks.zkx.dns; [v6 v4];
 }

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, roosModules, ... }: let
+{ config, pkgs, lib, secrets, networks, roosModules, ... }: let
   fsec = config.sops.secrets;
 in {
   containers.matrix = {
@@ -20,7 +20,7 @@ in {
       '';
 
       # The host network cannot handle the DNS traffic from Matrix...
-      networking.nameservers = with secrets.network.zksDNS; v4;
+      networking.nameservers = with networks.zkx.dns; [v6 v4];
       networking.useHostResolvConf = false;
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};

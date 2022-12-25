@@ -1,19 +1,18 @@
 { config, pkgs, lib, ... }:
 let
-  # Hack since secrets are not available to the machine top-level definition...
   networkDnsConfig =
-    { secrets, ... }:
+    { networks, ... }:
     {
       networking.networkmanager.dns = "systemd-resolved";
-      networking.search = with secrets.network.zksDNS; [ search "int.${search}" ];
+      networking.search = [ "zkx.ch" "int.zkx.ch" ];
       networking.firewall.allowedUDPPorts = [ 5355 ]; # LLMNR responses
       services.resolved = {
         enable = true;
         llmnr = "true";
         dnssec = "false";
-        extraConfig = with secrets.network; with lib; let
-          dnsZones = map (p: p.name) allDnsZones;
-          dnsSrvs = (map (ip: "[${ip}]") zksDNS.v6) ++ zksDNS.v4;
+        extraConfig = with lib; let
+          dnsZones = [ "dyn.zkx.ch" "zkx.ch" ];
+          dnsSrvs = with networks.zkx.dns; ["[${v6}]" v4];
           netXsrv = cartesianProductOfSets { net = dnsZones; srv = dnsSrvs; };
         in "DNS=" + concatMapStringsSep " " (x: "${x.srv}#${x.net}") netXsrv;
       };

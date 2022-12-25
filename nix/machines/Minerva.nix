@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  networkConfig = { secrets, ... }: let
+  networkConfig = { networks, ... }: let
     hostBridgeV4Addrs = [{ address = "10.231.136.1"; prefixLength = 24; }];
   in {
     # Disable autoconf of the physical adapter. See bellow.
@@ -19,8 +19,8 @@ let
       nat.externalInterface = "orion";  # Use the bridge to access the world.
 
       # Ask the named container to resolve DNS for us.
-      nameservers = with secrets.network.zksDNS; v6 ++ v4;
-      search = with secrets.network.zksDNS; [ search ];
+      nameservers = with networks.zkx.dns; [v6 v4];
+      search = [ "zkx.ch" "int.zkx.ch" ];
     };
 
     services.resolved = {
