@@ -13,7 +13,6 @@ in recursiveUpdate (rec {
   adminPubKeys = admins.authorizedPublicKeys;
 
   forHost = hostname: recursiveUpdate ({
-    pubkeys.wireguard = network.wireguardPublic."${hostname}";
     pubkeys.backups = network.backupSshPublic."${hostname}";
   }) (attrByPath [hostname] {} opaque.secrets.hosts);
 
