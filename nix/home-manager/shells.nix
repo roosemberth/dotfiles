@@ -44,6 +44,7 @@
         ignoreDups = true;
         ignoreSpace = true;
         extended = true;
+        share = false;
       };
 
       sessionVariables = {
