@@ -1,7 +1,7 @@
 { config, pkgs, lib, secrets, roosModules, ... }: let
   fsec = config.sops.secrets;
-  send-monitoring-sms-alert = with secrets.monitoring.alert-routes.twilio;
-    pkgs.writeShellScript "send-monitoring-sms-alert" ''
+  send-monitoring-sms-alert = pkgs.writeShellScript "send-monitoring-sms-alert" ''
+      source "${fsec."services/monitoring/alert-routes/twilio.env".path}"
       MSG="$(${pkgs.jq}/bin/jq -r '.alerts[]|.annotations.description' "$BODY")"
       if [ -z "$MSG" ]; then
         echo "Failed to decode notification..." >&2
@@ -9,8 +9,8 @@
         MSG="The monitoring system generated an alarm."
       fi
       exec ${pkgs.httpie}/bin/https --ignore-stdin --check-status \
-        --pretty=format -a '${auth}' --form '${url}' \
-        MessagingServiceSid='${mss}' To='${dest}' Body="$MSG"
+        --pretty=format -a "$AUTH" --form "$URL" \
+        MessagingServiceSid="$MSS" To="$DEST" Body="$MSG"
     '';
   hooksF = pkgs.writeText "alertmanager.yml" (builtins.toJSON [
     { id = "monitoring-sms-notification";
@@ -20,12 +20,6 @@
       execute-command = send-monitoring-sms-alert;
     }
   ]);
-  matrix-amconfig = (pkgs.formats.toml {}).generate "matrix-amconfig.toml" {
-    inherit (secrets.monitoring.alert-routes.matrix) TargetRoomID MXID MXToken;
-    Homeserver = "https://orbstheorem.ch";
-    HTTPPort = 9096;
-    HTTPAddress = "[::1]";
-  };
 in {
   containers.monitoring = {
     autoStart = true;
@@ -72,7 +66,7 @@ in {
         exporters.nextcloud = {
           enable = true;
           url = "https://nextcloud.orbstheorem.ch";
-          username = secrets.monitoring.exporter.nextcloud_user;
+          username = "nextcloud-exporter";
           passwordFile = fsec."services/monitoring/exporter/nextcloud_pass".path;
         };
         webExternalUrl = "https://monitoring.orbstheorem.ch/";
@@ -162,9 +156,11 @@ in {
         requiredBy = ["alertmanager.service"];
         partOf = ["alertmanager.service"];
         before = ["alertmanager.service"];
-        serviceConfig.ExecStart = let
-          pkg = pkgs.matrix-alertmanager-receiver;
-        in "${pkg}/bin/matrix-alertmanager-receiver -config ${matrix-amconfig}";
+        serviceConfig.ExecStart = ''
+          ${pkgs.matrix-alertmanager-receiver}/bin/matrix-alertmanager-receiver \
+            -config \
+            ${fsec."services/monitoring/alert-routes/matrix-amconfig.toml".path}
+        '';
         serviceConfig.Restart = "always";
         serviceConfig.RestartSec = 3;
       };
@@ -195,8 +191,13 @@ in {
 
   # We cannot set the required owner and group since the target values don't
   # exist in the host configuration, thus failing the activation script.
-  sops.secrets."services/monitoring/exporter/nextcloud_pass".restartUnits =
-    [ "container@monitoring.service" ];
+  sops.secrets = let
+    cfg.restartUnits = [ "container@monitoring.service" ];
+  in {
+    "services/monitoring/exporter/nextcloud_pass" = cfg;
+    "services/monitoring/alert-routes/twilio.env" = cfg;
+    "services/monitoring/alert-routes/matrix-amconfig.toml" = cfg;
+  };
 
   system.activationScripts.secretsForMonitoring = let
     cfg = config.containers.monitoring.config;
