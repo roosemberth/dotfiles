@@ -1,5 +1,5 @@
 { config, pkgs, lib, ... }: let
-  bindConfig = { secrets, ... }: let
+  bindConfig = let
     zone."orbstheorem.ch" = "/run/named/zones/orbstheorem.ch.zone";
   in {
     networking.firewall.allowedUDPPorts = [53];
@@ -30,7 +30,7 @@
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = let
-          srcfile = secrets.network.bind-zones."orbstheorem.ch";
+          srcfile = config.sops.secrets."services/dns/zones/orbstheorem.ch".path;
           installCmd = "${pkgs.coreutils}/bin/install";
         in pkgs.writeShellScript "copy-zonefile-for-bind" ''
           ${pkgs.coreutils}/bin/rm -fr /run/named/zones
@@ -43,6 +43,7 @@
     systemd.tmpfiles.rules = [
       "f /keyring/dns/dns-orbstheorem.ch.keys.conf 0400 named root -"
     ];
+    sops.secrets."services/dns/zones/orbstheorem.ch" = {};
   };
   acmeConfig = { secrets, ... }: {
     security.acme.acceptTerms = true;
