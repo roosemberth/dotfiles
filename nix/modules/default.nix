@@ -18,7 +18,6 @@ let
   ];
 in {
   _module.args = {
-    secrets = import ../secrets.nix { inherit lib; _modinjector = true; };
     roosModules = standaloneModules;
     networks.zkx = rec {
       dns = let
