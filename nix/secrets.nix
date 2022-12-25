@@ -11,7 +11,6 @@ let
   in map (removeSuffix ".asc") keys;
 in recursiveUpdate (rec {
   adminPubKeys = admins.authorizedPublicKeys;
-  network = import ./secrets/network.nix {};
   users = import ./secrets/users/users.nix { inherit lib; };
   keyrings = genAttrs keyring-names (name: {
     inherit name;

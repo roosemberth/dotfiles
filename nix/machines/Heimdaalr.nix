@@ -45,9 +45,9 @@
     ];
     sops.secrets."services/dns/zones/orbstheorem.ch" = {};
   };
-  acmeConfig = { secrets, ... }: {
+  acmeConfig = {
     security.acme.acceptTerms = true;
-    security.acme.defaults.email = secrets.network.acme.email;
+    security.acme.defaults.email = "roosemberth+acme@posteo.ch";
     security.acme.certs."orbstheorem.ch" = {
       extraDomainNames = ["*.orbstheorem.ch" "*.mimir.orbstheorem.ch"];
       group = "certs-orbstheore";
