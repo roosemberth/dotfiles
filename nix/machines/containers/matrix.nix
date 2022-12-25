@@ -1,4 +1,4 @@
-{ config, pkgs, lib, secrets, networks, roosModules, ... }: let
+{ config, pkgs, lib, networks, roosModules, ... }: let
   fsec = config.sops.secrets;
 in {
   containers.matrix = {
@@ -126,7 +126,8 @@ in {
           bridge.homeserverUrl = "https://orbstheorem.ch";
           bridge.adminMxid = "@roosemberth:orbstheorem.ch";
           bridge.disableJoinLeaveNotifications = true;
-          inherit (secrets.matrix_appservice_discord) database;
+          # database set via APPSERVICE_DISCORD_DATABASE_CONN_STRING envvar
+          database.filename = null;
           channel.namePattern = ":guild :name";
         };
         serviceDependencies = [ "matrix-synapse.service" ];
