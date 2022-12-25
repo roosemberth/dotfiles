@@ -1,4 +1,4 @@
-{ config, lib, pkgs, secrets, ... }: let
+{ config, lib, pkgs, secrets, networks, ... }: let
   removeCIDR = with lib; str: head (splitString "/" str);
 in {
   containers.named = {
@@ -32,8 +32,10 @@ in {
         "77.109.128.2"
         "213.144.129.20"
       ];
-      listenOn = map removeCIDR [ secrets.network.zkx.Minerva.host4 ];
-      listenOnIpv6 = map removeCIDR [ secrets.network.zkx.Minerva.host6 ];
+      listenOn = map removeCIDR
+        [ networks.zkx.publicInternalAddresses.Minerva.v4 ];
+      listenOnIpv6 = map removeCIDR
+        [ networks.zkx.publicInternalAddresses.Minerva.v6 ];
       zones = secrets.network.allDnsZones;
     };
     config.services.prometheus.exporters.bind.enable = true;

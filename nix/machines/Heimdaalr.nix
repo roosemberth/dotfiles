@@ -196,12 +196,12 @@
     systemd.services.nginx.after = ["acme-finished-orbstheorem.ch.target"];
     systemd.services.nginx.requires = ["acme-finished-orbstheorem.ch.target"];
   };
-  monitoringConfig = { secrets, ... }: {
+  monitoringConfig = { network, ... }: {
     services.prometheus.exporters.node.enable = true;
     services.prometheus.exporters.node.enabledCollectors = [ "systemd" ];
     services.prometheus.exporters.node.listenAddress = let
       removeCIDR = with lib; str: head (splitString "/" str);
-    in removeCIDR secrets.network.zkx.Heimdaalr.host4;
+    in removeCIDR networks.zkx.publicInternalAddresses.Heimdaalr.v4;
     # Prometheus binds to a wireguard address...
     systemd.services."prometheus-node-exporter".after =
       ["wireguard-Bifrost.service"];

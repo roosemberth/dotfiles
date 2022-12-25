@@ -65,7 +65,6 @@ in {
           enable = true;
           hosts = [
             "Heimdaalr.orbstheorem.ch"
-            secrets.network.zkx.Heimdaalr.ep.addr
             "ipv6.google.com"
             "ipv4.google.com"
           ];
