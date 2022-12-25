@@ -47,6 +47,8 @@ in {
 
       services.matrix-synapse.enable = true;
       services.matrix-synapse.dataDir = "/var/lib/matrix-synapse";
+      services.matrix-synapse.extraConfigFiles =
+        [ fsec."services/matrix/config_secrets".path ];
       services.matrix-synapse.settings = {
         server_name = "orbstheorem.ch";
         listeners = [{
@@ -83,15 +85,14 @@ in {
         report_stats = true;
         tls_certificate_path = fsec."services/matrix/tls_certificate".path;
         tls_private_key_path = fsec."services/matrix/tls_private_key".path;
-        inherit (secrets.matrix)
-          turn_uris
-          turn_shared_secret
-          database
-          registration_shared_secret
-          ;
         app_service_config_files = [
           fsec."services/matrix_appservice_discord/registration".path
         ];
+        # Silence assertion, this is configured in `config_secrets`.
+        database.args.host = "databases";
+        database.args.name = "psycopg2";
+        database.args.user = null;
+        database.args.password = null;
       };
       systemd.services.link-discord-appservice-registration = {
         description = "Link discord's appservice registration";
@@ -166,6 +167,7 @@ in {
     "services/matrix/tls_dh_params" = secretCfg;
     "services/matrix/tls_certificate" = secretCfg;
     "services/matrix/tls_private_key" = secretCfg;
+    "services/matrix/config_secrets" = secretCfg;
     "services/matrix_appservice_discord/env" = secretCfg;
     "services/matrix_appservice_discord/registration" = secretCfg;
   };
@@ -177,6 +179,7 @@ in {
     chown ${o}:${g} "${fsec."services/matrix/tls_dh_params".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_certificate".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
+    chown ${o}:${g} "${fsec."services/matrix/config_secrets".path}"
     chown ${o}:${g} "${fsec."services/matrix_appservice_discord/registration".path}"
   '';
 }
