@@ -40,6 +40,7 @@ in
         EDITOR = "nvim";
       };
 
+      programs.zsh-roos.enable = true;
       systemd.user.startServices = true;
 
       xdg = {
@@ -56,7 +57,6 @@ in
         python3 python3Packages.ipython glances
       ];
       programs.vim-roos.enable = true;
-      programs.zsh-roos.enable = true;
 
       xdg = {
         mime.enable = true;
