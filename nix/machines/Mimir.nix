@@ -60,6 +60,7 @@ in {
     bluetooth.package = pkgs.bluez;
 
     cpu.intel.updateMicrocode = true;
+    ledger.enable = true;
 
     opengl.enable = true;
     opengl.extraPackages = with pkgs;
