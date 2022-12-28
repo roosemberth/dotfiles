@@ -10,7 +10,6 @@
         format = builtins.concatStringsSep "" [
           "$username"
           "$hostname"
-          "$shlvl"
           "$directory"
           "$git_branch"
           "$git_commit"
