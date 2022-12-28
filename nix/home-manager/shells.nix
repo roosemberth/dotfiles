@@ -18,7 +18,6 @@
           "$git_status"
           "$nix_shell"
           "$memory_usage"
-          "$sudo"
           "$cmd_duration"
           "$line_break"
           "$jobs"
