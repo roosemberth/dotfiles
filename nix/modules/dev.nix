@@ -23,7 +23,6 @@ in {
         haskell-language-server
         cabal2nix
         cabal-install
-        brittany
         hpack
       ]);
 
