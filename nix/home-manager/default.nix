@@ -10,6 +10,7 @@ in {
     ./actions.nix
     ./media.nix
     ./shells.nix
+    ./reactimate-files.nix
     ./roos-sway-config.nix
     ./sway-session.nix
     ./swaync.nix
