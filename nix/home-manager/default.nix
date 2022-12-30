@@ -13,6 +13,7 @@ in {
     ./reactimate-files.nix
     ./roos-sway-config.nix
     ./sway-session.nix
+    ./wayland-session.nix
     ./swaync.nix
     ./test-module.nix
     ./vim-roos.nix
