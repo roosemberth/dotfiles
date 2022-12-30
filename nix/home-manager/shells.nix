@@ -8,9 +8,9 @@
       enable = true;
       settings = {
         format = builtins.concatStringsSep "" [
+          "$jobs"
           "$username"
           "$hostname"
-          "$directory"
           "$git_branch"
           "$git_commit"
           "$git_state"
@@ -19,8 +19,8 @@
           "$memory_usage"
           "$cmd_duration"
           "$line_break"
-          "$jobs"
           "$battery"
+          "$directory"
           "$status"
           "$character"
         ];
