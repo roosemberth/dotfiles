@@ -12,6 +12,7 @@ in {
     ./shells.nix
     ./reactimate-files.nix
     ./roos-sway-config.nix
+    ./hyprland-session.nix
     ./sway-session.nix
     ./wayland-session.nix
     ./swaync.nix

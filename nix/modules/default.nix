@@ -57,6 +57,7 @@ in {
     ./unfree.nix
     ./user-profiles/roosemberth.nix
     ./users.nix
+    ./hyprland-session.nix
     ./sway-session.nix
     ./layout-trees.nix
     ./wireguard.nix
