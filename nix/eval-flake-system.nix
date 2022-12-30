@@ -27,6 +27,18 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
         }).allModules;
     })
 
+    # Hyperland
+    ({ lib, ... }: with lib; {
+      # Imports under mkIf are not supported.
+      imports = optional (hasAttr "hyprland" inputs)
+        inputs.hyprland.nixosModules.default;
+
+      config = mkIf (hasAttr "hyprland" inputs) {
+        home-manager.sharedModules = [ inputs.hyprland.homeManagerModules.default ];
+        nixpkgs.overlays = [ inputs.hyprland.overlays.default ];
+      };
+    })
+
     # Bootstrap optional overlays
     ({ lib, ... }: with lib; let
       ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;
