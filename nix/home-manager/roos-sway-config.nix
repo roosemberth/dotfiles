@@ -21,11 +21,7 @@ in {
         "${mod}+F4"                    = "kill";
         "${mod}+c+Control"             = "reload";
         "${mod}+mod1+Control+F4+Shift" = "exec swaymsg exit";
-        "${mod}+t+Control" = ''
-          exec tmux list-sessions \
-          | grep -v flyway | grep -oP '^[^:]+(?!.*attached)' \
-          | xargs -n1 setsid ${term} -e tmux attach -t
-        '';
+        "${mod}+t+Control" = "exec ${actions."exec:term:attach-tmux".script}";
         "${mod}+Print" = ''
           exec swaymsg -t get_tree \
           | jq -r '.. | select(.pid? and .visible?)| .rect \
@@ -39,11 +35,7 @@ in {
         "${mod}+m"            = "exec makoctl dismiss";
         "${mod}+Return"       = "exec ${term} -e tmux";
         "${mod}+Return+Shift" = "exec ${term}";
-        "${mod}+v"            = ''
-          exec mpv "$(wl-paste)" --load-unsafe-playlists \
-            --script-opts=try_ytdl_first=yes \
-            --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
-        '';
+        "${mod}+v"            = "exec ${actions."exec:mpv:clipboard".script}";
         "${mod}+XF86AudioMute" = ''
           exec ${pkgs.remap-pa-client}/bin/remap-pa-client
         '';
@@ -99,11 +91,8 @@ in {
 
         # Scratchpad
         "${mod}+q"              = "exec tmux detach-client -s flyway";
-        "${mod}+q+Shift"        = "exec ${term} -a Scratchpad-flyway -- tmux new -As flyway";
-        "${mod}+Return+Control" = ''
-          exec OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER ${term} \
-            -W 120x10 -a launcher -e zsh
-        '';
+        "${mod}+q+Shift"        = "exec ${actions."exec:term:open-scratchpad".script}";
+        "${mod}+Return+Control" = "exec ${actions."exec:launcher:open".script}";
 
         ## Manage notifications
         "XF86Tools" = "exec ${actions."notifs:open".cmd}; mode notification-center";
@@ -205,9 +194,7 @@ in {
     systemdIntegration = false;  # Manually managed...
 
     # TODO: Integrate with the home-manager sway module...
-    extraConfig = let
-      getActiveCard = "pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g'";
-    in ''
+    extraConfig = ''
       bindsym --locked ${mod}+XF86Display          output eDP-1 toggle
 
       bindsym --locked ${mod}+Delete               exec ${actions."player:play-pause".cmd}
@@ -223,9 +210,9 @@ in {
 
       bindsym --locked XF86Favorites exec systemd-inhibit --what=handle-lid-switch ${lockcmd}
 
-      bindsym --locked XF86AudioMute        exec pactl set-sink-mute   "$(${getActiveCard})" toggle
-      bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume "$(${getActiveCard})" -5%
-      bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume "$(${getActiveCard})" +5%
+      bindsym --locked XF86AudioMute        exec ${actions."audio:vol-mute".script}
+      bindsym --locked XF86AudioLowerVolume exec ${actions."audio:vol-down".script}
+      bindsym --locked XF86AudioRaiseVolume exec ${actions."audio:vol-up".script}
     '';
   };
 }

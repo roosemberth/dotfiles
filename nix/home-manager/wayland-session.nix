@@ -60,6 +60,30 @@ in {
     qt.style.name = "adwaita-dark";
     qt.style.package = pkgs.adwaita-qt;
 
+    roos.actions = let
+      getActiveCard = "pactl list sinks | grep -B 1 RUNNING | sed '1q;d' | sed 's/[^0-9]\\+//g'";
+    in {
+      "exec:mpv:clipboard" = ''
+        mpv "$(wl-paste)" --load-unsafe-playlists \
+          --script-opts=try_ytdl_first=yes \
+          --ytdl-format='bestvideo[height<=?1080]+bestaudio/best'
+      '';
+      "exec:term:attach-tmux" = ''
+        tmux list-sessions \
+          | grep -v flyway | grep -oP '^[^:]+(?!.*attached)' \
+          | xargs -n1 setsid ${pkgs.foot}/bin/foot -e tmux attach -t
+      '';
+      "exec:term:open-scratchpad" = ''
+        ${pkgs.foot}/bin/foot -a Scratchpad-flyway -- tmux new -As flyway
+      '';
+      "exec:launcher:open" = ''
+        OLD_ZDOTDIR=$ZDOTDIR ZDOTDIR=$ZDOTDIR_LAUNCHER ${pkgs.foot}/bin/foot \
+          -W 120x10 -a launcher -e zsh
+      '';
+      "audio:vol-mute" = ''pactl set-sink-mute   "$(${getActiveCard})" toggle'';
+      "audio:vol-up"   = ''pactl set-sink-volume "$(${getActiveCard})" +5%'';
+      "audio:vol-down" = ''pactl set-sink-volume "$(${getActiveCard})" -5%'';
+    };
     roos.media.enable = true;
 
     systemd.user.services.ssh-agent = {
