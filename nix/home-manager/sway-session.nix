@@ -38,8 +38,8 @@ in {
     session.wayland.enable = true;
     systemd.user.services.waybar = {
       Unit.Description = "A wayland taskbar";
-      Unit.PartOf = [ "graphical-session.target" ];
-      Install.WantedBy = [ "graphical-session.target" ];
+      Unit.PartOf = [ "sway-session.target" ];
+      Install.WantedBy = [ "sway-session.target" ];
       Service = {
         ExecStart = "${waybar'}/bin/waybar";
         Restart = "always";
