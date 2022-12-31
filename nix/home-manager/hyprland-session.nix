@@ -34,6 +34,12 @@ in {
         RestartSec = "3";
       };
     };
+    # There seems to be no reliable way to specify a custom configuration path.
+    # Symlink this as a hack in the meantime...
+    systemd.user.tmpfiles.rules = let
+      target = "%h/.local/etc/hypr/hyprland.conf";
+      toCreate = "%h/.config/hypr/hyprland.conf";
+    in ["L+ ${toCreate} - - - - ${target}"];
 
     wayland.windowManager.hyprland = {
       enable = true;
