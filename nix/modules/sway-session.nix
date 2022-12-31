@@ -14,7 +14,7 @@
     };
 
     nixpkgs.config.packageOverrides = pkgs: {
-      pass = pkgs.pass.override { waylandSupport = true; };
+      pass = pkgs.pass-wayland;
     };
 
     programs.sway.enable = true;

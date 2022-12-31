@@ -5,7 +5,7 @@
     fonts.fonts = with pkgs; [ font-awesome noto-fonts-emoji ];
 
     nixpkgs.config.packageOverrides = pkgs: {
-      pass = pkgs.pass.override { waylandSupport = true; };
+      pass = pkgs.pass-wayland;
     };
 
     programs.hyprland.enable = true;
