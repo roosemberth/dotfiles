@@ -18,6 +18,8 @@ in {
   options.sessions.hyprland.enable = mkEnableOption "Hyprland wayland session";
 
   config = mkIf config.sessions.hyprland.enable {
+    programs.swaync.enable = true;
+
     session.wayland.enable = true;
     systemd.user.services.waybar-hyprland = {
       Unit.Description = "A wayland taskbar for hyprland";
