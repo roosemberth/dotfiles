@@ -12,30 +12,17 @@
         --add-flags "--config ${cfgFile} --style ${styleFile}"
     '';
   };
-
-  swaylock' = with pkgs; stdenv.mkDerivation {
-    name = "swaylock-wrapped";
-    version = swaylock-effects.version;
-    nativeBuildInputs = [ makeWrapper ];
-
-    buildCommand = ''
-      makeWrapper ${swaylock-effects}/bin/swaylock "$out/bin/swaylock" \
-        --add-flags "--screenshots --clock --effect-blur 7x5" \
-        --add-flags "--effect-vignette 0.5:0.5 --fade-in 0.25"
-    '';
-  };
 in {
   options.sessions.sway.enable = mkEnableOption "Sway-based wayland session";
 
   config = mkIf config.sessions.sway.enable {
-    home.packages = with pkgs; [
-      waybar' dmenu swaylock' swayidle
-    ];
+    home.packages = with pkgs; [ waybar' dmenu ];
 
     programs.sway.roos-cfg.enable = true;
     programs.swaync.enable = true;
 
     session.wayland.enable = true;
+    session.wayland.swayidle.enable = true;
     systemd.user.services.waybar = {
       Unit.Description = "A wayland taskbar";
       Unit.PartOf = [ "sway-session.target" ];

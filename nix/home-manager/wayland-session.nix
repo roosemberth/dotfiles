@@ -13,12 +13,26 @@
     fi
   '';
 
+  swaylock' = with pkgs; stdenv.mkDerivation {
+    name = "swaylock-wrapped";
+    version = swaylock-effects.version;
+    nativeBuildInputs = [ makeWrapper ];
+
+    buildCommand = ''
+      makeWrapper ${swaylock-effects}/bin/swaylock "$out/bin/swaylock" \
+        --add-flags "--screenshots --clock --effect-blur 7x5" \
+        --add-flags "--effect-vignette 0.5:0.5 --fade-in 0.25"
+    '';
+  };
+
 in {
   options.session.wayland.enable = mkEnableOption ''
     Wayland session support
 
     This module contains all configuration common to wayland sessions.
   '';
+  options.session.wayland.swayidle.enable =
+    mkEnableOption "Idle manager for wlroots compositors";
 
   config = mkIf config.session.wayland.enable {
     dconf = {
@@ -47,7 +61,7 @@ in {
       wdisplays wl-clipboard wl-clipboard-x11 mpc_cli
       pinentry' x11_ssh_askpass
       adwaita-qt pavucontrol pulseaudio wireplumber wayvnc
-    ];
+    ] ++ optionals config.session.wayland.swayidle.enable [ swaylock' swayidle ];
 
     programs.foot.enable = true;
     programs.foot.settings.main = {
@@ -95,6 +109,25 @@ in {
         Restart = "always";
         RestartSec = "3";
         Environment = [ "SSH_ASKPASS=${pkgs.x11_ssh_askpass}/libexec/ssh-askpass" ];
+      };
+    };
+
+    systemd.user.services.swayidle = mkIf config.session.wayland.swayidle.enable {
+      Unit.Description = "Idle Manager for wlroots-based wayland compositors";
+      Unit.Documentation = [ "man:swayidle(1)" ];
+      Unit.PartOf = [ "graphical-session.target" ];
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = ''
+          ${pkgs.swayidle}/bin/swayidle -w idlehint 300 \
+            timeout 300   "${swaylock'}/bin/swaylock -f" \
+            timeout 600   'swaymsg "output * dpms off"' \
+            resume        'swaymsg "output * dpms on"' \
+            before-sleep  "${swaylock'}/bin/swaylock -f" \
+            lock          "${swaylock'}/bin/swaylock -f"
+        '';
+        Restart = "always";
+        RestartSec = "3";
       };
     };
 

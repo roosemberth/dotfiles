@@ -6,7 +6,6 @@ in {
     cfg = config.wayland.windowManager.sway;
     mod = cfg.config.modifier;
     term = cfg.config.terminal;
-    lockcmd = "swaylock -c 00000050";
     selectWs = "swaymsg -t get_workspaces | jq 'map(.name)|.[]' | dmenu";
     actions = config.roos.actions;
   in mkIf config.programs.sway.roos-cfg.enable {
@@ -177,15 +176,6 @@ in {
         { command = "systemctl --user start graphical-session-pre.target"; }
         { command = "systemctl --user start graphical-session.target"; }
         { command = "systemctl --user start sway-session.target"; }
-        { command = ''
-            swayidle -w idlehint 300 \
-              timeout 300   "${lockcmd} -f" \
-              timeout 600   'swaymsg "output * dpms off"' \
-              resume        'swaymsg "output * dpms on"' \
-              before-sleep  "${lockcmd} -f" \
-              lock          "${lockcmd} -f"
-          '';
-        }
       ];
 
       workspaceAutoBackAndForth = true;
@@ -208,7 +198,7 @@ in {
       bindsym --locked XF86MonBrightnessUp         exec brightnessctl s 5%+
       bindsym --locked XF86MonBrightnessUp+Shift   exec brightnessctl s 100%
 
-      bindsym --locked XF86Favorites exec systemd-inhibit --what=handle-lid-switch ${lockcmd}
+      bindsym --locked XF86Favorites exec systemd-inhibit --what=handle-lid-switch swaylock
 
       bindsym --locked XF86AudioMute        exec ${actions."audio:vol-mute".script}
       bindsym --locked XF86AudioLowerVolume exec ${actions."audio:vol-down".script}
