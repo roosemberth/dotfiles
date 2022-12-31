@@ -37,8 +37,7 @@ I try to keep them organized by hostname.
 _NixOS modules_-inspired module system containing system-wide configurations.
 
 These modules are very similar to NixOS modules (and may be used as staging
-before being upstreamed). Note however that an additional argument (`secrets`)
-is available in the module call scope (see [secrets](#secrets)).
+before being upstreamed).
 
 Importing `nix/modules` will recursively source any `*.nix` file under it
 (except for `default.nix` or `util.nix`).
@@ -92,19 +91,14 @@ provide features.
 Secrets such as user password hashes, SSH keypairs, user email accounts and
 opaque configurations.
 
-Files under `nix/secrets` are encrypted to my GPG key using [git-crypt
-](https://github.com/AGWA/git-crypt).
-The secrets attrset is declared in `nix/secrets.nix`.
-I intend to keep this file as transparent as possible so that anybody can
-make themselves an idea of the secrets structure.
+I used to encrypt nix expressions using [git-crypt][].
+Because of this it was not possible to evaluate or build without access to my
+private PGP key.
+I've since moved to using [sops-nix][] to secure secrets pertaining to hosts and
+services.
 
-The secrets attrset is added to the includes call scope.
-This allows modules and other sourced nix files (such as machine static
-configuration) to simply take the argument `secrets` as an input, without
-worrying about how these secrets were provisioned.
-Modules may then access secrets as a regular attribute set.
-
-I try to keep secrets as minimal as possible.
+[git-crypt]: https://github.com/AGWA/git-crypt
+[sops-nix]: https://github.com/Mic92/sops-nix
 
 ## Application configurations
 
