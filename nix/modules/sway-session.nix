@@ -17,6 +17,16 @@
       pass = pkgs.pass.override { waylandSupport = true; };
     };
 
+    programs.sway.enable = true;
+    programs.sway.extraPackages = [];  # Managed by sway-session.nix
+    programs.sway.wrapperFeatures.gtk = true;
+    programs.sway.extraSessionCommands = ''
+      export MOZ_ENABLE_WAYLAND=1
+      export MOZ_USE_XINPUT2=1
+      export XDG_SESSION_TYPE=wayland
+      export XDG_CURRENT_DESKTOP=sway
+    '';
+
     roos.gConfig.config = {
       home.packages = with pkgs; [ gammastep ];
       sessions.sway.enable = true;
@@ -28,21 +38,11 @@
       };
     };
 
-    programs.sway.enable = true;
-    programs.sway.extraPackages = [];  # Managed by sway-session.nix
-    programs.sway.wrapperFeatures.gtk = true;
-    programs.sway.extraSessionCommands = ''
-      export MOZ_ENABLE_WAYLAND=1
-      export MOZ_USE_XINPUT2=1
-      export XDG_SESSION_TYPE=wayland
-      export XDG_CURRENT_DESKTOP=sway
-    '';
-
-    xdg.portal.enable = true;
-
-    services.pipewire.enable = true;
     services.greetd.enable = true;
     services.greetd.settings.default_session.command =
       "${lib.makeBinPath [pkgs.greetd.tuigreet]}/tuigreet --time --cmd sway";
+    services.pipewire.enable = true;
+
+    xdg.portal.enable = true;
   };
 }
