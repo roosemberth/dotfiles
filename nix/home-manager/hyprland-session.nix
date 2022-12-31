@@ -23,6 +23,7 @@ in {
     programs.swaync.enable = true;
 
     session.wayland.enable = true;
+    session.wayland.swayidle.enable = true;
     systemd.user.services.waybar-hyprland = {
       Unit.Description = "A wayland taskbar for hyprland";
       Unit.PartOf = [ "hyprland-session.target" ];
