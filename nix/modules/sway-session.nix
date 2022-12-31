@@ -2,8 +2,6 @@
   options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
   config = mkIf config.roos.sway.enable {
-    fonts.fonts = with pkgs; [ font-awesome noto-fonts-emoji ];
-
     i18n.inputMethod = {
       enabled = "ibus";
       ibus.engines = with pkgs.ibus-engines; let
@@ -11,10 +9,6 @@
           langs = [ "de-ch" "en-us" "es-sv" "fr-moderne" "it-it" "ru-ru" ];
         };
       in [ typing-booster' ];
-    };
-
-    nixpkgs.config.packageOverrides = pkgs: {
-      pass = pkgs.pass-wayland;
     };
 
     programs.sway.enable = true;
@@ -28,7 +22,6 @@
     '';
 
     roos.gConfig.config = {
-      home.packages = with pkgs; [ gammastep ];
       sessions.sway.enable = true;
       # Allocate sway-session target so other automation can depend on it.
       systemd.user.targets."sway-session" = {
@@ -37,12 +30,6 @@
         # This target is started by sway
       };
     };
-
-    services.greetd.enable = true;
-    services.greetd.settings.default_session.command =
-      "${lib.makeBinPath [pkgs.greetd.tuigreet]}/tuigreet --time --cmd sway";
-    services.pipewire.enable = true;
-
-    xdg.portal.enable = true;
+    roos.wayland.enable = true;
   };
 }

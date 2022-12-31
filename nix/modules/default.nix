@@ -59,6 +59,7 @@ in {
     ./users.nix
     ./hyprland-session.nix
     ./sway-session.nix
+    ./wayland-session.nix
     ./layout-trees.nix
     ./wireguard.nix
     ./wireguard-new.nix

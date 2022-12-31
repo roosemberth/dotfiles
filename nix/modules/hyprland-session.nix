@@ -2,12 +2,6 @@
   options.roos.hyprland.enable = mkEnableOption "Enable Hyprland support.";
 
   config = mkIf config.roos.hyprland.enable {
-    fonts.fonts = with pkgs; [ font-awesome noto-fonts-emoji ];
-
-    nixpkgs.config.packageOverrides = pkgs: {
-      pass = pkgs.pass-wayland;
-    };
-
     programs.hyprland.enable = true;
 
     roos.gConfig.config = {
@@ -19,10 +13,6 @@
         # This target is started by hyprland
       };
     };
-
-    services.greetd.enable = true;
-    services.greetd.settings.hyprland.command =
-      "${lib.makeBinPath [pkgs.greetd.tuigreet]}/tuigreet --time --cmd Hyprland";
-    services.pipewire.enable = true;
+    roos.wayland.enable = true;
   };
 }
