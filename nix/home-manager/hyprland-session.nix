@@ -18,6 +18,8 @@ in {
   options.sessions.hyprland.enable = mkEnableOption "Hyprland wayland session";
 
   config = mkIf config.sessions.hyprland.enable {
+    home.packages = [ config.roos.actions-package ];
+
     programs.swaync.enable = true;
 
     session.wayland.enable = true;
@@ -32,13 +34,10 @@ in {
       };
     };
 
-    wayland.windowManager.hyprland = let
-      terminal = "${pkgs.foot}/bin/foot";
-    in {
+    wayland.windowManager.hyprland = {
       enable = true;
-      extraConfig = ''
-        bind=SUPER,RETURN,exec,${terminal}
-      '';
+      extraConfig = builtins.readFile
+        (dotfileUtils.fetchDotfile "etc/hyprland.conf");
     };
   };
 }
