@@ -3,8 +3,8 @@
   "position": "top",
   "height": 20,
 
-  "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["sway/window"],
+  "modules-left": ["wlr/workspaces", "sway/mode", "hyprland/submap"],
+  "modules-center": ["sway/window", "hyprland/window"],
   "modules-right": [
     "idle_inhibitor",
     "pulseaudio",
@@ -17,8 +17,11 @@
     "clock"
   ],
 
+  "hyprland/window": {
+    "separate-outputs": true
+  },
+
   "sway/workspaces": {
-    "numeric-first": true,
     "format": "{icon} {value}",
     "format-icons": {
       "1": "",
