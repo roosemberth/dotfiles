@@ -1,30 +1,44 @@
 # dotfiles
 
 This is my collection of user/application/system settings & configurations.
-It was founded on the bases of my old dotfiles repository and [ayekat's dotfiles
-repository](https://github.com/ayekat/dotfiles).
-Over the years both have diverged and I have decided to break implicit
-compatibility across them.
-However they both share a very similar ideology.
-A key difference is that this repository does not (_or at least tries not to_)
-assume any FHS locations.
-This plays really well with [NixOS](https://nixos.org) at expense of complexity.
-Hence some application configurations must be rendered before they can be used
-(see [application configurations](#application-configurations)).
-If you're interested on something more standard, go check ayekat's repository.
-
-Application configurations are usually under the `etc` directory.
+It started as a collection of configuration files and shells scripts shared
+among friends at uni and now lives as my personal project to put in code all
+aspects of software I use in my personal computers.
+This is possible thanks to Nix and NixOS.
 
 ## NixOS
 
-I use [NixOS](https://nixos.org) to manage system and user configurations.
-Some application configuration is also managed using my own [_Home Manager_
-][Home manager]-inspired module system, but I try to
-keep application configuration files as portable as possible (see
-[the dedicated section](#application-configurations)).
+At its heart, this repository is essentially a set of Nix expressions.
+I use [NixOS][] and [Home manager][] to manage system and user configurations
+on several devices. On top of this, I've built my own experiments and tools.
 
-Since I often use a very similar configuration across different devices, I try
-to split the configuration at different levels:
+[NixOS]: https://nixos.org
+[Home manager]: https://nix-community.github.io/home-manager/
+
+### Organisation
+
+> This section can be safely skipped.
+
+I use [Nix flakes][], an "upcoming" feature of Nix allowing me to borrow nix
+expressions from other people and publish my own in a way that promotes reuse
+and sharing. However, due to both technical requirements and curiosity, I've
+diverged a bit in structure from most flakes you'll find online.
+
+[Nix flakes]: https://nixos.wiki/wiki/Flakes
+
+I maintain systems on different NixOS distributions: As a rule of thumb, servers
+and other services where I choose reliability and low maintenance cost over
+flexibility use the latest stable release, whereas devices I interact with more
+often are on NixOS unstable.
+
+To aleviate the complexity of evaluating the borrowed code with each version to
+then build system derivations, I've introduced the concept of 'distributions'.
+A distribution is a projection of borrowed code on some NixOS version.
+
+Finally, every host is evaluated through `./nix/eval-flake-system.nix`.
+This file is responsible for typing all borrowed code together with the NixOS
+(`nix/modules/`) and Home manager modules (`nix/home-manager/`) where I have
+created my own little abstractions.
 
 ### Machine configurations (`nix/machines`):
 
@@ -42,10 +56,9 @@ before being upstreamed).
 Importing `nix/modules` will recursively source any `*.nix` file under it
 (except for `default.nix` or `util.nix`).
 
-### User modules
+### Home manager modules
 
-[Home Manager][Home manager]-based module system with
-configuration profiles.
+[Home Manager][Home manager]-based module system with configuration profiles.
 
 Each module may provide features to an user configuration profile.
 Each user may be assigned to zero or one configuration profiles.
