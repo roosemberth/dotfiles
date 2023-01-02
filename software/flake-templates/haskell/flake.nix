@@ -17,7 +17,7 @@
     devShells = forAllSystems (pkgs: with pkgs; {
       default = mkShell {
         inputsFrom = [ mypackage ];
-        packages = [ cabal-install haskell-language-server brittany ];
+        packages = [ cabal-install haskell-language-server fourmolu ];
       };
     });
 

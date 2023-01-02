@@ -62,7 +62,7 @@ lspconfig.hls.setup {
   on_attach = on_generic_lsp_attach,
   settings = {
     haskell = {
-      formattingProvider = "brittany",
+      formattingProvider = "fourmolu",
     }
   }
 }
