@@ -4,124 +4,6 @@ in {
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
 
-  matrix-federation-tester = with final; buildGoModule rec {
-    pname = "matrix-federation-tester";
-    version = "0.2";
-    src = fetchFromGitHub {
-      owner = "matrix-org";
-      repo = "matrix-federation-tester";
-      rev = "v${version}";
-      sha256 = "sha256-Z1/2hWHsmLtOeHUgr/Jr0FF8WRsbUGWaKbiqTdSvKDU=";
-    };
-    vendorSha256 = "sha256-1zbNYB6S72/uzoeUMdaCQjzKOZ1xTlGc3oseXWGyetA=";
-    meta = with lib; {
-      description = "Tester for matrix federation written in golang";
-      homepage = "https://github.com/matrix-org/matrix-federation-tester";
-      maintainers = with maintainers; [ roosemberth ];
-      platforms = platforms.linux;
-    };
-  };
-
-  wl-clipboard-x11 = with final; stdenv.mkDerivation rec {
-    name = "wl-clipboard-x11";
-    version = "5";
-    src = fetchFromGitHub {
-      owner = "brunelli";
-      repo = "wl-clipboard-x11";
-      rev = "v${version}";
-      sha256 = "sha256-i+oF1Mu72O5WPTWzqsvo4l2CERWWp4Jq/U0DffPZ8vg=";
-    };
-    makeFlags = [ "PREFIX=$(out)" ];
-  };
-
-  matrix-alertmanager-receiver = with final; buildGoModule rec {
-    pname = "matrix-alertmanager-receiver";
-    version = "0.1.2";
-    src = fetchgit {
-      url = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
-      rev = "refs/tags/${version}";
-      sha256 = "sha256-F6Cn0lmASAjWGEBCmyLdfz4r06fDTEfZQcynfA/RRtI=";
-    };
-    vendorSha256 = "sha256-7tRCX9FzOsLXCTWWjLp3hr1kegt1dxsbCKfC7tICreo=";
-    meta = with lib; {
-      description = "Forwards prometheus alerts to Matrix rooms";
-      homepage = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
-      maintainers = with maintainers; [ roosemberth ];
-      platforms = platforms.all;
-    };
-  };
-
-  remap-pa-client = with final; python3.pkgs.buildPythonApplication {
-    pname = "remap-pa-client";
-    version = "0.0";
-    src = ./remap-pa-client/remap-pa-client.py;
-    dontUnpack = true;
-    format = "other";
-    propagatedBuildInputs = [ python3.pkgs.pulsectl jq foot fzf sway ];
-    installPhase = ''
-      mkdir -p "$out/bin"
-      cp $src "$out/bin/remap-pa-client"
-      chmod +x "$out/bin/remap-pa-client"
-    '';
-  };
-
-  nvim-roos-core = nvim.core;
-  nvim-roos-essential = nvim.essential;
-  nvim-roos-full = nvim.full;
-
-  recla-certs = with final; stdenv.mkDerivation {
-    name = "recla-certs";
-    version = "22011001";
-    srcs = [
-      (pkgs.fetchurl {
-        url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-jvrB6mvOyJ1HuYMZS8qqogOaJ0AOR9vuRooLf5p5t5I=";
-      })
-      (pkgs.fetchurl {
-        url = "https://www.rec.la/rec.la-key.pem";
-        hash = "sha256-biwuc3HQBxXYzYKOwMYhHNWrP5z7ytmZY1Bgk5TolxI=";
-      })
-    ];
-    phases = [ "buildPhase" ];
-    buildPhase = ''
-      mkdir "$out"
-      for _src in $srcs; do
-        cp "$_src" "$out/$(basename "$(stripHash "$_src")")"
-      done
-    '';
-  };
-
-  youtube-dl = final.yt-dlp.override { withAlias = true; };
-
-  # Can't overrideAttrs over prev: vendorSha256 doesn't get updated...
-  prometheus-bind-exporter = let
-    pkg =
-      { lib, buildGoModule, fetchFromGitHub, nixosTests }:
-      buildGoModule rec {
-        pname = "bind_exporter";
-        version = "0.5.0";
-
-        src = fetchFromGitHub {
-          rev = "v${version}";
-          owner = "prometheus-community";
-          repo = "bind_exporter";
-          sha256 = "sha256-ta+uy0FUEMcL4SW1K3v2j2bfDRmdAIz42MKPsNj4FbA=";
-        };
-
-        vendorSha256 = "sha256-L0jZM83u423tiLf7kcqnXsQi7QBvNEXhuU+IwXXAhE0=";
-
-        passthru.tests = { inherit (nixosTests.prometheus-exporters) bind; };
-
-        meta = with lib; {
-          description = "Prometheus exporter for bind9 server";
-          homepage = "https://github.com/digitalocean/bind_exporter";
-          license = licenses.asl20;
-          maintainers = with maintainers; [ rtreffer ];
-          platforms = platforms.unix;
-        };
-      };
-  in final.callPackage pkg {};
-
   layout-trees-generator = with final; rustPlatform.buildRustPackage rec {
     pname = "layout-trees-generator";
     version = "0.1.0";
@@ -154,6 +36,110 @@ in {
     '';
   };
 
+  matrix-alertmanager-receiver = with final; buildGoModule rec {
+    pname = "matrix-alertmanager-receiver";
+    version = "0.1.2";
+    src = fetchgit {
+      url = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
+      rev = "refs/tags/${version}";
+      sha256 = "sha256-F6Cn0lmASAjWGEBCmyLdfz4r06fDTEfZQcynfA/RRtI=";
+    };
+    vendorSha256 = "sha256-7tRCX9FzOsLXCTWWjLp3hr1kegt1dxsbCKfC7tICreo=";
+    meta = with lib; {
+      description = "Forwards prometheus alerts to Matrix rooms";
+      homepage = "https://git.sr.ht/~fnux/matrix-alertmanager-receiver";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.all;
+    };
+  };
+
+  matrix-federation-tester = with final; buildGoModule rec {
+    pname = "matrix-federation-tester";
+    version = "0.2";
+    src = fetchFromGitHub {
+      owner = "matrix-org";
+      repo = "matrix-federation-tester";
+      rev = "v${version}";
+      sha256 = "sha256-Z1/2hWHsmLtOeHUgr/Jr0FF8WRsbUGWaKbiqTdSvKDU=";
+    };
+    vendorSha256 = "sha256-1zbNYB6S72/uzoeUMdaCQjzKOZ1xTlGc3oseXWGyetA=";
+    meta = with lib; {
+      description = "Tester for matrix federation written in golang";
+      homepage = "https://github.com/matrix-org/matrix-federation-tester";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.linux;
+    };
+  };
+
+  nvim-roos-core = nvim.core;
+  nvim-roos-essential = nvim.essential;
+  nvim-roos-full = nvim.full;
+
+  # Can't overrideAttrs over prev: vendorSha256 doesn't get updated...
+  prometheus-bind-exporter = let
+    pkg =
+      { lib, buildGoModule, fetchFromGitHub, nixosTests }:
+      buildGoModule rec {
+        pname = "bind_exporter";
+        version = "0.5.0";
+
+        src = fetchFromGitHub {
+          rev = "v${version}";
+          owner = "prometheus-community";
+          repo = "bind_exporter";
+          sha256 = "sha256-ta+uy0FUEMcL4SW1K3v2j2bfDRmdAIz42MKPsNj4FbA=";
+        };
+
+        vendorSha256 = "sha256-L0jZM83u423tiLf7kcqnXsQi7QBvNEXhuU+IwXXAhE0=";
+
+        passthru.tests = { inherit (nixosTests.prometheus-exporters) bind; };
+
+        meta = with lib; {
+          description = "Prometheus exporter for bind9 server";
+          homepage = "https://github.com/digitalocean/bind_exporter";
+          license = licenses.asl20;
+          maintainers = with maintainers; [ rtreffer ];
+          platforms = platforms.unix;
+        };
+      };
+  in final.callPackage pkg {};
+
+  recla-certs = with final; stdenv.mkDerivation {
+    name = "recla-certs";
+    version = "22011001";
+    srcs = [
+      (pkgs.fetchurl {
+        url = "https://www.rec.la/rec.la-bundle.crt";
+        hash = "sha256-jvrB6mvOyJ1HuYMZS8qqogOaJ0AOR9vuRooLf5p5t5I=";
+      })
+      (pkgs.fetchurl {
+        url = "https://www.rec.la/rec.la-key.pem";
+        hash = "sha256-biwuc3HQBxXYzYKOwMYhHNWrP5z7ytmZY1Bgk5TolxI=";
+      })
+    ];
+    phases = [ "buildPhase" ];
+    buildPhase = ''
+      mkdir "$out"
+      for _src in $srcs; do
+        cp "$_src" "$out/$(basename "$(stripHash "$_src")")"
+      done
+    '';
+  };
+
+  remap-pa-client = with final; python3.pkgs.buildPythonApplication {
+    pname = "remap-pa-client";
+    version = "0.0";
+    src = ./remap-pa-client/remap-pa-client.py;
+    dontUnpack = true;
+    format = "other";
+    propagatedBuildInputs = [ python3.pkgs.pulsectl jq foot fzf sway ];
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src "$out/bin/remap-pa-client"
+      chmod +x "$out/bin/remap-pa-client"
+    '';
+  };
+
   swaynotificationcenter = prev.swaynotificationcenter.overrideAttrs(o: {
     patches = o.patches or [] ++ [
       (final.writeText "1-remove-superfluous-trigger-on-example-config.patch" ''
@@ -176,4 +162,18 @@ in {
       '')
     ];
   });
+
+  wl-clipboard-x11 = with final; stdenv.mkDerivation rec {
+    name = "wl-clipboard-x11";
+    version = "5";
+    src = fetchFromGitHub {
+      owner = "brunelli";
+      repo = "wl-clipboard-x11";
+      rev = "v${version}";
+      sha256 = "sha256-i+oF1Mu72O5WPTWzqsvo4l2CERWWp4Jq/U0DffPZ8vg=";
+    };
+    makeFlags = [ "PREFIX=$(out)" ];
+  };
+
+  youtube-dl = final.yt-dlp.override { withAlias = true; };
 }
