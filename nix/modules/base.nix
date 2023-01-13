@@ -33,7 +33,6 @@ in
         STARSHIP_CONFIG = "${userCfg.xdg.configHome}/starship.toml";
         ZDOTDIR = "\$HOME/.local/etc/zsh";
         ZDOTDIR_LAUNCHER = util.fetchDotfile "etc/zsh/launcher";
-        GTK2_RC_FILES = "${userCfg.xdg.configHome}/gtk-2.0/gtkrc-2.0";
         GTK_RC_FILES = "${userCfg.xdg.configHome}/gtk-1.0/gtkrc";
         # Preserve if existing (e.g. agent forwarding).
         SSH_AUTH_SOCK = "\${SSH_AUTH_SOCK:-$XDG_RUNTIME_DIR/ssh-agent-$(id -un)-socket}";
