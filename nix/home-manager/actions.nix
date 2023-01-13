@@ -8,7 +8,7 @@
       description = "A single-command script executing action ${name}";
       type = with types; uniq path;
       default = let
-        safeName = replaceChars ["/" " " ":"] ["-" "-" "-"] name;
+        safeName = replaceStrings ["/" " " ":"] ["-" "-" "-"] name;
       in pkgs.writeScript "action:${safeName}" "${config.cmd}";
     };
   };
