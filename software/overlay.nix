@@ -4,6 +4,24 @@ in {
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
 
+  kubic = with final; buildGoModule rec {
+    pname = "kubic";
+    version = "0.0.4";
+    src = fetchFromGitHub {
+      owner = "tty2";
+      repo = "kubic";
+      rev = "v${version}";
+      hash = "sha256-QExJ8MnEmNuzFPCNPPw7nMfGDDB4H8dmTPYTNaqlRSk=";
+    };
+    vendorHash = null;
+    meta = with lib; {
+      description = "k8s tui";
+      homepage = "https://github.com/tty2/kubic";
+      maintainers = with maintainers; [ roosemberth ];
+      platforms = platforms.all;
+    };
+  };
+
   layout-trees-generator = with final; rustPlatform.buildRustPackage rec {
     pname = "layout-trees-generator";
     version = "0.1.0";
