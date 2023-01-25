@@ -136,6 +136,20 @@ in
   };
 
   environment.etc."machine-id".source = "/var/lib/secrets/machine-id";
+  environment.etc."wireplumber/main.lua.d/70-rename-dac.lua".text = ''
+    -- Most applications show the description: Set it to a reasonable value...
+    rule = {
+      matches = {{
+        { "alsa.long_card_name", "=", "LENOVO-20QESA0V00-ThinkPadX1Carbon7th" },
+        { "device.profile.description", "=", "Speaker + Headphones" },
+      }},
+      apply_properties = {
+        ["node.description"] = "Laptop Speaker/Headphones",
+        ["node.nick"] = "Laptop Speaker/Headphones",
+      },
+    }
+    table.insert(alsa_monitor.rules, rule)
+  '';
 
   systemd.services.fix-generated-mounts-permissions = {
     description = "Fix directory permissions of the @roosemberth dataset"
@@ -154,48 +168,6 @@ in
       done <<< $(mount | grep /subvolumes/per-dataset/@roosemberth | awk '{print $3}')
     ''));
   };
-
-  # TODO: Migrate to wireplumber
-  services.pipewire.wireplumber.enable = false;
-  services.pipewire.media-session.enable = true;
-  services.pipewire.media-session.config.bluez-monitor.rules = [{
-    # Matches all bluetooth cards
-    matches = [ { "device.name" = "~bluez_card.*"; } ];
-    actions."update-props" = {
-      "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-      # mSBC is not expected to work on all headset + adapter combinations.
-      "bluez5.msbc-support" = true;
-    };
-  } {
-    matches = [
-      { "node.name" = "~bluez_input.*"; }
-      { "node.name" = "~bluez_output.*"; }
-    ];
-    actions."node.pause-on-idle" = false;
-  }];
-
-  services.pipewire.media-session.config.alsa-monitor.rules = [{
-    matches = [{
-      "node.description" =
-        "Cannon Point-LP High Definition Audio Controller Speaker + Headphones";
-    }];
-    actions."update-props"."node.description" = "Laptop DSP";
-    actions."update-props"."node.nick" = "Laptop audio";
-    # Workaround odd bug on the session-manager where output will start in bad state.
-    actions."update-props"."api.acp.autoport" = true;
-  } {
-    matches = [{
-      "node.description" =
-        "Cannon Point-LP High Definition Audio Controller Digital Microphone";
-    }];
-    actions."update-props"."node.description" = "Laptop Mic";
-    actions."update-props"."node.nick" = "Laptop mic";
-  } {
-    matches = [{
-      "node.description" = "~Cannon Point-LP High Definition Audio.*";
-    }];
-    actions."update-props"."node.pause-on-idle" = true;
-  }];
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
