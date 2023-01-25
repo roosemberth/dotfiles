@@ -138,7 +138,7 @@ in
   environment.etc."machine-id".source = "/var/lib/secrets/machine-id";
   environment.etc."wireplumber/main.lua.d/70-rename-dac.lua".text = ''
     -- Most applications show the description: Set it to a reasonable value...
-    rule = {
+    laptopAnalog = {
       matches = {{
         { "alsa.long_card_name", "=", "LENOVO-20QESA0V00-ThinkPadX1Carbon7th" },
         { "device.profile.description", "=", "Speaker + Headphones" },
@@ -148,7 +148,40 @@ in
         ["node.nick"] = "Laptop Speaker/Headphones",
       },
     }
-    table.insert(alsa_monitor.rules, rule)
+    av1 = {
+      matches = {{
+        { "alsa.long_card_name", "=", "LENOVO-20QESA0V00-ThinkPadX1Carbon7th" },
+        { "device.profile.description", "=", "HDMI / DisplayPort 1 Output" },
+      }},
+      apply_properties = {
+        ["node.description"] = "Laptop AV1",
+        ["node.nick"] = "Laptop AV1",
+      },
+    }
+    av2 = {
+      matches = {{
+        { "alsa.long_card_name", "=", "LENOVO-20QESA0V00-ThinkPadX1Carbon7th" },
+        { "device.profile.description", "=", "HDMI / DisplayPort 2 Output" },
+      }},
+      apply_properties = {
+        ["node.description"] = "Laptop AV2",
+        ["node.nick"] = "Laptop AV2",
+      },
+    }
+    av3 = {
+      matches = {{
+        { "alsa.long_card_name", "=", "LENOVO-20QESA0V00-ThinkPadX1Carbon7th" },
+        { "device.profile.description", "=", "HDMI / DisplayPort 3 Output" },
+      }},
+      apply_properties = {
+        ["node.description"] = "Laptop AV3",
+        ["node.nick"] = "Laptop AV3",
+      },
+    }
+    table.insert(alsa_monitor.rules, laptopAnalog)
+    table.insert(alsa_monitor.rules, av1)
+    table.insert(alsa_monitor.rules, av2)
+    table.insert(alsa_monitor.rules, av3)
   '';
 
   systemd.services.fix-generated-mounts-permissions = {
