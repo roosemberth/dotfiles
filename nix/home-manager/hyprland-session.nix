@@ -46,8 +46,16 @@ in {
 
     wayland.windowManager.hyprland = {
       enable = true;
-      extraConfig = builtins.readFile
-        (dotfileUtils.fetchDotfile "etc/hyprland.conf");
+      extraConfig = ''
+        exec-once=${pkgs.writeShellScript "import-user-env-to-dbus-systemd" ''
+          if [ -d "/etc/profiles/per-user/$USER/etc/profile.d" ]; then
+            . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+          fi
+          ${pkgs.dbus}/bin/dbus-update-activation-environment --systemd \
+            XDG_CONFIG_HOME XDG_DATA_HOME XDG_BACKEND
+        ''}
+        ${builtins.readFile (dotfileUtils.fetchDotfile "etc/hyprland.conf")}
+      '';
     };
   };
 }
