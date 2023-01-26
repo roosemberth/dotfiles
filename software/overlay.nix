@@ -124,11 +124,11 @@ in {
 
   recla-certs = with final; stdenv.mkDerivation {
     name = "recla-certs";
-    version = "22011001";
+    version = "23012601";
     srcs = [
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-jvrB6mvOyJ1HuYMZS8qqogOaJ0AOR9vuRooLf5p5t5I=";
+        hash = "sha256-ICUvO7lKXzntIglUrpT3Z8hnrOdYeY6sPTbCl7LBOHA=";
       })
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-key.pem";
