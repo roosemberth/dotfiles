@@ -12,7 +12,7 @@ in {
     ./shells.nix
     ./reactimate-files.nix
     ./roos-sway-config.nix
-    ./hyprland-session.nix
+    #./hyprland-session.nix is Included by eval-flake-system.
     ./sway-session.nix
     ./wayland-session.nix
     ./swaync.nix
