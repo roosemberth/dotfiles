@@ -131,9 +131,8 @@ in
         zip
       ];
 
-      programs.firefox = {
-        enable = true;
-        extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      programs.firefox = let
+        baseExtensions = with pkgs.nur.repos.rycee.firefox-addons; [
           # Cookie quick manager
           # Dark background and light text?
           # fragments
@@ -160,18 +159,23 @@ in
 
           french-dictionary
         ];
+      in {
+        enable = true;
         profiles."default" = {
           id = 0;
           settings = {};
           isDefault = true;
+          extensions = baseExtensions;
         };
         profiles."moon" = {
           id = 1;
           settings = {};
+          extensions = baseExtensions;
         };
         profiles."games" = {
           id = 2;
           settings = {};
+          extensions = baseExtensions;
         };
       };
     };
