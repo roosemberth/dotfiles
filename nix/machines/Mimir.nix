@@ -207,11 +207,28 @@ in {
         '';
       };
       # Reverse proxy for dev stuff
-      virtualHosts.".rec.la" = {
+      virtualHosts."~^(?<service>[^.]+?)\\.rec.la$" = {
         onlySSL = true;
         sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
         sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
+        extraConfig = ''
+          # Optional authentication
+          set $service_htpasswd /srv/$service.htpasswd;
+          if (!-f $service_htpasswd) {
+              return 599;
+          }
+          error_page 599 = @noauth;
+        '';
         locations."/" = {
+          proxyPass = "http://localhost:5000";
+          proxyWebsockets = true;
+          extraConfig = ''
+            auth_basic "Blue 37 Orchid.";
+            auth_basic_user_file $service_htpasswd;
+            proxy_buffering off;
+          '';
+        };
+        locations."@noauth" = {
           proxyPass = "http://localhost:5000";
           proxyWebsockets = true;
           extraConfig = ''
