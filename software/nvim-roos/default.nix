@@ -101,7 +101,7 @@
 
   mkPlugSection = contents: ''
     " Manually configured entries to use Plug's lazy load feature
-    source ${vimPlugins.vim-plug.rtp}/plug.vim
+    source ${vimPlugins.vim-plug.outPath}/plug.vim
     call plug#begin(tempname())
 
     ${contents}
@@ -138,10 +138,10 @@ in {
       ] + ''
         luafile ${./lspconfig.lua}
       ''+ mkPlugSection ''
-        Plug '${vimPlugins.vimwiki.rtp}', { 'on': 'VimwikiIndex' }
+        Plug '${vimPlugins.vimwiki.outPath}', { 'on': 'VimwikiIndex' }
         try " Do not load taskwiki if tasklib module is not installed.
         py3 import tasklib
-        Plug '${vimPlugins.taskwiki.rtp}', { 'on': 'VimwikiIndex' }
+        Plug '${vimPlugins.taskwiki.outPath}', { 'on': 'VimwikiIndex' }
         catch
         endtry
       '';
