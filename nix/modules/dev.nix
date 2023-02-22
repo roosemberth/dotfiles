@@ -17,6 +17,15 @@ in {
         usbutils
         # Nix
         manix sops
+      ] ++ [
+        (python3.withPackages(p: with p;[
+          beautifulsoup4
+          flask
+          ipython
+          python-lsp-server
+          pyyaml
+          requests
+        ]))
       ] ++ (with haskellPackages; [  # Haskell development
         (ghc.withPackages
           (p: with p;[QuickCheck aeson lens http-conduit optparse-applicative yaml]))

@@ -51,10 +51,7 @@ in
     };
 
     roos.sConfig = {
-      home.packages = with pkgs; [
-        man-pages-posix man-pages
-        python3 python3Packages.ipython glances
-      ];
+      home.packages = with pkgs; [ man-pages-posix man-pages glances ];
       programs.vim-roos.enable = true;
 
       xdg = {
