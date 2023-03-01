@@ -6,7 +6,6 @@ in {
   config = mkIf config.roos.dev.enable {
     roos.sConfig = {
       home.packages = with pkgs; [
-        awscli2
         # Other
         httpie
         wdiff
