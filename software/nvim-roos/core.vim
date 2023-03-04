@@ -35,8 +35,7 @@ set autoindent copyindent
 set expandtab tabstop=2 shiftwidth=2
 au FileType c setl tabstop=4 shiftwidth=4
 
-set wrap linebreak
-au FileType html,java,scala setl nowrap
+set nowrap linebreak
 
 " https://github.com/torvalds/linux/pull/17#issuecomment-5661185
 au FileType gitcommit setl textwidth=72
