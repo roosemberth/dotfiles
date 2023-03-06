@@ -163,7 +163,7 @@ in {
       (final.writeText "1-remove-superfluous-trigger-on-example-config.patch" ''
         --- a/src/config.json.in
         +++ b/src/config.json.in
-        @@ -18,12 +18,7 @@
+        @@ -24,17 +24,7 @@
            "hide-on-clear": false,
            "hide-on-action": true,
            "script-fail-notify": true,
@@ -171,6 +171,11 @@ in {
         -    "example-script": {
         -      "exec": "echo 'Do something...'",
         -      "urgency": "Normal"
+        -    },
+        -    "example-action-script": {
+        -      "exec": "echo 'Do something actionable!'",
+        -      "urgency": "Normal",
+        -      "run-on": "action"
         -    }
         -  },
         +  "scripts": {},
