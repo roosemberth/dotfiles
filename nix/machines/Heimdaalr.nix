@@ -121,9 +121,6 @@
         "heig.orbstheorem.ch".locations."/".proxyPass =
           "http://mimir.r.orbstheorem.ch:2270";
 
-        "powerflow.orbstheorem.ch".locations."/".proxyPass =
-          "http://minerva.intranet.orbstheorem.ch:45100";
-
         "minerva.orbstheorem.ch".locations."/".proxyPass =
           "http://minerva.intranet.orbstheorem.ch";
 

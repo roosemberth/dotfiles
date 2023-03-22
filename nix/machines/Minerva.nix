@@ -162,7 +162,6 @@ in {
     ./containers/nextcloud.nix
     ./containers/matrix.nix
     ./containers/monitoring.nix
-    ./containers/powerflow.nix
     networkConfig
     nasConfig
     containerHostConfig
