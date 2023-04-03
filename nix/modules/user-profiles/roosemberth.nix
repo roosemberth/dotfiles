@@ -125,7 +125,6 @@ in
         tdesktop
         tree
         unzip
-        visidata
         wtype
         xkcdpass
         zip
