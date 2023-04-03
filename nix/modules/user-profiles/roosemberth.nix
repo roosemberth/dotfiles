@@ -11,6 +11,7 @@ in
       chown 1000 /nix/var/nix/{profiles,gcroots}/per-user/roosemberth
     '';
 
+    programs.zsh.enable = true;
     users.users.roosemberth = {
       uid = 1000;
       description = "Roosemberth Palacios";
@@ -36,7 +37,6 @@ in
       home.packages = (with pkgs; [
         file
         moreutils
-        nix-zsh-completions
         openssl
         pv
         zsh-completions
