@@ -53,7 +53,7 @@ in {
     })
   ];
 
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelModules = [ "kvm-intel" ];

@@ -9,7 +9,7 @@ let
 in
 {
   boot = {
-    cleanTmpDir = true;
+    tmp.cleanOnBoot = true;
     initrd = {
       availableKernelModules = [ "xhci_pci" "nvme" "sd_mod" ];
       kernelModules = ["dm_crypt" "cbc" "kvm-intel" "e1000e"];

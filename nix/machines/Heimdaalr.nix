@@ -274,7 +274,7 @@ in {
     turnConfig
   ];
 
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
 
   environment.systemPackages = [ pkgs.nvim-roos-essential ];
