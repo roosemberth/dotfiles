@@ -37,7 +37,9 @@ local on_generic_lsp_attach = function(client, bufnr)
   vim.keymap.set('n', '<leader>aa', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', '<leader>ar', vim.lsp.codelens.run, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<leader>f', vim.lsp.buf.formatting, bufopts)
+  vim.keymap.set('n', '<leader>f', function()
+    vim.lsp.buf.format { async = true }
+  end, bufopts)
 end
 
 -- lspconfig.rust_analyzer is configured by rust-tools.
