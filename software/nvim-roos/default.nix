@@ -48,6 +48,16 @@
     src = ./mynix-tools;
     propagatedBuildInputs = [ nix ];
   };
+  vim-raku = vimUtils.buildVimPluginFrom2Nix {
+    pname = "vim-raku";
+    version = "2023-05-21";
+    src = fetchFromGitHub {
+      owner = "Raku";
+      repo = "vim-raku";
+      rev = "f9ed159f2a6e733d544c3f674f9d2a1ed1c89654";
+      hash = "sha256-SHi32oJfyixfa2pfSi0Ue2lxUlI3F4yrs46v/B5724w=";
+    };
+  };
 
   essentialPlugins = with vimPlugins; {
     start = [
@@ -91,6 +101,7 @@
       telescope-manix
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
+      vim-raku
       vim-terraform
     ];
   };
