@@ -56,7 +56,7 @@ in {
   boot.tmp.cleanOnBoot = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
-  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelModules = [ "kvm-intel" "ddcci-backlight" ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [
     "aarch64-linux"
