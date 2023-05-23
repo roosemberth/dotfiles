@@ -15,7 +15,7 @@ in {
         claws
         usbutils
         # Nix
-        manix sops
+        manix sops nix-output-monitor
       ] ++ [
         (python3.withPackages(p: with p;[
           beautifulsoup4

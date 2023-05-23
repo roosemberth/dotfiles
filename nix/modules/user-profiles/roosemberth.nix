@@ -106,6 +106,7 @@ in
         brightnessctl
         element-desktop'
         epiphany
+        evolution
         fortune
         glances
         gnome.adwaita-icon-theme
