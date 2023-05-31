@@ -1,17 +1,6 @@
 final: prev: let
   nvim = final.callPackage ./nvim-roos {};
 in {
-  linuxPackages_latest = prev.linuxPackages_latest // {
-    ddcci-driver = prev.linuxPackages_latest.ddcci-driver.overrideAttrs (o: {
-      patches = o.patches or [] ++ [
-        (final.fetchpatch {
-          url = "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux/-/merge_requests/12.patch";
-          hash = "sha256-2C2leS20egGY3J2tq96gsUQXYw13wBJ3ZWrdIXxmEYs=";
-        })
-      ];
-    });
-  };
-
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
 
