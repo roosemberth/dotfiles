@@ -1,11 +1,11 @@
 {
   inputs = {
-    # Raccoon
-    raccoon-nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    raccoon-hm.url = "github:nix-community/home-manager/release-22.11";
-    raccoon-hm.inputs.nixpkgs.follows = "raccoon-nixpkgs";
-    raccoon-sops-nix.url = "github:Mic92/sops-nix";
-    raccoon-sops-nix.inputs.nixpkgs.follows = "raccoon-nixpkgs";
+    # Stoat
+    stoat-nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    stoat-hm.url = "github:nix-community/home-manager/release-23.05";
+    stoat-hm.inputs.nixpkgs.follows = "stoat-nixpkgs";
+    stoat-sops-nix.url = "github:Mic92/sops-nix";
+    stoat-sops-nix.inputs.nixpkgs.follows = "stoat-nixpkgs";
 
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -27,11 +27,11 @@
 
   outputs = inputs@{ self, flake-utils, ... }: let
     # Distributions
-    raccoon = with inputs; {
+    stoat = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
-      nixpkgs = raccoon-nixpkgs;
-      hm = raccoon-hm;
-      sops-nix = raccoon-sops-nix;
+      nixpkgs = stoat-nixpkgs;
+      hm = stoat-hm;
+      sops-nix = stoat-sops-nix;
     };
     unstable = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
@@ -56,13 +56,13 @@
   in {
     nixosConfigurations = vms // {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Mimir-vm = mkSystem raccoon ({ modulesPath, ... }: {
+      Mimir-vm = mkSystem stoat ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = mkSystem raccoon ./nix/machines/Minerva.nix;
-      Heimdaalr = mkSystem raccoon ./nix/machines/Heimdaalr.nix;
+      Minerva = mkSystem stoat ./nix/machines/Minerva.nix;
+      Heimdaalr = mkSystem stoat ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
-        raccoon ./nix/machines/strong-ghost.nix;
+        stoat ./nix/machines/strong-ghost.nix;
     };
 
     apps = with lib; forAllSystems unstable (pkgs: with lib; let
@@ -83,7 +83,7 @@
         self.nixosConfigurations;
     in nixosConfigPackages // overlayPackages);
 
-    devShells = forAllSystems raccoon
+    devShells = forAllSystems stoat
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
 
     deploy = with self.nixosConfigurations; with unstable; {
