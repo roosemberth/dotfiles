@@ -127,7 +127,7 @@ in {
           bridge.adminMxid = "@roosemberth:orbstheorem.ch";
           bridge.disableJoinLeaveNotifications = true;
           # database set via APPSERVICE_DISCORD_DATABASE_CONN_STRING envvar
-          database.filename = null;
+          database.connString = null;
           channel.namePattern = ":guild :name";
         };
         serviceDependencies = [ "matrix-synapse.service" ];
