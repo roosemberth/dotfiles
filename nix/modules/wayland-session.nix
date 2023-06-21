@@ -8,6 +8,16 @@ in {
 
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass-wayland;
+      # GNOME desktop portal causes havoc since it will not run without
+      # gnome-shell, but applications will still try to call it over d-bus.
+      # See https://github.com/flatpak/xdg-desktop-portal/issues/906
+      xdg-desktop-portal-gnome = pkgs.symlinkJoin {
+        name = "xdg-desktop-portal-gnome";
+        paths = [ pkgs.xdg-desktop-portal-gnome ];
+        postBuild = ''
+          rm $out/share/xdg-desktop-portal/portals/gnome.portal
+        '';
+      };
     };
 
     roos.gConfig.config.home.packages = with pkgs; [ gammastep ];
