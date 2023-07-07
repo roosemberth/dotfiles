@@ -1,8 +1,25 @@
 final: prev: let
   nvim = final.callPackage ./nvim-roos {};
+  xtrx = final.callPackage ./xtrx-sdr {};
 in {
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
+
+  gnuradio-with-soapy = with final; let
+    soapy = soapysdr-with-plugins;
+    extraSoapyPkgs = [ xtrx.libxtrx ];
+    modulesVersion = v: with final.lib;
+      versions.major v + "." + versions.minor v;
+    soapyModulesPath = "lib/SoapySDR/modules" + (modulesVersion soapy.version);
+    soapyPkgsSearchPath = lib.makeSearchPath soapyModulesPath extraSoapyPkgs;
+  in gnuradio.override {
+    extraMakeWrapperArgs = [
+      "--prefix" "SOAPY_SDR_PLUGIN_PATH" ":" "${soapyPkgsSearchPath}"
+    ];
+    extraPythonPackages = with gnuradio.unwrapped.python.pkgs; [
+      soapysdr
+    ];
+  };
 
   kubic = with final; buildGoModule rec {
     pname = "kubic";
@@ -53,6 +70,8 @@ in {
         --prefix PATH : ${lib.makeBinPath [ pkgs.systemd ]}
     '';
   };
+
+  inherit (xtrx) libxtrx libxtrxll libxtrxdsp liblms7002m;
 
   matrix-alertmanager-receiver = with final; buildGoModule rec {
     pname = "matrix-alertmanager-receiver";
@@ -156,6 +175,22 @@ in {
       cp $src "$out/bin/remap-pa-client"
       chmod +x "$out/bin/remap-pa-client"
     '';
+  };
+
+  sdrpp = prev.sdrpp.override { soapysdr = final.soapysdr-with-plugins; };
+
+  soapysdr-with-plugins = prev.soapysdr-with-plugins.override {
+    extraPackages = with final; [
+      limesuite
+      soapyairspy
+      soapyaudio
+      soapybladerf
+      soapyhackrf
+      soapyremote
+      soapyrtlsdr
+      soapyuhd
+      xtrx.libxtrx
+    ];
   };
 
   swaynotificationcenter = prev.swaynotificationcenter.overrideAttrs(o: {
