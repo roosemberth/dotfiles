@@ -285,7 +285,7 @@ in {
 
   nix.extraOptions = "experimental-features = nix-command flakes";
   nix.package = pkgs.nixUnstable;
-  nix.trustedUsers = [ "roosemberth" ];
+  nix.settings.trusted-users = [ "roosemberth" ];
 
   roos.dotfilesPath = ../..;
   roos.user-profiles.reduced = ["roosemberth"];
@@ -294,7 +294,7 @@ in {
   security.pam.enableSSHAgentAuth = true;
   services = {
     openssh.enable = true;
-    openssh.gatewayPorts = "yes";
+    openssh.settings.GatewayPorts = "yes";
     openssh.extraConfig = "PermitTunnel yes";
     netdata.enable = true;
     resolved.llmnr = "false";

@@ -26,7 +26,6 @@ in {
   };
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/vda";
-  boot.loader.grub.version = 2;
 
   sops.secrets."ssh-host/initramfs/ed25519" = {};
 
@@ -89,14 +88,12 @@ in {
 
   services.snapper.configs = let
     mkCfg = path: {
-      subvolume = path;
-      extraConfig = ''
-        ALLOW_GROUPS="wheel"
-        EMPTY_PRE_POST_CLEANUP="yes"
-        SYNC_ACL="yes"
-        TIMELINE_CLEANUP="yes"
-        TIMELINE_CREATE="yes"
-      '';
+      SUBVOLUME = path;
+      ALLOW_GROUPS = ["wheel"];
+      EMPTY_PRE_POST_CLEANUP = true;
+      SYNC_ACL = true;
+      TIMELINE_CLEANUP = true;
+      TIMELINE_CREATE = true;
     };
   in {
     "home"    = mkCfg "/home";
