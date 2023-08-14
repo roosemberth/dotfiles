@@ -28,7 +28,7 @@ in
           playlist-start = "auto";
           save-position-on-quit = true;
         };
-        scripts = with pkgs.mpvScripts; [ youtube-quality ];
+        scripts = with pkgs.mpvScripts; [ quality-menu ];
       };
     };
 
