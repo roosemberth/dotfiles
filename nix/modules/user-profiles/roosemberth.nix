@@ -18,6 +18,7 @@ in
       hashedPassword = users.roos.hashedPassword;
       isNormalUser = true;
       extraGroups = [
+        "adbusers"
         "docker"
         "input"
         "libvirtd"
