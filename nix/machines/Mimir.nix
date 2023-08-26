@@ -117,6 +117,7 @@ in {
   };
 
   programs = {
+    adb.enable = true;
     dconf.enable = true;
     wireshark.enable = true;
     wireshark.package = pkgs.wireshark;
