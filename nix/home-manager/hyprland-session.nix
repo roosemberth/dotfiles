@@ -4,11 +4,11 @@
     styleFile = dotfileUtils.fetchDotfile "etc/waybar/style.css";
   in stdenv.mkDerivation {
     name = "waybar-hyprland-with-config";
-    version = waybar-hyprland.version;
+    version = waybar.version;
     nativeBuildInputs = [ makeWrapper ];
 
     buildCommand = ''
-      makeWrapper ${waybar-hyprland}/bin/waybar "$out/bin/waybar" \
+      makeWrapper ${waybar}/bin/waybar "$out/bin/waybar" \
         --prefix PATH : "${lib.makeBinPath [ hyprland pavucontrol procps ]}" \
         --add-flags "--config ${cfgFile} --style ${styleFile}"
     '';
