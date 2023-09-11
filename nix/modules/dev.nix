@@ -7,13 +7,16 @@ in {
     roos.sConfig = {
       home.packages = with pkgs; [
         # Other
-        httpie
-        wdiff
-        jq
-        yq
-        virt-viewer
         claws
+        docker-credential-helpers
+        httpie
+        jq
+        rakudo
+        rlwrap
         usbutils
+        virt-viewer
+        wdiff
+        yq
         # Nix
         manix sops nix-output-monitor
       ] ++ [
