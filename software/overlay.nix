@@ -147,7 +147,7 @@ in {
     srcs = [
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-JqoEgk+Kt6mnWZ3XTZY+lxSW4DPXK8gaKBfW8YHr6Ic=";
+        hash = "sha256-+DnRavP8iwtwsZwyvkwaXoKJl1ggkR2LHtRXkZBDafs=";
       })
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-key.pem";
