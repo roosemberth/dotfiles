@@ -4,7 +4,7 @@ in {
   options.roos.wayland.enable = mkEnableOption "Enable wayland support";
 
   config = mkIf cfg.enable {
-    fonts.fonts = with pkgs; [ font-awesome noto-fonts-emoji ];
+    fonts.packages = with pkgs; [ font-awesome noto-fonts-emoji ];
 
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass-wayland;

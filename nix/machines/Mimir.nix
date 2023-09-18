@@ -62,7 +62,7 @@ in {
     "aarch64-linux"
   ];
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     hack-font
     noto-fonts
     noto-fonts-emoji
