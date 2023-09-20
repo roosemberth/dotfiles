@@ -2,6 +2,7 @@
   waybar' = with pkgs; let
     cfgFile = dotfileUtils.fetchDotfile "etc/waybar/config";
     styleFile = dotfileUtils.fetchDotfile "etc/waybar/style.css";
+    hyprland' = config.wayland.windowManager.hyprland.finalPackage;
   in stdenv.mkDerivation {
     name = "waybar-hyprland-with-config";
     version = waybar.version;
@@ -9,7 +10,7 @@
 
     buildCommand = ''
       makeWrapper ${waybar}/bin/waybar "$out/bin/waybar" \
-        --prefix PATH : "${lib.makeBinPath [ hyprland pavucontrol procps ]}" \
+        --prefix PATH : "${lib.makeBinPath [ hyprland' pavucontrol procps ]}" \
         --add-flags "--config ${cfgFile} --style ${styleFile}"
     '';
   };

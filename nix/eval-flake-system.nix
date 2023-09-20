@@ -27,28 +27,6 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
         }).allModules;
     })
 
-    # Hyperland
-    ({ lib, ... }: with lib; {
-      # Imports under mkIf are not supported.
-      imports = optionals (hasAttr "hyprland" inputs)
-        ([
-          inputs.hyprland.nixosModules.default 
-          # This module uses options defined in the hyprland NixOS module, thus
-          # can only be evaluated alongside it.
-         ./modules/hyprland-session.nix
-        ]);
-
-      config = mkIf (hasAttr "hyprland" inputs) {
-        home-manager.sharedModules = [
-          inputs.hyprland.homeManagerModules.default
-          # This module uses options defined in the hyprland home-manager
-          # module, thus can only be evaluated alongside it.
-          ./home-manager/hyprland-session.nix
-        ];
-        nixpkgs.overlays = [ inputs.hyprland.overlays.default ];
-      };
-    })
-
     # Bootstrap optional overlays
     ({ lib, ... }: with lib; let
       ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;

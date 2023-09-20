@@ -57,7 +57,7 @@ in {
     ./unfree.nix
     ./user-profiles/roosemberth.nix
     ./users.nix
-    #./hyprland-session.nix is Included by eval-flake-system.
+    ./hyprland-session.nix
     ./sway-session.nix
     ./wayland-session.nix
     ./layout-trees.nix

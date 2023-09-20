@@ -16,8 +16,6 @@
     unstable-sops-nix.url = "github:Mic92/sops-nix";
     unstable-sops-nix.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-nur.url = "github:nix-community/NUR";
-    unstable-hyprland.url = "github:hyprwm/Hyprland";
-    unstable-hyprland.inputs.nixpkgs.follows = "unstable-nixpkgs";
 
     # Agnostic
     flake-utils.url = "github:numtide/flake-utils";
@@ -40,7 +38,6 @@
       deploy-rs = unstable-deploy-rs;
       sops-nix = unstable-sops-nix;
       nur = unstable-nur;
-      hyprland = unstable-hyprland;
     };
 
     lib = unstable.nixpkgs.lib;
