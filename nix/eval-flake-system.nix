@@ -31,7 +31,7 @@ systemConfiguration: nixpkgs.lib.nixosSystem {
     ({ lib, ... }: with lib; let
       ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;
     in {
-      nixpkgs.overlays = ifFound "nur" ++ ifFound "deploy-rs";
+      nixpkgs.overlays = ifFound "nur";
     })
 
     # Fix flake registry inputs of the target derivation

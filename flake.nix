@@ -11,8 +11,6 @@
     unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     unstable-hm.url = "github:nix-community/home-manager";
     unstable-hm.inputs.nixpkgs.follows = "unstable-nixpkgs";
-    unstable-deploy-rs.url = "github:serokell/deploy-rs";
-    unstable-deploy-rs.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-sops-nix.url = "github:Mic92/sops-nix";
     unstable-sops-nix.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-nur.url = "github:nix-community/NUR";
@@ -35,7 +33,6 @@
       inherit (inputs) self flake-utils flake-registry;
       nixpkgs = unstable-nixpkgs;
       hm = unstable-hm;
-      deploy-rs = unstable-deploy-rs;
       sops-nix = unstable-sops-nix;
       nur = unstable-nur;
     };
@@ -82,28 +79,5 @@
 
     devShells = forAllSystems stoat
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
-
-    deploy = with self.nixosConfigurations; with unstable; {
-      magicRollback = true;
-      autoRollback = true;
-      sshUser = "roosemberth";
-      user = "root";
-
-      nodes.Heimdaalr = {
-        hostname = "Heimdaalr";
-        profiles.system.path =
-          deploy-rs.lib.x86_64-linux.activate.nixos Heimdaalr;
-      };
-      nodes.Mimir = {
-        hostname = "Mimir";
-        profiles.system.path =
-          deploy-rs.lib.x86_64-linux.activate.nixos Mimir;
-      };
-      nodes.Minerva = {
-        hostname = "Minerva";
-        profiles.system.path =
-          deploy-rs.lib.x86_64-linux.activate.nixos Minerva;
-      };
-    };
   };
 }
