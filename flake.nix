@@ -45,8 +45,8 @@
     forAllSystems = { self, nixpkgs, flake-utils, ... }: fn:
       lib.genAttrs flake-utils.lib.defaultSystems
         (s: fn (import nixpkgs { system = s; overlays = [ self.overlay ]; }));
-  in {
-    nixosConfigurations = {
+
+    hosts = {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Mimir-vm = mkSystem stoat ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
@@ -56,13 +56,16 @@
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         stoat ./nix/machines/strong-ghost.nix;
     };
+  in {
+    nixosConfigurations = {
+      inherit (hosts) Mimir Mimir-vm Minerva Heimdaalr strong-ghost;
+    };
 
     apps = with lib; forAllSystems unstable (pkgs: with lib; let
       toApp = name: drv:
         { type = "app"; program = "${drv}/bin/run-${name}-vm"; };
       nixosConfigApps = mapAttrs
-        (name: _: toApp name self.packages."${pkgs.system}"."${name}")
-        self.nixosConfigurations;
+        (name: _: toApp name self.packages."${pkgs.system}"."${name}") hosts;
     in nixosConfigApps);
 
     overlay = import ./software/overlay.nix;
@@ -71,8 +74,7 @@
 
     packages = forAllSystems unstable (pkgs: with lib; let
       overlayPackages = getAttrs (attrNames (self.overlay {} {})) pkgs;
-      nixosConfigPackages = mapAttrs (_: c: c.config.system.build.vm)
-        self.nixosConfigurations;
+      nixosConfigPackages = mapAttrs (_: c: c.config.system.build.vm) hosts;
     in nixosConfigPackages // overlayPackages);
 
     devShells = forAllSystems stoat
