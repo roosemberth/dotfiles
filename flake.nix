@@ -42,13 +42,11 @@
     mkSystem = dist: cfg:
       import ./nix/eval-flake-system.nix "x86_64-linux" dist cfg;
 
-    vms = import ./nix/machines/vms.nix "x86_64-linux" unstable;
-
     forAllSystems = { self, nixpkgs, flake-utils, ... }: fn:
       lib.genAttrs flake-utils.lib.defaultSystems
         (s: fn (import nixpkgs { system = s; overlays = [ self.overlay ]; }));
   in {
-    nixosConfigurations = vms // {
+    nixosConfigurations = {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Mimir-vm = mkSystem stoat ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
