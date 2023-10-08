@@ -82,8 +82,28 @@ in
         ranger
         silver-searcher
         tig
+        lf
         xxd
       ]);
+      programs.helix.enable = true;
+      programs.helix.settings = {
+        keys.normal = {
+          "B" = "file_picker_in_current_buffer_directory";
+        };
+        keys.normal.space = {
+          "f" = [
+            ":new"
+            ":insert-output lf -selection-path=/dev/stdout"
+            "split_selection_on_newline"
+            "goto_file"
+            "goto_last_modification"
+            "goto_last_modified_file"
+            ":buffer-close!"
+            ":theme nord"
+            ":theme default"
+          ];
+        };
+      };
       programs.git.package = pkgs.gitFull;
       programs.gpg = {
         enable = true;
