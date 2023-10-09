@@ -11,6 +11,7 @@ in {
         docker-credential-helpers
         httpie
         jq
+        kubectl
         rakudo
         rlwrap
         usbutils
