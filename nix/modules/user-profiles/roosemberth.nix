@@ -93,9 +93,7 @@ in
           "B" = "file_picker_in_current_buffer_directory";
         };
         keys.normal.space = {
-          # Replace the last two lines (`:theme`) with `:redraw` when a new
-          # release is published...
-          "f" = assert lib.versionAtLeast "23.05" pkgs.helix.version; [
+          "f" = [
             ":new"
             ":insert-output ${pkgs.lf}/bin/lf -selection-path=/dev/stdout"
             "split_selection_on_newline"
@@ -103,11 +101,7 @@ in
             "goto_last_modification"
             "goto_last_modified_file"
             ":buffer-close!"
-            # These two lines are a hack until
-            # https://github.com/helix-editor/helix/pull/6949
-            # is available in a release...
-            ":theme nord"
-            ":theme nightfox"
+            ":redraw"
           ];
         };
       };
