@@ -9,7 +9,7 @@
 , manix
 , ...
 }: let
-  Mark = vimUtils.buildVimPluginFrom2Nix {
+  Mark = vimUtils.buildVimPlugin {
     pname = "Mark";
     version = "1.1.8-g";
     src = fetchFromGitHub {
@@ -20,7 +20,7 @@
     };
     meta.homepage = "https://github.com/vim-scripts/Mark/";
   };
-  md-img-paste-vim = vimUtils.buildVimPluginFrom2Nix {
+  md-img-paste-vim = vimUtils.buildVimPlugin {
     pname = "md-img-paste.vim";
     version = "2020-10-11";
     src = fetchFromGitHub {
@@ -31,7 +31,7 @@
     };
     meta.homepage = "https://github.com/ferrine/md-img-paste.vim";
   };
-  arduino-syntax-file = vimUtils.buildVimPluginFrom2Nix {
+  arduino-syntax-file = vimUtils.buildVimPlugin {
     pname = "arduino-syntax-file";
     version = "2015-05-20";
     src = fetchFromGitHub {
@@ -42,13 +42,13 @@
     };
     meta.homepage = "https://github.com/vim-scripts/Arduino-syntax-file/";
   };
-  mynix-tools = vimUtils.buildVimPluginFrom2Nix {
+  mynix-tools = vimUtils.buildVimPlugin {
     pname = "nix-edit";
     version = "0.0";
     src = ./mynix-tools;
     propagatedBuildInputs = [ nix ];
   };
-  vim-raku = vimUtils.buildVimPluginFrom2Nix {
+  vim-raku = vimUtils.buildVimPlugin {
     pname = "vim-raku";
     version = "2023-05-21";
     src = fetchFromGitHub {
