@@ -71,6 +71,30 @@ in {
     '';
   };
 
+  bitbox-bridge = with final; rustPlatform.buildRustPackage rec {
+    pname = "bitbox-bridge";
+    version = "1.5.1";
+    src = fetchFromGitHub {
+      owner = "digitalbitbox";
+      repo = "bitbox-bridge";
+      rev = "v${version}";
+      hash = "sha256-pxxTdbUwsw5wqlG77BqLrBzLvuOn46qfWMEQRyvXVOU=";
+    };
+    cargoLock = {
+      lockFile = "${src}/Cargo.lock";
+      outputHashes."hidapi-2.3.1" =
+        "sha256-uv2yyaPNLpB2Og5LIKxop9swXwHniuC7FQPg01yAWLk=";
+    };
+    nativeBuildInputs = [ pkg-config ];
+    buildInputs = [ udev.dev ];
+
+    meta = with lib; {
+      homepage = "https://github.com/digitalbitbox/bitbox-bridge";
+      license = licenses.asl20;
+      maintainers = [ maintainers.tailhook ];
+    };
+  };
+
   inherit (xtrx) libxtrx libxtrxll libxtrxdsp liblms7002m;
 
   matrix-alertmanager-receiver = with final; buildGoModule rec {
