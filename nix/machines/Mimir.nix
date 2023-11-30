@@ -203,7 +203,7 @@ in {
         '';
       };
       # Reverse proxy for dev stuff
-      virtualHosts."~^(?<service>[^.]+?)\\.rec.la$" = {
+      virtualHosts."~^(?!priv-)(?<service>[^.]+?)\\.rec.la$" = {
         onlySSL = true;
         sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
         sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
@@ -230,6 +230,15 @@ in {
           extraConfig = ''
             proxy_buffering off;
           '';
+        };
+      };
+      virtualHosts."~^priv-(?<service>[^.]+?)\\.rec.la$" = {
+        onlySSL = true;
+        sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
+        sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
+        locations."/" = {
+          proxyPass = "http://localhost:5001";
+          proxyWebsockets = true;
         };
       };
     };
