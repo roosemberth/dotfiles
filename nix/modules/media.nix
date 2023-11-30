@@ -7,8 +7,6 @@ in
 
   config = mkIf config.roos.media.enable {
     roos.sConfigFn = userCfg: {
-      home.packages = with pkgs; [ beets ];
-
       home.file."Media/Music/.keep".text = ""; # Placeholder
       xdg.configFile."beets/config.yaml".source =
         util.renderDotfile "etc/beets/config.yaml" {
