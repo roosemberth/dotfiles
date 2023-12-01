@@ -167,10 +167,16 @@ in {
           "SUPER,Delete,exec,action player:play-pause"
           "SUPER,End,exec,action player:prev"
           "SUPER,Insert,exec,action player:next"
+          "SUPER,XF86AudioLowerVolume,exec,action player:prev"
+          "SUPER,XF86AudioRaiseVolume,exec,action player:next"
 
           ",XF86AudioMute,exec,action audio:vol-mute"
           ",XF86AudioLowerVolume,exec,action audio:vol-down"
           ",XF86AudioRaiseVolume,exec,action audio:vol-up"
+          ",XF86AudioPrev,exec,action player:Prev"
+          ",XF86AudioNext,exec,action player:next"
+          ",XF86AudioPlay,exec,action player:play-pause"
+          ",XF86AudioStop,exec,action player:play-pause"
         ];
 
         windowrulev2 = [
