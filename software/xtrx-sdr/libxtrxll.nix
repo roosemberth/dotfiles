@@ -5,7 +5,7 @@ let
   libusb3380 = stdenv.mkDerivation {
     name = "libusb3380";
     version = "0.0.1-2-git-2023020301";
-    nativeBuildInputs = with pkgs; [cmake pkgconfig];
+    nativeBuildInputs = with pkgs; [cmake pkg-config];
     buildInputs = [ pkgs.libusb1 ];
     outputs = [ "out" "dev" ];
 
@@ -27,7 +27,7 @@ in
 stdenv.mkDerivation {
   name = "libxtrxll";
   version = "0.0.1-git-2021082801";
-  nativeBuildInputs = with pkgs; [ cmake pkgconfig ];
+  nativeBuildInputs = with pkgs; [ cmake pkg-config ];
   buildInputs = [ liblms7002m libusb3380 pkgs.libusb1 ];
   outputs = [ "out" "dev" ];
 

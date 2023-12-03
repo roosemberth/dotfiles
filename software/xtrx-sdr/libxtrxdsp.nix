@@ -3,7 +3,7 @@
 stdenv.mkDerivation {
   name = "libxtrxdsp";
   version = "0.0.1-git-2023020301";
-  nativeBuildInputs = with pkgs; [ cmake pkgconfig ];
+  nativeBuildInputs = with pkgs; [ cmake pkg-config ];
   outputs = [ "out" "dev" ];
 
   src = fetchFromGitHub {

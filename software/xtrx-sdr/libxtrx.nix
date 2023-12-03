@@ -17,7 +17,7 @@ let
   qcustomplot2 = stdenv.mkDerivation {
     name = "qcustomplot";
     version = "2.1.1";
-    nativeBuildInputs = with pkgs; [ qmake pkgconfig wrapQtAppsHook ];
+    nativeBuildInputs = with pkgs; [ qmake pkg-config wrapQtAppsHook ];
     outputs = [ "out" "dev" ];
 
     cmakeFlags = [ "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON" ];
@@ -53,7 +53,7 @@ in
 stdenv.mkDerivation {
   name = "libxtrx";
   version = "0.0.1.2-git-2023020301";
-  nativeBuildInputs = with pkgs; [ cmake pkgconfig ];
+  nativeBuildInputs = with pkgs; [ cmake pkg-config ];
   buildInputs = [
     liblms7002m
     libxtrxdsp

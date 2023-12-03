@@ -3,7 +3,7 @@
 stdenv.mkDerivation {
   name = "liblms7002m";
   version = "0.0.1-git-2020051801";
-  nativeBuildInputs = with pkgs; [ cmake pkgconfig python3Packages.cheetah3 ];
+  nativeBuildInputs = with pkgs; [ cmake pkg-config python3Packages.cheetah3 ];
   outputs = [ "out" "dev" ];
 
   src = fetchFromGitHub {

@@ -79,7 +79,7 @@
       rls
       rustup
 
-      pkgconfig
+      pkg-config
       gcc
       glib
       cairo
