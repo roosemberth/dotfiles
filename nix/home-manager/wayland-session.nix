@@ -1,12 +1,12 @@
 { pkgs, config, lib, dotfileUtils, ... }: with lib; let
   pinentry' = let
     # Disable GNOME secrets integration...
-    mypinentry = pkgs.pinentry.override({ libsecret = null; });
+    mypinentry = pkgs.pinentry.override({ withLibsecret = false; });
     pinentry-curses = getOutput "curses" mypinentry;
-    pinentry-gtk2   = getOutput "gtk2"   mypinentry;
+    pinentry-gnome3 = getOutput "gnome3" mypinentry;
   in pkgs.writeShellScriptBin "pinentry" ''
     if [[ "$XDG_SESSION_TYPE" == "wayland" || "$XDG_SESSION_TYPE" = "x11" ]]; then
-      exec ${pinentry-gtk2}/bin/pinentry-gtk-2 "$@"
+      exec ${pinentry-gnome3}/bin/pinentry-gnome3 "$@"
     else
       ${pkgs.ncurses}/bin/reset
       exec ${pinentry-curses}/bin/pinentry-curses "$@"
