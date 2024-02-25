@@ -81,6 +81,7 @@ in {
 
     cpu.intel.updateMicrocode = true;
     ledger.enable = true;
+    digitalbitbox.enable = true;
 
     opengl.enable = true;
     opengl.extraPackages = with pkgs;
