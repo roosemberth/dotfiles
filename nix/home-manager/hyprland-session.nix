@@ -19,7 +19,7 @@ in {
   options.sessions.hyprland.enable = mkEnableOption "Hyprland wayland session";
 
   config = mkIf config.sessions.hyprland.enable {
-    home.packages = [ config.roos.actions-package ];
+    home.packages = with pkgs; [ config.roos.actions-package wlr-randr ];
 
     programs.swaync.enable = true;
 
