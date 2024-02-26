@@ -14,10 +14,8 @@ in
           "${util.renderDotfile "etc/tmux" {}}/main.tmux.conf";
         ".zshenv".text = "";  # empty file to silence zsh-newuser-install.
         # Systemd does not honot $XDG_CONFIG_HOME
-        ".config/systemd".source =
-          (pkgs.runCommandLocal "systemd-user-config-link" {} ''
-            ln -s "${builtins.toString userCfg.xdg.configHome}/systemd" "$out"
-          '');
+        ".config/systemd".source = userCfg.lib.file.mkOutOfStoreSymlink
+          "${userCfg.xdg.configHome}/systemd";
       };
 
       home.packages = (with pkgs; [
