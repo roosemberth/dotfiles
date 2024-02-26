@@ -69,12 +69,17 @@ in {
         };
         decoration = {
           rounding = 10;
-          inactive_opacity = 0.9;
-          blur.enabled = true;
-          blur.xray = true;
+          shadow_range = 20;
+          shadow_render_power = 1;
         };
         binds.workspace_back_and_forth = true;
         dwindle.no_gaps_when_only = true;
+
+        misc = {
+          allow_session_lock_restore = true;
+          key_press_enables_dpms = true;
+          vrr = 2;
+        };
 
         bindm = [
           "SUPER,$MOUSE_LMB,movewindow"
@@ -184,7 +189,6 @@ in {
           "noanim,class:launcher"
           "float,class:Scratchpad-flyway"
           "noanim,class:Scratchpad-flyway"
-          "opacity 0.9,class:Scratchpad-flyway"
           "size 50% 60%,class:Scratchpad-flyway"
           "dimaround,class:Scratchpad-flyway"
           "center,class:Scratchpad-flyway"
