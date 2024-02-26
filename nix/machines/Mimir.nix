@@ -102,7 +102,8 @@ in {
     daemonIOSchedClass = "idle";
     daemonIOSchedPriority = 7;
     daemonCPUSchedPolicy = "idle";
-    package = pkgs.nixUnstable;
+    # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
+    package = pkgs.nixVersions.nix_2_17;
     settings.trusted-users = [ "roosemberth" ];
     settings.substituters = [ "https://cache.nixos.org" ];
     # Is this a good idea?
