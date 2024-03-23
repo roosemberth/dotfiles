@@ -57,7 +57,12 @@ in {
     brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
     databaseConfig
-    myfprintd
+    ({ # myfprintd is not imported because some PAM tests were broken.
+      config.assertions = [{
+        assertion = pkgs.fprintd.version == "1.94.2";
+        message = "fprintd has been updated. Consider enabling myfprintd module.";
+      }];
+    })
   ];
 
   boot.tmp.cleanOnBoot = true;
