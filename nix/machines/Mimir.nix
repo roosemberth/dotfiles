@@ -38,10 +38,16 @@ let
       "C /run/postgres_ssl_key 0400 postgres root - ${pkgs.recla-certs}/rec.la-key.pem"
     ];
   };
+  # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
+  brokenMkOutOfStoreSymlinkNixWorkaround = {
+    nix.package = pkgs.nixVersions.nix_2_17;
+    nixpkgs.config.permittedInsecurePackages = [ "nix-2.17.1" ];
+  };
 in {
   imports = [
     ../modules
     ./Mimir-static.nix
+    brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
     databaseConfig
 
@@ -102,8 +108,6 @@ in {
     daemonIOSchedClass = "idle";
     daemonIOSchedPriority = 7;
     daemonCPUSchedPolicy = "idle";
-    # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
-    package = pkgs.nixVersions.nix_2_17;
     settings.trusted-users = [ "roosemberth" ];
     settings.substituters = [ "https://cache.nixos.org" ];
     # Is this a good idea?
