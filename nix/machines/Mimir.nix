@@ -43,6 +43,13 @@ let
     nix.package = pkgs.nixVersions.nix_2_17;
     nixpkgs.config.permittedInsecurePackages = [ "nix-2.17.1" ];
   };
+
+  # Cannot use module fprintd.nix because I don't want pam support.
+  myfprintd = ({pkgs, ...}: {
+    services.dbus.packages = [ pkgs.fprintd ];
+    environment.systemPackages = [ pkgs.fprintd ];
+    systemd.packages = [ pkgs.fprintd ];
+  });
 in {
   imports = [
     ../modules
@@ -50,13 +57,7 @@ in {
     brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
     databaseConfig
-
-    # Cannot use module fprintd.nix because I don't want pam support.
-    ({pkgs, ...}: {
-      services.dbus.packages = [ pkgs.fprintd ];
-      environment.systemPackages = [ pkgs.fprintd ];
-      systemd.packages = [ pkgs.fprintd ];
-    })
+    myfprintd
   ];
 
   boot.tmp.cleanOnBoot = true;
