@@ -6,6 +6,7 @@ let
       networking.networkmanager.dns = "systemd-resolved";
       networking.search = [ "zkx.ch" "int.zkx.ch" ];
       networking.firewall.allowedUDPPorts = [ 5355 ]; # LLMNR responses
+      services.tailscale.enable = true;
       services.resolved = {
         enable = true;
         llmnr = "true";
