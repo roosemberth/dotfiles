@@ -41,8 +41,7 @@ let
   };
   # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
   brokenMkOutOfStoreSymlinkNixWorkaround = {
-    nix.package = pkgs.nixVersions.nix_2_17;
-    nixpkgs.config.permittedInsecurePackages = [ "nix-2.17.1" ];
+    nix.package = pkgs.nixVersions.nix_2_18;
   };
 
   # Cannot use module fprintd.nix because I don't want pam support.
