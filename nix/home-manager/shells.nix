@@ -79,11 +79,14 @@
         fi
       '';
 
-      initExtra = ''
-        if command -v fzf-share &> /dev/null; then
-          source "$(fzf-share)/completion.zsh"
-          source "$(fzf-share)/key-bindings.zsh"
-        fi
+      initExtra = let
+        fzfCompletions = pkgs.runCommandLocal "fzf-completions" {} ''
+          ${pkgs.fzf}/bin/fzf --zsh > $out
+          sha256sum $out
+          echo "3946021b46d369648baaaecf0260638e8e8f8a2705854a5ec144daed23360503 $out" | sha256sum -c --quiet
+        '';
+      in ''
+        . ${fzfCompletions}
 
         # Filter commands going to the history
         zshaddhistory() {
