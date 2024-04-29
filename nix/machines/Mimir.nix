@@ -86,6 +86,10 @@ in {
   ];
 
   environment.systemPackages = with pkgs; [ acpi ];
+  environment.gnome.excludePackages = with pkgs; with pkgs.gnome; [
+    orca gnome-backgrounds gnome-color-manager gnome-shell-extensions
+    gnome-tour gnome-user-docs orca gnome-menus
+  ];
 
   hardware = {
     bluetooth.enable = true;
