@@ -199,6 +199,12 @@ in
           settings = {};
           extensions = baseExtensions;
         };
+        profiles."truss" = {
+          id = 3;
+          settings = {};
+          extensions = with pkgs.nur.repos.rycee.firefox-addons;
+            [ metamask ublock-origin ];
+        };
       };
     };
 
