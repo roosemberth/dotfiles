@@ -18,27 +18,6 @@ let
         in "DNS=" + concatMapStringsSep " " (x: "${x.srv}#${x.net}") netXsrv;
       };
     };
-  databaseConfig = {
-    services.postgresql = {
-      enable = true;
-      enableTCPIP = true;
-      authentication = pkgs.lib.mkOverride 10 ''
-        local all all trust
-        host all all 127.0.0.1/24 trust
-        host all all ::1/128 trust
-        host all all 172.17.0.1/24 trust
-      '';
-      settings = {
-        ssl = true;
-        log_connections = true;
-        ssl_cert_file = "${pkgs.recla-certs}/rec.la-bundle.crt";
-        ssl_key_file = "/run/postgres_ssl_key";
-      };
-    };
-    systemd.tmpfiles.rules = [
-      "C /run/postgres_ssl_key 0400 postgres root - ${pkgs.recla-certs}/rec.la-key.pem"
-    ];
-  };
   # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
   brokenMkOutOfStoreSymlinkNixWorkaround = {
     nix.package = pkgs.nixVersions.nix_2_18;
@@ -56,7 +35,6 @@ in {
     ./Mimir-static.nix
     brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
-    databaseConfig
     ({ # myfprintd is not imported because some PAM tests were broken.
       config.assertions = [{
         assertion = pkgs.fprintd.version == "1.94.2";
