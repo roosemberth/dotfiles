@@ -64,8 +64,8 @@ in {
     ledger.enable = true;
     digitalbitbox.enable = true;
 
-    opengl.enable = true;
-    opengl.extraPackages = with pkgs;
+    graphics.enable = true;
+    graphics.extraPackages = with pkgs;
       [ vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver ];
 
     pulseaudio.enable = false;
