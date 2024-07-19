@@ -23,6 +23,11 @@ in {
 
     session.wayland.enable = true;
     session.wayland.swayidle.enable = true;
+    systemd.user.targets.sway-session = {
+      Unit.After = "graphical-session-pre.target";
+      Unit.BindsTo = "graphical-session.target";
+      Unit.Wants = "graphical-session-pre.target";
+    };
     systemd.user.services.waybar = {
       Unit.Description = "A wayland taskbar";
       Unit.PartOf = [ "sway-session.target" ];
