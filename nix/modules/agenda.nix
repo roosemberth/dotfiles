@@ -10,7 +10,7 @@ in {
         pass' = pass.withExtensions (p: with p; [ pass-otp ]);
       in [
         mailcap pass' w3m xdg-utils
-        timewarrior gnome.gnome-keyring gcr pkgs.libsecret
+        timewarrior gnome-keyring gcr pkgs.libsecret
       ];
       home.sessionVariables = rec {
         PASSWORD_STORE_DIR = "${userCfg.xdg.dataHome}/pass";

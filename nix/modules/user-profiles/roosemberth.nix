@@ -131,10 +131,10 @@ in
         evolution
         fortune
         glances
-        gnome.adwaita-icon-theme
-        gnome.eog
-        gnome.nautilus
-        gnome.pomodoro
+        adwaita-icon-theme
+        eog
+        nautilus
+        gnome-pomodoro
         gtk3  # gtk-launch
         links2
         mosh
