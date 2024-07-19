@@ -100,6 +100,12 @@ in {
     };
     roos.media.enable = true;
 
+    services.gpg-agent = {
+      enable = true;
+      extraConfig = ''
+        pinentry-program ${pinentry'}/bin/pinentry
+      '';
+    };
     systemd.user.services.ssh-agent = {
       Unit.Description = "SSH Agent";
       Unit.PartOf = [ "graphical-session.target" ];
