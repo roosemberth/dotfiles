@@ -22,25 +22,12 @@ let
   brokenMkOutOfStoreSymlinkNixWorkaround = {
     nix.package = pkgs.nixVersions.nix_2_18;
   };
-
-  # Cannot use module fprintd.nix because I don't want pam support.
-  myfprintd = ({pkgs, ...}: {
-    services.dbus.packages = [ pkgs.fprintd ];
-    environment.systemPackages = [ pkgs.fprintd ];
-    systemd.packages = [ pkgs.fprintd ];
-  });
 in {
   imports = [
     ../modules
     ./Mimir-static.nix
     brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
-    ({ # myfprintd is not imported because some PAM tests were broken.
-      config.assertions = [{
-        assertion = pkgs.fprintd.version == "1.94.2";
-        message = "fprintd has been updated. Consider enabling myfprintd module.";
-      }];
-    })
   ];
 
   boot.tmp.cleanOnBoot = true;
@@ -170,6 +157,7 @@ in {
 
   services = {
     flatpak.enable = true;
+    fprintd.enable = true;
     gvfs.enable = true;
     logind.extraConfig = ''
       HandlePowerKey=ignore
