@@ -18,15 +18,10 @@ let
         in "DNS=" + concatMapStringsSep " " (x: "${x.srv}#${x.net}") netXsrv;
       };
     };
-  # See https://github.com/nix-community/home-manager/issues/4692#issuecomment-1848832609
-  brokenMkOutOfStoreSymlinkNixWorkaround = {
-    nix.package = pkgs.nixVersions.nix_2_18;
-  };
 in {
   imports = [
     ../modules
     ./Mimir-static.nix
-    brokenMkOutOfStoreSymlinkNixWorkaround
     networkDnsConfig
   ];
 
