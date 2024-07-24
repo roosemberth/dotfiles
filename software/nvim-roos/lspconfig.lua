@@ -103,7 +103,7 @@ vim.api.nvim_create_autocmd("FileType", {
   -- NOTE: You may or may not want java included here. You will need it if you
   -- want basic Java support but it may also conflict if you are using
   -- something like nvim-jdtls which also works on a java filetype autocmd.
-  pattern = { "scala", "sbt", "java", "sc" },
+  pattern = { "scala", "sbt", "sc" },
   callback = function()
     require("metals").initialize_or_attach(metals_config)
   end,
@@ -124,3 +124,22 @@ require("fidget").setup {
     spinner = "dots"
   }
 }
+
+local jdtls_config = {
+  cmd = {vim.g.jdtls_path},
+  root_dir = vim.fs.dirname(vim.fs.find({'gradlew', '.git', 'mvnw'}, { upward = true })[1]),
+  on_attach = function(client, bufnr)
+    on_generic_lsp_attach(client, bufnr)
+    -- jdtls-specific bindings
+    vim.keymap.set('n', '<leader>of', require'jdtls'.organize_imports)
+  end,
+}
+
+local nvim_jdtls_group = vim.api.nvim_create_augroup("nvim-jdtls", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "java" },
+  callback = function()
+    require('jdtls').start_or_attach(jdtls_config)
+  end,
+  group = nvim_jdtls_group,
+})
