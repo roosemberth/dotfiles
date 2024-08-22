@@ -113,20 +113,9 @@ in
     };
 
     roos.gConfigFn = userCfg: {
-      home.packages = with pkgs; let
-        element-desktop' = pkgs.symlinkJoin {
-          name = "element-desktop-with-data-path";
-          paths = [ element-desktop ];
-          nativeBuildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram "$out/bin/element-desktop" \
-              --add-flags '--profile-dir ${userCfg.xdg.dataHome}/Element'
-          '';
-        };
-      in [
+      home.packages = with pkgs; [
         bat
         brightnessctl
-        element-desktop'
         epiphany
         evolution
         fortune
