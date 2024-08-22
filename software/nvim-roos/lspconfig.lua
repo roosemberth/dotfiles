@@ -125,21 +125,38 @@ require("fidget").setup {
   }
 }
 
-local jdtls_config = {
-  cmd = {vim.g.jdtls_path},
-  root_dir = vim.fs.dirname(vim.fs.find({'gradlew', '.git', 'mvnw'}, { upward = true })[1]),
-  on_attach = function(client, bufnr)
-    on_generic_lsp_attach(client, bufnr)
-    -- jdtls-specific bindings
-    vim.keymap.set('n', '<leader>of', require'jdtls'.organize_imports)
-  end,
-}
+require('spring_boot').setup({
+  java_cmd = vim.g.java_path,
+  ls_path = vim.g.spring_boot_tools_path .. '/language-server',
+})
 
 local nvim_jdtls_group = vim.api.nvim_create_augroup("nvim-jdtls", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "java" },
   callback = function()
-    require('jdtls').start_or_attach(jdtls_config)
+    -- vim returns a copy of objects in the global namespace, thus their
+    -- properties cannot be directly updated.
+    local spring_boot_opts = vim.g.spring_boot
+    spring_boot_opts.jdt_extensions_path = vim.g.spring_boot_tools_path .. "/jars"
+    vim.g.spring_boot = spring_boot_opts
+
+    require('jdtls').start_or_attach({
+      cmd = {
+        vim.g.jdtls_path,
+        '--jvm-arg=-javaagent:' .. vim.g.lombok_path,
+      },
+      init_options = {
+        bundles = require('spring_boot').java_extensions(),
+        jdtls_plugins = {'spring-boot-tools'},
+      },
+      root_dir = vim.fs.root(0, {".git", "mvnw", "gradlew"}),
+      on_attach = function(client, bufnr)
+        on_generic_lsp_attach(client, bufnr)
+        -- jdtls-specific bindings
+        vim.keymap.set('n', '<leader>of', require'jdtls'.organize_imports)
+      end,
+    })
+    require('spring_boot').init_lsp_commands()
   end,
   group = nvim_jdtls_group,
 })
