@@ -83,7 +83,7 @@
         fzfCompletions = pkgs.runCommandLocal "fzf-completions" {} ''
           ${pkgs.fzf}/bin/fzf --zsh > $out
           sha256sum $out
-          echo "050a2a0ab30baf6c2156ba628921f4c485d1403ab321849090b96adb9a76aa6a $out" | sha256sum -c --quiet
+          echo "be1e183acd9829d36d88476fce8165a1ba15b588fc3d76e13dbb3788a13da3b3 $out" | sha256sum -c --quiet
         '';
       in ''
         . ${fzfCompletions}
