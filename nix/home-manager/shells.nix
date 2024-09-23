@@ -86,7 +86,7 @@
           echo "be1e183acd9829d36d88476fce8165a1ba15b588fc3d76e13dbb3788a13da3b3 $out" | sha256sum -c --quiet
         '';
       in ''
-        . ${fzfCompletions}
+        ${if (versionAtLeast version "24.11") then ". ${fzfCompletions}" else ""}
 
         # Filter commands going to the history
         zshaddhistory() {

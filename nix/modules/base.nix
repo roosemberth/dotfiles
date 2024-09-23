@@ -90,7 +90,7 @@ in
       }
     ];
 
-    programs.bash.completion.enable = true;
+    programs.bash.enableCompletion = true;
     programs.mtr.enable = true;
   };
 }

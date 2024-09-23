@@ -20,7 +20,6 @@ let
     };
 in {
   imports = [
-    ../modules
     ./Mimir-static.nix
     networkDnsConfig
   ];
