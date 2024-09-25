@@ -156,7 +156,6 @@ in {
 
   services = {
     flatpak.enable = true;
-    fprintd.enable = true;
     gvfs.enable = true;
     logind.extraConfig = ''
       HandlePowerKey=ignore
