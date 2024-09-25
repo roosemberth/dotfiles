@@ -201,7 +201,8 @@ in {
     '';
   };
 
-  sdrpp = prev.sdrpp.override { soapysdr = final.soapysdr-with-plugins; };
+  sdrpp = prev.sdrpp.override { soapysdr-with-plugins = final.soapysdr-with-plugins; };
+  sdrangel = prev.sdrangel.override { soapysdr-with-plugins = final.soapysdr-with-plugins; };
 
   soapysdr-with-plugins = prev.soapysdr-with-plugins.override {
     extraPackages = with final; [
