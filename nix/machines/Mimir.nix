@@ -59,8 +59,13 @@ in {
     digitalbitbox.enable = true;
 
     graphics.enable = true;
-    graphics.extraPackages = with pkgs;
-      [ vaapiIntel vaapiVdpau libvdpau-va-gl intel-media-driver ];
+    graphics.extraPackages = with pkgs; [
+      intel-media-driver
+      libvdpau-va-gl
+      rocmPackages.clr.icd
+      vaapiIntel
+      vaapiVdpau
+    ];
 
     pulseaudio.enable = false;
   };
