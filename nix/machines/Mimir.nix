@@ -92,6 +92,13 @@ in {
     config = {
       packageOverrides = p: {
         vaapiIntel = p.vaapiIntel.override { enableHybridCodec = true; };
+        # Gnome and Sway sessions both enable the GTK desktop portal, but GNOME
+        # overrides the derivation to exclude portals in GNOME. This generates
+        # a conflict as we end up with two different implementations in the same
+        # system. This option is forced here.
+        xdg-desktop-portal-gtk = (p.xdg-desktop-portal-gtk.override {
+          buildPortalsInGnome = false;
+        });
       };
     };
   };
