@@ -119,6 +119,7 @@ in
         epiphany
         evolution
         fortune
+        fractal
         glances
         adwaita-icon-theme
         eog
