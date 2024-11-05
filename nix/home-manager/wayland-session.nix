@@ -60,7 +60,7 @@ in {
       slurp grim swappy libnotify
       wdisplays wl-clipboard wl-clipboard-x11 mpc_cli
       pinentry' x11_ssh_askpass
-      adwaita-qt pavucontrol pulseaudio wireplumber wayvnc
+      adwaita-qt pavucontrol pulseaudio wireplumber
     ] ++ optionals config.session.wayland.swayidle.enable [ swaylock' swayidle ];
 
     programs.foot.enable = true;
