@@ -81,6 +81,18 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
         }).allModules;
     })
 
+    # Cosmic
+    ({ lib, ... }: with lib; {
+      # Imports under mkIf are not supported.
+      imports = optionals (hasAttr "cosmic" inputs)
+        ([
+          inputs.cosmic.nixosModules.default
+          # This module uses options defined in the cosmic NixOS module, thus
+          # can only be evaluated alongside it.
+          ./modules/cosmic-session.nix
+        ]);
+    })
+
     # Bootstrap optional overlays
     ({ lib, ... }: with lib; let
       ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;

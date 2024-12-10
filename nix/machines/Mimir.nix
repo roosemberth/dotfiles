@@ -116,6 +116,7 @@ in {
   # };
   roos.sway.enable = true;
   roos.hyprland.enable = true;
+  roos.cosmic.enable = true;
   roos.wireguard.enable = true;
   roos.wireguard.network = "bifrost-via-heimdaalr";
 

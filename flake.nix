@@ -14,6 +14,8 @@
     unstable-sops-nix.url = "github:Mic92/sops-nix";
     unstable-sops-nix.inputs.nixpkgs.follows = "unstable-nixpkgs";
     unstable-nur.url = "github:nix-community/NUR";
+    unstable-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
+    unstable-cosmic.inputs.nixpkgs.follows = "unstable-nixpkgs";
 
     # Agnostic
     flake-utils.url = "github:numtide/flake-utils";
@@ -35,6 +37,7 @@
       hm = unstable-hm;
       sops-nix = unstable-sops-nix;
       nur = unstable-nur;
+      cosmic = unstable-cosmic;
     };
 
     lib = unstable.nixpkgs.lib;
