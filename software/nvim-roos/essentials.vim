@@ -24,7 +24,7 @@ nnoremap <leader>T :Telescope<CR>
 nnoremap <leader>S :Telescope git_status<CR>
 nnoremap <leader>F :Telescope find_files<CR>
 nnoremap <leader>B :Telescope buffers<CR>
-nnoremap <leader><C-_> :Telescope live_grep<CR>
+nnoremap <leader>_ :Telescope live_grep<CR>
 
 " Ranger
 nnoremap <C-w>f :split +RangerEdit<CR>
