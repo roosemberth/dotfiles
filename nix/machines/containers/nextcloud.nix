@@ -40,6 +40,7 @@ in {
         config.dbhost = "databases";
         config.defaultPhoneRegion = "CH";
         config.overwriteProtocol = "https";
+        configureRedis = true;
       };
       users.users.nextcloud.uid = 999;
       users.groups.nextcloud.gid = 999;
