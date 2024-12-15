@@ -51,13 +51,13 @@
 
     hosts = {
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Mimir-vm = mkSystem stoat ({ modulesPath, ... }: {
+      Mimir-vm = mkSystem unstable ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
       Minerva = mkSystem stoat ./nix/machines/Minerva.nix;
       Heimdaalr = mkSystem stoat ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
-        stoat ./nix/machines/strong-ghost.nix;
+        unstable ./nix/machines/strong-ghost.nix;
     };
   in {
     nixosConfigurations = {
@@ -80,7 +80,7 @@
       nixosConfigPackages = mapAttrs (_: c: c.config.system.build.vm) hosts;
     in nixosConfigPackages // overlayPackages);
 
-    devShells = forAllSystems stoat
+    devShells = forAllSystems unstable
       (pkgs: import ./nix/dev-shells.nix { inherit pkgs; });
   };
 }
