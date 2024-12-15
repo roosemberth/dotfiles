@@ -23,7 +23,6 @@ in {
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
       nix.extraOptions = "experimental-features = nix-command flakes";
-      nixpkgs.config.permittedInsecurePackages = [ "nextcloud-27.1.11" ];
       services.nextcloud = {
         enable = true;
         home = "/var/lib/nextcloud";
@@ -31,7 +30,7 @@ in {
         hostName = "nextcloud.orbstheorem.ch";
         maxUploadSize = "50G";
         enableImagemagick = true;
-        package = pkgs.nextcloud27;
+        package = pkgs.nextcloud28;
         autoUpdateApps.enable = true;
         config.adminuser = "oleander";
         config.adminpassFile = fsec."services/nextcloud/adminpass".path;

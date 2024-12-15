@@ -185,7 +185,6 @@ in {
 
   nix.extraOptions = "experimental-features = nix-command flakes";
   nix.settings.trusted-users = [ "roosemberth" ];
-  nixpkgs.config.permittedInsecurePackages = [ "nextcloud-27.1.11" ];
 
   roos.dotfilesPath = ../..;
   roos.nginx-fileshare.enable = true;
