@@ -1,12 +1,5 @@
 {
   inputs = {
-    # Uakari
-    uakari-nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    uakari-hm.url = "github:nix-community/home-manager/release-24.05";
-    uakari-hm.inputs.nixpkgs.follows = "uakari-nixpkgs";
-    uakari-sops-nix.url = "github:Mic92/sops-nix";
-    uakari-sops-nix.inputs.nixpkgs.follows = "uakari-nixpkgs";
-
     # Vicuña
     vicuna-nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     vicuna-hm.url = "github:nix-community/home-manager/release-24.11";
@@ -32,12 +25,6 @@
 
   outputs = inputs@{ self, flake-utils, ... }: let
     # Distributions
-    uakari = with inputs; {
-      inherit (inputs) self flake-utils flake-registry;
-      nixpkgs = uakari-nixpkgs;
-      hm = uakari-hm;
-      sops-nix = uakari-sops-nix;
-    };
     vicuna = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
       nixpkgs = vicuna-nixpkgs;
@@ -67,7 +54,7 @@
       Mimir-vm = mkSystem unstable ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
-      Minerva = mkSystem uakari ./nix/machines/Minerva.nix;
+      Minerva = mkSystem vicuna ./nix/machines/Minerva.nix;
       Heimdaalr = mkSystem vicuna ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         unstable ./nix/machines/strong-ghost.nix;
