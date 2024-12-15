@@ -124,8 +124,27 @@
         "minerva.orbstheorem.ch".locations."/".proxyPass =
           "http://minerva.intranet.orbstheorem.ch";
 
-        "nextcloud.orbstheorem.ch".locations."/".proxyPass =
-          "http://minerva.intranet.orbstheorem.ch:42080";
+        "nextcloud.orbstheorem.ch".locations = {
+          "/".proxyPass = "http://minerva.intranet.orbstheorem.ch:42080";
+          "/index.php/apps/uppush" = {
+            proxyPass = "http://minerva.intranet.orbstheorem.ch:42080";
+            extraConfig = ''
+              proxy_connect_timeout 10m;
+              proxy_send_timeout    10m;
+              proxy_read_timeout    10m;
+              proxy_buffering off;
+            '';
+          };
+          "=/_matrix/push/v1/notify" = {
+            proxyPass = "http://minerva.intranet.orbstheorem.ch:42080/index.php/apps/uppush/gateway/matrix";
+            extraConfig = ''
+              proxy_connect_timeout 10m;
+              proxy_send_timeout    10m;
+              proxy_read_timeout    10m;
+              proxy_buffering off;
+            '';
+          };
+        };
 
         "collabora.orbstheorem.ch".locations."/" = {
           proxyPass = "http://minerva.intranet.orbstheorem.ch:42085";
