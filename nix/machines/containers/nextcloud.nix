@@ -22,8 +22,8 @@ in {
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
-      nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
+      nixpkgs.config.permittedInsecurePackages = [ "nextcloud-27.1.11" ];
       services.nextcloud = {
         enable = true;
         home = "/var/lib/nextcloud";
@@ -31,14 +31,13 @@ in {
         hostName = "nextcloud.orbstheorem.ch";
         maxUploadSize = "50G";
         enableImagemagick = true;
-        package = pkgs.nextcloud26;
+        package = pkgs.nextcloud27;
         autoUpdateApps.enable = true;
         config.adminuser = "oleander";
         config.adminpassFile = fsec."services/nextcloud/adminpass".path;
         config.dbuser = "nextcloud-FRMw7z";
         config.dbpassFile = fsec."services/nextcloud/dbpass".path;
         config.dbtype = "pgsql";
-        config.dbport = "5432";
         config.dbhost = "databases";
         config.defaultPhoneRegion = "CH";
         config.overwriteProtocol = "https";

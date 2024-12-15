@@ -134,6 +134,7 @@ in {
       ];
     }];
     # Create users for clients
+    users.groups.backup-receivers = {};
     users.users = mkMerge (mapAttrsToList (client: clientCfg: let
       targetDir = "${cfg.registration.backupsRoot}/${client}";
       btrbkCfg = config.roos.btrbk;

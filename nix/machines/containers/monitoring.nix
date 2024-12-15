@@ -40,7 +40,6 @@ in {
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
-      nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       nixpkgs.config.permittedInsecurePackages = [
         "prometheus-nextcloud-exporter-0.4.0" # CVE-2022-21698 does not affect me

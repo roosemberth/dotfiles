@@ -19,7 +19,6 @@ in {
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
-      nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
 
       roos.firewall.networks.lan = {

@@ -153,8 +153,13 @@ let
     };
   };
 in {
+  # Hack because the containers depend on a "legacy" way of loading the modules
+  # in this repo.
+  _module.args.roosModules = [
+    ../modules/lib.nix
+    ../modules/firewall.nix
+  ];
   imports = [
-    ../modules
     ./Minerva-static.nix
     ./containers/databases.nix
     ./containers/home-automation.nix
@@ -179,8 +184,8 @@ in {
   hardware.cpu.intel.updateMicrocode = true;
 
   nix.extraOptions = "experimental-features = nix-command flakes";
-  nix.package = pkgs.nixUnstable;
   nix.settings.trusted-users = [ "roosemberth" ];
+  nixpkgs.config.permittedInsecurePackages = [ "nextcloud-27.1.11" ];
 
   roos.dotfilesPath = ../..;
   roos.nginx-fileshare.enable = true;

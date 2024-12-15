@@ -20,7 +20,6 @@
       networking.useNetworkd = true;
       systemd.services.systemd-networkd-wait-online = lib.mkForce {};
 
-      nix.package = pkgs.nixUnstable;
       nix.extraOptions = "experimental-features = nix-command flakes";
       services.home-assistant = {
         enable = true;
