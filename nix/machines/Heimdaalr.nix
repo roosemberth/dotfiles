@@ -276,7 +276,6 @@
   };
 in {
   imports = [
-    ../modules
     ./Heimdaalr-static.nix
     acmeConfig
     bindConfig
@@ -290,12 +289,13 @@ in {
 
   environment.systemPackages = [ pkgs.nvim-roos-essential ];
 
+  networking.defaultGateway.interface = "ens3";
+  networking.defaultGateway6.interface = "ens3";
   networking.hostName = "Heimdaalr";
   networking.useNetworkd = true;
   networking.useDHCP = false;
 
   nix.extraOptions = "experimental-features = nix-command flakes";
-  nix.package = pkgs.nixUnstable;
   nix.settings.trusted-users = [ "roosemberth" ];
 
   roos.dotfilesPath = ../..;

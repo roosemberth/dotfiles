@@ -7,6 +7,13 @@
     stoat-sops-nix.url = "github:Mic92/sops-nix";
     stoat-sops-nix.inputs.nixpkgs.follows = "stoat-nixpkgs";
 
+    # Vicuña
+    vicuna-nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    vicuna-hm.url = "github:nix-community/home-manager/release-24.11";
+    vicuna-hm.inputs.nixpkgs.follows = "vicuna-nixpkgs";
+    vicuna-sops-nix.url = "github:Mic92/sops-nix";
+    vicuna-sops-nix.inputs.nixpkgs.follows = "vicuna-nixpkgs";
+
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     unstable-hm.url = "github:nix-community/home-manager";
@@ -30,6 +37,12 @@
       nixpkgs = stoat-nixpkgs;
       hm = stoat-hm;
       sops-nix = stoat-sops-nix;
+    };
+    vicuna = with inputs; {
+      inherit (inputs) self flake-utils flake-registry;
+      nixpkgs = vicuna-nixpkgs;
+      hm = vicuna-hm;
+      sops-nix = vicuna-sops-nix;
     };
     unstable = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
@@ -55,7 +68,7 @@
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
       });
       Minerva = mkSystem stoat ./nix/machines/Minerva.nix;
-      Heimdaalr = mkSystem stoat ./nix/machines/Heimdaalr.nix;
+      Heimdaalr = mkSystem vicuna ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         unstable ./nix/machines/strong-ghost.nix;
     };
