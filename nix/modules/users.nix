@@ -38,7 +38,7 @@ in {
     };
 
     rConfig = mkOption {
-      type = options.home-manager.users.type.functor.wrapped;
+      type = options.home-manager.users.type.nestedTypes.elemType;
       default = {
         home.stateVersion = "18.09";
       };
@@ -59,7 +59,7 @@ in {
     };
 
     sConfig = mkOption {
-      type = options.home-manager.users.type.functor.wrapped;
+      type = options.home-manager.users.type.nestedTypes.elemType;
       default = {};
       description = ''
         Home-manager configuration to be used in user-profiles with simple
@@ -79,7 +79,7 @@ in {
     };
 
     gConfig = mkOption {
-      type = options.home-manager.users.type.functor.wrapped;
+      type = options.home-manager.users.type.nestedTypes.elemType;
       default = {};
       description = ''
         Home-manager configuration to be used in user-profiles with graphical
