@@ -95,7 +95,7 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
 
     # Bootstrap optional overlays
     ({ lib, ... }: with lib; let
-      ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlay;
+      ifFound = attr: optional (hasAttr attr inputs) inputs."${attr}".overlays.default;
     in {
       nixpkgs.overlays = ifFound "nur";
     })
