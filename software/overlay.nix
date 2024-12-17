@@ -142,11 +142,11 @@ in {
     srcs = [
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-XO5nfvZlpRAoxi6keyUq6nCrw8FkiAGfivOV1q4Gt0U=";
+        hash = "sha256-bcnH/JO7SIuwUgpseAqNPA+1SGpHEaykm0xT+sc5MCM=";
       })
       (pkgs.fetchurl {
         url = "https://www.rec.la/rec.la-key.pem";
-        hash = "sha256-biwuc3HQBxXYzYKOwMYhHNWrP5z7ytmZY1Bgk5TolxI=";
+        hash = "sha256-bcnH/JO7SIuwUgpseAqNPA+1SGpHEaykm0xT+sc5MCM=";
       })
     ];
     phases = [ "buildPhase" ];
