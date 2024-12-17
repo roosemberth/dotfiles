@@ -2,6 +2,16 @@ final: prev: let
   nvim = final.callPackage ./nvim-roos {};
   xtrx = final.callPackage ./xtrx-sdr {};
 in {
+  cosmic-comp = prev.cosmic-comp.overrideAttrs(o: rec {
+    version = "1.0.0-alpha.4-unstable-2024-12-17";
+    src = final.fetchFromGitHub {
+      owner = "pop-os";
+      repo = "cosmic-comp";
+      rev = "7ac204ee799224de389ed988ee96a79411adc695";
+      hash = "sha256-Fuw3oxpUEH7Ai3kuojUGjsz1jFAsTA3/CyjYz5WxlPw=";
+    };
+  });
+
   ensure-nodatacow-btrfs-subvolume =
     final.callPackage ./ensure-nodatacow-btrfs-subvolume.nix { };
 
