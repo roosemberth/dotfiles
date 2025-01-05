@@ -76,7 +76,6 @@ in
         git-crypt
         git-annex
         git-open
-        git-annex-utils
         nix-index
         nmap
         ranger

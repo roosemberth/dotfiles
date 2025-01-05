@@ -62,7 +62,6 @@ in {
     graphics.extraPackages = with pkgs; [
       intel-media-driver
       libvdpau-va-gl
-      rocmPackages.clr.icd
       vaapiIntel
       vaapiVdpau
     ];
