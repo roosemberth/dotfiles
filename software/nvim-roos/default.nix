@@ -54,12 +54,12 @@
   };
   spring-boot-nvim = vimUtils.buildVimPlugin {
     pname = "spring-boot";
-    version = "2024-08-10";
+    version = "2024-12-31";
     src = fetchFromGitHub {
       owner = "JavaHello";
       repo = "spring-boot.nvim";
-      rev = "995a705becbc711b703f9ab344745ececf6471a3";
-      hash = "sha256-Hri6WQnWTmFwlOUCVG8O1eELn9FhlvVpUC9lt+uIGkc=";
+      rev = "db7fe5c4b2a9f62498a2cbeee1313af2aa332fd3";
+      hash = "sha256-uVQ70lU7tS/VbOnqk6Z7GiZbrQRSjXYk10EdZWBCg1M=";
     };
     meta.homepage = "https://github.com/JavaHello/spring-boot.nvim/blob/main/README_en.md";
   };
