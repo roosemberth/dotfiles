@@ -19,6 +19,7 @@ in
       isNormalUser = true;
       extraGroups = [
         "adbusers"
+        "dialout"
         "docker"
         "input"
         "libvirtd"
