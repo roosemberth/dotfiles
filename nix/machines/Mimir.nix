@@ -107,6 +107,7 @@ in {
   roos.dotfilesPath = ../..;
   roos.media.enable = true;
   roos.nginx-fileshare.enable = true;
+  roos.nginx-fileshare.host = "files.mimir.orbstheorem.ch";
   roos.nginx-fileshare.directory = "/srv/shared";
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
@@ -168,7 +169,6 @@ in {
       enable = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      # Default redirect to HTTPs (e.g. socat rec.la testing).
       virtualHosts.localhost = {
         default = true;
         extraConfig = ''
@@ -183,10 +183,7 @@ in {
         '';
       };
       # Reverse proxy for dev stuff
-      virtualHosts."~^(?!priv-)(?<service>[^.]+?)\\.rec.la$" = {
-        onlySSL = true;
-        sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
-        sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
+      virtualHosts."~^(?!priv-)(?<service>[^.]+?)\\.mimir.orbstheorem.ch$" = {
         extraConfig = ''
           # Optional authentication
           set $service_htpasswd /srv/$service.htpasswd;
@@ -210,15 +207,6 @@ in {
           extraConfig = ''
             proxy_buffering off;
           '';
-        };
-      };
-      virtualHosts."~^priv-(?<service>[^.]+?)\\.rec.la$" = {
-        onlySSL = true;
-        sslCertificate = "${pkgs.recla-certs}/rec.la-bundle.crt";
-        sslCertificateKey = "${pkgs.recla-certs}/rec.la-key.pem";
-        locations."/" = {
-          proxyPass = "http://localhost:5001";
-          proxyWebsockets = true;
         };
       };
     };

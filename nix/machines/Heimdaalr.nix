@@ -200,18 +200,6 @@
           extraConfig = ''
             proxy_set_header  X-Real-IP         $remote_addr;
             proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
-            proxy_set_header  Host              "$subdomain.rec.la";
-            proxy_set_header  X-Forwarded-Proto https;
-            proxy_pass        https://mimir.r.orbstheorem.ch:443;
-          '';
-        };
-
-        "bity.orbstheorem.ch".locations."/" = {
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_set_header  X-Real-IP         $remote_addr;
-            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
-            proxy_set_header  Host              "bity.rec.la";
             proxy_set_header  X-Forwarded-Proto https;
             proxy_pass        https://mimir.r.orbstheorem.ch:443;
           '';
