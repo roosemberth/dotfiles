@@ -65,19 +65,6 @@ in {
           bind_addresses = [ "0.0.0.0" ];
           tls = false;
         }];
-        trusted_key_servers = [{
-          server_name = "pacien.net";
-          verify_keys."ed25519:a_fhhB" =
-            "N8ZVXJG7CSnCK1+rthEmvoDo1tPlQC5bxcJuPA+/RZs";
-        } {
-          server_name = "gnugen.ch";
-          verify_keys."ed25519:a_bPqV" =
-          "1NrywDVt85bq5qLeInMXgUY+Y7f7Lqza6XGpV5viPpU";
-        } {
-          server_name = "matrix.org";
-          verify_keys."ed25519:auto" =
-          "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw";
-        }];
         enable_metrics = true;
         max_upload_size = "100M";
         url_preview_enabled = true;
