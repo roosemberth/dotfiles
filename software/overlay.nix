@@ -136,28 +136,6 @@ in {
   nvim-roos-essential = nvim.essential;
   nvim-roos-full = nvim.full;
 
-  recla-certs = with final; stdenv.mkDerivation {
-    name = "recla-certs";
-    version = "23012601";
-    srcs = [
-      (pkgs.fetchurl {
-        url = "https://www.rec.la/rec.la-bundle.crt";
-        hash = "sha256-bcnH/JO7SIuwUgpseAqNPA+1SGpHEaykm0xT+sc5MCM=";
-      })
-      (pkgs.fetchurl {
-        url = "https://www.rec.la/rec.la-key.pem";
-        hash = "sha256-bcnH/JO7SIuwUgpseAqNPA+1SGpHEaykm0xT+sc5MCM=";
-      })
-    ];
-    phases = [ "buildPhase" ];
-    buildPhase = ''
-      mkdir "$out"
-      for _src in $srcs; do
-        cp "$_src" "$out/$(basename "$(stripHash "$_src")")"
-      done
-    '';
-  };
-
   remap-pa-client = with final; python3.pkgs.buildPythonApplication {
     pname = "remap-pa-client";
     version = "0.0";
