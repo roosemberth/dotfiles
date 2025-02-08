@@ -14,7 +14,7 @@ let
         extraConfig = with lib; let
           dnsZones = [ "dyn.zkx.ch" "zkx.ch" ];
           dnsSrvs = with networks.zkx.dns; ["[${v6}]" v4];
-          netXsrv = cartesianProductOfSets { net = dnsZones; srv = dnsSrvs; };
+          netXsrv = cartesianProduct { net = dnsZones; srv = dnsSrvs; };
         in "DNS=" + concatMapStringsSep " " (x: "${x.srv}#${x.net}") netXsrv;
       };
     };
@@ -65,8 +65,6 @@ in {
       vaapiIntel
       vaapiVdpau
     ];
-
-    pulseaudio.enable = false;
   };
 
   networking.hostName = "Mimir";
@@ -162,6 +160,7 @@ in {
       HandlePowerKey=ignore
       RuntimeDirectorySize=95%
     '';
+    pulseaudio.enable = false;
     # Despite being in the xserver namespace, this does not enable any of X11.
     xserver.desktopManager.gnome.enable = true;
     xserver.displayManager.gdm.enable = true;

@@ -48,7 +48,7 @@ in {
       rev = version;
       hash = "sha256-/SBcYFNPIDxVqIGiDXr03ETQoQp/DJ6Jkha3GuhFRdY=";
     };
-    cargoSha256 = "sha256-Emn7MHX1rPgDUuGuxYTEwCNjj0Qyx23pxdlxaZ0Nt/M=";
+    cargoHash = "sha256-Emn7MHX1rPgDUuGuxYTEwCNjj0Qyx23pxdlxaZ0Nt/M=";
 
     nativeBuildInputs = [ makeWrapper ];
 

@@ -101,7 +101,7 @@ in {
 
   config = let
     mkUserCfgs = users: cfgFilter: let
-      userXcfg = cartesianProductOfSets
+      userXcfg = cartesianProduct
         { user = users; cfg = cfgFilter options.roos; };
     in mkMerge (map (x: {
       ${x.user} = mkAliasDefinitions x.cfg;
@@ -109,7 +109,7 @@ in {
     mergeFunctorWithUser = user: x:  # x is a merge of functions to user configs
       mkMerge (map (f: f config.home-manager.users.${user}) x.contents);
     callUserCfgFns = users: cfgFilter: let
-      userXcfgfn = cartesianProductOfSets
+      userXcfgfn = cartesianProduct
         { user = users; cfgFn = cfgFilter options.roos; };
     in mkMerge (map (x: {
       ${x.user} = mkAliasAndWrapDefinitions
