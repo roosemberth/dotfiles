@@ -2,15 +2,6 @@
   options.roos.sway.enable = mkEnableOption "Enable sway support.";
 
   config = mkIf config.roos.sway.enable {
-    i18n.inputMethod = {
-      enabled = "ibus";
-      ibus.engines = with pkgs.ibus-engines; let
-        typing-booster' = typing-booster.override {
-          langs = [ "de-ch" "en-us" "es-sv" "fr-moderne" "it-it" "ru-ru" ];
-        };
-      in [ typing-booster' ];
-    };
-
     programs.sway.enable = true;
     programs.sway.extraPackages = [];  # Managed by sway-session.nix
     programs.sway.wrapperFeatures.gtk = true;
