@@ -120,6 +120,7 @@ in {
 
   # Output profiles
   roos.gConfigFn = hmCfg: {
+    config.home.packages = with pkgs; [ prusa-slicer ];
     config.systemd.user.services.kanshi = let
       cfgFile = pkgs.writeText "kanshi.conf" ''
         profile home {
