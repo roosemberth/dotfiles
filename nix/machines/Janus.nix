@@ -31,6 +31,7 @@
 
   roos.agenda.enable = true;
   roos.cosmic.enable = true;
+  roos.dev.enable = true;
   roos.dotfilesPath = ../..;
   roos.user-profiles.graphical = ["roosemberth"];
 
