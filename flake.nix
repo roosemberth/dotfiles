@@ -51,7 +51,7 @@
         (s: fn (import nixpkgs { system = s; overlays = [ self.overlay ]; }));
 
     hosts = {
-      Janus = mkSystem unstable ({ ... }: {
+      janus = mkSystem unstable ({ ... }: {
         imports = [
           ./nix/machines/Janus.nix
           nixos-hardware.nixosModules.framework-13-7040-amd
@@ -68,7 +68,7 @@
     };
   in {
     nixosConfigurations = {
-      inherit (hosts) Mimir Mimir-vm Minerva Heimdaalr Janus strong-ghost;
+      inherit (hosts) Mimir Mimir-vm Minerva Heimdaalr janus strong-ghost;
     };
 
     apps = with lib; forAllSystems unstable (pkgs: with lib; let
