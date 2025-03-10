@@ -30,15 +30,7 @@ in {
           pyyaml
           requests
         ]))
-      ] ++ (with haskellPackages; [  # Haskell development
-        (ghc.withPackages
-          (p: with p;[QuickCheck aeson lens http-conduit optparse-applicative yaml]))
-        haskell-language-server
-        cabal2nix
-        cabal-install
-        fourmolu
-        hpack
-      ]);
+      ];
 
       xdg.configFile."stylish-haskell/config.yaml".source =
         util.fetchDotfile "etc/stylish-haskell.yaml";
