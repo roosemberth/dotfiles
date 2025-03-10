@@ -9,14 +9,10 @@
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  environment.gnome.excludePackages = with pkgs; [
-    orca gnome-backgrounds gnome-color-manager gnome-shell-extensions
-    gnome-tour gnome-user-docs orca gnome-menus
-  ];
-
   hardware = {
     bluetooth.enable = true;
     enableRedistributableFirmware = true;
+    framework.laptop13.audioEnhancement.enable = true;
     graphics.enable = true;
   };
 
@@ -30,6 +26,7 @@
       keep-derivations = true
     '';
     settings.trusted-users = [ "roosemberth" ];
+    registry.df.flake.outPath = "/var/home/roosemberth/ws/1-Repositories/dotfiles";
   };
 
   roos.agenda.enable = true;
@@ -37,11 +34,14 @@
   roos.dotfilesPath = ../..;
   roos.user-profiles.graphical = ["roosemberth"];
 
+  programs.evolution.enable = true;
+  programs.seahorse.enable = true;
   services = {
+    accounts-daemon.enable = true;
+    gnome.gnome-keyring.enable = true;
+    gnome.gnome-online-accounts.enable = true;
+    fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
     tailscale.enable = true;
-    # Despite being in the xserver namespace, this does not enable any of X11.
-    xserver.desktopManager.gnome.enable = true;
-    xserver.displayManager.gdm.enable = true;
   };
 
   system.stateVersion = "25.05";
