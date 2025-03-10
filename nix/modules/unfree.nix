@@ -3,8 +3,6 @@
 { config, lib, ... }: with lib;
 let
   allowedList = []
-    ++ optionals config.roos.media.enable
-      ["libspotify" "pyspotify" "spotify" "spotify-unwrapped"]
     ++ optionals config.roos.steam.enable
       ["steam" "steam-unwrapped" "steam-runtime" "steam-run"]
     ++ ["ninja-cookie" "mpv-youtube-quality" "slack" ]

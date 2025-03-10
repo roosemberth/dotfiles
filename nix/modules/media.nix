@@ -21,7 +21,6 @@ in
       home.packages = with pkgs; [
         ffmpeg-full
         freetube
-        spotify
         tidal-hifi
         youtube-dl
       ];
