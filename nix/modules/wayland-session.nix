@@ -4,6 +4,9 @@ in {
   options.roos.wayland.enable = mkEnableOption "Enable wayland support";
 
   config = mkIf cfg.enable {
+    # Make wayland sessions visible.
+    environment.pathsToLink = [ "/share/wayland-sessions" ];
+
     fonts.packages = with pkgs; [ font-awesome noto-fonts-emoji ];
 
     nixpkgs.config.packageOverrides = pkgs: {
