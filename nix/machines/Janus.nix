@@ -9,7 +9,11 @@
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  hardware.enableRedistributableFirmware = true;
+  hardware = {
+    bluetooth.enable = true;
+    enableRedistributableFirmware = true;
+    graphics.enable = true;
+  };
 
   networking.hostName = "janus";
   networking.networkmanager.enable = true;
@@ -23,8 +27,11 @@
     settings.trusted-users = [ "roosemberth" ];
   };
 
+  roos.cosmic.enable = true;
   roos.dotfilesPath = ../..;
-  roos.user-profiles.reduced = ["roosemberth"];
+  roos.user-profiles.graphical = ["roosemberth"];
   system.stateVersion = "25.05";
   users.users.roosemberth.home = "/var/home/roosemberth";
+
+  virtualisation.podman.enable = true;
 }
