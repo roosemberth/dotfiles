@@ -20,7 +20,7 @@ in {
         yq
         zed-editor
         # Nix
-        manix sops nix-output-monitor
+        manix sops nh nix-output-monitor nix-tree
       ] ++ [
         (python3.withPackages(p: with p;[
           beautifulsoup4
