@@ -9,6 +9,8 @@
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  hardware.enableRedistributableFirmware = true;
+
   networking.hostName = "janus";
   networking.networkmanager.enable = true;
 
