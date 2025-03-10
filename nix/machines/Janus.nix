@@ -9,6 +9,11 @@
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  environment.gnome.excludePackages = with pkgs; [
+    orca gnome-backgrounds gnome-color-manager gnome-shell-extensions
+    gnome-tour gnome-user-docs orca gnome-menus
+  ];
+
   hardware = {
     bluetooth.enable = true;
     enableRedistributableFirmware = true;
@@ -31,6 +36,13 @@
   roos.cosmic.enable = true;
   roos.dotfilesPath = ../..;
   roos.user-profiles.graphical = ["roosemberth"];
+
+  services = {
+    # Despite being in the xserver namespace, this does not enable any of X11.
+    xserver.desktopManager.gnome.enable = true;
+    xserver.displayManager.gdm.enable = true;
+  };
+
   system.stateVersion = "25.05";
   users.users.roosemberth.home = "/var/home/roosemberth";
 
