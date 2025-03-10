@@ -12,6 +12,10 @@
         Unit.PartOf = [ "graphical-session.target" ];
         # This target is started by hyprland
       };
+      systemd.user.services.swaync = {
+        Unit.PartOf = [ "hyprland-session.target" ];
+        Install.WantedBy = [ "hyprland-session.target" ];
+      };
     };
     roos.wayland.enable = true;
   };
