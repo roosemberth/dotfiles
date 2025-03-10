@@ -15,6 +15,7 @@
     services.gnome.gnome-keyring.enable = true;
 
     roos.gConfig.config = {
+      session.wayland.enable = true;
       systemd.user.services.swaync.Unit.Conflicts = [ "cosmic-session.target" ];
       systemd.user.services.kanshi.Unit.Conflicts = [ "cosmic-session.target" ];
       systemd.user.services.swayidle.Unit.Conflicts = [ "cosmic-session.target" ];
