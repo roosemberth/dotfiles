@@ -21,9 +21,10 @@
     flake-utils.url = "github:numtide/flake-utils";
     flake-registry.url = "github:NixOS/flake-registry";
     flake-registry.flake = false;
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
 
-  outputs = inputs@{ self, flake-utils, ... }: let
+  outputs = inputs@{ self, flake-utils, nixos-hardware, ... }: let
     # Distributions
     vicuna = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
@@ -50,6 +51,12 @@
         (s: fn (import nixpkgs { system = s; overlays = [ self.overlay ]; }));
 
     hosts = {
+      Janus = mkSystem unstable ({ ... }: {
+        imports = [
+          ./nix/machines/Janus.nix
+          nixos-hardware.nixosModules.framework-13-7040-amd
+        ];
+      });
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Mimir-vm = mkSystem unstable ({ modulesPath, ... }: {
         imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
@@ -61,7 +68,7 @@
     };
   in {
     nixosConfigurations = {
-      inherit (hosts) Mimir Mimir-vm Minerva Heimdaalr strong-ghost;
+      inherit (hosts) Mimir Mimir-vm Minerva Heimdaalr Janus strong-ghost;
     };
 
     apps = with lib; forAllSystems unstable (pkgs: with lib; let
