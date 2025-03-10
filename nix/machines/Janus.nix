@@ -38,6 +38,7 @@
   roos.user-profiles.graphical = ["roosemberth"];
 
   services = {
+    tailscale.enable = true;
     # Despite being in the xserver namespace, this does not enable any of X11.
     xserver.desktopManager.gnome.enable = true;
     xserver.displayManager.gdm.enable = true;
