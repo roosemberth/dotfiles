@@ -45,8 +45,8 @@
     fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
     tailscale.enable = true;
   };
-
   system.stateVersion = "25.05";
+  time.timeZone = "Europe/Zurich";
   users.users.roosemberth.home = "/var/home/roosemberth";
 
   virtualisation.podman.enable = true;
