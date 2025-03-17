@@ -34,6 +34,7 @@
   roos.dev.enable = true;
   roos.dotfilesPath = ../..;
   roos.media.enable = true;
+  roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
 
   programs.evolution.enable = true;
