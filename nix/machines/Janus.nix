@@ -44,6 +44,7 @@
     gnome.gnome-keyring.enable = true;
     gnome.gnome-online-accounts.enable = true;
     fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
+    logind.powerKey = "ignore";
     tailscale.enable = true;
   };
   system.stateVersion = "25.05";
