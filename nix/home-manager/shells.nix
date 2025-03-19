@@ -4,6 +4,7 @@
   };
 
   config = mkIf config.programs.zsh-roos.enable {
+    home.packages = with pkgs; [ eza ];
     programs.starship = {
       enable = true;
       settings = {
@@ -57,9 +58,8 @@
         "....." = "cd ../../../..";
         "cp"    = "cp -i";
         "df"    = "df -h";
-        "l"     = "ls -vlF";
-        "ll"    = "ls -valFh";
-        "ls"    = "ls --color=auto";
+        "l"     = "eza --long";
+        "ll"    = "eza --long --all --all --icons=always --mounts";
         "mv"    = "mv -i";
         "rlf"   = "readlink -f";
         "rm"    = "rm --one-file-system";
