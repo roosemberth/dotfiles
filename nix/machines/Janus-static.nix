@@ -169,6 +169,13 @@ in {
           # very simple and would prevent testing some behaviour.
           useDefaultFilesystems = false;
           useEFIBoot = true;
+          qemu.options = [
+            "-chardev stdio,mux=on,id=char0,signal=off"
+            "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
+            "-mon chardev=char0,mode=readline"
+            "-serial chardev:char0"
+            "-vga cirrus"
+          ];
         };
       })
     ];
