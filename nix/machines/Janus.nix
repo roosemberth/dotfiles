@@ -33,11 +33,11 @@
   roos.cosmic.enable = true;
   roos.dev.enable = true;
   roos.dotfilesPath = ../..;
+  roos.evolution.enable = true;
   roos.media.enable = true;
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
 
-  programs.evolution.enable = true;
   programs.seahorse.enable = true;
   services = {
     accounts-daemon.enable = true;

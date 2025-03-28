@@ -38,6 +38,7 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
         ./modules/btrbk.nix
         ./modules/container-host.nix
         ./modules/dev.nix
+        ./modules/evolution.nix
         ./modules/firewall.nix
         ./modules/layout-trees.nix
         ./modules/lib.nix
