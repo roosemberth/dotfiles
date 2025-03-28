@@ -177,22 +177,22 @@ in
           id = 0;
           settings = {};
           isDefault = true;
-          extensions = baseExtensions;
+          extensions.packages = baseExtensions;
         };
         profiles."moon" = {
           id = 1;
           settings = {};
-          extensions = baseExtensions;
+          extensions.packages = baseExtensions;
         };
         profiles."games" = {
           id = 2;
           settings = {};
-          extensions = baseExtensions;
+          extensions.packages = baseExtensions;
         };
         profiles."truss" = {
           id = 3;
           settings = {};
-          extensions = with pkgs.nur.repos.rycee.firefox-addons;
+          extensions.packages = with pkgs.nur.repos.rycee.firefox-addons;
             [ metamask ublock-origin ];
         };
       };
