@@ -149,7 +149,22 @@ in {
           fi
         '';
       })
-      ({config, ...}: let # Configure filesystms in VM
+      ({ ... }: { # Configure emulation
+        roos.sway.enable = true;
+        roos.gConfig.wayland.windowManager.sway.config.modifier =
+          lib.mkForce "Mod1"; # It's hard to use the same modifier as the host.
+        virtualisation.qemu = {
+          consoles = [ "ttyS0,115200n8" "tty1" ];
+          options = [
+            "-chardev stdio,mux=on,id=char0,signal=off"
+            "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
+            "-mon chardev=char0,mode=readline"
+            "-serial chardev:char0"
+            "-vga cirrus"
+          ];
+        };
+      })
+      ({config, lib, ...}: let # Configure filesystms in VM
         fsToExclude =
           [
             "/nix" # Provided by nixos/modules/virtualisation/qemu-vm.nix
@@ -169,13 +184,6 @@ in {
           # very simple and would prevent testing some behaviour.
           useDefaultFilesystems = false;
           useEFIBoot = true;
-          qemu.options = [
-            "-chardev stdio,mux=on,id=char0,signal=off"
-            "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
-            "-mon chardev=char0,mode=readline"
-            "-serial chardev:char0"
-            "-vga cirrus"
-          ];
         };
       })
     ];
