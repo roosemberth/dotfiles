@@ -56,6 +56,7 @@
           ./nix/machines/Janus.nix
           nixos-hardware.nixosModules.framework-13-7040-amd
         ];
+        hardware.framework.laptop13.audioEnhancement.enable = true;
       });
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Minerva = mkSystem vicuna ./nix/machines/Minerva.nix;

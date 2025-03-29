@@ -12,7 +12,6 @@
   hardware = {
     bluetooth.enable = true;
     enableRedistributableFirmware = true;
-    framework.laptop13.audioEnhancement.enable = true;
     graphics.enable = true;
   };
 
