@@ -110,7 +110,12 @@ in {
           # mkfs.btrfs is necessary in the initrd to create a btrfs filesystem.
           copy_bin_and_libs ${pkgs.btrfs-progs}/bin/mkfs.btrfs
         '';
-
+        boot.initrd.luks.devices."${hostname}-system".preOpenCommands = ''
+          # Trick the luks hook into believing this password was successfully
+          # used to unlock a previous device, so it will attempt to "reuse" it.
+          # This way, booting the VM requires no interaction.
+          echo -n 1234 > /crypt-ramfs/passphrase
+        '';
         # This is better suited at the beginning of postDeviceCommands, but we
         # have no way of reliably inserting it before other code.
         boot.initrd.preLVMCommands = ''
@@ -149,18 +154,38 @@ in {
           fi
         '';
       })
+      ({ pkgs, ... }: {
+        assertions = let
+          originalConfigKernel = originalConfig.boot.kernelPackages.kernel;
+        in [{
+          assertion = originalConfigKernel.version == "6.14";
+          message = ''
+            On kernel 6.14, using the virtio-gpu-gl device would cause COSMIC
+            to continously crash. Since kernel ${originalConfigKernel.version}
+            is now used in the base configuration, please re-test this and
+            update this assertion.
+          '';
+        }];
+        boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+      })
       ({ ... }: { # Configure emulation
-        roos.sway.enable = true;
-        roos.gConfig.wayland.windowManager.sway.config.modifier =
-          lib.mkForce "Mod1"; # It's hard to use the same modifier as the host.
+        services.getty.autologinUser = "roosemberth";
+        services.greetd.settings.initial_session = {
+          command = "cosmic-session";
+          user = "roosemberth";
+        };
+        services.journald.console = "/dev/ttyS0";
+        virtualisation.cores = 4;
+        virtualisation.memorySize = 2048;
         virtualisation.qemu = {
           consoles = [ "ttyS0,115200n8" "tty1" ];
           options = [
             "-chardev stdio,mux=on,id=char0,signal=off"
             "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
+            "-device virtio-gpu-gl,blob=on,hostmem=256M,venus=on"
+            "-display gtk,gl=on"
             "-mon chardev=char0,mode=readline"
             "-serial chardev:char0"
-            "-vga cirrus"
           ];
         };
       })
