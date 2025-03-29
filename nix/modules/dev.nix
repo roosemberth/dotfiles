@@ -18,6 +18,7 @@ in {
         virt-viewer
         wdiff
         yq
+        zed-editor
         # Nix
         manix sops nh nix-output-monitor nix-tree
       ] ++ [
