@@ -58,9 +58,6 @@
         ];
       });
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Mimir-vm = mkSystem unstable ({ modulesPath, ... }: {
-        imports = [ ./nix/machines/Mimir.nix ./nix/modules/vm-compat.nix ];
-      });
       Minerva = mkSystem vicuna ./nix/machines/Minerva.nix;
       Heimdaalr = mkSystem vicuna ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
