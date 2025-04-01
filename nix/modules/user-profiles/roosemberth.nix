@@ -85,26 +85,6 @@ in
         lf
         xxd
       ]);
-      programs.helix.enable = true;
-      programs.helix.settings = {
-        theme = "nightfox";
-        editor.whitespace.render = "all";
-        keys.normal = {
-          "B" = "file_picker_in_current_buffer_directory";
-        };
-        keys.normal.space = {
-          "f" = [
-            ":new"
-            ":insert-output ${pkgs.lf}/bin/lf -selection-path=/dev/stdout"
-            "split_selection_on_newline"
-            "goto_file"
-            "goto_last_modification"
-            "goto_last_modified_file"
-            ":buffer-close!"
-            ":redraw"
-          ];
-        };
-      };
       programs.git.package = pkgs.gitFull;
       programs.gpg = {
         enable = true;
