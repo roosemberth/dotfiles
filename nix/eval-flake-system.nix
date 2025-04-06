@@ -40,6 +40,7 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
         ./modules/dev.nix
         ./modules/evolution.nix
         ./modules/firewall.nix
+        ./modules/games.nix
         ./modules/layout-trees.nix
         ./modules/lib.nix
         ./modules/media.nix

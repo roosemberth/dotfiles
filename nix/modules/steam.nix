@@ -9,5 +9,6 @@
         extraProfile = "export SDL_VIDEODRIVER=x11";
       };
     };
+    roos.game-fixes.enable = true;
   };
 }
