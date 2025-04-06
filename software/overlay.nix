@@ -41,14 +41,14 @@ in {
 
   layout-trees-generator = with final; rustPlatform.buildRustPackage rec {
     pname = "layout-trees-generator";
-    version = "0.1.0";
+    version = "0.2.0";
     src = fetchFromGitLab {
       owner = "roosemberth";
       repo = "layout-trees";
       rev = version;
-      hash = "sha256-/SBcYFNPIDxVqIGiDXr03ETQoQp/DJ6Jkha3GuhFRdY=";
+      hash = "sha256-/fzaRNpv3uu15y48vIyUY9X/FxLDue0KEG7Iaj+ybO4=";
     };
-    cargoHash = "sha256-Emn7MHX1rPgDUuGuxYTEwCNjj0Qyx23pxdlxaZ0Nt/M=";
+    cargoHash = "sha256-QhJNdF4Meme+R3HnGezNt0ZGiQCRXtdJv1d7T/tPEZ8=";
 
     nativeBuildInputs = [ makeWrapper ];
 
@@ -62,7 +62,7 @@ in {
       '';
       homepage = "https://github.com/BurntSushi/ripgrep";
       license = licenses.unlicense;
-      maintainers = [ maintainers.tailhook ];
+      maintainers = [ maintainers.roosemberth ];
     };
 
     postInstall = ''
