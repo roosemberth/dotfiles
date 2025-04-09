@@ -41,14 +41,14 @@ in {
 
   layout-trees-generator = with final; rustPlatform.buildRustPackage rec {
     pname = "layout-trees-generator";
-    version = "0.2.0";
+    version = "0.2.1";
     src = fetchFromGitLab {
       owner = "roosemberth";
       repo = "layout-trees";
       rev = version;
-      hash = "sha256-/fzaRNpv3uu15y48vIyUY9X/FxLDue0KEG7Iaj+ybO4=";
+      hash = "sha256-KuUaY7maDTM5/sBpDzObfhwHZW3zuPxafspBspn7amo=";
     };
-    cargoHash = "sha256-QhJNdF4Meme+R3HnGezNt0ZGiQCRXtdJv1d7T/tPEZ8=";
+    cargoHash = "sha256-68R08gc0lkfsToC5Wfc1UEKbga2Bo0iHh6+te9mvSV4=";
 
     nativeBuildInputs = [ makeWrapper ];
 
