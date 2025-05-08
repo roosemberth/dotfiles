@@ -5,7 +5,7 @@ let
   allowedList = []
     ++ optionals config.roos.steam.enable
       ["steam" "steam-unwrapped" "steam-runtime" "steam-run"]
-    ++ ["ninja-cookie" "mpv-youtube-quality" "slack" ]
+    ++ ["ninja-cookie" "mpv-youtube-quality" ]
     ;
 in {
   config.nixpkgs.config.allowUnfreePredicate =
