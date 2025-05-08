@@ -94,29 +94,25 @@ in
 
     roos.gConfigFn = userCfg: {
       home.packages = with pkgs; [
+        adwaita-icon-theme
         bat
         brightnessctl
-        epiphany
+        eog
         evolution
         fortune
         fractal
         glances
-        adwaita-icon-theme
-        eog
-        nautilus
         gnome-pomodoro
         gtk3  # gtk-launch
-        links2
-        mosh
         mumble
-        ncmpcpp
-        networkmanagerapplet
-        pandoc
+        nautilus
         screen-message
         socat
+        sparrow
         tdesktop
         tree
         unzip
+        wlr-randr
         wtype
         xkcdpass
         zip
