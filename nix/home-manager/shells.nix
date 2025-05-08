@@ -152,8 +152,7 @@
           }
 
           function cltmp(){
-            TMPBASE="''${XDG_RUNTIME_DIR:-$HOME/tmp/$(id -u)/}"
-            pushd "$TMPBASE/latest-ctmp"
+            TMPBASE="''${XDG_RUNTIME_DIR:-$HOME/tmp/$(id -u)/}/tmp.*(oc[1])"
           }
 
         '')
