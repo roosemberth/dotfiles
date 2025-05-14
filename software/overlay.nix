@@ -71,6 +71,27 @@ in {
     '';
   };
 
+  bdk-kit = with final; rustPlatform.buildRustPackage rec {
+    pname = "bdk-cli";
+    version = "6ac12a1b7bf8cdd8c7f60fb8c1b4acf076762991";
+    src = fetchFromGitHub {
+      owner = "bitcoindevkit";
+      repo = "bdk-cli";
+      rev = version;
+      hash = "sha256-zTVK2JAjFlDUHR4ba6ddgBtbEkRrBiHWtLLFN5C4Gl8=";
+    };
+    cargoHash = "sha256-weOM4asAI2Y547vB7Xodzv0sCHoauqgDdaHSBFGOYig=";
+
+    meta = with lib; {
+      description = ''
+        A CLI wallet library and REPL tool to demo and test the BDK library.
+      '';
+      homepage = "https://github.com/bitcoindevkit/bdk-cli";
+      license = licenses.mit;
+      maintainers = [ maintainers.roosemberth ];
+    };
+  };
+
   bitbox-bridge = with final; rustPlatform.buildRustPackage rec {
     pname = "bitbox-bridge";
     version = "1.5.1";
