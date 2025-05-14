@@ -52,6 +52,7 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
         ./modules/wireguard-new.nix
         ./modules/wireguard.nix
       ] ++ (lib.optionals (lib.versionAtLeast lib.version "24.11") [
+        ./modules/cosmic-session.nix
         ./modules/hyprland-session.nix
         ./modules/sway-session.nix
         ./modules/wayland-session.nix
@@ -81,18 +82,6 @@ in systemConfiguration: nixpkgs.lib.nixosSystem {
           inherit config;
           inherit (nixpkgs) lib;
         }).allModules;
-    })
-
-    # Cosmic
-    ({ lib, ... }: with lib; {
-      # Imports under mkIf are not supported.
-      imports = optionals (hasAttr "cosmic" inputs)
-        ([
-          inputs.cosmic.nixosModules.default
-          # This module uses options defined in the cosmic NixOS module, thus
-          # can only be evaluated alongside it.
-          ./modules/cosmic-session.nix
-        ]);
     })
 
     # Bootstrap optional overlays

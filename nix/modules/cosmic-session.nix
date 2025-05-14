@@ -9,14 +9,10 @@
       # https://github.com/lilyinstarlight/nixos-cosmic?tab=readme-ov-file#cosmic-utilities---clipboard-manager-not-working
       COSMIC_DATA_CONTROL_ENABLED = "1";
     };
-
-    services.desktopManager.cosmic.enable = true;
-    services.flatpak.enable = true;
-    services.gnome.gnome-keyring.enable = true;
-
     roos.gConfig.config = {
       session.wayland.enable = true;
     };
     roos.wayland.enable = true;
+    services.desktopManager.cosmic.enable = true;
   };
 }
