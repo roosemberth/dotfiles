@@ -46,7 +46,6 @@ in
       programs.git = {
         enable = true;
         package = lib.mkDefault pkgs.gitMinimal;
-        userEmail = "roosemberth@posteo.ch";
         userName = "Roosembert Palacios";
         signing.key = "C2242BB7";
         signing.signByDefault = true;
