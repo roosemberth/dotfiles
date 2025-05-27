@@ -106,6 +106,7 @@ in
         mumble
         nautilus
         screen-message
+        signal-desktop
         socat
         sparrow
         tdesktop
@@ -115,6 +116,7 @@ in
         wtype
         xkcdpass
         zip
+        zulip
       ];
 
       programs.firefox = let
