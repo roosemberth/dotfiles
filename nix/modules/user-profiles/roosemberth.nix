@@ -38,6 +38,7 @@ in
     roos.rConfigFn = userCfg: {
       home.packages = (with pkgs; [
         file
+        fd
         moreutils
         openssl
         pv
