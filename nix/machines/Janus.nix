@@ -40,6 +40,7 @@
   programs.seahorse.enable = true;
   services = {
     accounts-daemon.enable = true;
+    ddccontrol.enable = true;
     gnome.gnome-keyring.enable = true;
     gnome.gnome-online-accounts.enable = true;
     fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
