@@ -8,10 +8,10 @@ in {
     initrd.luks.devices."${hostname}-system" = {
       device = systemLuksDevice;
       postOpenCommands = ''
-        ${pkgs.substituteAll {
-          src = ./rotate-active-submodule-versions.sh;
+        ${pkgs.replaceVarsWith {
           isExecutable = true;
-          rootfsDevice = systemDevice;
+          replacements.rootfsDevice = systemDevice;
+          src = ./rotate-active-submodule-versions.sh;
         }}
       '';
     };
