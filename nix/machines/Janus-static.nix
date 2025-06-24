@@ -85,6 +85,7 @@ in {
     };
   };
 
+  services.fwupd.enable = true;
   services.hardware.bolt.enable = true;
   systemd.services.fix-generated-mounts-permissions = {
     description = "Fix directory permissions of the @roosemberth dataset"
