@@ -14,5 +14,9 @@
     };
     roos.wayland.enable = true;
     services.desktopManager.cosmic.enable = true;
+
+    # Enabled by default on COSMIC session.
+    services.avahi.enable = false;
+    services.orca.enable = false;
   };
 }
