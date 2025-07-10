@@ -7,6 +7,13 @@
     vicuna-sops-nix.url = "github:Mic92/sops-nix";
     vicuna-sops-nix.inputs.nixpkgs.follows = "vicuna-nixpkgs";
 
+    # Warbler
+    warbler-nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    warbler-hm.url = "github:nix-community/home-manager/release-25.05";
+    warbler-hm.inputs.nixpkgs.follows = "warbler-nixpkgs";
+    warbler-sops-nix.url = "github:Mic92/sops-nix";
+    warbler-sops-nix.inputs.nixpkgs.follows = "warbler-nixpkgs";
+
     # Unstable
     unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     unstable-hm.url = "github:nix-community/home-manager";
@@ -24,18 +31,24 @@
 
   outputs = inputs@{ self, flake-utils, nixos-hardware, ... }: let
     # Distributions
-    vicuna = with inputs; {
-      inherit (inputs) self flake-utils flake-registry;
-      nixpkgs = vicuna-nixpkgs;
-      hm = vicuna-hm;
-      sops-nix = vicuna-sops-nix;
-    };
     unstable = with inputs; {
       inherit (inputs) self flake-utils flake-registry;
       nixpkgs = unstable-nixpkgs;
       hm = unstable-hm;
       sops-nix = unstable-sops-nix;
       nur = unstable-nur;
+    };
+    vicuna = with inputs; {
+      inherit (inputs) self flake-utils flake-registry;
+      nixpkgs = vicuna-nixpkgs;
+      hm = vicuna-hm;
+      sops-nix = vicuna-sops-nix;
+    };
+    warbler = with inputs; {
+      inherit (inputs) self flake-utils flake-registry;
+      nixpkgs = warbler-nixpkgs;
+      hm = warbler-hm;
+      sops-nix = warbler-sops-nix;
     };
 
     lib = unstable.nixpkgs.lib;
@@ -57,7 +70,7 @@
       });
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
       Minerva = mkSystem vicuna ./nix/machines/Minerva.nix;
-      Heimdaalr = mkSystem vicuna ./nix/machines/Heimdaalr.nix;
+      Heimdaalr = mkSystem warbler ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         unstable ./nix/machines/strong-ghost.nix;
     };

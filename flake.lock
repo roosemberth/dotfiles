@@ -97,7 +97,10 @@
         "unstable-sops-nix": "unstable-sops-nix",
         "vicuna-hm": "vicuna-hm",
         "vicuna-nixpkgs": "vicuna-nixpkgs",
-        "vicuna-sops-nix": "vicuna-sops-nix"
+        "vicuna-sops-nix": "vicuna-sops-nix",
+        "warbler-hm": "warbler-hm",
+        "warbler-nixpkgs": "warbler-nixpkgs",
+        "warbler-sops-nix": "warbler-sops-nix"
       }
     },
     "systems": {
@@ -231,6 +234,63 @@
       "inputs": {
         "nixpkgs": [
           "vicuna-nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1751606940,
+        "narHash": "sha256-KrDPXobG7DFKTOteqdSVeL1bMVitDcy7otpVZWDE6MA=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "3633fc4acf03f43b260244d94c71e9e14a2f6e0d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "warbler-hm": {
+      "inputs": {
+        "nixpkgs": [
+          "warbler-nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1751810233,
+        "narHash": "sha256-kllkNbIqQi3VplgTMeGzuh1t8Gk8TauvkTRt93Km+tQ=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "9b0873b46c9f9e4b7aa01eb634952c206af53068",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "release-25.05",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "warbler-nixpkgs": {
+      "locked": {
+        "lastModified": 1751943650,
+        "narHash": "sha256-7orTnNqkGGru8Je6Un6mq1T8YVVU/O5kyW4+f9C1mZQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "88983d4b665fb491861005137ce2b11a9f89f203",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-25.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "warbler-sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "warbler-nixpkgs"
         ]
       },
       "locked": {
