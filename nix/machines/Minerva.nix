@@ -187,8 +187,9 @@ in {
   nix.settings.trusted-users = [ "roosemberth" ];
 
   roos.dotfilesPath = ../..;
-  roos.nginx-fileshare.enable = true;
   roos.nginx-fileshare.directory = "/srv/shared";
+  roos.nginx-fileshare.enable = true;
+  roos.nginx-fileshare.host = "minerva.orbstheorem.ch";
   roos.user-profiles.reduced = ["roosemberth"];
   roos.wireguard.enable = true;
   roos.wireguard.network = "bifrost-via-heimdaalr";
