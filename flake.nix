@@ -69,7 +69,7 @@
         hardware.framework.laptop13.audioEnhancement.enable = true;
       });
       Mimir = mkSystem unstable ./nix/machines/Mimir.nix;
-      Minerva = mkSystem vicuna ./nix/machines/Minerva.nix;
+      Minerva = mkSystem warbler ./nix/machines/Minerva.nix;
       Heimdaalr = mkSystem warbler ./nix/machines/Heimdaalr.nix;
       strong-ghost = import ./nix/eval-flake-system.nix "aarch64-linux"
         unstable ./nix/machines/strong-ghost.nix;
