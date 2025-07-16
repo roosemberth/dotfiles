@@ -12,6 +12,9 @@ in {
     config = {
       imports = roosModules;
       networking.firewall.allowedTCPPorts = [ 8448 ];
+      networking.interfaces.eth0.ipv4.addresses = [
+        { address = "10.231.136.4"; prefixLength = 24; }
+      ];
       networking.interfaces.eth0.ipv4.routes = [
         { address = "0.0.0.0"; prefixLength = 0; via = "10.231.136.1"; }
       ];
