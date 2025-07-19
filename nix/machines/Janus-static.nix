@@ -25,6 +25,23 @@ in {
   };
 
   environment.etc."machine-id".source = "/var/lib/secrets/machine-id";
+  environment.etc."NetworkManager/dispatcher.d/99-llmnr-sometimes".source =
+    pkgs.writeShellScript "llmnr-dispatcher" ''
+      IFACE="$1"
+      STATUS="$2"
+
+      if [ "$STATUS" = "up" ]; then
+        CONN_NAME=$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.CONNECTION device show "$IFACE" | tr -d '\n')
+        case "$(echo $CONN_NAME | sha256sum)" in
+          5dcb60670f27d6cdf16463bb960e60bef13fdda3550cef32d05848ef86aa1c42)
+            ${pkgs.systemd}/bin/resolvectl llmnr "$IFACE" yes
+            ;;
+          *)
+            ${pkgs.systemd}/bin/resolvectl llmnr "$IFACE" no
+            ;;
+        esac
+      fi
+    '';
 
   fileSystems = {
     "/" = {

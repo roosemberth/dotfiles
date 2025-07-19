@@ -16,7 +16,9 @@
   };
 
   networking.hostName = "janus";
+  networking.firewall.allowedUDPPorts = [ 5355 ]; # LLMNR responses
   networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "systemd-resolved";
 
   nix = {
     extraOptions = ''
@@ -41,10 +43,12 @@
   services = {
     accounts-daemon.enable = true;
     ddccontrol.enable = true;
+    fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
     gnome.gnome-keyring.enable = true;
     gnome.gnome-online-accounts.enable = true;
-    fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
     logind.powerKey = "ignore";
+    resolved.enable = true;
+    resolved.llmnr = "resolve";
     tailscale.enable = true;
   };
   system.stateVersion = "25.05";
