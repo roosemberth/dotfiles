@@ -47,7 +47,7 @@
       };
 
       sessionVariables = {
-        PAGER = "less -j.3";
+        PAGER = "less -j.3 -S";
         VISUAL = "vim -O";
       };
 
