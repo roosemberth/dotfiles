@@ -95,6 +95,7 @@
       vim-dispatch
       vim-fugitive
       vim-gitgutter
+      vim-svelte
       vim-tbone
       # Behaviour
       nvim-autopairs
