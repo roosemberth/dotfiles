@@ -138,7 +138,6 @@ in
           form-history-control
           localcdn
           multi-account-containers
-          ninja-cookie
           search-by-image
           sidebery
           temporary-containers
