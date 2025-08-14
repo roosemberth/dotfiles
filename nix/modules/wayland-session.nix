@@ -27,7 +27,7 @@ in {
 
     services.greetd.enable = true;
     services.greetd.settings.default_session.command = let
-      binpath = lib.makeBinPath [pkgs.greetd.tuigreet];
+      binpath = lib.makeBinPath [pkgs.tuigreet];
       sessionsDir = "/run/current-system/sw/share/wayland-sessions";
     in "${binpath}/tuigreet --sessions ${sessionsDir} --time";
     services.pipewire.enable = true;
