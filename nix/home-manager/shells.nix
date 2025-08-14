@@ -39,7 +39,7 @@
       history = {
         size = 100000;  # History size in memory.
         save = 100000000;  # History events.
-        path = ".local/var/lib/zsh/history";  # FIXME: Use `$XDG_DATA_DIR`.
+        path = "${config.xdg.dataHome}/zsh/history";
         ignoreDups = true;
         ignoreSpace = true;
         extended = true;
