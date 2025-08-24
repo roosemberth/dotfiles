@@ -27,7 +27,7 @@ in {
           beautifulsoup4
           flask
           ipython
-          python-lsp-server
+          pyright
           pyyaml
           requests
         ]))
