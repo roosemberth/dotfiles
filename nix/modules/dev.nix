@@ -8,6 +8,7 @@ in {
       home.packages = with pkgs; [
         # Other
         claws
+        exoscale-cli
         docker-credential-helpers
         httpie
         jq
