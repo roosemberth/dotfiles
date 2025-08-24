@@ -13,6 +13,7 @@ in {
         httpie
         jq
         kubectl
+        pyright
         rakudo
         rlwrap
         usbutils
