@@ -8,6 +8,7 @@
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  environment.systemPackages = with pkgs; [ yubikey-manager ];
 
   hardware = {
     bluetooth.enable = true;
