@@ -15,6 +15,11 @@ in {
         }}
       '';
     };
+    loader.systemd-boot = {
+      editor = false;
+      enable = true;
+      memtest86.enable = true;
+    };
     loader.efi.efiSysMountPoint = "/boot";
     loader.grub = {
       device = "nodev";
