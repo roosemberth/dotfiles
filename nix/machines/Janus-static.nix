@@ -48,6 +48,7 @@ in {
         esac
       fi
     '';
+  environment.systemPackages = with pkgs; [ sbctl ];
 
   fileSystems = {
     "/" = {
