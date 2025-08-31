@@ -1,14 +1,18 @@
-{ config, pkgs, lib, ... }:
-{
+{ config, pkgs, lib, ... }: let
+  yubikey = { ... }: {
+    environment.systemPackages = with pkgs; [ pcsc-tools yubikey-manager ];
+    services.pcscd.enable = true;
+  };
+in {
   imports = [
     ./Janus-static.nix
+    yubikey
   ];
 
   boot.tmp.cleanOnBoot = true;
   boot.kernel.sysctl."kernel.yama.ptrace_scope" = 2;  # Enable YAMA restrictions
   boot.kernel.sysctl."kernel.sysrq" = 240;  # Enable sysrq
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  environment.systemPackages = with pkgs; [ yubikey-manager ];
 
   hardware = {
     bluetooth.enable = true;
