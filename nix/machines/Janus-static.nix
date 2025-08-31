@@ -16,7 +16,7 @@ in {
       '';
     };
     loader.systemd-boot = {
-      consoleMode = "auto";
+      consoleMode = "2";
       editor = false;
       enable = true;
       memtest86.enable = true;
