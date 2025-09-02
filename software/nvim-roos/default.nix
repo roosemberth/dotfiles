@@ -1,9 +1,6 @@
-{ lib
-, fetchFromGitHub
-, fetchzip
-, jdk
+{ fetchFromGitHub
 , jdt-language-server
-, lombok
+, lib
 , manix
 , neovim
 , nix
@@ -52,17 +49,6 @@
     src = ./mynix-tools;
     propagatedBuildInputs = [ nix ];
   };
-  spring-boot-nvim = vimUtils.buildVimPlugin {
-    pname = "spring-boot";
-    version = "2024-12-31";
-    src = fetchFromGitHub {
-      owner = "JavaHello";
-      repo = "spring-boot.nvim";
-      rev = "db7fe5c4b2a9f62498a2cbeee1313af2aa332fd3";
-      hash = "sha256-uVQ70lU7tS/VbOnqk6Z7GiZbrQRSjXYk10EdZWBCg1M=";
-    };
-    meta.homepage = "https://github.com/JavaHello/spring-boot.nvim/blob/main/README_en.md";
-  };
   vim-raku = vimUtils.buildVimPlugin {
     pname = "vim-raku";
     version = "2023-05-21";
@@ -72,12 +58,6 @@
       rev = "f9ed159f2a6e733d544c3f674f9d2a1ed1c89654";
       hash = "sha256-SHi32oJfyixfa2pfSi0Ue2lxUlI3F4yrs46v/B5724w=";
     };
-  };
-  vscode-spring-boot-tools = fetchzip {
-    extension = "zip";
-    hash = "sha256-b7V57bC5h+qNGjXadgYpbKNGRnrPZhr1PIQlNLNTor8=";
-    stripRoot = false;
-    url = "https://github.com/spring-projects/sts4/releases/download/4.24.0.RELEASE/vscode-spring-boot-1.56.0-RC2.vsix";
   };
 
   essentialPlugins = with vimPlugins; {
@@ -121,7 +101,6 @@
       pgsql-vim
       plantuml-syntax
       rust-tools-nvim
-      spring-boot-nvim
       telescope-manix
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
@@ -172,9 +151,6 @@ in {
         ./essentials.vim
       ] + ''
         let g:jdtls_path = '${jdt-language-server}/bin/jdtls'
-        let g:spring_boot_tools_path = '${vscode-spring-boot-tools}/extension'
-        let g:java_path = '${lib.getExe jdk}'
-        let g:lombok_path = '${lombok}/share/java/lombok.jar'
         luafile ${./lspconfig.lua}
       ''+ mkPlugSection ''
         Plug '${vimPlugins.vimwiki.outPath}', { 'on': 'VimwikiIndex' }
