@@ -1,13 +1,12 @@
-{ fetchFromGitHub
-, jdt-language-server
+{ neovim
+, fetchFromGitHub
 , lib
-, manix
-, neovim
+, vimPlugins
+, vimUtils
 , nix
 , nixUnstable
 , ripgrep
-, vimPlugins
-, vimUtils
+, manix
 , ...
 }: let
   Mark = vimUtils.buildVimPlugin {
@@ -95,7 +94,6 @@
       fidget-nvim
       mynix-tools
       nvim-dap
-      nvim-jdtls
       nvim-lspconfig
       nvim-metals
       pgsql-vim
@@ -150,7 +148,6 @@ in {
         ./core.vim
         ./essentials.vim
       ] + ''
-        let g:jdtls_path = '${jdt-language-server}/bin/jdtls'
         luafile ${./lspconfig.lua}
       ''+ mkPlugSection ''
         Plug '${vimPlugins.vimwiki.outPath}', { 'on': 'VimwikiIndex' }
