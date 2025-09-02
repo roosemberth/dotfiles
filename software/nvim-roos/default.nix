@@ -95,7 +95,6 @@
       mynix-tools
       nvim-dap
       nvim-lspconfig
-      nvim-metals
       pgsql-vim
       plantuml-syntax
       rust-tools-nvim

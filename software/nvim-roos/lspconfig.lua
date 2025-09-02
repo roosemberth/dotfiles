@@ -77,39 +77,6 @@ lspconfig.clangd.setup {
   on_attach = on_generic_lsp_attach,
 }
 
-local metals_config = require("metals").bare_config()
-metals_config = {
-  settings = {
-    showImplicitArguments = true,
-    excludedPackages = {
-      "akka.actor.typed.javadsl",
-      "com.github.swagger.akka.javadsl"
-    },
-    useGlobalExecutable = true,
-  },
-  on_attach = function(client, bufnr)
-    on_generic_lsp_attach(client, bufnr)
-    -- Required on metals
-    vim.opt_global.shortmess:remove("F"):append("c")
-    -- Scala-specific bindings
-    vim.keymap.set('n', 'gds', vim.lsp.buf.document_symbol)
-    vim.keymap.set('n', 'gws', vim.lsp.buf.workspace_symbol)
-    vim.keymap.set('n', '<leader>ws', require'metals'.hover_worksheet)
-  end,
-}
-
-local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  -- NOTE: You may or may not want java included here. You will need it if you
-  -- want basic Java support but it may also conflict if you are using
-  -- something like nvim-jdtls which also works on a java filetype autocmd.
-  pattern = { "scala", "sbt", "sc" },
-  callback = function()
-    require("metals").initialize_or_attach(metals_config)
-  end,
-  group = nvim_metals_group,
-})
-
 vim.g.markdown_fenced_languages = {
   "ts=typescript"
 }
