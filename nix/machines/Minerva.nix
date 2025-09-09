@@ -173,6 +173,7 @@ in {
   roos.user-profiles.reduced = ["roosemberth"];
   roos.wireguard.enable = true;
   roos.wireguard.network = "bifrost-via-heimdaalr";
+  roos.rConfigFn = _: { programs.zsh-roos.fzf-completions.enable = false; };
 
   programs.mosh.enable = true;
   security.pam.enableSSHAgentAuth = true;
