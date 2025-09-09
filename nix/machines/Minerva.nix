@@ -158,6 +158,7 @@ in {
   environment.systemPackages = with pkgs; [
     gitAndTools.git-annex
     nvim-roos-essential
+    nh nix-output-monitor nix-tree
   ];
 
   hardware.cpu.intel.updateMicrocode = true;
