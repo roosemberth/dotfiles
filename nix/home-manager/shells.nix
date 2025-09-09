@@ -1,9 +1,16 @@
-{ config, pkgs, lib, ... }: with lib; {
+{ config, pkgs, lib, ... }: let
+  cfg = config.programs.zsh-roos;
+in with lib; {
   options.programs = {
     zsh-roos.enable = mkEnableOption "Roos' zsh config";
+    zsh-roos.fzf-completions.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to enable fzf completions";
+    };
   };
 
-  config = mkIf config.programs.zsh-roos.enable {
+  config = mkIf cfg.enable {
     home.packages = with pkgs; [ eza ];
     programs.starship = {
       enable = true;
@@ -87,7 +94,7 @@
         '')
 
         (''
-          ${if (versionAtLeast version "24.11") then ". ${fzfCompletions}" else ""}
+          ${if cfg.fzf-completions.enable then ". ${fzfCompletions}" else ""}
 
           # Filter commands going to the history
           zshaddhistory() {
