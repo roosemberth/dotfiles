@@ -8,7 +8,6 @@ in {
     bindMounts.matrix-synapse.mountPoint = "/var/lib/matrix-synapse";
     bindMounts.matrix-synapse.isReadOnly = false;
     bindMounts."/run/secrets/services/matrix" = {};
-    bindMounts."/run/secrets/services/matrix_appservice_discord" = {};
     config = {
       imports = roosModules;
       networking.firewall.allowedTCPPorts = [ 8448 ];
@@ -74,29 +73,11 @@ in {
         report_stats = true;
         tls_certificate_path = fsec."services/matrix/tls_certificate".path;
         tls_private_key_path = fsec."services/matrix/tls_private_key".path;
-        app_service_config_files = [
-          fsec."services/matrix_appservice_discord/registration".path
-        ];
         # Silence assertion, this is configured in `config_secrets`.
         database.args.host = "databases";
         database.args.name = "psycopg2";
         database.args.user = null;
         database.args.password = null;
-      };
-      systemd.services.link-discord-appservice-registration = {
-        description = "Link discord's appservice registration";
-        requiredBy = [ "matrix-appservice-discord.service" ];
-        before = [ "matrix-appservice-discord.service" ];
-        path = with pkgs; [ acl  ];
-        serviceConfig.ExecStart = builtins.toString
-          (pkgs.writeShellScript "fix-appservice-perms" (''
-            # Workaround the NixOS module...
-            mkdir -p /var/lib/private/matrix-appservice-discord
-            cd /var/lib/private/matrix-appservice-discord
-            cp ${fsec."services/matrix_appservice_discord/registration".path} \
-              discord-registration.yaml
-            chmod 444 discord-registration.yaml
-        ''));
       };
       systemd.services.forward-v6-to-v4-for-metrics = {
         description = "Listen in ipv6 and forward to synapse metrics over ipv4";
@@ -107,21 +88,6 @@ in {
             TCP6-LISTEN:9092,ipv6only,fork \
             TCP-CONNECT:localhost:9092'';
         serviceConfig.Type = "exec";
-      };
-      services.matrix-appservice-discord = {
-        enable = true;
-        settings = {
-          bridge.domain = "orbstheorem.ch";
-          bridge.homeserverUrl = "https://orbstheorem.ch";
-          bridge.adminMxid = "@roosemberth:orbstheorem.ch";
-          bridge.disableJoinLeaveNotifications = true;
-          # database set via APPSERVICE_DISCORD_DATABASE_CONN_STRING envvar
-          database.connString = null;
-          channel.namePattern = ":guild :name";
-        };
-        serviceDependencies = [ "matrix-synapse.service" ];
-        # Read by systemd, so we don't care about permissions.
-        environmentFile = fsec."services/matrix_appservice_discord/env".path;
       };
       system.stateVersion = "22.05";
     };
@@ -158,8 +124,6 @@ in {
     "services/matrix/tls_certificate" = secretCfg;
     "services/matrix/tls_private_key" = secretCfg;
     "services/matrix/config_secrets" = secretCfg;
-    "services/matrix_appservice_discord/env" = secretCfg;
-    "services/matrix_appservice_discord/registration" = secretCfg;
   };
 
   system.activationScripts.secretsForMatrix = let
@@ -170,6 +134,5 @@ in {
     chown ${o}:${g} "${fsec."services/matrix/tls_certificate".path}"
     chown ${o}:${g} "${fsec."services/matrix/tls_private_key".path}"
     chown ${o}:${g} "${fsec."services/matrix/config_secrets".path}"
-    chown ${o}:${g} "${fsec."services/matrix_appservice_discord/registration".path}"
   '';
 }
