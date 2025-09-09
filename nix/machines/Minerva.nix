@@ -144,11 +144,32 @@ let
       serviceConfig.ExecStart = "${probe-nas-disk} %i";
     };
   };
+  containerHostConfig = {
+    roos.container-host.hostDataDir = "/mnt/cabinet/minerva-data";
+
+    systemd.services."container-host-volumes" = {
+      requires = [ "mnt-cabinet.mount" ];
+      after = [ "mnt-cabinet.mount" ];
+    };
+  };
 in {
+  # Hack because the containers depend on a "legacy" way of loading the modules
+  # in this repo.
+  _module.args.roosModules = [
+    ../modules/lib.nix
+    ../modules/firewall.nix
+  ];
   imports = [
     ./Minerva-static.nix
+    ./containers/databases.nix
+    ./containers/home-automation.nix
+    ./containers/named.nix
+    ./containers/nextcloud.nix
+    ./containers/matrix.nix
+    ./containers/monitoring.nix
     networkConfig
     nasConfig
+    containerHostConfig
   ];
 
   boot.tmp.cleanOnBoot = true;
