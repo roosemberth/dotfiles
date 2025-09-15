@@ -25,6 +25,7 @@ in
         "libvirtd"
         "networkmanager"
         "tss"
+        "tty"
         "video"
         "wheel"
         "wireshark"
