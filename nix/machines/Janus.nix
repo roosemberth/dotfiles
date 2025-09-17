@@ -57,6 +57,7 @@ in {
     tailscale.enable = true;
   };
   system.stateVersion = "25.05";
+  systemd.oomd.enableUserSlices = true;
   time.timeZone = "Europe/Zurich";
   users.users.roosemberth.home = "/var/home/roosemberth";
 
