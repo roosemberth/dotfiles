@@ -141,7 +141,12 @@ in {
     vimAlias = true;
     extraMakeWrapperArgs = let bins = [ manix ripgrep ]; in
       "--prefix PATH : '${lib.makeBinPath bins}'";
-    extraPython3Packages = p: with p; [ tasklib packaging ];
+      extraPython3Packages = p:
+        assert
+          lib.assertMsg
+          (p.tasklib.version == "2.5.1")
+          "tasklib previously failed to build and was disabled, consider re-enabling it (new version: ${p.tasklib.version}).";
+        with p; [ /* tasklib */ packaging ];
     configure = {
       customRC = composeConfig [
         ./core.vim
