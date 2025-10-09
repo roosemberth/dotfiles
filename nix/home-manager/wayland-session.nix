@@ -114,7 +114,7 @@ in {
         ExecStart = "${pkgs.openssh}/bin/ssh-agent -D -a %t/ssh-agent-%u-socket";
         Restart = "always";
         RestartSec = "3";
-        Environment = [ "SSH_ASKPASS=${pkgs.x11_ssh_askpass}/libexec/ssh-askpass" ];
+        Environment = [ "SSH_ASKPASS=${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass" ];
       };
     };
 
