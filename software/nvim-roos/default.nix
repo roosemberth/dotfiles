@@ -4,7 +4,6 @@
 , vimPlugins
 , vimUtils
 , nix
-, nixUnstable
 , ripgrep
 , manix
 , ...
