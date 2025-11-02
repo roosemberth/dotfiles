@@ -1,7 +1,7 @@
 { pkgs, config, lib, dotfileUtils, ... }: with lib; let
   pinentry' = let
     # Disable GNOME secrets integration...
-    mypinentry = pkgs.pinentry.override({ withLibsecret = false; });
+    mypinentry = pkgs.pinentry-gnome3.override({ withLibsecret = false; });
     pinentry-curses = getOutput "curses" mypinentry;
     pinentry-gnome3 = getOutput "gnome3" mypinentry;
   in pkgs.writeShellScriptBin "pinentry" ''
@@ -58,7 +58,7 @@ in {
     };
     home.packages = with pkgs; [
       slurp grim swappy libnotify
-      wdisplays wl-clipboard wl-clipboard-x11 mpc_cli
+      wdisplays wl-clipboard wl-clipboard-x11 mpc
       pinentry' x11_ssh_askpass
       adwaita-qt pavucontrol pulseaudio wireplumber
     ] ++ optionals config.session.wayland.swayidle.enable [ swaylock' swayidle ];

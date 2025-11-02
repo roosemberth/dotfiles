@@ -111,7 +111,7 @@ in
         signal-desktop
         socat
         sparrow
-        tdesktop
+        telegram-desktop
         tree
         unzip
         wlr-randr

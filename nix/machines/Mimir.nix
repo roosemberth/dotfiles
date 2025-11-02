@@ -36,7 +36,7 @@ in {
   fonts.packages = with pkgs; [
     hack-font
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     noto-fonts-extra
     powerline-fonts
     profont

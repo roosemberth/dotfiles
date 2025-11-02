@@ -7,7 +7,7 @@ in {
     # Make wayland sessions visible.
     environment.pathsToLink = [ "/share/wayland-sessions" ];
 
-    fonts.packages = with pkgs; [ font-awesome noto-fonts-emoji ];
+    fonts.packages = with pkgs; [ font-awesome noto-fonts-color-emoji ];
 
     nixpkgs.config.packageOverrides = pkgs: {
       pass = pkgs.pass-wayland;
