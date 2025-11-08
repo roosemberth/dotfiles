@@ -44,6 +44,7 @@ in {
   roos.steam.enable = true;
   roos.user-profiles.graphical = ["roosemberth"];
 
+  programs.kdeconnect.enable = true;
   programs.seahorse.enable = true;
   services = {
     accounts-daemon.enable = true;
