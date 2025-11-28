@@ -66,9 +66,17 @@ in
       };
       programs.ssh = {
         enable = true;
-        compression = true;
-        userKnownHostsFile = "${userCfg.xdg.dataHome}/ssh/known_hosts";
+        enableDefaultConfig = false;
         includes = [ "${userCfg.xdg.dataHome}/ssh/config" ];
+        matchBlocks."*" = {
+          addKeysToAgent = "confirm";
+          compression = true;
+          forwardAgent = false;
+          hashKnownHosts = false;
+          serverAliveCountMax = 3;
+          serverAliveInterval = 15;
+          userKnownHostsFile = "${userCfg.xdg.dataHome}/ssh/known_hosts";
+        };
       };
     };
 
