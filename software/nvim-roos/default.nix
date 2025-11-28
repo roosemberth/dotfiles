@@ -96,7 +96,7 @@
       nvim-lspconfig
       pgsql-vim
       plantuml-syntax
-      rust-tools-nvim
+      rustaceanvim
       telescope-manix
       vim-markdown  # Provides syntax highlighting inside code blocks :D
       vim-nix
