@@ -42,7 +42,7 @@ in with lib; {
     };
     programs.zsh = {
       enable = true;
-      dotDir = ".local/etc/zsh";  # FIXME: Use `$XDG_DATA_DIR`.
+      dotDir = "${config.xdg.configHome}/zsh";
       history = {
         size = 100000;  # History size in memory.
         save = 100000000;  # History events.
