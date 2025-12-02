@@ -78,7 +78,7 @@ in with lib; {
         fzfCompletions = pkgs.runCommandLocal "fzf-completions" {} ''
           ${pkgs.fzf}/bin/fzf --zsh > $out
           sha256sum $out
-          echo "4bbeb19e5f933c54d3bc9a9e7c42e2be9da726f8895dd1fd3251cb8a40d73566 $out" | sha256sum -c --quiet
+          echo "f410ce60ae4ce11f6b6c6f505edbc8fbc4386d1d87fc4c774d5f5612ad896047  $out" | sha256sum -c --quiet
         '';
       in lib.mkMerge [
         (lib.mkBefore ''
