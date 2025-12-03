@@ -87,8 +87,4 @@ vim.lsp.enable('pylsp')
 vim.lsp.enable('ts_ls')
 
 -- LSP Status and progress
-require("fidget").setup {
-  text = {
-    spinner = "dots"
-  }
-}
+require("fidget").setup {}
