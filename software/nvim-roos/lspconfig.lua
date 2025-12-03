@@ -42,22 +42,21 @@ local on_generic_lsp_attach = function(client, bufnr)
   end, bufopts)
 end
 
--- lspconfig.rust_analyzer is configured by rust-tools.
-local rt = require("rust-tools")
-rt.setup({
-  tools = {
-    reload_workspace_from_cargo_toml = false,
-  },
-  server = {
-    on_attach = function(client, bufnr)
-      on_generic_lsp_attach(client, bufnr)
-      local bufopts = { noremap=true, silent=true, buffer=bufnr }
-      vim.keymap.set("n", "I", rt.hover_actions.hover_actions, bufopts)
-      vim.keymap.set("n", "<Leader>aa", rt.code_action_group.code_action_group, bufopts)
-      vim.cmd('packadd termdebug')
-      vim.b.termdebugger = 'rust-gdb'
-    end,
-  },
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "rust",
+  callback = function(ev)
+    on_generic_lsp_attach(null, ev.buf)
+    local bufopts = { noremap=true, silent=true, buffer=ev.buf }
+    vim.keymap.set('n', '<leader>aa', function()
+      vim.cmd.RustLsp('codeAction')
+    end, bufopts)
+    vim.keymap.set('n', 'I', function()
+      vim.cmd.RustLsp({ 'hover', 'actions' })
+    end, bufopts)
+    vim.keymap.set('n', '<leader>rt', function()
+      vim.cmd.RustLsp('testables')
+    end, bufopts)
+  end,
 })
 
 lspconfig.hls.setup {
