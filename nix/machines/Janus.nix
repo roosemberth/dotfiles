@@ -52,7 +52,7 @@ in {
     fprintd.enable = false;  # Enabled by NixOS hardware (framework 13 7040).
     gnome.gnome-keyring.enable = true;
     gnome.gnome-online-accounts.enable = true;
-    logind.powerKey = "ignore";
+    logind.settings.Login.HandlePowerKey = "ignore";
     resolved.enable = true;
     resolved.llmnr = "resolve";
     tailscale.enable = true;

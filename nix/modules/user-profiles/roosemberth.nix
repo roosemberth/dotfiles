@@ -48,11 +48,11 @@ in
       programs.git = {
         enable = true;
         package = lib.mkDefault pkgs.gitMinimal;
-        userName = "Roosembert Palacios";
+        user.name = "Roosembert Palacios";
         signing.key = "C2242BB7";
         signing.signByDefault = true;
         lfs.enable = true;
-        extraConfig = {
+        settings = {
           core.editor = "nvim";
           core.pager = "bat";
           commit.verbose = true;
