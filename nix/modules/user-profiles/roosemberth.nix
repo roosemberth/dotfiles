@@ -48,20 +48,20 @@ in
       programs.git = {
         enable = true;
         package = lib.mkDefault pkgs.gitMinimal;
-        user.name = "Roosembert Palacios";
         signing.key = "C2242BB7";
         signing.signByDefault = true;
         lfs.enable = true;
         settings = {
+          alias.c = "commit -s -v";
+          commit.verbose = true;
           core.editor = "nvim";
           core.pager = "bat";
-          commit.verbose = true;
           format.signOff = true;
           pull.ff = "only";
           tag.gpgSign = true;
           url."https://github.com/".insteadOf = [ "gh:" "github:" ];
           url."https://gitlab.com/".insteadOf = [ "gl:" "gitlab:" ];
-          alias.c = "commit -s -v";
+          user.name = "Roosembert Palacios";
         };
       };
       programs.ssh = {
