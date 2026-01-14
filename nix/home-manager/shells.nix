@@ -12,6 +12,11 @@ in with lib; {
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [ eza ];
+    programs.atuin = {
+      enable = true;
+      daemon.enable = true;
+      enableZshIntegration = true;
+    };
     programs.starship = {
       enable = true;
       settings = {
