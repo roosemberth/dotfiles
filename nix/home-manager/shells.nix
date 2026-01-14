@@ -10,15 +10,75 @@ in with lib; {
     };
   };
 
-  config = mkIf cfg.enable {
+  config = let
+    shellAliases = {
+      ".."    = "cd ..";
+      "..."   = "cd ../..";
+      "...."  = "cd ../../..";
+      "....." = "cd ../../../..";
+      "cp"    = "cp -i";
+      "df"    = "df -h";
+      "l"     = "eza --long";
+      "ll"    = "eza --long --all --all --icons=always --mounts";
+      "mv"    = "mv -i";
+      "rlf"   = "readlink -f";
+      "wtf"   = "dmesg | tail -n 20";
+    };
+  in mkIf cfg.enable {
     home.packages = with pkgs; [ eza ];
     programs.atuin = {
       enable = true;
       daemon.enable = true;
       enableZshIntegration = true;
+      enableNushellIntegration = true;
+    };
+    programs.nushell = {
+      enable = true;
+      inherit shellAliases;
+      settings = {
+        edit_mode = "vi";
+        show_banner = false;
+        color_config.hints = "dark_gray";
+      };
+      extraConfig = ''
+        def aps [pattern: string] {
+          ps | where name =~ $pattern
+        }
+
+        # Project picker: find under ~/ws -> fzf -> cd -> ranger
+        def wp [] {
+          let dest = (
+            ^find ($nu.home-path | path join "ws") -maxdepth 5 -not -path '*/.*' -type d
+            | fzf
+            | str trim
+          )
+          if ($dest | is-empty) { return }
+          cd $dest
+          ^ranger
+        }
+
+        let cfg = ($env.config? | default {})
+        let kb = ($cfg.keybindings? | default [])
+        $env.config = ($cfg | upsert keybindings (
+          $kb | append [{
+            name: "wrapToProject"
+            modifier: control
+            keycode: char_o
+            mode: vi_insert
+            event: { send: executehostcommand cmd: "wp" }
+          }, {
+            name: accept_hint_alt_l
+            modifier: alt
+            keycode: char_l
+            mode: [emacs vi_insert]
+            event: { send: historyhintcomplete }
+          }]
+        ))
+      '';
     };
     programs.starship = {
       enable = true;
+      enableNushellIntegration = true;
       settings = {
         format = builtins.concatStringsSep "" [
           "$jobs"
@@ -63,20 +123,8 @@ in with lib; {
         VISUAL = "vim -O";
       };
 
-      shellAliases = {
-        ".."    = "cd ..";
-        "..."   = "cd ../..";
-        "...."  = "cd ../../..";
-        "....." = "cd ../../../..";
-        "cp"    = "cp -i";
-        "df"    = "df -h";
-        "l"     = "eza --long";
-        "ll"    = "eza --long --all --all --icons=always --mounts";
-        "mv"    = "mv -i";
-        "rlf"   = "readlink -f";
-        "rm"    = "rm --one-file-system";
-        "wtf"   = "dmesg | tail -n 20";
-        "aps"   = "ps aux | grep -v grep | grep --color=always";
+      shellAliases = shellAliases // {
+        "aps" = "ps aux | grep -v grep | grep --color=always";
       };
 
       initContent = let
