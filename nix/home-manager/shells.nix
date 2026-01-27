@@ -28,7 +28,6 @@ in with lib; {
     home.packages = with pkgs; [ eza ];
     programs.atuin = {
       enable = true;
-      daemon.enable = true;
       enableZshIntegration = true;
       enableNushellIntegration = true;
     };
