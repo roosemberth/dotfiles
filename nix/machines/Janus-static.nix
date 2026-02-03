@@ -180,21 +180,8 @@ in {
           fi
         '';
       })
-      ({ pkgs, ... }: {
-        assertions = let
-          originalConfigKernel = originalConfig.boot.kernelPackages.kernel;
-        in [{
-          assertion = originalConfigKernel.version == "6.14";
-          message = ''
-            On kernel 6.14, using the virtio-gpu-gl device would cause COSMIC
-            to continously crash. Since kernel ${originalConfigKernel.version}
-            is now used in the base configuration, please re-test this and
-            update this assertion.
-          '';
-        }];
-        boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
-      })
-      ({ ... }: { # Configure emulation
+      ({ pkgs, ... }: { # Configure emulation
+        environment.systemPackages = with pkgs; [ glmark2 ];
         services.getty.autologinUser = "roosemberth";
         services.greetd.settings.initial_session = {
           command = "cosmic-session";
@@ -208,8 +195,7 @@ in {
           options = [
             "-chardev stdio,mux=on,id=char0,signal=off"
             "-device virtio-balloon-pci,id=balloon0,bus=pci.0"
-            "-device virtio-gpu-gl,blob=on,hostmem=256M,venus=on"
-            "-display gtk,gl=on"
+            "-device virtio-vga-gl -display sdl,gl=on"
             "-mon chardev=char0,mode=readline"
             "-serial chardev:char0"
           ];
