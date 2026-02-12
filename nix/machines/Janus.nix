@@ -3,9 +3,15 @@
     environment.systemPackages = with pkgs; [ pcsc-tools yubikey-manager ];
     services.pcscd.enable = true;
   };
+  nix-daemon-ssh-agent = { ... }: {
+    systemd.services.nix-daemon.environment = {
+      SSH_AUTH_SOCK = "/run/nix-daemon-ssh-agent.socket";
+    };
+  };
 in {
   imports = [
     ./Janus-static.nix
+    nix-daemon-ssh-agent
     yubikey
   ];
 
